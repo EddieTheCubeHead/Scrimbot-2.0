@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="games" uuid="2048ac4b-b32c-474a-bb87-8f11ec74ee05">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:C:\Users\EddieTheCubeHead\PycharmProjects\scrimbot2.0\venv\Src\Database\DBFiles\games.db</jdbc-url>
+    </data-source>
+  </component>
+</project>
