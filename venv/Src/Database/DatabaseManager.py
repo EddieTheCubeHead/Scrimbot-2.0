@@ -23,6 +23,7 @@ class DatabaseManager():
     def initialize_tables(self):
 
 
+
 # Enable initializing the database without starting the bot by making this file executable and run the initialization
 # script on execute
 if __name__ == "__main__":
