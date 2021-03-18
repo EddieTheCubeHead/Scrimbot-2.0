@@ -1,0 +1,8 @@
+CREATE TABLE Games (
+    Name VARCHAR(32) PRIMARY KEY,
+    Dispname VARCHAR(32) NOT NULL,
+    Colour CHAR(8) NOT NULL,
+    Icon VARCHAR(256) NOT NULL,
+    Type VARCHAR(8) NOT NULL,
+    Playercount SMALLINT
+);

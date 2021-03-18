@@ -1,80 +1,76 @@
-// This is straight up copied from the original Scrim-Bot but with more games added even though the bot stores games
-// in a database, this file exists to ease the initial population of said database
 {
-  "Games": {
-    "Team": {
-      "dota": {
-        "playerreq": 10,
-        "dispname": "Dota 2",
-        "icon": "https://i.imgur.com/OlWIlyY.jpg?1",
-        "colour": "0xce0000",
-        "alias": [ "dota2" ]
-      },
-      "csgo": {
-        "playerreq": 10,
-        "dispname": "CS:GO",
-        "icon": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/6d/6d448876809d7b79aa8f070271c07b1296459400_full.jpg",
-        "colour": "0xff8c1a",
-        "alias": [ "cs", "counterstrike" ]
-      },
-      "overwatch": {
-        "playerreq": 12,
-        "dispname": "Overwatch",
-        "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Overwatch_circle_logo.svg/1200px-Overwatch_circle_logo.svg.png",
-        "colour": "0xffa31a",
-        "alias": [ "ow" ]
-      },
-      "test": {
-        "playerreq": 2,
-        "dispname": "Test",
-        "icon": "https://cdn.pixabay.com/photo/2012/04/24/12/43/t-39853_960_720.png",
-        "colour": "0xffffff",
-        "alias": [ "t" ]
-      },
-      "rocket_league": {
-        "playerreq": 6,
-        "dispname": "Rocket League",
-        "icon": "https://i.imgur.com/BvQOQyN.png",
-        "colour": "0x0000ff",
-        "alias": [ "rl", "rocketleague", "rocket" ]
-      },
-      "valorant": {
-        "playerreq": 10,
-        "dispname": "Valorant",
-        "icon": "https://www.citypng.com/public/uploads/preview/-41603132788rzosdsitdt.png",
-        "colour": "0xeb4034",
-        "alias": []
-      }
+  "Team": {
+    "dota": {
+      "playercount": 10,
+      "dispname": "Dota 2",
+      "icon": "https://i.imgur.com/OlWIlyY.jpg?1",
+      "colour": "0xce0000",
+      "alias": [ "dota2" ]
     },
-    "FFA": {
-      "ttt": {
-        "maxplayers": 0,
-        "dispname": "Trouble in Terrorist Town",
-        "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Gmodlogo.svg/1200px-Gmodlogo.svg.png",
-        "colour": "0x4789da",
-        "alias": []
-      },
-      "civilization5": {
-        "maxplayers": 6,
-        "dispname": "Civilization V",
-        "icon": "https://images.sftcdn.net/images/t_optimized,f_auto/p/6ab5bc4e-96d8-11e6-b45f-00163ec9f5fa/2860980152/civilization-v-logo.png",
-        "colour": "0xe5e104",
-        "alias": [ "civ 5", "civ5" ]
-      },
-      "civilization6": {
-        "maxplayers": 0,
-        "dispname": "Civilization VI",
-        "icon": "https://s3-ap-northeast-1.amazonaws.com/peatix-files/pod/8170530/cover-download-civ-6-mac-free.jpeg",
-        "colour": "0x000770",
-        "alias": [ "civ 6", "civ6" ]
-      },
-      "amongus": {
-        "maxplayers": 10,
-        "dispname": "Among Us",
-        "icon": "https://www.scarsdalelibrary.org/sites/default/files/2021-02/among_us.jpg",
-        "colour": "0xff0000",
-        "alias": [ "amogus" ]
-      }
+    "csgo": {
+      "playercount": 10,
+      "dispname": "CS:GO",
+      "icon": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/6d/6d448876809d7b79aa8f070271c07b1296459400_full.jpg",
+      "colour": "0xff8c1a",
+      "alias": [ "cs", "counterstrike" ]
+    },
+    "overwatch": {
+      "playercount": 12,
+      "dispname": "Overwatch",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Overwatch_circle_logo.svg/1200px-Overwatch_circle_logo.svg.png",
+      "colour": "0xffa31a",
+      "alias": [ "ow" ]
+    },
+    "test": {
+      "playercount": 2,
+      "dispname": "Test",
+      "icon": "https://cdn.pixabay.com/photo/2012/04/24/12/43/t-39853_960_720.png",
+      "colour": "0xffffff",
+      "alias": [ "t" ]
+    },
+    "rocket_league": {
+      "playercount": 6,
+      "dispname": "Rocket League",
+      "icon": "https://i.imgur.com/BvQOQyN.png",
+      "colour": "0x0000ff",
+      "alias": [ "rl", "rocketleague", "rocket" ]
+    },
+    "valorant": {
+      "playercount": 10,
+      "dispname": "Valorant",
+      "icon": "https://www.citypng.com/public/uploads/preview/-41603132788rzosdsitdt.png",
+      "colour": "0xeb4034",
+      "alias": []
+    }
+  },
+  "FFA": {
+    "ttt": {
+      "playercount": 0,
+      "dispname": "Trouble in Terrorist Town",
+      "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Gmodlogo.svg/1200px-Gmodlogo.svg.png",
+      "colour": "0x4789da",
+      "alias": []
+    },
+    "civilization5": {
+      "playercount": 6,
+      "dispname": "Civilization V",
+      "icon": "https://images.sftcdn.net/images/t_optimized,f_auto/p/6ab5bc4e-96d8-11e6-b45f-00163ec9f5fa/2860980152/civilization-v-logo.png",
+      "colour": "0xe5e104",
+      "alias": [ "civ 5", "civ5" ]
+    },
+    "civilization6": {
+      "playercount": 0,
+      "dispname": "Civilization VI",
+      "icon": "https://mlpnk72yciwc.i.optimole.com/cqhiHLc.WqA8~2eefa/w:350/h:350/q:75/rt:fill/g:ce/https://bleedingcool.com/wp-content/uploads/2017/10/Civilization-VI-atlas.jpg",
+      "colour": "0x000770",
+      "alias": [ "civ 6", "civ6" ]
+    },
+    "amongus": {
+      "playercount": 10,
+      "dispname": "Among Us",
+      "icon": "https://www.scarsdalelibrary.org/sites/default/files/2021-02/among_us.jpg",
+      "colour": "0xff0000",
+      "alias": [ "amogus" ]
     }
   }
 }
