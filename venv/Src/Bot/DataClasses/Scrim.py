@@ -1,3 +1,6 @@
+__version__ = "0.1"
+__author__ = "Eetu Asikainen"
+
 import discord
 from discord.ext import commands
 

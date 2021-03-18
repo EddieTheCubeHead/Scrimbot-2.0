@@ -1,7 +1,11 @@
+__version__ = "0.1"
+__author__ = "Eetu Asikainen"
+
 import sqlite3
 import os
 import sys
 import json
+
 from discord.ext import commands
 
 class DatabaseManager():
@@ -70,7 +74,6 @@ class DatabaseManager():
 
     def fetch_scrim(self, channel_id: int):
         cursor = self.server_connection.cursor()
-        print(type(channel_id))
         cursor.execute("SELECT * FROM Scrims WHERE ChannelID = ?", (channel_id,))
         scrim_row = cursor.fetchone()
         cursor.close()
@@ -81,7 +84,7 @@ class DatabaseManager():
                                spectator_voice_id: int = None):
 
         if self.fetch_scrim(channel_id):
-            raise commands.UserInputError("This channel is already registered for scrim usage.")
+            raise commands.UserInputError(message="This channel is already registered for scrim usage.")
 
         cursor = self.server_connection.cursor()
 
@@ -95,7 +98,7 @@ class DatabaseManager():
                                spectator_voice_id: int = None):
 
         if not self.fetch_scrim(channel_id):
-            raise commands.UserInputError("This channel is not registered for scrim usage.")
+            raise commands.UserInputError(message="This channel is not registered for scrim usage.")
 
         cursor = self.server_connection.cursor()
 
@@ -109,7 +112,7 @@ class DatabaseManager():
     def remove_scrim_channel(self, channel_id: int):
 
         if not self.fetch_scrim(channel_id):
-            raise commands.UserInputError("This channel is not registered for scrim usage.")
+            raise commands.UserInputError(message="This channel is not registered for scrim usage.")
 
         cursor = server_connection.cursor()
 
