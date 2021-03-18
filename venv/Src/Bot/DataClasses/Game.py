@@ -7,3 +7,4 @@ class Game():
         
     @classmethod
     async def convert(cls, ctx: commands.Context, argument: str):
+        pass

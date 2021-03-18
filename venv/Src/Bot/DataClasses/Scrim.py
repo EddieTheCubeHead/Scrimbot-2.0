@@ -9,10 +9,6 @@ class Scrim():
         self.__all_scrims[channel_id] = self
 
     @classmethod
-    def init_scrims(cls):
-        pass
-
-    @classmethod
     async def convert(cls, ctx: commands.Context, argument: str):
 
         if ctx.channel.id not in cls.__all_scrims:

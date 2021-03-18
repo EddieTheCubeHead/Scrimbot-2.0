@@ -7,5 +7,11 @@
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:C:\Users\EddieTheCubeHead\PycharmProjects\scrimbot2.0\venv\Src\Database\DBFiles\games.db</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="servers" uuid="b84ba3a0-a1eb-4c87-ba57-4d8d8926379e">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:C:\Users\EddieTheCubeHead\PycharmProjects\scrimbot2.0\venv\Src\Database\DBFiles\servers.db</jdbc-url>
+    </data-source>
   </component>
 </project>

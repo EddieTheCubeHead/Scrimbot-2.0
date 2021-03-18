@@ -2,38 +2,122 @@ import sqlite3
 import os
 import sys
 import json
-import Src.Database.sqlite_statements as sqlite_statements
+from discord.ext import commands
 
 class DatabaseManager():
+    """A class to serve as an abstraction layer between the bot and the database."""
+
     def __init__(self, db_folder = "DBFiles"):
 
-        # If the bot is run the first time the database needs to be initialized
-        do_init = not (os.path.isdir(f"./{db_folder}") and os.path.isfile(f"./{db_folder}/games.db")
-                                and os.path.isfile(f"./{db_folder}/servers.db"))
+        self.__path = os.path.join(os.path.dirname(__file__))
 
-        if not os.path.isdir(f"./{db_folder}"):
+        # If the bot is run the first time the database needs to be initialized
+        init_databases = not (os.path.isdir(f"{self.__path}/{db_folder}")
+                              and os.path.isfile(f"{self.__path}/{db_folder}/games.db")
+                              and os.path.isfile(f"{self.__path}/{db_folder}/servers.db"))
+
+        if not os.path.isdir(f"{self.__path}/{db_folder}"):
             print("Didn't find a database file folder. Creating a new one.")
             try:
-                os.mkdir(f"./{db_folder}")
+                os.mkdir(f"{self.__path}/{db_folder}")
             except OSError:
-                full_path = os.getcwd()
-                print(f"Error creating database folder at {full_path}/{db_folder}; shutting down.")
+                print(f"Error creating database folder at {self.__path}/{db_folder}; shutting down.")
                 sys.exit(1)
 
-        self.game_connection = sqlite3.connect(f"{db_folder}/games.db")
-        self.server_connection = sqlite3.connect(f"{db_folder}/servers.db")
+        self.game_connection = sqlite3.connect(f"{self.__path}/{db_folder}/games.db")
+        self.server_connection = sqlite3.connect(f"{self.__path}/{db_folder}/servers.db")
 
-        if do_init:
+        if init_databases:
             # Games are stored in a database instead of just using the init json to enable possible user-added custom
             # games later on
             print("Didn't find established database files. Initializing the databases")
-            sqlite_statements.init_games(self.game_connection)
+            self.__init_games()
+            self.__init_servers()
 
+    def __init_games(self):
+        cursor = self.game_connection.cursor()
 
+        with open(f"{self.__path}/SQLScripts/CreateGamesTable.sql") as create_games_table:
+            cursor.execute(create_games_table.read())
+
+        with open(f"{self.__path}/SQLScripts/CreateAliasesTable.sql") as create_aliases_table:
+            cursor.execute(create_aliases_table.read())
+
+        with open(f"{self.__path}/games_init.json") as games:
+            games_dict = json.load(games)
+
+        for category in games_dict:
+            for game in games_dict[category]:
+                cursor.execute("INSERT INTO Games (Name, Colour, Icon, Playercount, Type) VALUES (?, ?, ?, ?, ?)",
+                               (game, games_dict[category][game]['colour'], games_dict[category][game]['icon'],
+                               games_dict[category][game]['playercount'], category))
+
+                for alias in games_dict[category][game]['alias']:
+                    cursor.execute("INSERT INTO GameAliases (GameName, Alias) VALUES (?, ?)",
+                                   (game, alias))
+
+        self.game_connection.commit()
+        cursor.close()
+
+    def __init_servers(self):
+        cursor = self.server_connection.cursor()
+
+        with open(f"{self.__path}/SQLScripts/CreateScrimsTable.sql") as create_scrims_table:
+            cursor.execute(create_scrims_table.read())
+
+        self.server_connection.commit()
+        cursor.close()
+
+    def fetch_scrim(self, channel_id: int):
+        cursor = self.server_connection.cursor()
+        print(type(channel_id))
+        cursor.execute("SELECT * FROM Scrims WHERE ChannelID = ?", (channel_id,))
+        scrim_row = cursor.fetchone()
+        cursor.close()
+
+        return scrim_row
+
+    def register_scrim_channel(self, channel_id: int, team_1_voice_id: int = None, team_2_voice_id: int = None,
+                               spectator_voice_id: int = None):
+
+        if self.fetch_scrim(channel_id):
+            raise commands.UserInputError("This channel is already registered for scrim usage.")
+
+        cursor = self.server_connection.cursor()
+
+        cursor.execute("INSERT INTO Scrims (ChannelID, Team1VoiceID, Team2VoiceID, SpectatorVoiceID) \
+                        VALUES (?, ?, ?, ?)", (channel_id, team_1_voice_id, team_2_voice_id, spectator_voice_id))
+
+        self.server_connection.commit()
+        cursor.close()
+
+    def update_scrim_channel(self, channel_id: int, team_1_voice_id: int = None, team_2_voice_id: int = None,
+                               spectator_voice_id: int = None):
+
+        if not self.fetch_scrim(channel_id):
+            raise commands.UserInputError("This channel is not registered for scrim usage.")
+
+        cursor = self.server_connection.cursor()
+
+        cursor.execute("UPDATE Scrims SET (Team1VoiceID = ?, Team2VoiceID = ?, SpectatorVoiceID = ?) \
+                                WHERE ChannelID = ?",
+                       (team_1_voice_id, team_2_voice_id, spectator_voice_id, channel_id))
+
+        self.server_connection.commit()
+        cursor.close()
+
+    def remove_scrim_channel(self, channel_id: int):
+
+        if not self.fetch_scrim(channel_id):
+            raise commands.UserInputError("This channel is not registered for scrim usage.")
+
+        cursor = server_connection.cursor()
+
+        cursor.execute("DELETE FROM Scrims WHERE ChannelID = ?", channel_id)
 
 
 
 # Enable initializing the database without starting the bot by making this file executable and running the
-# initialization script on execute
+# initialization logic on execute
 if __name__ == "__main__":
     init_manager = DatabaseManager()
