@@ -13,41 +13,41 @@ class DatabaseManager():
 
     def __init__(self, db_folder = "DBFiles"):
 
-        self.__path = os.path.join(os.path.dirname(__file__))
+        self._path = os.path.join(os.path.dirname(__file__))
 
         # If the bot is run the first time the database needs to be initialized
-        init_databases = not (os.path.isdir(f"{self.__path}/{db_folder}")
-                              and os.path.isfile(f"{self.__path}/{db_folder}/games.db")
-                              and os.path.isfile(f"{self.__path}/{db_folder}/servers.db"))
+        init_databases = not (os.path.isdir(f"{self._path}/{db_folder}")
+                              and os.path.isfile(f"{self._path}/{db_folder}/games.db")
+                              and os.path.isfile(f"{self._path}/{db_folder}/servers.db"))
 
-        if not os.path.isdir(f"{self.__path}/{db_folder}"):
+        if not os.path.isdir(f"{self._path}/{db_folder}"):
             print("Didn't find a database file folder. Creating a new one.")
             try:
-                os.mkdir(f"{self.__path}/{db_folder}")
+                os.mkdir(f"{self._path}/{db_folder}")
             except OSError:
-                print(f"Error creating database folder at {self.__path}/{db_folder}; shutting down.")
+                print(f"Error creating database folder at {self._path}/{db_folder}; shutting down.")
                 sys.exit(1)
 
-        self.game_connection = sqlite3.connect(f"{self.__path}/{db_folder}/games.db")
-        self.server_connection = sqlite3.connect(f"{self.__path}/{db_folder}/servers.db")
+        self._game_connection = sqlite3.connect(f"{self._path}/{db_folder}/games.db")
+        self._server_connection = sqlite3.connect(f"{self._path}/{db_folder}/servers.db")
 
         if init_databases:
             # Games are stored in a database instead of just using the init json to enable possible user-added custom
             # games later on
             print("Didn't find established database files. Initializing the databases")
-            self.__init_games()
-            self.__init_servers()
+            self._init_games()
+            self._init_servers()
 
-    def __init_games(self):
-        cursor = self.game_connection.cursor()
+    def _init_games(self):
+        cursor = self._game_connection.cursor()
 
-        with open(f"{self.__path}/SQLScripts/CreateGamesTable.sql") as create_games_table:
+        with open(f"{self._path}/SQLScripts/CreateGamesTable.sql") as create_games_table:
             cursor.execute(create_games_table.read())
 
-        with open(f"{self.__path}/SQLScripts/CreateAliasesTable.sql") as create_aliases_table:
+        with open(f"{self._path}/SQLScripts/CreateAliasesTable.sql") as create_aliases_table:
             cursor.execute(create_aliases_table.read())
 
-        with open(f"{self.__path}/games_init.json") as games:
+        with open(f"{self._path}/games_init.json") as games:
             games_dict = json.load(games)
 
         for category in games_dict:
@@ -60,20 +60,20 @@ class DatabaseManager():
                     cursor.execute("INSERT INTO GameAliases (GameName, Alias) VALUES (?, ?)",
                                    (game, alias))
 
-        self.game_connection.commit()
+        self._game_connection.commit()
         cursor.close()
 
-    def __init_servers(self):
-        cursor = self.server_connection.cursor()
+    def _init_servers(self):
+        cursor = self._server_connection.cursor()
 
-        with open(f"{self.__path}/SQLScripts/CreateScrimsTable.sql") as create_scrims_table:
+        with open(f"{self._path}/SQLScripts/CreateScrimsTable.sql") as create_scrims_table:
             cursor.execute(create_scrims_table.read())
 
-        self.server_connection.commit()
+        self.__server_connection.commit()
         cursor.close()
 
     def fetch_scrim(self, channel_id: int):
-        cursor = self.server_connection.cursor()
+        cursor = self._server_connection.cursor()
         cursor.execute("SELECT * FROM Scrims WHERE ChannelID = ?", (channel_id,))
         scrim_row = cursor.fetchone()
         cursor.close()
@@ -86,12 +86,12 @@ class DatabaseManager():
         if self.fetch_scrim(channel_id):
             raise commands.UserInputError(message="This channel is already registered for scrim usage.")
 
-        cursor = self.server_connection.cursor()
+        cursor = self._server_connection.cursor()
 
         cursor.execute("INSERT INTO Scrims (ChannelID, Team1VoiceID, Team2VoiceID, SpectatorVoiceID) \
                         VALUES (?, ?, ?, ?)", (channel_id, team_1_voice_id, team_2_voice_id, spectator_voice_id))
 
-        self.server_connection.commit()
+        self._server_connection.commit()
         cursor.close()
 
     def update_scrim_channel(self, channel_id: int, team_1_voice_id: int = None, team_2_voice_id: int = None,
@@ -100,13 +100,13 @@ class DatabaseManager():
         if not self.fetch_scrim(channel_id):
             raise commands.UserInputError(message="This channel is not registered for scrim usage.")
 
-        cursor = self.server_connection.cursor()
+        cursor = self._server_connection.cursor()
 
         cursor.execute("UPDATE Scrims SET (Team1VoiceID = ?, Team2VoiceID = ?, SpectatorVoiceID = ?) \
                                 WHERE ChannelID = ?",
                        (team_1_voice_id, team_2_voice_id, spectator_voice_id, channel_id))
 
-        self.server_connection.commit()
+        self._server_connection.commit()
         cursor.close()
 
     def remove_scrim_channel(self, channel_id: int):
@@ -114,9 +114,32 @@ class DatabaseManager():
         if not self.fetch_scrim(channel_id):
             raise commands.UserInputError(message="This channel is not registered for scrim usage.")
 
-        cursor = server_connection.cursor()
+        cursor = self._server_connection.cursor()
 
         cursor.execute("DELETE FROM Scrims WHERE ChannelID = ?", channel_id)
+
+    def check_voice_availability(self, channel_id: int):
+
+        cursor = self._server_connection.cursor()
+
+        cursor.execute("SELECT * FROM Scrims WHERE (Team1VoiceID = ? OR Team2VoiceID = ? OR SpectatorVoiceID = ?)",
+                       (channel_id, channel_id, channel_id))
+
+        return cursor.fetchone()
+
+    def games_init_generator(self):
+
+        game_cursor = self._game_connection.cursor()
+
+        game_cursor.execute("SELECT * FROM Games")
+
+        for game in game_cursor:
+            alias_cursor = self._game_connection.cursor()
+
+            alias_cursor.execute("SELECT Alias FROM GameAliases WHERE GameName = ?", (game[0],))
+            aliases = [alias[0] for alias in alias_cursor.fetchall()]
+
+            yield(game[0], game[1], game[2], game[3], game[4], aliases)
 
 
 

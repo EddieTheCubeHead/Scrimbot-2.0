@@ -8,7 +8,9 @@ import os
 import discord
 from discord.ext import commands
 
+from Src.Bot.DataClasses.Game import Game
 from Src.Database.DatabaseManager import DatabaseManager
+from Src.Bot.DataClasses.Scrim import Scrim
 
 class ScrimClient(commands.Bot):
     def __init__(self):
@@ -21,23 +23,25 @@ class ScrimClient(commands.Bot):
         handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
         logger.addHandler(handler)
 
-        # Cogs are loaded as extensions so I can abuse the ability to reload them without restarting the bot if I decide
-        # to try and automate the development more in the future.
-        self.__setup_cogs()
-
         self.database_manager = DatabaseManager()
+        Scrim.set_database_manager(self.database_manager)
+
+        # Initializing games into memory
+        Game.init_games(self.database_manager.games_init_generator())
+
+        # Cogs are loaded as extensions so I can abuse the ability to reload them without restarting the bot if I decide
+        # to try and automate the deployment pipeline more in the future.
+        self._setup_cogs()
 
         with open("secrets.json") as secret_file:
-            self.__secrets = json.load(secret_file)
+            self._secrets = json.load(secret_file)
 
-        self.run(self.__secrets["token"])
+        self.run(self._secrets["token"])
 
     async def get_prefix(self, message: discord.Message):
         return "/"
 
-    def __setup_cogs(self):
-        cog_files = []
-
+    def _setup_cogs(self):
         for cog in os.listdir("Cogs"):
             if cog[-3:] == ".py":
                 self.load_extension(f"Cogs.{cog[:-3]}")
@@ -57,7 +61,11 @@ class ScrimClient(commands.Bot):
         command_str = f"{await self.get_prefix(ctx.message)}help {ctx.command.name}"
         forward_msg = "Error: " + str(error) \
                       + f"\n\nTo get help with this command, use the command '{command_str}'"
-        await self.temp_msg(ctx, forward_msg, delete_delay = 24.0)
+
+        await self.temp_msg(ctx, forward_msg, delete_delay = 32.0)
+
+    async def get_deletion_time(self, context: commands.Context):
+        return 15
 
     async def on_ready(self):
         print(f"Successfully logged in as {self.user.name}, version {__version__}")
