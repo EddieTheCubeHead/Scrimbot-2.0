@@ -41,6 +41,9 @@ class ScrimClient(commands.Bot):
     async def get_prefix(self, message: discord.Message):
         return "/"
 
+    async def get_deletion_time(self, context: commands.Context):
+        return 15
+
     def _setup_cogs(self):
         for cog in os.listdir("Cogs"):
             if cog[-3:] == ".py":
@@ -63,9 +66,6 @@ class ScrimClient(commands.Bot):
                       + f"\n\nTo get help with this command, use the command '{command_str}'"
 
         await self.temp_msg(ctx, forward_msg, delete_delay = 32.0)
-
-    async def get_deletion_time(self, context: commands.Context):
-        return 15
 
     async def on_ready(self):
         print(f"Successfully logged in as {self.user.name}, version {__version__}")

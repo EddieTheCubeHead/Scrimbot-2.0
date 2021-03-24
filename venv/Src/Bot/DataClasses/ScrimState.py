@@ -6,5 +6,6 @@ from enum import Enum
 class ScrimState(Enum):
     INACTIVE = 1
     LFP = 2
-    LOCKED = 3
-    STARTED = 4
+    CAPS = 3
+    LOCKED = 4
+    STARTED = 5
