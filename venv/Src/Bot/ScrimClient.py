@@ -14,7 +14,9 @@ from Src.Bot.DataClasses.Scrim import Scrim
 
 class ScrimClient(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=self.get_prefix, intents = discord.Intents.default())
+        intents = discord.Intents.default()
+        intents.members = True
+        super().__init__(command_prefix=self.get_prefix, intents = intents)
 
         # Logging setup code stolen from the original Scrim-Bot, that was probably stolen from somewhere else
         logger = logging.getLogger('discord')

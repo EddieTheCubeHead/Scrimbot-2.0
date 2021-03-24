@@ -27,7 +27,7 @@ class ScrimCommands(commands.Cog):
     @checks.active_scrim()
     async def terminate(self, ctx: commands.Context):
         scrim = await Scrim.get_scrim(ctx)
-        await scrim.terminate(f"Scrim terminated manually by {ctx.author.nick or ctx.author.name}")
+        await scrim.terminate(f"Scrim terminated manually by {ctx.author.display_name}")
         await ctx.message.delete()
 
 def setup(client: commands.Bot):

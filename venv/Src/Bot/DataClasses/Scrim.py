@@ -26,8 +26,11 @@ class Scrim():
         self._team_2_voice = team_2_voice
         self._spectator_voice = spectator_voice
 
-        # The reset function just sets all values to 0/Null/etc. so it can be used to init the class
-        self.reset()
+        self._participants = []
+        self._team_1 = []
+        self._team_2 = []
+
+        self.state = ScrimState.INACTIVE
 
         self._all_scrims[channel.id] = self
 
@@ -62,7 +65,7 @@ class Scrim():
             scrim = cls._all_scrims[react.message.channel.id]
 
             if react.message == scrim._message:
-                return Scrim
+                return scrim
         return
 
     @classmethod
@@ -86,28 +89,6 @@ class Scrim():
         if self._deletion_time and idle_time >= datetime.timedelta(seconds=self._deletion_time*60):
             self.terminate()
 
-    async def _update_embed(self):
-        pass
-
-    def _create_player_list(self, team: ScrimTeam):
-        if team == ScrimTeam.TEAMLESS:
-            return "\n".join([discord.utils.escape_markdown(user.nick or user.name) for user in self._participants])
-
-        elif team == ScrimTeam.SPECTATOR:
-            return "\n".join([discord.utils.escape_markdown(user.nick or user.name) for user in self._spectators])
-
-        else:
-            player_list = self._team_1 if team == ScrimTeam.TEAM1 else self._team_2
-            string_list = [discord.utils.escape_markdown(user.nick or user.name) for user in player_list]
-
-            # Bolding captains
-            if string_list and self.state == ScrimState.CAPS:
-                string_list[0] = "**" + string_list[0] + "**"
-
-            return "\n".join(string_list)
-
-
-
     async def create(self, ctx: commands.Context, game: Game, deletion_time: int,
                      is_ranked: bool = True):
         self._game = game
@@ -122,13 +103,30 @@ class Scrim():
         await self._message.add_reaction(emoji="\U0001F441")  # eye
 
     async def add_player(self, player: discord.Member):
-        if self.state != ScrimState.LFP or player in self._all_participants:
+        if self.state != ScrimState.LFP:
             return
 
-        self._participants.append(player)
-        self._all_participants.add(player)
+        if player.id in self._all_participants:
+            raise commands.BadArgument("Cannot join more than one scrim at a time.")
 
-        await self._update_embed()
+        self._participants.append(player.id)
+        self._all_participants.add(player.id)
+        self._embed.add_to_participants(player.id, discord.utils.escape_markdown(player.display_name))
+
+        await self._message.edit(embed=self._embed)
+
+    async def remove_player(self, player: discord.Member):
+        if self.state != ScrimState.LFP:
+            return
+
+        if player.id not in self._participants:
+            raise commands.BadArgument("Cannot leave a scrim you are not a participant in.")
+
+        self._participants.remove(player.id)
+        self._all_participants.remove(player.id)
+        self._embed.remove_from_participants(player.id)
+
+        await self._message.edit(embed=self._embed)
 
     async def terminate(self, reason: str):
         self._embed.terminate(reason)
@@ -139,7 +137,7 @@ class Scrim():
     def reset(self):
         self.state = ScrimState.INACTIVE
 
-        self._last_interaction = datetime.now()
+        self._last_interaction = datetime.datetime.now()
         self._deletion_time = 0
 
         self._game = None
@@ -149,6 +147,7 @@ class Scrim():
         self._cap_1 = None
         self._cap_2 = None
 
+        self._all_participants.difference_update(set(self._participants + self._team_1 + self._team_2))
         self._participants = []
         self._team_1 = []
         self._team_2 = []
