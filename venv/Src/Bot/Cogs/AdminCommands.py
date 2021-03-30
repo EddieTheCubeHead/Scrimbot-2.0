@@ -1,20 +1,52 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from typing import Optional
+
 import discord
 from discord.ext import commands
 
-# Almost a cyclical import here, but this helps with type hints
-import Src.Bot.ScrimClient as sc
+from Src.Bot.ScrimClient import ScrimClient
 from Src.Bot.DataClasses.Scrim import Scrim
 
 class AdminCommands(commands.Cog):
-    def __init__(self, client: sc.ScrimClient):
+    """A cog housing the upkeep and maintenance related commands of the bot
+
+    Commands
+    -------
+    register(ctx, team_1_voice, team_2_voice, spectator_voice)
+        A command to register a channel as a channel that can be used for scrims
+    """
+
+    def __init__(self, client: ScrimClient):
+        """The constructor of the AdminCommands cog.
+
+        args
+        ----
+
+        :param client: The client instance associated with this cog.
+        :type client: ScrimClient
+        """
         self._client = client
 
-    def _sanitize_channels__(self, team_1_voice: discord.VoiceChannel, team_2_voice: discord.VoiceChannel,
-                              spectator_voice: discord.VoiceChannel):
+    def _sanitize_channels__(self, team_1_voice: Optional[discord.VoiceChannel],
+                             team_2_voice: Optional[discord.VoiceChannel],
+                             spectator_voice: Optional[discord.VoiceChannel])\
+                            -> (Optional[int], Optional[int], Optional[int]):
+        """A private method that validates the given voice channels as free and returns their ids
 
+        args
+        ----
+
+        :param team_1_voice: The voice channel designated for team 1
+        :type team_1_voice: Optional[discord.VoiceChannel]
+        :param team_2_voice: The voice channel designated for team 2
+        :type team_2_voice: Optional[discord.VoiceChannel]
+        :param spectator_voice: The voice channel designated for spectators
+        :type spectator_voice: Optional[discord.VoiceChannel]
+        :return: Channel id's corresponding to the input channels
+        :rtype: (Optional[int], Optional[int], Optional[int])
+        """
         if team_1_voice and not team_2_voice:
             raise commands.UserInputError("If you specify a voice channel for team 1 you must also specify a voice \
                                           channel for team 2.")
@@ -38,9 +70,9 @@ class AdminCommands(commands.Cog):
                 raise commands.UserInputError(error_str)
 
         # ID declarations outside function call to prevent calling id from None object
-        team_1_id = team_1_voice.id if team_1_voice else None
-        team_2_id = team_2_voice.id if team_2_voice else None
-        spectator_id = spectator_voice.id if spectator_voice else None
+        team_1_id: Optional[int] = team_1_voice.id if team_1_voice else None
+        team_2_id: Optional[int] = team_2_voice.id if team_2_voice else None
+        spectator_id: Optional[int] = spectator_voice.id if spectator_voice else None
 
         return team_1_id, team_2_id, spectator_id
 
@@ -48,6 +80,20 @@ class AdminCommands(commands.Cog):
     @commands.guild_only()
     async def register(self, ctx: commands.Context, team_1_voice: discord.VoiceChannel = None,
                        team_2_voice: discord.VoiceChannel = None, spectator_voice: discord.VoiceChannel = None):
+        """A command that registers a channel as viable for scrim usage and assigns associated voice channels.
+
+        args
+        ----
+
+        :param ctx: The invokation context of the command
+        :type ctx: commands.Context
+        :param team_1_voice: The voice channel assigned to team 1. If blank tries to find from channel group.
+        :type team_1_voice: Optional[discord.VoiceChannel]
+        :param team_2_voice: The voice channel assigned to team 2. If blank tries to find from channel group.
+        :type team_2_voice: Optional[discord.VoiceChannel]
+        :param spectator_voice: The voice channel assigned to spectators. If blank tries to find from channel group.
+        :type spectator_voice: Optional[discord.VoiceChannel]
+        """
 
         # Try to automatically assign voice channels if the category is of the right size
         if not team_1_voice:
@@ -82,11 +128,29 @@ class AdminCommands(commands.Cog):
 
     @register.error
     async def register_error(self, ctx: commands.Context, error: discord.DiscordException):
+        """Error handler method for the command 'register'
+
+        args
+        ----
+
+        :param ctx: The invokation context of the command that raised the error
+        :type ctx: commands.Context
+        :param error: The error caught
+        :type error: discord.DiscordException
+        """
         if isinstance(error, commands.UserInputError):
             await self._client.handle_error(ctx, error)
         else:
             raise error
 
-def setup(client: commands.Bot):
+def setup(client: ScrimClient):
+    """A method for adding the cog to the bot
+
+    args
+    ----
+
+    :param client: The instance of the bot the cog should be added into
+    :type client: ScrimClient
+    """
     client.add_cog(AdminCommands(client))
     print(f"Using cog {__name__}, version {__version__}")

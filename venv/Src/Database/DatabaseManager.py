@@ -5,13 +5,44 @@ import sqlite3
 import os
 import sys
 import json
+from typing import Optional
 
 from discord.ext import commands
 
 class DatabaseManager():
-    """A class to serve as an abstraction layer between the bot and the database."""
+    """A class to serve as an abstraction layer between the bot and the database.
+
+    mehtods
+    -------
+
+    fetch_scrim(channel_id)
+        Fetch the scrim info of the given channel from the database
+
+    register_scrim_channel(channel_id, team_1_voice_id, team_2_voice_id, spectator_voice_id)
+        Register a new channel for scrim usage into the database
+
+    update_scrim_channel(channel_id, team_1_voice_id, team_2_voice_id, spectator_voice_id)
+        Update channel data in the database
+
+    remove_scrim_channel(channel_id)
+        Remove a scrim channel from the database
+
+    check_voice_availabílity(channel_id)
+        Check whether the given channel is already reserved for voice usage in other scrims
+
+    games_init_generator()
+        A generator that can be used to initialize the games supported by the bot from the games in the database
+    """
 
     def __init__(self, db_folder = "DBFiles"):
+        """The constructor of DatabaseManager
+
+        args
+        ----
+
+        :param db_folder: The folder in which the database files are storen, default "DBFiles"
+        :type db_folder: str
+        """
 
         self._path = os.path.join(os.path.dirname(__file__))
 
@@ -39,6 +70,8 @@ class DatabaseManager():
             self._init_servers()
 
     def _init_games(self):
+        """A private helper method that creates the games-table based on scripts in the SQLScripts folder"""
+
         cursor = self._game_connection.cursor()
 
         with open(f"{self._path}/SQLScripts/CreateGamesTable.sql") as create_games_table:
@@ -64,6 +97,8 @@ class DatabaseManager():
         cursor.close()
 
     def _init_servers(self):
+        """A private helper method that creates the servers-table based on the scripts in the SQLScripts folder"""
+
         cursor = self._server_connection.cursor()
 
         with open(f"{self._path}/SQLScripts/CreateScrimsTable.sql") as create_scrims_table:
@@ -72,7 +107,17 @@ class DatabaseManager():
         self.__server_connection.commit()
         cursor.close()
 
-    def fetch_scrim(self, channel_id: int):
+    def fetch_scrim(self, channel_id: int) -> Optional[sqlite3.Row]:
+        """A method for fetching a row containing the data of a specified scrim from the database
+
+        args
+        ----
+
+        :param channel_id: The unique discord id of the channel of which to fetch scrim data of
+        :type channel_id: int
+        :return: An sqlite row-object of the data
+        :rtype: Optional[sqlite3.Row]
+        """
         cursor = self._server_connection.cursor()
         cursor.execute("SELECT * FROM Scrims WHERE ChannelID = ?", (channel_id,))
         scrim_row = cursor.fetchone()
@@ -82,6 +127,20 @@ class DatabaseManager():
 
     def register_scrim_channel(self, channel_id: int, team_1_voice_id: int = None, team_2_voice_id: int = None,
                                spectator_voice_id: int = None):
+        """A method for registering a new channel for scrim usage
+
+        args
+        ----
+
+        :param channel_id: The channel id of the channel to regiser
+        :type channel_id: int
+        :param team_1_voice_id: The channel id of the optional voice channel for team 1
+        :type team_1_voice_id: Optional[int]
+        :param team_2_voice_id: The channel id of the optional voice channel for team 2
+        :type team_2_voice_id: Optional[int]
+        :param spectator_voice_id: The channel id of the optional spectator voice channel
+        :type spectator_voice_id: Optional[int]
+        """
 
         if self.fetch_scrim(channel_id):
             raise commands.UserInputError(message="This channel is already registered for scrim usage.")
@@ -96,6 +155,20 @@ class DatabaseManager():
 
     def update_scrim_channel(self, channel_id: int, team_1_voice_id: int = None, team_2_voice_id: int = None,
                                spectator_voice_id: int = None):
+        """A method for updating channel data for scrim channels
+
+        args
+        ----
+
+        :param channel_id: The channel id of the channel to update data of
+        :type channel_id: int
+        :param team_1_voice_id: The new channel id of the optional voice channel for team 1
+        :type team_1_voice_id: Optional[int]
+        :param team_2_voice_id: The new channel id of the optional voice channel for team 2
+        :type team_2_voice_id: Optional[int]
+        :param spectator_voice_id: The new channel id of the optional spectator voice channel
+        :type spectator_voice_id: Optional[int]
+        """
 
         if not self.fetch_scrim(channel_id):
             raise commands.UserInputError(message="This channel is not registered for scrim usage.")
@@ -110,6 +183,14 @@ class DatabaseManager():
         cursor.close()
 
     def remove_scrim_channel(self, channel_id: int):
+        """A method for removing all channel data of the given channel
+
+        args
+        ----
+
+        :param channel_id: The channel id of the channel of which data should be deleted
+        :type channel_id: int
+        """
 
         if not self.fetch_scrim(channel_id):
             raise commands.UserInputError(message="This channel is not registered for scrim usage.")
@@ -118,7 +199,14 @@ class DatabaseManager():
 
         cursor.execute("DELETE FROM Scrims WHERE ChannelID = ?", channel_id)
 
-    def check_voice_availability(self, channel_id: int):
+    def check_voice_availability(self, channel_id: int) -> Optional[sqlite3.Row]:
+        """A method to ensure the given channel id is not reserved for voice usage for other scrims
+
+        :param channel_id: The channel id of the channel to check availability of
+        :type channel_id: int
+        :return: A row object containing data of the reserved scrim if reserved, otherwise None
+        :rtype: Optional[sqlite3.Row]
+        """
 
         cursor = self._server_connection.cursor()
 
@@ -127,7 +215,12 @@ class DatabaseManager():
 
         return cursor.fetchone()
 
-    def games_init_generator(self):
+    def games_init_generator(self) -> (str, str, str, str, int, Optional[list[str]]):
+        """A generator that yields the data of all games stored in the database, one game per iteration.
+
+        :return: A tuple containing all the data required in the Game constructor
+        :rtype: (str, str, str, str, int, Optional[list[str]])
+        """
 
         game_cursor = self._game_connection.cursor()
 
@@ -144,6 +237,6 @@ class DatabaseManager():
 
 
 # Enable initializing the database without starting the bot by making this file executable and running the
-# initialization logic on execute
+# initialization logic on execution
 if __name__ == "__main__":
     init_manager = DatabaseManager()
