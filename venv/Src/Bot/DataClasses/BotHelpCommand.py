@@ -12,6 +12,7 @@ class BotHelpCommand(commands.DefaultHelpCommand):
 
     methods
     -------
+
     add_command_formatting(command)
         An overridden method from DefaultHelpCommand responsible for adding helps string into the paginator
     """
@@ -28,6 +29,9 @@ class BotHelpCommand(commands.DefaultHelpCommand):
     def add_command_formatting(self, command: commands.Command):
         """An override from DefaultHelpCommand. Responsible for adding the custom help string into the paginator
 
+        args
+        ----
+
         :param command: The command for which a help message should be constructed
         :type command: commands.Command
         """
@@ -38,6 +42,9 @@ class BotHelpCommand(commands.DefaultHelpCommand):
 
     def _command_doc_parser(self, docstring: str) -> tuple[str, list[tuple[str, str, str]]]:
         """A private helper method for parsing a command's docstring
+
+        args
+        ----
 
         :param docstring: The docstring that should be parsed
         :type docstring: str
@@ -68,6 +75,9 @@ class BotHelpCommand(commands.DefaultHelpCommand):
     def _help_command_builder(self, command: commands.Command, description: str,
                               param_data: list[tuple[str, str, str]]):
         """A private helper method for building a help command's text out of data given
+
+        args
+        ----
 
         :param prefix: The prefix used to invoke the command
         :type prefix: str

@@ -101,6 +101,7 @@ class Scrim():
         self._team_2_lock = asyncio.Lock()
 
         self.state = ScrimState.INACTIVE
+        self._last_interaction = datetime.datetime.now()
 
         self._all_scrims[channel.id] = self
 
@@ -154,9 +155,10 @@ class Scrim():
             return
 
         else:
-            scrim = cls._all_scrims[react.message.channel.id]
+            scrim: Scrim = cls._all_scrims[react.message.channel.id]
 
             if react.message == scrim._message:
+                scrim._last_interaction = datetime.datetime.now()
                 return scrim
         return
 
