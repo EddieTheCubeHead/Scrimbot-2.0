@@ -75,6 +75,7 @@ class ScrimEmbed(discord.Embed):
         :param team_2_title:
         :type team_2_title:
         """
+
         super().__init__(title="Status", description= f"Looking for players. (0/{game.playercount})",
                          color = game.colour)
 
@@ -115,6 +116,7 @@ class ScrimEmbed(discord.Embed):
         :param user_name: The name the user should be displayed with in the scrim
         :type user_name: str
         """
+
         self._participant_names[user_id] = user_name
         self._update_participant_fields()
 
@@ -127,11 +129,13 @@ class ScrimEmbed(discord.Embed):
         :param user_id: The unique discord id of the user
         :type user_id: int
         """
+
         self._participant_names.pop(user_id)
         self._update_participant_fields()
 
     def _update_participant_fields(self):
         """A private helper method for updating the participant fields based on the participant dict."""
+
         self.set_field_at(0,
                           name=f"**Players** {'_(full)_' if len(self._participant_names) >= self._playerreq else ''}",
                           value="\n".join(list(self._participant_names.values())[:self._playerreq]) or "_empty_")
@@ -169,6 +173,7 @@ class ScrimEmbed(discord.Embed):
         :param user_name: The name the user should be displayed with
         :type user_name: str
         """
+
         self._spectator_names[user_id] = user_name
         self.set_field_at(1, name="**Spectators**", value="\n".join(self._spectator_names.values()))
 
@@ -181,6 +186,7 @@ class ScrimEmbed(discord.Embed):
         :param user_id: The unique discord id of the user
         :type user_id: int
         """
+
         self._spectator_names.pop(user_id)
         self.set_field_at(1, name="**Spectators**", value="\n".join(self._spectator_names.values()) or "_empty_")
 

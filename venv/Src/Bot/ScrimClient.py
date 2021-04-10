@@ -11,15 +11,17 @@ from discord.ext import commands
 from Src.Bot.DataClasses.Game import Game
 from Src.Database.DatabaseManager import DatabaseManager
 from Src.Bot.DataClasses.Scrim import Scrim
+from Src.Bot.DataClasses.BotHelpCommand import BotHelpCommand
 
 class ScrimClient(commands.Bot):
     """The class that implements the discord.py bot class. The heart of the bot"""
+
     def __init__(self):
         """The constructor of ScrimClient. Running this starts the bot on the created instance"""
 
         intents = discord.Intents.default()
         intents.members = True
-        super().__init__(command_prefix=self.get_prefix, intents = intents)
+        super().__init__(command_prefix=self.get_prefix, intents = intents, help_command=BotHelpCommand())
 
         # Logging setup code stolen from the original Scrim-Bot, that was probably stolen from somewhere else
         logger = logging.getLogger('discord')
@@ -41,6 +43,7 @@ class ScrimClient(commands.Bot):
         with open("secrets.json") as secret_file:
             self._secrets = json.load(secret_file)
 
+        self.description = "A discord bot for organizing scrims."
         self.run(self._secrets["token"])
 
     async def get_prefix(self, message: discord.Message):

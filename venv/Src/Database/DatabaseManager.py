@@ -118,6 +118,7 @@ class DatabaseManager():
         :return: An sqlite row-object of the data
         :rtype: Optional[sqlite3.Row]
         """
+
         cursor = self._server_connection.cursor()
         cursor.execute("SELECT * FROM Scrims WHERE ChannelID = ?", (channel_id,))
         scrim_row = cursor.fetchone()

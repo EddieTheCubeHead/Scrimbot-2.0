@@ -27,6 +27,7 @@ class AdminCommands(commands.Cog):
         :param client: The client instance associated with this cog.
         :type client: ScrimClient
         """
+
         self._client = client
 
     def _sanitize_channels__(self, team_1_voice: Optional[discord.VoiceChannel],
@@ -47,6 +48,7 @@ class AdminCommands(commands.Cog):
         :return: Channel id's corresponding to the input channels
         :rtype: (Optional[int], Optional[int], Optional[int])
         """
+
         if team_1_voice and not team_2_voice:
             raise commands.UserInputError("If you specify a voice channel for team 1 you must also specify a voice \
                                           channel for team 2.")
@@ -87,11 +89,11 @@ class AdminCommands(commands.Cog):
 
         :param ctx: The invokation context of the command
         :type ctx: commands.Context
-        :param team_1_voice: The voice channel assigned to team 1. If blank tries to find from channel group.
+        :param team_1_voice: The voice channel assigned to team 1. If blank tries to find from channel group
         :type team_1_voice: Optional[discord.VoiceChannel]
-        :param team_2_voice: The voice channel assigned to team 2. If blank tries to find from channel group.
+        :param team_2_voice: The voice channel assigned to team 2. If blank tries to find from channel group
         :type team_2_voice: Optional[discord.VoiceChannel]
-        :param spectator_voice: The voice channel assigned to spectators. If blank tries to find from channel group.
+        :param spectator_voice: The voice channel assigned to spectators. If blank tries to find from channel group
         :type spectator_voice: Optional[discord.VoiceChannel]
         """
 
@@ -138,6 +140,7 @@ class AdminCommands(commands.Cog):
         :param error: The error caught
         :type error: discord.DiscordException
         """
+
         if isinstance(error, commands.UserInputError):
             await self._client.handle_error(ctx, error)
         else:
@@ -152,5 +155,6 @@ def setup(client: ScrimClient):
     :param client: The instance of the bot the cog should be added into
     :type client: ScrimClient
     """
+
     client.add_cog(AdminCommands(client))
     print(f"Using cog {__name__}, version {__version__}")

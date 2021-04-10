@@ -26,6 +26,7 @@ class ScrimCommands(commands.Cog):
         :param client: The client instance associated with this cog.
         :type client: ScrimClient
         """
+
         self._client = client
 
     @commands.command(aliases=['s'])
@@ -41,9 +42,10 @@ class ScrimCommands(commands.Cog):
         :type ctx: commands.Context
         :param game: The game that should be used for creating the scrim
         :type game: Game
-        :param deletion_time: (Optional) The time in minutes that the scrim can be inactive before automatic deletion.
+        :param deletion_time: The time in minutes that the scrim can be inactive before automatic deletion
         :type deletion_time: Optional[int]
         """
+
         scrim = ctx.scrim
         deletion_time = deletion_time or await self._client.get_deletion_time(ctx)
         await scrim.create(ctx, game, deletion_time)
@@ -61,6 +63,7 @@ class ScrimCommands(commands.Cog):
         :param ctx: The invokation context of the command
         :type ctx: commands.Context
         """
+
         scrim = ctx.scrim
         await scrim.lock()
         await ctx.message.delete()
@@ -93,6 +96,7 @@ class ScrimCommands(commands.Cog):
         :param ctx: The invokation context of the command
         :type ctx: commands.Context
         """
+
         scrim = ctx.scrim
         await scrim.terminate(f"Scrim terminated manually by {ctx.author.display_name}")
         await ctx.message.delete()
@@ -107,5 +111,6 @@ def setup(client: commands.Bot):
     :param client: The instance of the bot the cog should be added into
     :type client: ScrimClient
     """
+
     client.add_cog(ScrimCommands(client))
     print(f"Using cog {__name__}, version {__version__}")

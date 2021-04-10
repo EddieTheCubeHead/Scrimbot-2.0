@@ -1,9 +1,15 @@
+from __future__ import annotations
+
+
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+
 from typing import Generator, Optional
 
+
 from discord.ext import commands
+
 
 class Game():
     """A class that houses the data of the supported games. Might get subclassed in the future to implement FFA games.
@@ -38,6 +44,7 @@ class Game():
         :param aliases: A list of game aliases that can be used for creting scrim
         :type aliases: list[str]
         """
+
         self.name = name
         self.colour = int(colour, 16)
         self.playercount = playercount
@@ -49,7 +56,7 @@ class Game():
         print(f"Created game {name}")
 
     @classmethod
-    def init_games(cls, games_data_generator: Generator[(str, str, str, str, int, Optional[list[str]]), None, None]):
+    def init_games(cls, games_data_generator: Generator[tuple[str, str, str, str, int, list[str]], None, None]):
         """A classmethod for initializing the list of games based on a given generator.
 
         args
@@ -58,6 +65,7 @@ class Game():
         :param games_data_generator: A generator function that yields the data for one game instance each call
         :type games_data_generator: Generator[(str, str, str, str, int, Optional[list[str]]), None, None]
         """
+
         while True:
             try:
                 game_data = next(games_data_generator)
@@ -79,6 +87,7 @@ class Game():
         :return: A game that has a name or an alias matching the argument string
         :rtype: Game
         """
+
         if argument in cls._games_dict:
             return cls._games_dict[argument]
         else:

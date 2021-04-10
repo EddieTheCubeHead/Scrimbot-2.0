@@ -11,6 +11,7 @@ from Src.Bot.DataClasses.ScrimState import ScrimState
 
 def free_scrim():
     """A check that requires the channel to be eligible scrims and not have a currently active scrim."""
+
     async def predicate(ctx: commands.Context):
         scrim = await Scrim.get_scrim(ctx)
         if not scrim.state == ScrimState.INACTIVE:
@@ -21,6 +22,7 @@ def free_scrim():
 
 def active_scrim():
     """A check that requires the channel to have an active scrim and the user to have permissions to that scirm"""
+
     async def predicate(ctx: commands.Context):
         scrim = await Scrim.get_scrim(ctx)
         if ctx.author != scrim.master:

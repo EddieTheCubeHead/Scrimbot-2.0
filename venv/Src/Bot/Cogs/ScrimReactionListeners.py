@@ -86,6 +86,7 @@ class ScrimReactionListeners(commands.Cog):
         :param user: The user associated with the reaction event
         :type user: discord.Member
         """
+
         if user.bot:
             return
 
@@ -126,5 +127,6 @@ def setup(client: commands.Bot):
     :param client: The instance of the bot the cog should be added into
     :type client: ScrimClient
     """
+
     client.add_cog(ScrimReactionListeners(client))
     print(f"Using cog {__name__}, version {__version__}")

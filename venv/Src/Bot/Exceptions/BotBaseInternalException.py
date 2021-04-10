@@ -3,13 +3,13 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
 
-class BotBaseUserException(commands.CommandError):
-    """A base class for all the exceptions caused by the user activity (input/actions) thrown by the bot."""
+class BotBaseInternalException(commands.CommandError):
+    """A base class for all the exceptions excepted in the code that should get handled silently internally."""
 
     def __init__(self, message: str):
         """The constructor of the exception
 
-        :param message: The error message displayed to the user.
+        :param message: The error message logged internally
         :type message: str
         """
 

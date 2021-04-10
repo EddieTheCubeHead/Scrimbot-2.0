@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
@@ -93,6 +95,7 @@ class Scrim():
         self._spectators = []
         self._team_1 = []
         self._team_2 = []
+        self.master = None
 
         self._team_1_lock = asyncio.Lock()
         self._team_2_lock = asyncio.Lock()
