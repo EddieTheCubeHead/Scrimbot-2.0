@@ -13,4 +13,13 @@ class BotBaseInternalException(commands.CommandError):
         :type message: str
         """
 
-        self.message = message
+        self._message = message
+
+    def get_message(self) -> str:
+        """A method to get the error message related to this error.
+
+        :return: The error message
+        :rtype: str
+        """
+
+        return self._message

@@ -13,6 +13,7 @@ from discord.ext import commands
 from Src.Bot.DataClasses.ScrimState import ScrimState
 from Src.Bot.DataClasses.Game import Game
 from Src.Bot.DataClasses.ScrimEmbed import ScrimEmbed
+from Src.Bot.Exceptions.BotMissingScrimException import BotMissingScrimException
 from Src.Database.DatabaseManager import DatabaseManager
 
 class Scrim():
@@ -122,7 +123,7 @@ class Scrim():
         if ctx.channel.id not in cls._all_scrims:
             db_entry = cls._db_manager.fetch_scrim(ctx.channel.id)
             if not db_entry:
-                raise commands.BadArgument("This channel is not registered for scrim usage.")
+                raise BotMissingScrimException(ctx)
             else:
                 channel = ctx.channel
                 team_1_voice, team_2_voice, spectator_voice = None, None, None

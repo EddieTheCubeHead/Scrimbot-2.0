@@ -26,8 +26,17 @@ class BotHelpCommand(commands.DefaultHelpCommand):
         "Optional[int]": "a whole number"
     }
 
+    def __init__(self, dm_help=True):
+        """A custom constructor for the BotHelpCommand.
+
+        :param dm_help: Whether the bot should sent help messages as dms instead of to the invokation context
+        :type dm_help: Optional[bool]
+        """
+
+        super().__init__(dm_help=dm_help)
+
     def add_command_formatting(self, command: commands.Command):
-        """An override from DefaultHelpCommand. Responsible for adding the custom help string into the paginator
+        """An override from DefaultHelpCommand. Responsible for adding the custom help string into the paginator.
 
         args
         ----
@@ -35,13 +44,12 @@ class BotHelpCommand(commands.DefaultHelpCommand):
         :param command: The command for which a help message should be constructed
         :type command: commands.Command
         """
+
         desc, param_data = self._command_doc_parser(command.help)
-        print(f"Command name: {command.name}\n\nSignature: {command.signature}\n\nDescription: {command.description}")
-        print(f"\nChecks:{command.checks}\n\nAliases: {command.aliases}")
         self._help_command_builder(command, desc, param_data)
 
     def _command_doc_parser(self, docstring: str) -> tuple[str, list[tuple[str, str, str]]]:
-        """A private helper method for parsing a command's docstring
+        """A private helper method for parsing a command's docstring.
 
         args
         ----
@@ -102,4 +110,3 @@ class BotHelpCommand(commands.DefaultHelpCommand):
 
         if command.aliases:
             self.paginator.add_line(f"Aliases: {command.aliases}")
-

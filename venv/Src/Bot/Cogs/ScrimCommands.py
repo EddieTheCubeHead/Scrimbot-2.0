@@ -8,6 +8,7 @@ from Src.Bot.ScrimClient import ScrimClient
 import Src.Bot.checks as checks
 from Src.Bot.DataClasses.Game import Game
 from Src.Bot.DataClasses.Scrim import Scrim
+from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
 class ScrimCommands(commands.Cog):
     """A cog housing the commands directly related to creating and manipulating scrims

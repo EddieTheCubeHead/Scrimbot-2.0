@@ -12,23 +12,25 @@ from Src.Bot.DataClasses.Game import Game
 from Src.Database.DatabaseManager import DatabaseManager
 from Src.Bot.DataClasses.Scrim import Scrim
 from Src.Bot.DataClasses.BotHelpCommand import BotHelpCommand
+from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 
 class ScrimClient(commands.Bot):
-    """The class that implements the discord.py bot class. The heart of the bot"""
+    """The class that implements the discord.py bot class. The heart of the bot."""
 
     def __init__(self):
-        """The constructor of ScrimClient. Running this starts the bot on the created instance"""
+        """The constructor of ScrimClient. Running this starts the bot on the created instance."""
 
         intents = discord.Intents.default()
         intents.members = True
         super().__init__(command_prefix=self.get_prefix, intents = intents, help_command=BotHelpCommand())
 
-        # Logging setup code stolen from the original Scrim-Bot, that was probably stolen from somewhere else
-        logger = logging.getLogger('discord')
-        logger.setLevel(logging.DEBUG)
+        # Logging setup code stolen from discord.py docs
+        self.logger = logging.getLogger('discord')
+        self.logger.setLevel(logging.DEBUG)
         handler = logging.FileHandler(filename='scrim_bot.log', encoding='utf-8', mode='w')
-        handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-        logger.addHandler(handler)
+        handler.setFormatter(logging.Formatter('%(asctime)s || %(levelname)s || %(name)s || %(message)s'))
+        self.logger.addHandler(handler)
 
         self.database_manager = DatabaseManager()
         Scrim.set_database_manager(self.database_manager)
@@ -93,20 +95,42 @@ class ScrimClient(commands.Bot):
 
         await temporary_message.delete(delay=delete_delay)
 
-    async def handle_error(self, ctx: commands.Context, error: discord.DiscordException):
-        """A temporary error handler. Should get written out when I implement custom exceptions and help system.
+    async def on_command_error(self, context: commands.Context, exception: Exception):
+        """An override for the default discord.py command error handler"""
+
+        if isinstance(exception, BotBaseUserException):
+            await self._handle_user_error(context, exception)
+        elif isinstance(exception, BotBaseInternalException):
+            await self._handle_internal_error(context, exception)
+        else:
+            raise exception
+
+    async def _handle_user_error(self, ctx: commands.Context, exception: BotBaseUserException):
+        """The default way to handle user related exceptions for commands
 
         :param ctx: The context of the raised error
         :type ctx: commands.Context
         :param error: The raised error
-        :type error: discord.DiscordException
+        :type error: BotBaseUserException
         """
 
-        command_str = f"{await self.get_prefix(ctx.message)}help {ctx.command.name}"
-        forward_msg = "Error: " + str(error) \
+        command_str = f"{ctx.prefix}help {ctx.command.name}"
+        forward_msg = f"{exception.get_header()} {exception.get_description()}" \
                       + f"\n\nTo get help with this command, use the command '{command_str}'"
 
         await self.temp_msg(ctx, forward_msg, delete_delay = 32.0)
+
+    async def _handle_internal_error(self, ctx: commands.Context, exception: BotBaseInternalException):
+        """The default way to handle internal exceptions for commands
+
+        :param ctx: The context of the raised error
+        :type ctx: commands.Context
+        :param error: The raised error
+        :type error: BotBaseInternalException
+        """
+
+        self.logger.error(f"command: '{ctx.command.name}' invoked as: '{ctx.message.content}' " + \
+                          f"error: {exception.get_message()}")
 
     async def on_ready(self):
         """Bot initialization logic. Currently just functions to inform the user the bot is connected."""

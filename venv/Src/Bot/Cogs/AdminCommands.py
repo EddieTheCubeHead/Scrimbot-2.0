@@ -8,6 +8,7 @@ from discord.ext import commands
 
 from Src.Bot.ScrimClient import ScrimClient
 from Src.Bot.DataClasses.Scrim import Scrim
+from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 
 class AdminCommands(commands.Cog):
     """A cog housing the upkeep and maintenance related commands of the bot
@@ -30,7 +31,7 @@ class AdminCommands(commands.Cog):
 
         self._client = client
 
-    def _sanitize_channels__(self, team_1_voice: Optional[discord.VoiceChannel],
+    def _sanitize_channels(self, team_1_voice: Optional[discord.VoiceChannel],
                              team_2_voice: Optional[discord.VoiceChannel],
                              spectator_voice: Optional[discord.VoiceChannel])\
                             -> (Optional[int], Optional[int], Optional[int]):
@@ -50,26 +51,12 @@ class AdminCommands(commands.Cog):
         """
 
         if team_1_voice and not team_2_voice:
-            raise commands.UserInputError("If you specify a voice channel for team 1 you must also specify a voice \
-                                          channel for team 2.")
+            raise BotBaseUserException("If you specify a voice channel for team 1 you must also specify a voice " + \
+                                       "channel for team 2.")
 
-        if team_1_voice:
-            taken_by = self._client.database_manager.check_voice_availability(team_1_voice.id)
-            if taken_by:
-                error_str = f"Channel {team_1_voice} is already used by a scrim on channel {taken_by[0]}."
-                raise commands.UserInputError(error_str)
-
-        if team_2_voice:
-            taken_by = self._client.database_manager.check_voice_availability(team_2_voice.id)
-            if taken_by:
-                error_str = f"Channel {team_2_voice} is already used by a scrim on channel {taken_by[0]}."
-                raise commands.UserInputError(error_str)
-
-        if spectator_voice:
-            taken_by = self._client.database_manager.check_voice_availability(spectator_voice.id)
-            if taken_by:
-                error_str = f"Channel {spectator_voice} is already used by a scrim on channel {taken_by[0]}."
-                raise commands.UserInputError(error_str)
+        for channel in (team_1_voice, team_2_voice, spectator_voice):
+            if channel:
+                self._check_channel_availability(channel)
 
         # ID declarations outside function call to prevent calling id from None object
         team_1_id: Optional[int] = team_1_voice.id if team_1_voice else None
@@ -77,6 +64,12 @@ class AdminCommands(commands.Cog):
         spectator_id: Optional[int] = spectator_voice.id if spectator_voice else None
 
         return team_1_id, team_2_id, spectator_id
+
+    def _check_channel_availability(self, channel: discord.VoiceChannel):
+        taken_by = self._client.database_manager.check_voice_availability(channel.id)
+        if taken_by:
+            error_str = f"Channel {channel} is already used by a scrim on channel {taken_by[0]}."
+            raise BotBaseUserException(error_str)
 
     @commands.command()
     @commands.guild_only()
@@ -114,7 +107,7 @@ class AdminCommands(commands.Cog):
                     team_1_voice, team_2_voice, spectator_voice = voice_candidates[:3]
 
 
-        team_1_id, team_2_id, spectator_id = self._sanitize_channels__(team_1_voice, team_2_voice, spectator_voice)
+        team_1_id, team_2_id, spectator_id = self._sanitize_channels(team_1_voice, team_2_voice, spectator_voice)
 
         self._client.database_manager.register_scrim_channel(ctx.channel.id, team_1_id, team_2_id, spectator_id)
 
@@ -127,24 +120,6 @@ class AdminCommands(commands.Cog):
         success_info += f"\nTeam 2: {team_2_voice or 'not set'}"
         success_info += f"\nSpectators: {spectator_voice or 'not set'}"
         await self._client.temp_msg(ctx, success_info)
-
-    @register.error
-    async def register_error(self, ctx: commands.Context, error: discord.DiscordException):
-        """Error handler method for the command 'register'
-
-        args
-        ----
-
-        :param ctx: The invokation context of the command that raised the error
-        :type ctx: commands.Context
-        :param error: The error caught
-        :type error: discord.DiscordException
-        """
-
-        if isinstance(error, commands.UserInputError):
-            await self._client.handle_error(ctx, error)
-        else:
-            raise error
 
 def setup(client: ScrimClient):
     """A method for adding the cog to the bot
