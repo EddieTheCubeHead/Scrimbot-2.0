@@ -195,7 +195,7 @@ class ScrimEmbed(discord.Embed):
         """A method for updating the embed to match a locked scrim and display required information"""
 
         self.description = \
-            f"Players locked. Use reactions for manual team selection or type '**{self._prefix}teams**" + \
+            f"Players locked. Use reactions for manual team selection or type '**{self._prefix}teams** " + \
             "_random/balanced/balancedrandom/pickup_' to define teams."
 
         while len(self._participant_names) > self._playerreq:
@@ -203,7 +203,7 @@ class ScrimEmbed(discord.Embed):
 
         self.set_field_at(0, name="**Unassigned**", value="\n".join(self._participant_names.values()))
 
-        div_string = "**------------------------------------------------------------**"
+        div_string = "------------------------------------------------------------"
         if len(self.fields) < 3:
             self.add_field(name=div_string, value=div_string, inline=False)
 
@@ -227,10 +227,8 @@ class ScrimEmbed(discord.Embed):
         :type user_name: str
         """
 
-        if user_id in self._team_2_names:
-            self._team_2_names.pop(user_id)
-        else:
-            self._participant_names.pop(user_id)
+        self._team_2_names.pop(user_id, None)
+        self._participant_names.pop(user_id, None)
         self._team_1_names[user_id] = user_name
 
         if self._state == ScrimState.CAPS and len(self._team_1_names) == 1:
@@ -250,10 +248,8 @@ class ScrimEmbed(discord.Embed):
         :type user_name: str
         """
 
-        if user_name in self._team_1_names:
-            self._team_1_names.pop(user_id)
-        else:
-            self._participant_names.pop(user_id)
+        self._team_1_names.pop(user_id, None)
+        self._participant_names.pop(user_id, None)
         self._team_2_names[user_id] = user_name
 
         if self._state == ScrimState.CAPS and len(self._team_2_names) == 1:
@@ -271,9 +267,11 @@ class ScrimEmbed(discord.Embed):
         :type user_id: int
         """
 
-        self._team_1_names.pop(user_id, None)
-        self._team_2_names.pop(user_id, None)
-        self._update_teams_fields()
+        user = self._team_1_names.pop(user_id, None)
+        user = user or self._team_2_names.pop(user_id, None)
+        if user:
+            self._participant_names[user_id] = user
+            self._update_teams_fields()
 
     def clear_teams(self):
         """A method for clearing both teams and assigning all players back to teamless players."""
@@ -288,12 +286,12 @@ class ScrimEmbed(discord.Embed):
     def _update_teams_fields(self):
         """A private helper method for updating the displayed information based on the team dicts."""
 
-        self.set_field_at(0, "**Unassigned**", value="\n".join(self._participant_names.values()) or "_empty_")
+        self.set_field_at(0, name="**Unassigned**", value="\n".join(self._participant_names.values()) or "_empty_")
         self.set_field_at(
-                3, name=f"**{self._team_1_title}** {'_full_' if len(self._team_1_names) >= self._playerreq/2 else ''}",
+                3, name=f"**{self._team_1_title}** {'_(full)_' if len(self._team_1_names) >= self._playerreq/2 else ''}",
                 value="\n".join(self._team_1_names.values()) or "_empty_")
         self.set_field_at(
-                4, name=f"**{self._team_2_title}** {'_full_' if len(self._team_2_names) >= self._playerreq / 2 else ''}",
+                4, name=f"**{self._team_2_title}** {'_(full)_' if len(self._team_2_names) >= self._playerreq / 2 else ''}",
                 value="\n".join(self._team_2_names.values()) or "_empty_")
 
         if not self._participant_names:
@@ -302,7 +300,7 @@ class ScrimEmbed(discord.Embed):
         else:
             if self._state != ScrimState.CAPS:
                 self.description = \
-                    f"Players locked. Use reactions for manual team selection or type '**{self._prefix}teams**" + \
+                    f"Players locked. Use reactions for manual team selection or type '**{self._prefix}teams** " + \
                     "_random/balanced/balancedrandom/pickup_' to define teams automatically."
             else:
                 if len(self._team_1_names) < 1 or len(self._team_2_names) < 1:
@@ -324,7 +322,7 @@ class ScrimEmbed(discord.Embed):
                              f"with '**{self._prefix}winner** _team1/team2/tie_")
         self.set_field_at(2, name=f"**{self._team_1_title}**",
                           value="\n".join(self._team_1_names.values()), inline=True)
-        self.set_field_at(2, name=f"**{self._team_2_title}**",
+        self.set_field_at(3, name=f"**{self._team_2_title}**",
                           value="\n".join(self._team_2_names.values()), inline=True)
 
     def declare_winner(self, winner: int):

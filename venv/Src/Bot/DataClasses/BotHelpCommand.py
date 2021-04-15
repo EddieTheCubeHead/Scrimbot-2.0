@@ -23,7 +23,8 @@ class BotHelpCommand(commands.DefaultHelpCommand):
         "str": "a string",
         "Optional[discord.VoiceChannel]": "a string representing a voice channel",
         "Game": "a string representing a game known by the bot, or an alias of one (see command 'listgames')",
-        "Optional[int]": "a whole number"
+        "Optional[int]": "a whole number",
+        "bool": "a string representing a truth value (true/false)"
     }
 
     def __init__(self, dm_help=True):

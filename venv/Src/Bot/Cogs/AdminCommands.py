@@ -132,4 +132,4 @@ def setup(client: ScrimClient):
     """
 
     client.add_cog(AdminCommands(client))
-    print(f"Using cog {__name__}, version {__version__}")
+    print(f"Using cog {__name__}, with version {__version__}")

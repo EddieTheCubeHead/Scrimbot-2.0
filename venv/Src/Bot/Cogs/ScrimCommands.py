@@ -18,6 +18,7 @@ class ScrimCommands(commands.Cog):
     scrim(ctx, game, deletion_time = 0)
         Creates a scrim of the specified game, that will be deleted after the given amount of time
     """
+
     def __init__(self, client: ScrimClient):
         """The constructor of the ScrimCommands cog.
 
@@ -47,9 +48,8 @@ class ScrimCommands(commands.Cog):
         :type deletion_time: Optional[int]
         """
 
-        scrim = ctx.scrim
         deletion_time = deletion_time or await self._client.get_deletion_time(ctx)
-        await scrim.create(ctx, game, deletion_time)
+        await ctx.scrim.create(ctx, game, deletion_time)
         await ctx.message.delete()
 
     @commands.command()
@@ -65,8 +65,7 @@ class ScrimCommands(commands.Cog):
         :type ctx: commands.Context
         """
 
-        scrim = ctx.scrim
-        await scrim.lock()
+        await ctx.scrim.lock()
         await ctx.message.delete()
 
     @commands.command()
@@ -88,6 +87,24 @@ class ScrimCommands(commands.Cog):
     @commands.command()
     @commands.guild_only()
     @checks.active_scrim()
+    async def start(self, ctx: commands.Context, move_voice: bool = True):
+        """A command for starting a scrim with two full teams
+
+        args
+        ----
+
+        :param ctx: The invokation context of the command
+        :type ctx: commands.Context
+        :param move_voice: Whether the bot should automatically move the participants to voice channels, default True
+        :type move_voice: bool
+        """
+
+        await ctx.scrim.start()
+        await ctx.message.delete()
+
+    @commands.command()
+    @commands.guild_only()
+    @checks.active_scrim()
     async def terminate(self, ctx: commands.Context):
         """A command that forcefully terminates a scrim on the channel
 
@@ -98,8 +115,7 @@ class ScrimCommands(commands.Cog):
         :type ctx: commands.Context
         """
 
-        scrim = ctx.scrim
-        await scrim.terminate(f"Scrim terminated manually by {ctx.author.display_name}")
+        await ctx.scrim.terminate(f"Scrim terminated manually by {ctx.author.display_name}")
         await ctx.message.delete()
 
 
@@ -114,4 +130,4 @@ def setup(client: commands.Bot):
     """
 
     client.add_cog(ScrimCommands(client))
-    print(f"Using cog {__name__}, version {__version__}")
+    print(f"Using cog {__name__}, with version {__version__}")

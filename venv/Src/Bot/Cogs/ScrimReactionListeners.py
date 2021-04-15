@@ -7,6 +7,7 @@ from discord.ext import commands
 from Src.Bot.DataClasses.ScrimState import ScrimState
 from Src.Bot.ScrimClient import ScrimClient
 from Src.Bot.DataClasses.Scrim import Scrim
+from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
 class ScrimReactionListeners(commands.Cog):
     """A cog responsive for tracking the reaction-based UI of the scrims
@@ -68,11 +69,9 @@ class ScrimReactionListeners(commands.Cog):
             else:
                 await react.remove(user)
 
-        # TODO: figure out reaction-based error handling if need arises
-        except commands.BadArgument:
+        except discord.DiscordException as exception:
             await react.remove(user)
-        except commands.CommandError:
-            pass
+            await self._client.handle_react_internal_error(react, user, exception)
 
     @commands.Cog.listener("on_reaction_remove")
     async def scrim_reaction_remove_listener(self, react: discord.Reaction, user: discord.Member):
@@ -95,27 +94,20 @@ class ScrimReactionListeners(commands.Cog):
             return
 
         try:
-            if react.emoji == "\U0001F3AE":
+            if react.emoji == "\U0001F3AE" and scrim.state == ScrimState.LFP:
                 await scrim.remove_player(user)
 
-            elif react.emoji == "\U0001F441":
+            elif react.emoji == "\U0001F441" and scrim.state == ScrimState.LFP:
                 await scrim.remove_spectator(user)
 
-            elif react.emoji == "1\u20E3":
+            elif (react.emoji == "1\u20E3" or react.emoji == "2\u20E3") and scrim.state == ScrimState.LOCKED:
                 await scrim.set_teamless(user)
 
-            elif react.emoji == "2\u20E3":
-                await scrim.set_teamless(user)
-
-            elif react.emoji == "\U0001F451":
+            elif react.emoji == "\U0001F451" and scrim.state == ScrimState.CAPS_PREP:
                 await scrim.remove_captain(user)
 
-            else:
-                await react.remove(user)
-
-        # TODO: figure out reaction-based error handling if need arises
-        except commands.CommandError:
-            pass
+        except discord.DiscordException as exception:
+            await self._client.handle_react_internal_error(react, user, exception)
 
 
 def setup(client: commands.Bot):
@@ -129,4 +121,4 @@ def setup(client: commands.Bot):
     """
 
     client.add_cog(ScrimReactionListeners(client))
-    print(f"Using cog {__name__}, version {__version__}")
+    print(f"Using cog {__name__}, with version {__version__}")

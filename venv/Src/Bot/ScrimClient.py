@@ -3,6 +3,7 @@ __author__ = "Eetu Asikainen"
 
 import json
 import logging
+import asyncio
 import os
 
 import discord
@@ -100,9 +101,18 @@ class ScrimClient(commands.Bot):
 
         if isinstance(exception, BotBaseUserException):
             await self._handle_user_error(context, exception)
+
         elif isinstance(exception, BotBaseInternalException):
             await self._handle_internal_error(context, exception)
+
+        # Special case for unkown commands
+        elif isinstance(exception, commands.CommandNotFound):
+            await self.temp_msg(context,
+                                f"Couldn't find command '{context.message.content.split(' ')[0]}'.\n" + \
+                                f"Use '{context.prefix}help' to see a full list of commands.")
+
         else:
+            self.logger.error(str(exception))
             raise exception
 
     async def _handle_user_error(self, ctx: commands.Context, exception: BotBaseUserException):
@@ -110,13 +120,14 @@ class ScrimClient(commands.Bot):
 
         :param ctx: The context of the raised error
         :type ctx: commands.Context
-        :param error: The raised error
-        :type error: BotBaseUserException
+        :param exception: The raised exception
+        :type exception: BotBaseUserException
         """
 
         command_str = f"{ctx.prefix}help {ctx.command.name}"
-        forward_msg = f"{exception.get_header()} {exception.get_description()}" \
-                      + f"\n\nTo get help with this command, use the command '{command_str}'"
+        forward_msg = f"{exception.get_header()} {exception.get_description()}"
+        if exception.send_help:
+            forward_msg += f"\n\nTo get help with this command, use the command '{command_str}'"
 
         await self.temp_msg(ctx, forward_msg, delete_delay = 32.0)
 
@@ -125,16 +136,38 @@ class ScrimClient(commands.Bot):
 
         :param ctx: The context of the raised error
         :type ctx: commands.Context
-        :param error: The raised error
-        :type error: BotBaseInternalException
+        :param exception: The raised exception
+        :type exception: BotBaseInternalException
         """
 
-        self.logger.error(f"command: '{ctx.command.name}' invoked as: '{ctx.message.content}' " + \
-                          f"error: {exception.get_message()}")
+        if exception.log:
+            self.logger.warning(f"command: '{ctx.command.name}' invoked as: '{ctx.message.content}' " + \
+                                f"caused the exception: {exception.get_message()}")
+
+    async def handle_react_internal_error(self, react: discord.Reaction, user: discord.User,
+                                          exception: BotBaseInternalException):
+        """A custom error handler for reaction-event based internal exceptions
+
+        :param react: The reaction associated with the exceptions
+        :type react: discord.Reaction
+        :param user: The user who added the reaction
+        :type user: discord.User
+        :param exception: The raised exception
+        :type exception: BotBaseInternalException
+        """
+
+        if isinstance(exception, BotBaseInternalException) and exception.log:
+            self.logger.warning(f"reaction: '{react.emoji}' in message: '{react.message.content}' " + \
+                                f"added by: '{user}' caused the exception: {exception.get_message()}")
+        elif isinstance(exception, BotBaseUserException):
+            temporary_message = await react.message.channel.send(f"{exception.get_header()} " + \
+                                                                 f"{exception.get_description()}")
+            await temporary_message.delete(delay=8)
 
     async def on_ready(self):
         """Bot initialization logic. Currently just functions to inform the user the bot is connected."""
-        print(f"Successfully logged in as {self.user.name}, version {__version__}")
+
+        print(f"Successfully logged in as {self.user.name}, with version {__version__}")
 
 if __name__ == "__main__":
     client = ScrimClient()
