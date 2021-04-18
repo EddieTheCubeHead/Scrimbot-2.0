@@ -11,4 +11,5 @@ class ScrimState(Enum):
     CAPS_PREP = 3
     CAPS = 4
     LOCKED = 5
-    STARTED = 6
+    VOICE_WAIT = 6
+    STARTED = 7

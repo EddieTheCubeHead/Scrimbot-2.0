@@ -321,6 +321,10 @@ class ScrimEmbed(discord.Embed):
 
     def cancel_wait_for_voice(self):
         """A method for cancelling the waiting for voice state"""
+
+        # Note that though this currently just calls self._update_teams_fields() this might demand extra logic in the
+        # future. This combined with the private nature of said function means I think separating this into it's own
+        # function is varranted.
         self._update_teams_fields()
 
     def start_scrim(self):
@@ -329,7 +333,7 @@ class ScrimEmbed(discord.Embed):
         self.remove_field(0)
         self.description = "Scrim underway."
         self.set_footer(text="Good luck, have fun! Declare the winner " + \
-                             f"with '**{self._prefix}winner** _team1/team2/tie_")
+                             f"with '{self._prefix}winner 1/2/tie'.")
         self.set_field_at(2, name=f"**{self._team_1_title}**",
                           value="\n".join(self._team_1_names.values()), inline=True)
         self.set_field_at(3, name=f"**{self._team_2_title}**",

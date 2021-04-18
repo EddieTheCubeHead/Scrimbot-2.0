@@ -107,8 +107,9 @@ class Scrim():
 
         self.master: discord.Member = None
 
-        self._teams_lock: asyncio.Lock = asyncio.Lock()
-        self._embed_lock: asyncio.Lock = asyncio.Lock()
+        self._teams_lock: asyncio.Lock = asyncio.Lock() # Lock for updating teams
+        self._embed_lock: asyncio.Lock = asyncio.Lock() # Lock for updating the embed
+        self._state_change_lock: asyncio.Lock = asyncio.Lock() # Lock for commands causing state changes
 
         self.state: ScrimState = ScrimState.INACTIVE
         self._last_interaction: datetime.datetime = datetime.datetime.now()
@@ -205,6 +206,14 @@ class Scrim():
         if self._deletion_time and idle_time >= datetime.timedelta(seconds=self._deletion_time*60):
             await self.terminate("Terminated due to inactivity.")
 
+    async def _secure_state_change(self, new_state: ScrimState, *eligible_states: list[ScrimState]):
+        with self._state_change_lock:
+            if self.state not in eligible_states:
+                raise BotBaseUserException("You cannot use that now: scrim is not in the correct state.",
+                                           send_help=False)
+
+            self.state = new_state
+
     async def create(self, ctx: commands.Context, game: Game, deletion_time: int,
                      is_ranked: bool = True):
         """A method that creates a new scrim on an active and registred channel.
@@ -222,11 +231,12 @@ class Scrim():
         :type is_ranked: bool
         """
 
+        await self._secure_state_change(ScrimState.LFP, ScrimState.INACTIVE)
+
         self._game: Game = game
         self._deletion_time: int = deletion_time
 
         self.master = ctx.author
-        self.state = ScrimState.LFP
 
         async with self._embed_lock:
             self._embed: ScrimEmbed = ScrimEmbed(game, is_ranked)
@@ -331,19 +341,17 @@ class Scrim():
     async def lock(self):
         """A method for locking a full scrim, preventing manipulation of participants and starting the team selection"""
 
-        if self.state != ScrimState.LFP:
-            return BotBaseUserException("You cannot use that now: scrim is not in the correct state.")
-
         if len(self._participants) < self._game.playercount:
             error_str = f"Need {self._game.playercount - len(self._participants)} more players to lock the scrim."
             raise BotBaseUserException(error_str, send_help=False)
 
+        await self._secure_state_change(ScrimState.LOCKED, ScrimState.LFP)
+
         if len(self._participants) > self._game.playercount:
-            with self._all_participant_lock:
+            async with self._all_participant_lock:
                 self._all_participants.difference_update(self._participants[self._game.playercount:])
 
         self._participants = self._participants[:self._game.playercount]
-        self.state = ScrimState.LOCKED
 
         async with self._embed_lock:
             self._embed.lock_scrim()
@@ -448,20 +456,32 @@ class Scrim():
         :param move_voice: Whether to move the participants into voice channels, if available
         :type move_voice: bool
         """
-
-        if self.state not in (ScrimState.LOCKED, ScrimState.CAPS):
-            raise BotBaseUserException("You cannot use that now: scrim is not in the correct state.", send_help=False)
         if not (len(self._team_1) == len(self._team_2) == self._game.playercount/2):
             raise BotBaseUserException("You cannot use that now: both teams are not full.", send_help=False)
 
+        prior_state = self.state
+
+        await self._secure_state_change(ScrimState.VOICE_WAIT, ScrimState.LOCKED, ScrimState.CAPS)
+
         if move_voice and self._team_1_voice and self._team_2_voice:
-            await self._move_voice_channels(context)
+            await self._move_voice_channels(context, prior_state)
 
-        self._embed.start_scrim()
-        await self._message.edit(embed=self._embed)
+        self.state = ScrimState.STARTED
+        with self._embed_lock:
+            self._embed.start_scrim()
+            await self._message.edit(embed=self._embed)
 
-    async def _move_voice_channels(self, context: commands.Context):
-        """A private helper method for moving all players into corresponding voice channels"""
+    async def _move_voice_channels(self, context: commands.Context, prior_state: ScrimState):
+        """A private helper method for moving all players into corresponding voice channels
+
+        args
+        ----
+
+        :param context: The original invokation context of the start command
+        :type context: commands.Context
+        :param prior_state: The state the scrim was in before the attempt to start it
+        :type prior_state: ScrimState
+        """
         self._embed.wait_for_voice()
         await self._message.edit(embed=self._embed)
 
@@ -479,8 +499,10 @@ class Scrim():
             await asyncio.sleep(1)
 
         else:
-            self._embed.cancel_wait_for_voice()
-            await self._message.edit(embed=self._embed)
+            with self._embed_lock:
+                self._embed.cancel_wait_for_voice()
+                await self._message.edit(embed=self._embed)
+            self.state = prior_state
             raise BotBaseUserException("Couldn't start the scrim." + \
                                        "All participants not connected after waiting for 5 minutes.", send_help=False)
 
@@ -494,9 +516,28 @@ class Scrim():
             for spectator in self._spectators:
                 try:
                     await spectator.move_to(self._spectator_voice, reason="ScrimBot: Setting up a scrim.")
-                except BaseException as exception:
-                    raise BotBaseInternalException("Tried to move a spectator while setting up a scrim." + \
-                                                   f"failed with the exception {exception}.")
+                except BaseException:
+                    # Spectators being in voice channels is not mandated. Thus passing here is ok
+                    pass
+
+    async def finish(self, winner: int):
+        """A method for finishing a scrim (and updating and logging stats like player elo once those get implemented)
+
+        args
+        ----
+
+        :param winner: The team that won the team (0 = tie)
+        :type winner: int
+        """
+
+        await self._secure_state_change(ScrimState.INACTIVE, ScrimState.STARTED)
+
+        with self._embed_lock:
+            self._embed.declare_winner(winner)
+            self._message.edit(embed=self._embed)
+
+        self.reset()
+
 
     async def terminate(self, reason: str):
         """A method for terminating an ongoing scrim prematurely
@@ -508,8 +549,10 @@ class Scrim():
         :type reason: str
         """
 
-        self._embed.terminate(reason)
-        await self._message.edit(embed=self._embed)
+        with self._embed_lock:
+            self._embed.terminate(reason)
+            await self._message.edit(embed=self._embed)
+
         await self._message.clear_reactions()
         async with self._all_participant_lock:
             self._all_participants.difference_update({*self._participants, *self._team_1, *self._team_2})
