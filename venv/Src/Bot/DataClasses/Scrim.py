@@ -331,6 +331,9 @@ class Scrim():
     async def lock(self):
         """A method for locking a full scrim, preventing manipulation of participants and starting the team selection"""
 
+        if self.state != ScrimState.LFP:
+            return BotBaseUserException("You cannot use that now: scrim is not in the correct state.")
+
         if len(self._participants) < self._game.playercount:
             error_str = f"Need {self._game.playercount - len(self._participants)} more players to lock the scrim."
             raise BotBaseUserException(error_str, send_help=False)
@@ -446,22 +449,54 @@ class Scrim():
         :type move_voice: bool
         """
 
+        if self.state not in (ScrimState.LOCKED, ScrimState.CAPS):
+            raise BotBaseUserException("You cannot use that now: scrim is not in the correct state.", send_help=False)
+        if not (len(self._team_1) == len(self._team_2) == self._game.playercount/2):
+            raise BotBaseUserException("You cannot use that now: both teams are not full.", send_help=False)
+
         if move_voice and self._team_1_voice and self._team_2_voice:
-            voice_wait_start: datetime.datetime = datetime.datetime.now()
-            while datetime.datetime.now() - voice_wait_start < datetime.timedelta(minutes=5):
-                for player in self._team_1 + self._team_2:
-                    if player.voice == None:
-                        break
-                    elif player.voice.channel != None and not player.voice.channel == context.guild:
-                        break
-                else:
-                    break
-            else:
-                raise BotBaseUserException("Couldn't start the scrim." + \
-                                            "All participants not connected after waiting for 5 minutes. ")
+            await self._move_voice_channels(context)
 
         self._embed.start_scrim()
         await self._message.edit(embed=self._embed)
+
+    async def _move_voice_channels(self, context: commands.Context):
+        """A private helper method for moving all players into corresponding voice channels"""
+        self._embed.wait_for_voice()
+        await self._message.edit(embed=self._embed)
+
+        voice_wait_start: datetime.datetime = datetime.datetime.now()
+
+        while datetime.datetime.now() - voice_wait_start < datetime.timedelta(minutes=2):
+            for player in self._team_1 + self._team_2:
+                if player.voice == None:
+                    break
+                elif player.voice.channel != None and not player.voice.channel.guild == context.guild:
+                    break
+            else:
+                break
+
+            await asyncio.sleep(1)
+
+        else:
+            self._embed.cancel_wait_for_voice()
+            await self._message.edit(embed=self._embed)
+            raise BotBaseUserException("Couldn't start the scrim." + \
+                                       "All participants not connected after waiting for 5 minutes.", send_help=False)
+
+        for player in self._team_1:
+            await player.move_to(self._team_1_voice, reason="ScrimBot: Setting up a scrim.")
+
+        for player in self._team_2:
+            await player.move_to(self._team_2_voice, reason="ScrimBot: Setting up a scrim.")
+
+        if self._spectator_voice:
+            for spectator in self._spectators:
+                try:
+                    await spectator.move_to(self._spectator_voice, reason="ScrimBot: Setting up a scrim.")
+                except BaseException as exception:
+                    raise BotBaseInternalException("Tried to move a spectator while setting up a scrim." + \
+                                                   f"failed with the exception {exception}.")
 
     async def terminate(self, reason: str):
         """A method for terminating an ongoing scrim prematurely

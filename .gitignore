@@ -1,5 +1,11 @@
+# Token, databases and logs
 /venv/Src/Bot/secrets.json
 /venv/Src/Database/DBFiles/
+/venv/Src/Bot/scrim_bot.log
+
+# Auto-generated IDE files
 /venv/Lib/
 /venv/Scripts/
-/venv/Src/Bot/scrim_bot.log
+
+# Learning rust atm and using the db data of the bot for some practice projects. Better exclude the unnecessary files
+/venv/Src/Database/RustTesting/

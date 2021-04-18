@@ -6,9 +6,11 @@ from discord.ext import commands
 
 from Src.Bot.ScrimClient import ScrimClient
 import Src.Bot.checks as checks
+import Src.Bot.converters as converters
 from Src.Bot.DataClasses.Game import Game
 from Src.Bot.DataClasses.Scrim import Scrim
 from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 
 class ScrimCommands(commands.Cog):
     """A cog housing the commands directly related to creating and manipulating scrims
@@ -99,7 +101,25 @@ class ScrimCommands(commands.Cog):
         :type move_voice: bool
         """
 
-        await ctx.scrim.start()
+        await ctx.scrim.start(ctx, move_voice)
+        await ctx.message.delete()
+
+    @commands.command()
+    @commands.guild_only()
+    @checks.active_scrim()
+    async def winner(self, ctx: commands.Context, winner: converters.parse_winner):
+        """A command for finishing a scrim and declaring a winner
+
+        args
+        ----
+
+        :param ctx: The invokation context of the command
+        :type ctx: commands.Context
+        :param winner: The team that won the scrim, should be '1', '2' or 'tie' (some aliases exist though)
+        :type winner: str
+        """
+
+        # await ctx.scrim.finish(winner)
         await ctx.message.delete()
 
     @commands.command()

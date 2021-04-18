@@ -302,6 +302,7 @@ class ScrimEmbed(discord.Embed):
                 self.description = \
                     f"Players locked. Use reactions for manual team selection or type '**{self._prefix}teams** " + \
                     "_random/balanced/balancedrandom/pickup_' to define teams automatically."
+                self.set_footer(text=f"React 1️⃣ to join {self._team_1_title} or 2️⃣ to join {self._team_2_title}.")
             else:
                 if len(self._team_1_names) < 1 or len(self._team_2_names) < 1:
                     self.description = "Setting up a pickup game. Waiting for players to choose captains. " + \
@@ -313,11 +314,20 @@ class ScrimEmbed(discord.Embed):
                                        f"{len(self._participant_names)} players left to pick."
                     self.set_footer(text=f"Captains, user '**{self._prefix}pick** user' to pick players on your turn.")
 
+    def wait_for_voice(self):
+        """A method for updating the scrim's state to show waiting for players to join voice channels."""
+        self.description = "Starting the scrim: waiting for all players to join voice channels."
+        self.set_footer(text="Players, please join a voice channel to start the scrim.")
+
+    def cancel_wait_for_voice(self):
+        """A method for cancelling the waiting for voice state"""
+        self._update_teams_fields()
 
     def start_scrim(self):
         """A method for updating the embed to match a started scrim."""
 
         self.remove_field(0)
+        self.description = "Scrim underway."
         self.set_footer(text="Good luck, have fun! Declare the winner " + \
                              f"with '**{self._prefix}winner** _team1/team2/tie_")
         self.set_field_at(2, name=f"**{self._team_1_title}**",
