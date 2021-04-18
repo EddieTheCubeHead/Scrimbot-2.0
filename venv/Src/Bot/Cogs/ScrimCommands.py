@@ -54,7 +54,7 @@ class ScrimCommands(commands.Cog):
         await ctx.scrim.create(ctx, game, deletion_time)
         await ctx.message.delete()
 
-    @commands.command()
+    @commands.command(aliases=["l", "lockteams"])
     @commands.guild_only()
     @checks.active_scrim()
     async def lock(self, ctx: commands.Context):
@@ -70,7 +70,7 @@ class ScrimCommands(commands.Cog):
         await ctx.scrim.lock()
         await ctx.message.delete()
 
-    @commands.command()
+    @commands.command(aliases=["t", "maketeams"])
     @commands.guild_only()
     @checks.active_scrim()
     async def teams(self, ctx: commands.Context):
@@ -86,7 +86,7 @@ class ScrimCommands(commands.Cog):
         if not ctx.invoked_subcommand:
             raise commands.CommandError(f"Invalid subcommand for command '{ctx.prefix}teams'.")
 
-    @commands.command()
+    @commands.command(aliases=["begin"])
     @commands.guild_only()
     @checks.active_scrim()
     async def start(self, ctx: commands.Context, move_voice: bool = True):
@@ -104,7 +104,7 @@ class ScrimCommands(commands.Cog):
         await ctx.scrim.start(ctx, move_voice)
         await ctx.message.delete()
 
-    @commands.command()
+    @commands.command(aliases=["win", "w", "victor", "v"])
     @commands.guild_only()
     @checks.active_scrim()
     async def winner(self, ctx: commands.Context, winner: converters.parse_winner):
@@ -119,8 +119,23 @@ class ScrimCommands(commands.Cog):
         :type winner: str
         """
 
-        # await ctx.scrim.finish(winner)
+        await ctx.scrim.finish(winner)
         await ctx.message.delete()
+
+    @commands.command(aliases=["draw"])
+    @commands.guild_only()
+    @checks.active_scrim()
+    async def tie(self, ctx: commands.Context):
+        """A command for finishing a scrim as a tie. Just calls the 'winner' command with 'tie' as argument
+
+        args
+        ----
+
+        :param ctx: The invokation context of the command
+        :type ctx: commands.Context
+        """
+
+        await self.winner(ctx, "tie")
 
     @commands.command()
     @commands.guild_only()
