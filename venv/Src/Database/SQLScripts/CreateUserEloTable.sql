@@ -1,0 +1,6 @@
+CREATE TABLE UserElos (
+    Snowflake INT PRIMARY KEY,
+    Game VARCHAR(32) NOT NULL,
+    Elo INT NOT NULL,
+    FOREIGN KEY (Game) REFERENCES Games(Name)
+)
