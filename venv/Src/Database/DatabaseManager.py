@@ -80,6 +80,15 @@ class DatabaseManager():
         with open(f"{self._path}/SQLScripts/CreateAliasesTable.sql") as create_aliases_table:
             cursor.execute(create_aliases_table.read())
 
+        with open(f"{self._path}/SQLScripts/CreateMatchesTable.sql") as create_matches_table:
+            cursor.execute(create_matches_table.read())
+
+        with open(f"{self._path}/SQLScripts/CreateParticipantsTable.sql") as create_participants_table:
+            cursor.execute(create_participants_table.read())
+
+        with open(f"{self._path}/SQLScripts/CreateUserEloTable.sql") as create_user_elo_table:
+            cursor.execute(create_user_elo_table.read())
+
         with open(f"{self._path}/games_init.json") as games:
             games_dict = json.load(games)
 
@@ -104,7 +113,13 @@ class DatabaseManager():
         with open(f"{self._path}/SQLScripts/CreateScrimsTable.sql") as create_scrims_table:
             cursor.execute(create_scrims_table.read())
 
-        self.__server_connection.commit()
+        with open(f"{self._path}/SQLScripts/CreateServersTable.sql") as create_servers_table:
+            cursor.execute(create_servers_table.read())
+
+        with open(f"{self._path}/SQLScripts/CreateServerAdministratorsTable.sql") as create_server_admins_table:
+            cursor.execute(create_server_admins_table.read())
+
+        self._server_connection.commit()
         cursor.close()
 
     def fetch_scrim(self, channel_id: int) -> Optional[sqlite3.Row]:
@@ -234,6 +249,8 @@ class DatabaseManager():
             aliases = [alias[0] for alias in alias_cursor.fetchall()]
 
             yield(game[0], game[1], game[2], game[3], game[4], aliases)
+
+    def 
 
 
 
