@@ -250,8 +250,6 @@ class DatabaseManager():
 
             yield(game[0], game[1], game[2], game[3], game[4], aliases)
 
-    def 
-
 
 
 # Enable initializing the database without starting the bot by making this file executable and running the
