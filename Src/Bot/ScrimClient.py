@@ -124,11 +124,7 @@ class ScrimClient(commands.Bot):
         :type exception: BotBaseUserException
         """
 
-        command_str = f"{ctx.prefix}help {ctx.command.name}"
-        forward_msg = f"{exception.get_header()} {exception.get_description()}"
-        if exception.send_help:
-            forward_msg += f"\n\nTo get help with this command, use the command '{command_str}'"
-
+        forward_msg = f"{exception.get_header()} {exception.get_description()}{exception.get_help_portion(ctx)}"
         await self.temp_msg(ctx, forward_msg, delete_delay = 32.0)
 
     async def _handle_internal_error(self, ctx: commands.Context, exception: BotBaseInternalException):

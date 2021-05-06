@@ -28,7 +28,10 @@ class BotHelpCommand(commands.DefaultHelpCommand):
     }
 
     def __init__(self, dm_help=True):
-        """A custom constructor for the BotHelpCommand.
+        """A custom constructor for BotHelpCommand
+
+        args
+        ----
 
         :param dm_help: Whether the bot should sent help messages as dms instead of to the invokation context
         :type dm_help: Optional[bool]
@@ -55,7 +58,7 @@ class BotHelpCommand(commands.DefaultHelpCommand):
         args
         ----
 
-        :param docstring: The docstring that should be parsed
+        :param docstring: The docstring that should be parsed:
         :type docstring: str
         :return: A tuple containing the command description and a list of str, str, str tuples with readable param data
         :rtype: tuple[str, list[tuple[str, str, str]]]
@@ -68,10 +71,10 @@ class BotHelpCommand(commands.DefaultHelpCommand):
         current_types = []
         for line in lines[1:]:
             if line.lstrip().startswith(":param") and not line.lstrip().startswith(":param ctx:"):
-                current_name.append(line.split(":")[1].split(" ")[1].lstrip())
-                current_param.append(":".join(line.split(":")[2:]).lstrip().rstrip())
-            elif line.lstrip().startswith(":type") and not line.lstrip().startswith(":type ctx:"):
-                current_types.append(":".join(line.split(":")[2:]).lstrip().rstrip())
+                current_name.append(line.split(":")[1].split(" ")[1].strip())
+                current_param.append(":".join(line.split(":")[2:]).strip())
+            elif line.strip().startswith(":type") and not line.strip().startswith(":type ctx:"):
+                current_types.append(":".join(line.split(":")[2:]).strip())
 
         param_types = list(zip(current_name, current_param, current_types))
 

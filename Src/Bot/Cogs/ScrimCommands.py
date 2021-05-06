@@ -101,8 +101,8 @@ class ScrimCommands(commands.Cog):
         :type move_voice: bool
         """
 
-        await ctx.scrim.start(ctx, move_voice)
         await ctx.message.delete()
+        await ctx.scrim.start(ctx, move_voice)
 
     @commands.command(aliases=["win", "w", "victor", "v"])
     @commands.guild_only()

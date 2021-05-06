@@ -7,9 +7,10 @@ from typing import Optional
 import discord
 
 from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.EmbedField import EmbedField
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 
-class ScrimTeam(collections.UserList):
+class ScrimTeam(collections.UserList, EmbedField):
     """A class that houses the data of a team in a scrim
 
     attributes
@@ -32,6 +33,8 @@ class ScrimTeam(collections.UserList):
         self._voice_channel: discord.VoiceChannel = None
         self.name = ""
         self.is_pickup = False
+        self.winner = False
+        self.inline = True
 
     @classmethod
     def from_team_data(cls, max_size: int, name: str, voice_channel: discord.VoiceChannel = None):
@@ -54,16 +57,34 @@ class ScrimTeam(collections.UserList):
 
         return new_team
 
-    def get_formatted_name(self) -> str:
+    def get_name(self) -> str:
         """A method for getting the name of the team formatted for embed displaying
 
         :return: A formatted string representing the team name
         :rtype: str
         """
 
-        return f"**{self.name}**{' _(full)_' if self.is_full() else ''}"
+        return f"**{self.name}**{self._get_state_addon()}"
 
-    def get_formatted_players(self) -> str:
+    def _get_state_addon(self) -> str:
+        """A private helper method that returns required addons to the team name based on team state
+
+        :return: A string that represents the scrim state. Might be an empty string, but not None
+        :rtype: str"""
+
+        if self.winner:
+            return " _winner_"
+
+        elif self.is_full():
+            return " _(full)_"
+
+        elif self.max_size:
+            return f" _({len(self.data)}/{self.max_size})_"
+
+        else:
+            return ""
+
+    def get_value(self) -> str:
         """A method for getting the players in the team formatted for embed displaying
 
         :return: A formatted string with all player names on their own line
@@ -78,17 +99,6 @@ class ScrimTeam(collections.UserList):
             to_display_ready[0] = f"**{to_display_ready[0]}**"
 
         return "\n".join(to_display_ready) or "_empty_"
-
-    def get_formatted_queue(self) -> Optional[str]:
-        """A method for getting the players in the queue formatted for embed displaying
-
-        :return: A formatted string with all player names on their own line, None if no queue
-        :rtype: Optional[str]
-        """
-
-        if len(self.data) > self.max_size:
-            queued_names = [discord.utils.escape_markdown(player.display_name) for player in self.data[self.max_size:]]
-            return "\n".join(queued_names)
 
     def blind_remove(self, player: discord.Member) -> bool:
         """A method for attempting to remove a player from the team without checking whether they exist first

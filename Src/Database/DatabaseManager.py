@@ -9,6 +9,8 @@ from typing import Optional
 
 from discord.ext import commands
 
+from Src.Bot.DataClasses.Game import Game
+
 class DatabaseManager():
     """A class to serve as an abstraction layer between the bot and the database.
 
@@ -70,7 +72,7 @@ class DatabaseManager():
             self._init_servers()
 
     def _init_games(self):
-        """A private helper method that creates the games-table based on scripts in the SQLScripts folder"""
+        """A private helper method that creates the games-database based on scripts in the SQLScripts folder"""
 
         cursor = self._game_connection.cursor()
 
@@ -231,11 +233,11 @@ class DatabaseManager():
 
         return cursor.fetchone()
 
-    def games_init_generator(self) -> (str, str, str, str, int, Optional[list[str]]):
+    def games_init_generator(self) -> tuple[str, str, str, str, int, Optional[list[str]]]:
         """A generator that yields the data of all games stored in the database, one game per iteration.
 
         :return: A tuple containing all the data required in the Game constructor
-        :rtype: (str, str, str, str, int, Optional[list[str]])
+        :rtype: tuple[str, str, str, str, int, Optional[list[str]]]
         """
 
         game_cursor = self._game_connection.cursor()
@@ -248,8 +250,18 @@ class DatabaseManager():
             alias_cursor.execute("SELECT Alias FROM GameAliases WHERE GameName = ?", (game[0],))
             aliases = [alias[0] for alias in alias_cursor.fetchall()]
 
-            yield(game[0], game[1], game[2], game[3], game[4], aliases)
+            yield(*game, aliases)
 
+    def set_player_elo(self, player_id: int, elo: int, game: Game):
+        """A method that updates a player's elo in the table or creates a new record if the player has no elo
+
+        :param player_id: The discord id ("snowflake") of the player whose elo should be updated
+        :type player_id: int
+        :param elo: The new elo value of the player
+        :type elo: int
+        :param game: The game
+        :type game:
+        """
 
 
 # Enable initializing the database without starting the bot by making this file executable and running the

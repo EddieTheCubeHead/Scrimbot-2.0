@@ -1,13 +1,14 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from collections import OrderedDict
+from typing import Optional
 
 import discord
 
 from Src.Bot.DataClasses.Game import Game
 from Src.Bot.DataClasses.ScrimState import ScrimState
 from Src.Bot.DataClasses.ScrimTeam import ScrimTeam
+from Src.Bot.DataClasses.EmbedField import EmbedField
 
 class ScrimEmbed(discord.Embed):
     """A subclass of discord.Embed that manages the embed part of the UI.
@@ -15,13 +16,13 @@ class ScrimEmbed(discord.Embed):
     methods
     -------
 
-    update_participant_fields(participants, spectators)
+    update_participants(participants, spectators)
         Update the embed according to the given ScrimTeam objects
 
     lock_scrim(unassigned, team_1, team_2)
         Update the embed to match the locked state of a scrim
 
-    update_teams_fields(unassigned, team_1, team_2)
+    update_teamss(unassigned, team_1, team_2)
         Update the embed according to the given ScrimTeam objects
 
     start_scrim()
@@ -37,7 +38,7 @@ class ScrimEmbed(discord.Embed):
         Update the prefix shown on the embed command examples
     """
 
-    def __init__(self, game: Game, is_ranked: bool, participants: ScrimTeam, spectators: ScrimTeam, *, prefix=None):
+    def __init__(self, game: Game, is_ranked: bool, participants: ScrimTeam, spectators: ScrimTeam, prefix=None):
         """A constuctor for ScrimEmbed
 
         args
@@ -59,20 +60,36 @@ class ScrimEmbed(discord.Embed):
         :type prefix: Optional[str]
         """
 
-        super().__init__(title="Status", description= f"Looking for players. (0/{game.playercount})",
+        super().__init__(title="Status", description= f"Looking for players. {game.playercount} remaining.",
                          color = game.colour)
 
         self.set_author(name=f"{game.name} {'ranked ' if is_ranked else ''}scrim", icon_url=game.icon)
 
-        self.add_field(name=participants.get_formatted_name(), value=participants.get_formatted_players(), inline=True)
-        self.add_field(name=spectators.get_formatted_name(), value=spectators.get_formatted_players(), inline=True)
         self.set_footer(text=f"To join players react \U0001F3AE To join spectators react \U0001F441")
 
-        self._state = ScrimState.LFP
-        self._playerreq = game.playercount
-        self._prefix = prefix or "/"
+        self._state: ScrimState = ScrimState.LFP
+        self._playerreq: int = game.playercount
+        self._prefix: str = prefix or "/"
 
-    def update_participant_fields(self, participants: ScrimTeam, spectators: ScrimTeam):
+        self._update_fields(participants, spectators)
+
+    def _update_fields(self, *new_fields: list[EmbedField]):
+        """A private helper method that constructs the fields of the embed from a given list of EmbedField objects
+
+        :param fields: The fields that should be displayed in the embed
+        :type fields: list[EmbedField]
+        """
+
+        while len(self.fields) > len(new_fields):
+            self.remove_field(0)
+
+        for index, field in enumerate(new_fields):
+            if index < len(self.fields):
+                self.set_field_at(index, name=field.get_name(), value=field.get_value(), inline=field.inline)
+            else:
+                self.add_field(name=field.get_name(), value=field.get_value(), inline=field.inline)
+
+    def update_participants(self, participants: ScrimTeam, spectators: ScrimTeam, queue: ScrimTeam):
         """A method that takes ScrimTeam objects of participants and/or spectators and updates the embed accordingly
 
         args
@@ -82,40 +99,42 @@ class ScrimEmbed(discord.Embed):
         :type participants: ScrimTeam
         :param spectators: All spectators of the scrim
         :type spectators: ScrimTeam
+        :param queue: The queue of players who couldn't fit in the scrim. Can be empty, but not None
+        :type queue: ScrimTeam
         """
-
-
-        self.set_field_at(0, name=participants.get_formatted_name(), value=participants.get_formatted_players())
-
-        queue_str = participants.get_formatted_queue()
 
         if participants.is_full():
 
-            self.description = \
-                f"{self._playerreq} players present. Type '{self._prefix}lock' to lock the current players."
-
-            if queue_str:
-                if len(self.fields) < 3:
-                    self.add_field(name="**Player queue**", value=queue_str, inline=True)
-                else:
-                    self.set_field_at(2, name="**Player queue**", value=queue_str)
+            description = f"{self._playerreq} players present. Type '{self._prefix}lock' to lock the current players."
 
         else:
+            description = f"Looking for players."
 
-            self.description = \
-                f"Looking for players. ({len(participants)}/{self._playerreq})"
+            if self._playerreq:
+                description += f" {self._playerreq - len(participants)} remaining."
 
-            if not queue_str:
-                if len(self.fields) >= 3:
-                    self.remove_field(2)
+        self.description = description
 
-        self.set_field_at(1, name=spectators.get_formatted_name(), value=spectators.get_formatted_players())
+        if queue:
+            self._update_fields(participants, spectators, queue)
 
-    def lock_scrim(self, unassigned: ScrimTeam, team_1: ScrimTeam, team_2: ScrimTeam):
+        else:
+            self._update_fields(participants, spectators)
+
+
+    def lock_scrim(self, unassigned: ScrimTeam, spectators: ScrimTeam, divider: EmbedField, team_1: ScrimTeam,
+                   team_2: ScrimTeam):
         """A method for updating the embed to match a locked scrim and display required information
+
+        args
+        ----
 
         :param unassigned: All unassigned players of the scrim
         :type unassigned: ScrimTeam
+        :param spectators: The spectators of the scrim
+        :type spectators: ScrimTeam
+        :param divider: A divider field between teamless participants and teams
+        :type divider: EmbedField
         :param team_1: Team 1 of the scrim
         :type team_1: ScrimTeam
         :param team_2: Team 2 of the scrim
@@ -126,33 +145,26 @@ class ScrimEmbed(discord.Embed):
             f"Players locked. Use reactions for manual team selection or type '**{self._prefix}teams** " + \
             "_random/balanced/balancedrandom/pickup_' to define teams."
 
-        self.set_field_at(0, name=unassigned.get_formatted_name(), value=unassigned.get_formatted_players())
+        self.update_teams(unassigned, spectators, divider, team_1, team_2)
 
-        div_string = "------------------------------------------------------------"
-        if len(self.fields) < 3:
-            self.add_field(name=div_string, value=div_string, inline=False)
+    def update_teams(self, unassigned: ScrimTeam, spectators: ScrimTeam, divider: EmbedField, team_1: ScrimTeam,
+                     team_2: ScrimTeam):
+        """A private helper method for updating the displayed information based on the team dicts
 
-        else:
-            self.set_field_at(2, name=div_string, value=div_string, inline=False)
-
-        self.add_field(name="", value="", inline=True)
-        self.add_field(name="", value="", inline=True)
-        self.update_teams_fields(unassigned, team_1, team_2)
-
-    def update_teams_fields(self, unassigned: ScrimTeam, team_1: ScrimTeam, team_2: ScrimTeam):
-        """A private helper method for updating the displayed information based on the team dicts.
+        args
+        ----
 
         :param unassigned: The unassigned players of the scrim
         :type unassigned: ScrimTeam
+        :param spectators: The spectators of the scrim
+        :type spectators: ScrimTeam
+        :param divider: A divider field between teamless participants and teams
+        :type divider: EmbedField
         :param team_1: Team 1 of the scrim
         :type team_1: ScrimTeam
         :param team_2: Team 2 of the scrim
         :type team_2: ScrimTeam
         """
-
-        self.set_field_at(0, name=unassigned.get_formatted_name(), value=unassigned.get_formatted_players())
-        self.set_field_at(3, name=team_1.get_formatted_name(), value=team_1.get_formatted_players())
-        self.set_field_at(4, name=team_2.get_formatted_name(), value=team_2.get_formatted_players())
 
         if len(unassigned) == 0:
             self.description=f"The teams are ready. Write '{self._prefix}start' to start the scrim.";
@@ -162,20 +174,22 @@ class ScrimEmbed(discord.Embed):
                 self.description = \
                     f"Players locked. Use reactions for manual team selection or type '**{self._prefix}teams** " + \
                     "_random/balanced/balancedrandom/pickup_' to define teams automatically."
-                footertext = f"React 1️⃣ to join {team_1.get_formatted_name()} " + \
-                             f"or 2️⃣ to join {team_2.get_formatted_name()}."
+                footertext = f"React 1️⃣ to join {team_1.get_name()} " + \
+                             f"or 2️⃣ to join {team_2.get_name()}."
             else:
                 if len(team_1) < 1 or len(team_2) < 1:
                     self.description = "Setting up a pickup game. Waiting for players to choose captains. " + \
                                        f"{self._picking_order[0]} will start the drafting."
-                    footertext=f"React 1️⃣ to become captain of {team_1.get_formatted_name()} " + \
-                               f"or 2️⃣ to become captain of {team_2.get_formatted_name()}."
+                    footertext=f"React 1️⃣ to become captain of {team_1.get_name()} " + \
+                               f"or 2️⃣ to become captain of {team_2.get_name()}."
                 else:
                     self.description = f"Picking underway. Next to pick {self._picking_order.pop(0)}. " + \
                                        f"{len(unassigned)} players left to pick."
                     footertext=f"Captains, use '**{self._prefix}pick** user' to pick players on your turn."
 
                 self.set_footer(text=footertext)
+
+        self._update_fields(unassigned, spectators, divider, team_1, team_2)
 
     def wait_for_voice(self):
         """A method for updating the scrim's state to show waiting for players to join voice channels."""
@@ -192,43 +206,57 @@ class ScrimEmbed(discord.Embed):
         self.description = description_text
         self.set_footer(text=f"Type '{self._prefix}teams clear' to clear teams")
 
-    def start_scrim(self, team_1: ScrimTeam, team_2: ScrimTeam):
-        """A method for updating the embed to match a started scrim.
+    def start_scrim(self, spectators: ScrimTeam, divider: EmbedField, team_1: ScrimTeam, team_2: ScrimTeam):
+        """A method for updating the embed to match a started scrim
 
+        args
+        ----
+
+        :param spectators: The spectators of the scrim
+        :type spectators: ScrimTeam
+        :param divider: A divider field between teamless participants and teams
+        :type divider: EmbedField
         :param team_1: Team 1 of the scrim
         :type team_1: ScrimTeam
         :param team_2: Team 2 of the scrim
         :type team_2: ScrimTeam
         """
 
-        self.remove_field(0)
         self.description = "Scrim underway."
         self.set_footer(text="Good luck, have fun! Declare the winner " + \
                              f"with '{self._prefix}winner 1/2/tie'.")
-        self.set_field_at(2, name=team_1.name, value=team_1.get_formatted_players())
-        self.set_field_at(3, name=team_2.name, value=team_2.get_formatted_players())
 
-    def declare_winner(self, winner: int):
+        self._update_fields(spectators, divider, team_1, team_2)
+
+    def declare_winner(self, team_1: ScrimTeam, team_2: ScrimTeam, winner: int):
         """A method for declaring a winner and updating the embed to display the final scrim state
 
+        args
+        ----
+
+        :param team_1: Team 1 of the scrim
+        :type team_1: ScrimTeam
+        :param team_2: Team 2 of the scrim
+        :type team_2: ScrimTeam
         :param winner: The team that won given as a number. 0 means tie
         :type winner: int
         """
 
-        if not winner:
+        if winner == 0:
             win_string = "Scrim over. It's a tie!"
-        elif winner == 1:
-            win_string = f"Scrim over. {self._team_1_title} won. Congratulations!"
         else:
-            win_string = f"Scrim over. {self._team_2_title} won. Congratulations!"
+            win_string = f"Scrim over. {team_1.name if winner == 1 else team_2.name} won. Congratulations!"
         self.description = win_string
         self.set_footer(text="gg wp")
-        self.remove_field(0)
-        self.remove_field(0)
+
+        self._update_fields(team_1, team_2)
 
 
     def terminate(self, reason: str):
-        """A method for updating the embed to match a terminated scrim and display the termination reason.
+        """A method for updating the embed to match a terminated scrim and display the termination reason
+
+        args
+        ----
 
         :param reason: The reason for termination
         :type reason: str
@@ -240,6 +268,9 @@ class ScrimEmbed(discord.Embed):
 
     def update_prefix(self, prefix: str):
         """A method for updating the prefix displayed in the embed's command examples
+
+        args
+        ----
 
         :param prefix: The new prefix of the guild the embed is on
         :type prefix: str

@@ -14,6 +14,7 @@ from Src.Bot.DataClasses.ScrimState import ScrimState
 from Src.Bot.DataClasses.Game import Game
 from Src.Bot.DataClasses.ScrimEmbed import ScrimEmbed
 from Src.Bot.DataClasses.ScrimTeam import ScrimTeam
+from Src.Bot.DataClasses.EmbedField import EmbedField
 from Src.Bot.Exceptions.BotMissingScrimException import BotMissingScrimException
 from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
@@ -34,10 +35,10 @@ class Scrim():
     classmethods
     ------------
 
-    get_scrim(ctx)
+    get_scrim(ctx) -> Scrim
         Fetches or creates a scrim from a compatible command invokation context
 
-    get_from_reaciton(react)
+    get_from_reaciton(react) -> Optional[Scrim]
         Fetches a scrim from a discord reaction event
 
     set_database_manager(manager)
@@ -220,6 +221,9 @@ class Scrim():
     async def _secure_state_change(self, new_state: ScrimState, *eligible_states: list[ScrimState]):
         """A private helper method for making sure the state of the scrim changes in a thread safe way
 
+        args
+        ----
+
         :param new_state: The desired new state of the scrim
         :type new_state: ScrimState
         :param eligible_states: All states from which the state into the desired new state can happen (greedy)
@@ -238,9 +242,10 @@ class Scrim():
 
         async with self._embed_lock:
             if self.state == ScrimState.LFP:
-                self._embed.update_participant_fields(self._participants, self._spectators)
+                self._embed.update_participants(self._participants, self._spectators, self._queue)
             elif self.state in (ScrimState.LOCKED, ScrimState.CAPS_PREP, ScrimState.CAPS):
-                self._embed.update_teams_fields(self._participants, self._team_1, self._team_2)
+                self._embed.update_teams(self._participants, self._spectators, self._divider, self._team_1,
+                                         self._team_2)
             else:
                 raise BotBaseInternalException("scrim._update_embed_fields called with weird state.")
 
@@ -270,6 +275,8 @@ class Scrim():
 
         self._participants: ScrimTeam = ScrimTeam.from_team_data(game.playercount, "Players")
         self._spectators: ScrimTeam = ScrimTeam.from_team_data(0, "Spectators")
+        self._queue: ScrimTeam = ScrimTeam.from_team_data(0, "Queue")
+        self._queue.inline = False
 
         self.master = ctx.author
 
@@ -297,7 +304,11 @@ class Scrim():
             if player in self._all_participants:
                 raise commands.BadArgument("Cannot join more than one scrim at a time.")
 
-            self._participants.append(player)
+            if self._participants.is_full():
+                self._queue.append(player)
+            else:
+                self._participants.append(player)
+
             self._all_participants.add(player)
 
         await self._update_embed_fields()
@@ -316,11 +327,15 @@ class Scrim():
             return
 
         async with self._all_participant_lock:
-            if player not in self._participants:
+            if player not in (self._participants + self._queue):
                 return
 
-            self._participants.remove(player)
+            self._participants.blind_remove(player)
+            self._queue.blind_remove(player)
             self._all_participants.remove(player)
+
+            if self._queue and not self._participants.is_full():
+                self._participants.append(self._queue.pop(0))
 
         await self._update_embed_fields()
 
@@ -374,11 +389,13 @@ class Scrim():
 
         await self._secure_state_change(ScrimState.LOCKED, ScrimState.LFP)
 
-        if len(self._participants) > self._game.playercount:
-            async with self._all_participant_lock:
-                self._all_participants.difference_update(self._participants[self._game.playercount:])
+        async with self._all_participant_lock:
+            self._all_participants.difference_update(self._queue)
 
-        self._participants = self._participants[:self._game.playercount]
+        self._queue = None
+
+        div_string = "------------------------------------------------------------"
+        self._divider = EmbedField(div_string, div_string, False)
         self._participants.name = "Unassigned"
         self._participants.max_size = 0
 
@@ -388,7 +405,7 @@ class Scrim():
         self._team_2: ScrimTeam = ScrimTeam.from_team_data(max_team_size, "Team 2", self._team_2_voice)
 
         async with self._embed_lock:
-            self._embed.lock_scrim(self._participants, self._team_1, self._team_2)
+            self._embed.lock_scrim(self._participants, self._spectators, self._divider, self._team_1, self._team_2)
             await self._message.edit(embed=self._embed)
 
         await self._message.clear_reactions()
@@ -494,10 +511,10 @@ class Scrim():
         self.state = ScrimState.STARTED
 
         async with self._embed_lock:
-            self._embed.start_scrim(self._team_1, self._team_2)
+            self._embed.start_scrim(self._spectators, self._divider, self._team_1, self._team_2)
             await self._message.edit(embed=self._embed)
 
-        self._message.clear_reactions()
+        await self._message.clear_reactions()
 
     async def _move_voice_channels(self, context: commands.Context, prior_state: ScrimState):
         """A private helper method for moving all players into corresponding voice channels
@@ -528,7 +545,7 @@ class Scrim():
             await asyncio.sleep(1)
 
         else:
-            with self._embed_lock:
+            async with self._embed_lock:
                 self._embed.cancel_wait_for_voice()
                 await self._message.edit(embed=self._embed)
             self.state = prior_state
@@ -551,9 +568,9 @@ class Scrim():
 
         await self._secure_state_change(ScrimState.INACTIVE, ScrimState.STARTED)
 
-        with self._embed_lock:
-            self._embed.declare_winner(winner)
-            self._message.edit(embed=self._embed)
+        async with self._embed_lock:
+            self._embed.declare_winner(self._team_1, self._team_1, winner)
+            await self._message.edit(embed=self._embed)
 
         self.reset()
 
@@ -568,7 +585,7 @@ class Scrim():
         :type reason: str
         """
 
-        with self._embed_lock:
+        async with self._embed_lock:
             self._embed.terminate(reason)
             await self._message.edit(embed=self._embed)
 

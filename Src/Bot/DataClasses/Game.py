@@ -7,9 +7,9 @@ __author__ = "Eetu Asikainen"
 
 from typing import Generator, Optional
 
-
 from discord.ext import commands
 
+from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 
 class Game():
     """A class that houses the data of the supported games. Might get subclassed in the future to implement FFA games.
@@ -95,4 +95,4 @@ class Game():
                 if argument in cls._games_dict[game].aliases:
                     return cls._games_dict[game]
 
-        raise commands.BadArgument(f"Unrecognized game: {argument}")
+        raise BotBaseUserException(f"Unrecognized game: '{argument}'")
