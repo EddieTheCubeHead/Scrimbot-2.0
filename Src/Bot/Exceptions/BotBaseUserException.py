@@ -3,6 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
 
+
 class BotBaseUserException(commands.CommandError):
     """A base class for all the exceptions caused by the user activity (input/actions) thrown by the bot."""
 

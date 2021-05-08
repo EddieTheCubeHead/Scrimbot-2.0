@@ -7,7 +7,7 @@ from discord.ext import commands
 from Src.Bot.DataClasses.ScrimState import ScrimState
 from Src.Bot.ScrimClient import ScrimClient
 from Src.Bot.DataClasses.Scrim import Scrim
-from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+
 
 class ScrimReactionListeners(commands.Cog):
     """A cog responsive for tracking the reaction-based UI of the scrims
@@ -110,7 +110,7 @@ class ScrimReactionListeners(commands.Cog):
             await self._client.handle_react_internal_error(react, user, exception)
 
 
-def setup(client: commands.Bot):
+def setup(client: ScrimClient):
     """A method for adding the cog to the bot
 
     args

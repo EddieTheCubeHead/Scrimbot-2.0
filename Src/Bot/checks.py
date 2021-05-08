@@ -5,10 +5,10 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
 
-from Src.Bot.ScrimClient import ScrimClient
 from Src.Bot.DataClasses.Scrim import Scrim
 from Src.Bot.DataClasses.ScrimState import ScrimState
 from Src.Bot.Exceptions.BotCheckFailure import BotCheckFailure
+
 
 def free_scrim():
     """A check that requires the channel to be eligible for scrims and not have a currently active scrim."""
@@ -20,6 +20,7 @@ def free_scrim():
         ctx.scrim = scrim
         return True
     return commands.check(predicate)
+
 
 def active_scrim():
     """A check that requires the channel to have an active scrim and the user to have permissions to that scirm."""

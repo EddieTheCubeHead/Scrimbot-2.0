@@ -5,7 +5,7 @@ __author__ = "Eetu Asikainen"
 
 import datetime
 import asyncio
-from typing import Optional
+from typing import Optional, Dict, Set, List
 
 import discord
 from discord.ext import commands
@@ -20,7 +20,8 @@ from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Src.Database.DatabaseManager import DatabaseManager
 
-class Scrim():
+
+class Scrim:
     """A class that houses data storage and implements data manipulation methods for the scrims themselves
 
     attributes
@@ -36,9 +37,9 @@ class Scrim():
     ------------
 
     get_scrim(ctx) -> Scrim
-        Fetches or creates a scrim from a compatible command invokation context
+        Fetches or creates a scrim from a compatible command invocation context
 
-    get_from_reaciton(react) -> Optional[Scrim]
+    get_from_reaction(react) -> Optional[Scrim]
         Fetches a scrim from a discord reaction event
 
     set_database_manager(manager)
@@ -90,8 +91,8 @@ class Scrim():
         A method for resetting the values back to nulls/empty values after a scrim has been concluded.
     """
 
-    _all_scrims: dict = {}
-    _all_participants: set = set()
+    _all_scrims: Dict[str, Scrim] = {}
+    _all_participants: Set[discord.Member] = set()
     _all_participant_lock: asyncio.Lock = asyncio.Lock()
     _db_manager: DatabaseManager = None
 
@@ -117,16 +118,35 @@ class Scrim():
         self._team_2_voice: Optional[discord.VoiceChannel] = team_2_voice
         self._spectator_voice: Optional[discord.VoiceChannel] = spectator_voice
 
-        self.master: discord.Member = None
+        self.master: Optional[discord.Member] = None
 
-        self._teams_lock: asyncio.Lock = asyncio.Lock() # Lock for updating teams
-        self._embed_lock: asyncio.Lock = asyncio.Lock() # Lock for updating the embed
-        self._state_change_lock: asyncio.Lock = asyncio.Lock() # Lock for commands causing state changes
+        self._teams_lock: asyncio.Lock = asyncio.Lock()  # Lock for updating teams
+        self._embed_lock: asyncio.Lock = asyncio.Lock()  # Lock for updating the embed
+        self._state_change_lock: asyncio.Lock = asyncio.Lock()  # Lock for commands causing state changes
 
         self.state: ScrimState = ScrimState.INACTIVE
         self._last_interaction: datetime.datetime = datetime.datetime.now()
 
         self._all_scrims[channel.id] = self
+
+        self._game: Optional[Game] = None
+        self._deletion_time: int = 0
+
+        self._participants: Optional[ScrimTeam] = None
+        self._spectators: Optional[ScrimTeam] = None
+        self._queue: Optional[ScrimTeam] = None
+
+        self._embed: Optional[ScrimEmbed] = None
+        self._message: Optional[discord.Message] = None
+
+        self._cap_1: Optional[discord.Member] = None
+        self._cap_2: Optional[discord.Member] = None
+
+        self._team_1: Optional[ScrimTeam] = None
+        self._team_2: Optional[ScrimTeam] = None
+
+        div_string = "------------------------------------------------------------"
+        self._divider: EmbedField = EmbedField(div_string, div_string, False)
 
     @classmethod
     async def get_scrim(cls, ctx: commands.Context) -> Scrim:
@@ -135,7 +155,7 @@ class Scrim():
         args
         ----
 
-        :param ctx: The invokation context of the command requiring a scrim
+        :param ctx: The invocation context of the command requiring a scrim
         :type ctx: commands.Context
         :return: A scrim instance based on a registered text channel
         :rtype: Scrim
@@ -156,13 +176,13 @@ class Scrim():
                     spectator_voice = ctx.guild.get_channel(db_entry[3])
 
                 return Scrim(channel, team_1_voice, team_2_voice, spectator_voice)
-        
+
         else:
-            cls._all_scrims[ctx.channel.id].last_interaction = datetime.datetime.now()
+            cls._all_scrims[ctx.channel.id]._last_interaction = datetime.datetime.now()
             return cls._all_scrims[ctx.channel.id]
 
     @classmethod
-    async def get_from_reaction(cls, react: discord.reaction) -> Optional[Scrim]:
+    async def get_from_reaction(cls, react: discord.Reaction) -> Optional[Scrim]:
         """A classmethod for fetching a scrim
 
         args
@@ -201,11 +221,11 @@ class Scrim():
     @classmethod
     async def tick_all(cls):
         """A classmethod for ticking all existing scrim instances"""
-        for scrim in cls._all_scrims.items():
+        for scrim in cls._all_scrims.values():
             await scrim._tick()
 
     async def _tick(self):
-        """A private methdod for ticking a scrim instance, terminating idle scrims and deleting old instances"""
+        """A private method for ticking a scrim instance, terminating idle scrims and deleting old instances"""
 
         idle_time = datetime.datetime.now() - self._last_interaction
 
@@ -215,10 +235,10 @@ class Scrim():
                 await self.terminate("Terminated due to inactivity.")
             self._all_scrims.pop(self._channel.id)
 
-        if self._deletion_time and idle_time >= datetime.timedelta(seconds=self._deletion_time*60):
+        if self._deletion_time and idle_time >= datetime.timedelta(seconds=self._deletion_time * 60):
             await self.terminate("Terminated due to inactivity.")
 
-    async def _secure_state_change(self, new_state: ScrimState, *eligible_states: list[ScrimState]):
+    async def _secure_state_change(self, new_state: ScrimState, *eligible_states: ScrimState):
         """A private helper method for making sure the state of the scrim changes in a thread safe way
 
         args
@@ -273,9 +293,9 @@ class Scrim():
         self._game: Game = game
         self._deletion_time: int = deletion_time
 
-        self._participants: ScrimTeam = ScrimTeam.from_team_data(game.playercount, "Players")
-        self._spectators: ScrimTeam = ScrimTeam.from_team_data(0, "Spectators")
-        self._queue: ScrimTeam = ScrimTeam.from_team_data(0, "Queue")
+        self._participants = ScrimTeam.from_team_data(game.playercount, "Players")
+        self._spectators = ScrimTeam.from_team_data(0, "Spectators")
+        self._queue = ScrimTeam.from_team_data(0, "Queue")
         self._queue.inline = False
 
         self.master = ctx.author
@@ -394,12 +414,10 @@ class Scrim():
 
         self._queue = None
 
-        div_string = "------------------------------------------------------------"
-        self._divider = EmbedField(div_string, div_string, False)
         self._participants.name = "Unassigned"
         self._participants.max_size = 0
 
-        max_team_size = int(self._game.playercount/2)
+        max_team_size = int(self._game.playercount / 2)
 
         self._team_1: ScrimTeam = ScrimTeam.from_team_data(max_team_size, "Team 1", self._team_1_voice)
         self._team_2: ScrimTeam = ScrimTeam.from_team_data(max_team_size, "Team 2", self._team_2_voice)
@@ -458,7 +476,7 @@ class Scrim():
                 raise BotBaseInternalException("Trying to add a player to team 2 who is already a member of team 2.")
             elif player not in self._participants + self._team_1:
                 raise BotBaseInternalException("Trying to add a player to team 2 who doesn't exist in the scrim.")
-            elif len(self._team_2) >= self._game.playercount/2:
+            elif len(self._team_2) >= self._game.playercount / 2:
                 raise BotBaseUserException(f"{self._team_2.name} is already full.", send_help=False)
 
             if player in self._team_1:
@@ -495,10 +513,12 @@ class Scrim():
         args
         ----
 
+        :param context: The context of the message from which the command was called
+        :type context: commands.Context
         :param move_voice: Whether to move the participants into voice channels, if available
         :type move_voice: bool
         """
-        if not (len(self._team_1) == len(self._team_2) == self._game.playercount/2):
+        if not (len(self._team_1) == len(self._team_2) == self._game.playercount / 2):
             raise BotBaseUserException("You cannot use that now: both teams are not full.", send_help=False)
 
         prior_state = self.state
@@ -535,9 +555,9 @@ class Scrim():
 
         while datetime.datetime.now() - voice_wait_start < datetime.timedelta(minutes=2):
             for player in self._team_1 + self._team_2:
-                if player.voice == None:
+                if player.voice is None:
                     break
-                elif player.voice.channel != None and not player.voice.channel.guild == context.guild:
+                elif player.voice.channel is not None and not player.voice.channel.guild == context.guild:
                     break
             else:
                 break
@@ -549,12 +569,12 @@ class Scrim():
                 self._embed.cancel_wait_for_voice()
                 await self._message.edit(embed=self._embed)
             self.state = prior_state
-            raise BotBaseUserException("Couldn't start the scrim." + \
+            raise BotBaseUserException("Couldn't start the scrim."
                                        "All participants not connected after waiting for 5 minutes.", send_help=False)
 
-        self._team_1.move_to_voice()
-        self._team_2.move_to_voice()
-        self._spectators.move_to_voice(success_required=False)
+        await self._team_1.move_to_voice()
+        await self._team_2.move_to_voice()
+        await self._spectators.move_to_voice(success_required=False)
 
     async def finish(self, winner: int):
         """A method for finishing a scrim (and updating and logging stats like player elo once those get implemented)
@@ -573,7 +593,6 @@ class Scrim():
             await self._message.edit(embed=self._embed)
 
         self.reset()
-
 
     async def terminate(self, reason: str):
         """A method for terminating an ongoing scrim prematurely
@@ -609,9 +628,7 @@ class Scrim():
         self._cap_1 = None
         self._cap_2 = None
 
-        self._participants = []
-        self._team_1 = []
-        self._team_2 = []
-        self._team_1_title = "Team 1"
-        self._team_2_title = "Team 2"
-        self._spectators = []
+        self._team_1 = None
+        self._team_2 = None
+        self._participants = None
+        self._spectators = None

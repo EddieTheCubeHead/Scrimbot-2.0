@@ -1,17 +1,18 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+
 class EmbedField:
     """A class that houses all data required to construct a field in the embed.
 
-    Currently used as is for the divider field and iherited for the ScrimTeam class so teams can be easily displayed as
+    Currently used as is for the divider field and inherited for the ScrimTeam class so teams can be easily displayed as
     embed fields.
 
     ----------
     attributes
 
     inline: bool
-        Whether the field should be attemtped to display inline with other inline=True fields
+        Whether the field should be attempted to display inline with other inline=True fields
 
     -------
     methods

@@ -1,7 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from typing import Optional
+from typing import Optional, List
 
 import discord
 
@@ -9,6 +9,7 @@ from Src.Bot.DataClasses.Game import Game
 from Src.Bot.DataClasses.ScrimState import ScrimState
 from Src.Bot.DataClasses.ScrimTeam import ScrimTeam
 from Src.Bot.DataClasses.EmbedField import EmbedField
+
 
 class ScrimEmbed(discord.Embed):
     """A subclass of discord.Embed that manages the embed part of the UI.
@@ -60,9 +61,10 @@ class ScrimEmbed(discord.Embed):
         :type prefix: Optional[str]
         """
 
-        super().__init__(title="Status", description= f"Looking for players. {game.playercount} remaining.",
-                         color = game.colour)
+        super().__init__(title="Status", description=f"Looking for players. {game.playercount} remaining.",
+                         color=game.colour)
 
+        self._picking_order: Optional[List[ScrimTeam]] = None
         self.set_author(name=f"{game.name} {'ranked ' if is_ranked else ''}scrim", icon_url=game.icon)
 
         self.set_footer(text=f"To join players react \U0001F3AE To join spectators react \U0001F441")
@@ -73,7 +75,7 @@ class ScrimEmbed(discord.Embed):
 
         self._update_fields(participants, spectators)
 
-    def _update_fields(self, *new_fields: list[EmbedField]):
+    def _update_fields(self, *new_fields: EmbedField):
         """A private helper method that constructs the fields of the embed from a given list of EmbedField objects
 
         :param fields: The fields that should be displayed in the embed
@@ -121,7 +123,6 @@ class ScrimEmbed(discord.Embed):
         else:
             self._update_fields(participants, spectators)
 
-
     def lock_scrim(self, unassigned: ScrimTeam, spectators: ScrimTeam, divider: EmbedField, team_1: ScrimTeam,
                    team_2: ScrimTeam):
         """A method for updating the embed to match a locked scrim and display required information
@@ -167,27 +168,27 @@ class ScrimEmbed(discord.Embed):
         """
 
         if len(unassigned) == 0:
-            self.description=f"The teams are ready. Write '{self._prefix}start' to start the scrim.";
+            self.description = f"The teams are ready. Write '{self._prefix}start' to start the scrim."
             self.set_footer(text=f"Type '{self._prefix}teams clear' to clear teams")
         else:
             if self._state != ScrimState.CAPS:
                 self.description = \
                     f"Players locked. Use reactions for manual team selection or type '**{self._prefix}teams** " + \
                     "_random/balanced/balancedrandom/pickup_' to define teams automatically."
-                footertext = f"React 1️⃣ to join {team_1.get_name()} " + \
-                             f"or 2️⃣ to join {team_2.get_name()}."
+                footer_text = f"React 1️⃣ to join {team_1.get_name()} " + \
+                              f"or 2️⃣ to join {team_2.get_name()}."
             else:
                 if len(team_1) < 1 or len(team_2) < 1:
                     self.description = "Setting up a pickup game. Waiting for players to choose captains. " + \
                                        f"{self._picking_order[0]} will start the drafting."
-                    footertext=f"React 1️⃣ to become captain of {team_1.get_name()} " + \
-                               f"or 2️⃣ to become captain of {team_2.get_name()}."
+                    footer_text = f"React 1️⃣ to become captain of {team_1.get_name()} " + \
+                                  f"or 2️⃣ to become captain of {team_2.get_name()}."
                 else:
                     self.description = f"Picking underway. Next to pick {self._picking_order.pop(0)}. " + \
                                        f"{len(unassigned)} players left to pick."
-                    footertext=f"Captains, use '**{self._prefix}pick** user' to pick players on your turn."
+                    footer_text = f"Captains, use '**{self._prefix}pick** user' to pick players on your turn."
 
-                self.set_footer(text=footertext)
+            self.set_footer(text=footer_text)
 
         self._update_fields(unassigned, spectators, divider, team_1, team_2)
 
@@ -223,7 +224,7 @@ class ScrimEmbed(discord.Embed):
         """
 
         self.description = "Scrim underway."
-        self.set_footer(text="Good luck, have fun! Declare the winner " + \
+        self.set_footer(text="Good luck, have fun! Declare the winner "
                              f"with '{self._prefix}winner 1/2/tie'.")
 
         self._update_fields(spectators, divider, team_1, team_2)
@@ -250,7 +251,6 @@ class ScrimEmbed(discord.Embed):
         self.set_footer(text="gg wp")
 
         self._update_fields(team_1, team_2)
-
 
     def terminate(self, reason: str):
         """A method for updating the embed to match a terminated scrim and display the termination reason

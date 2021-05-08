@@ -1,14 +1,16 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from typing import List, Optional
 import collections
-from typing import Optional
 
 import discord
 
+from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
+from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Src.Bot.DataClasses.Game import Game
 from Src.Bot.DataClasses.EmbedField import EmbedField
-from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
+
 
 class ScrimTeam(collections.UserList, EmbedField):
     """A class that houses the data of a team in a scrim
@@ -20,17 +22,18 @@ class ScrimTeam(collections.UserList, EmbedField):
         The name of the team. Functionality TBA but is meant to support custom team names
     """
 
-    def __init__(self, data):
+    def __init__(self, data: List[discord.Member]):
         """The constructor of ScrimTeam
 
-        :param game: The game of the scrim this team is associated with
-        :type game: Game
+        :param data: The data to be stored in the list
+        :type data: Game
         """
 
-        self.data: list[discord.Member] = data
+        super().__init__()
+        self.data: List[discord.Member] = data
 
         self.max_size: int = 0
-        self._voice_channel: discord.VoiceChannel = None
+        self._voice_channel: Optional[discord.VoiceChannel] = None
         self.name = ""
         self.is_pickup = False
         self.winner = False
@@ -41,7 +44,7 @@ class ScrimTeam(collections.UserList, EmbedField):
         """Because ScrimTeam subclasses UserList to function as a list of players this classmethod can be used as init
 
         :param max_size: How many players the team fits at maximum. 0 means infinite
-        :type game: int
+        :type max_size: int
         :param name: The name of the team
         :type name: str
         :param voice_channel: The voice channel the team should be moved to when the scrim starts
@@ -70,7 +73,8 @@ class ScrimTeam(collections.UserList, EmbedField):
         """A private helper method that returns required addons to the team name based on team state
 
         :return: A string that represents the scrim state. Might be an empty string, but not None
-        :rtype: str"""
+        :rtype: str
+        """
 
         if self.winner:
             return " _winner_"
@@ -124,7 +128,7 @@ class ScrimTeam(collections.UserList, EmbedField):
 
         return self.max_size and len(self.data) >= self.max_size
 
-    async def move_to_voice(self, *, success_required = True):
+    async def move_to_voice(self, *, success_required=True):
         """A method for attempting to move all players of the team into the team's voice channel
 
         kwargs
@@ -136,7 +140,7 @@ class ScrimTeam(collections.UserList, EmbedField):
 
         if not self._voice_channel:
             if success_required:
-                raise BotBaseInternalException("Required moving users into voice chat even without available voice " + \
+                raise BotBaseInternalException("Required moving users into voice chat even without available voice "
                                                "channel.")
             else:
                 return
@@ -144,7 +148,7 @@ class ScrimTeam(collections.UserList, EmbedField):
         for player in self.data:
             try:
                 await player.move_to(self._voice_channel, reason="ScrimBot: Setting up a scrim.")
-            except BaseException:
+            except discord.DiscordException:
                 if success_required:
-                    raise BotBaseUserError(f"Couldn't move user '{player.display_name}' " + \
-                                           f"into channel '{self._voice_channel}'.", send_help = False)
+                    raise BotBaseUserException(f"Couldn't move user '{player.display_name}' "
+                                               f"into channel '{self._voice_channel}'.", send_help=False)

@@ -1,16 +1,13 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import discord
 from discord.ext import commands
 
 from Src.Bot.ScrimClient import ScrimClient
 import Src.Bot.checks as checks
 import Src.Bot.converters as converters
 from Src.Bot.DataClasses.Game import Game
-from Src.Bot.DataClasses.Scrim import Scrim
-from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
-from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
+
 
 class ScrimCommands(commands.Cog):
     """A cog housing the commands directly related to creating and manipulating scrims
@@ -154,7 +151,7 @@ class ScrimCommands(commands.Cog):
         await ctx.message.delete()
 
 
-def setup(client: commands.Bot):
+def setup(client: ScrimClient):
     """A method for adding the cog to the bot
 
     args

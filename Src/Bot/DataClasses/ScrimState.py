@@ -3,6 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from enum import Enum
 
+
 class ScrimState(Enum):
     """A simple enum class to ease the state management of scrims"""
 

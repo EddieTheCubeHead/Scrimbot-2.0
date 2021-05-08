@@ -3,6 +3,9 @@ __author__ = "Eetu Asikainen"
 
 """A module containing the converters used by the bot."""
 
+from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
+
+
 def parse_winner(argument: str) -> int:
     """A converter that parses a string into an int representing the team that won (0 represents a tie)."""
 
@@ -13,5 +16,5 @@ def parse_winner(argument: str) -> int:
     elif argument in ("0", "Tie", "tie", "Draw", "draw", "None", "none"):
         return 0
     else:
-        raise BotBaseUserException(f"Couldn't parse team from string '{argument}'. " + \
+        raise BotBaseUserException(f"Couldn't parse team from string '{argument}'. "
                                    "Please give winner as '1', '2' or 'tie'.")

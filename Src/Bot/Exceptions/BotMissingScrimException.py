@@ -1,10 +1,10 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import discord
 from discord.ext import commands
 
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
+
 
 class BotMissingScrimException(BotBaseUserException, commands.CheckFailure):
     """An exception that should be raised when a scrim cannot be found during checks."""

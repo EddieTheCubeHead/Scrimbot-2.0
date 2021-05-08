@@ -3,6 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
 
+
 class BotBaseInternalException(commands.CommandError):
     """A base class for all the exceptions excepted in the code that should get handled silently internally."""
 
@@ -24,6 +25,9 @@ class BotBaseInternalException(commands.CommandError):
 
         self.log = log
         self._message = message
+
+    def __str__(self) -> str:
+        return self.get_message()
 
     def get_message(self) -> str:
         """A method to get the error message related to this error.

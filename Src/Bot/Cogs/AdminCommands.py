@@ -10,6 +10,7 @@ from Src.Bot.ScrimClient import ScrimClient
 from Src.Bot.DataClasses.Scrim import Scrim
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 
+
 class AdminCommands(commands.Cog):
     """A cog housing the upkeep and maintenance related commands of the bot
 
@@ -32,9 +33,9 @@ class AdminCommands(commands.Cog):
         self._client = client
 
     def _sanitize_channels(self, team_1_voice: Optional[discord.VoiceChannel],
-                             team_2_voice: Optional[discord.VoiceChannel],
-                             spectator_voice: Optional[discord.VoiceChannel])\
-                            -> (Optional[int], Optional[int], Optional[int]):
+                           team_2_voice: Optional[discord.VoiceChannel],
+                           spectator_voice: Optional[discord.VoiceChannel]) \
+            -> (Optional[int], Optional[int], Optional[int]):
         """A private method that validates the given voice channels as free and returns their ids
 
         args
@@ -106,11 +107,8 @@ class AdminCommands(commands.Cog):
 
                     team_1_voice, team_2_voice, spectator_voice = voice_candidates[:3]
 
-
         team_1_id, team_2_id, spectator_id = self._sanitize_channels(team_1_voice, team_2_voice, spectator_voice)
-
         self._client.database_manager.register_scrim_channel(ctx.channel.id, team_1_id, team_2_id, spectator_id)
-
         Scrim(ctx.channel, team_1_voice, team_2_voice, spectator_voice)
 
         # I hate constructing strings like this, but backslashes tend to cause unnecessary spaces in the bot message
@@ -120,6 +118,7 @@ class AdminCommands(commands.Cog):
         success_info += f"\nTeam 2: {team_2_voice or 'not set'}"
         success_info += f"\nSpectators: {spectator_voice or 'not set'}"
         await self._client.temp_msg(ctx, success_info)
+
 
 def setup(client: ScrimClient):
     """A method for adding the cog to the bot

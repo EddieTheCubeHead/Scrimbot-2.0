@@ -3,7 +3,6 @@ __author__ = "Eetu Asikainen"
 
 import json
 import logging
-import asyncio
 import os
 
 import discord
@@ -16,6 +15,7 @@ from Src.Bot.DataClasses.BotHelpCommand import BotHelpCommand
 from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 
+
 class ScrimClient(commands.Bot):
     """The class that implements the discord.py bot class. The heart of the bot."""
 
@@ -24,7 +24,7 @@ class ScrimClient(commands.Bot):
 
         intents = discord.Intents.default()
         intents.members = True
-        super().__init__(command_prefix=self.get_prefix, intents = intents, help_command=BotHelpCommand())
+        super().__init__(command_prefix=self.get_prefix, intents=intents, help_command=BotHelpCommand())
 
         # Logging setup code stolen from discord.py docs
         self.logger = logging.getLogger('discord')
@@ -54,8 +54,14 @@ class ScrimClient(commands.Bot):
 
         return "/"
 
-    async def get_deletion_time(self, context: commands.Context):
-        """A method that should return the guild's custom idle scrim deletion time, functionality TBA"""
+    async def get_deletion_time(self, context: commands.Context) -> int:
+        """A method that should return the guild's custom idle scrim deletion time, functionality TBA
+
+        :param context: The invocation context of a command that caused the deletion time query
+        :type context: commands.Context
+        :returns: The default scrim deletion time for the scrim in context
+        :rtype: int
+        """
 
         return 15
 
@@ -66,13 +72,13 @@ class ScrimClient(commands.Bot):
             if cog[-3:] == ".py":
                 self.load_extension(f"Cogs.{cog[:-3]}")
 
-    async def temp_msg(self, ctx: commands.Context, message: str, *, delete_delay = 16.0, delete_original_msg = True):
+    async def temp_msg(self, ctx: commands.Context, message: str, *, delete_delay=16.0, delete_original_msg=True):
         """A method for sending a temporary message to the given context.
 
         args
         ----
 
-        :param ctx: The command invokation context into which the message should be sent
+        :param ctx: The command invocation context into which the message should be sent
         :type ctx: commands.Context
         :param message: The message content
         :type message: str
@@ -91,8 +97,9 @@ class ScrimClient(commands.Bot):
         if delete_original_msg:
             try:
                 await ctx.message.delete()
-            except:
-                pass
+            except discord.DiscordException:
+                raise BotBaseInternalException(f"Tried to delete message '{ctx.message.content}' with a temp_msg call "
+                                               "and failed")
 
         await temporary_message.delete(delay=delete_delay)
 
@@ -105,10 +112,10 @@ class ScrimClient(commands.Bot):
         elif isinstance(exception, BotBaseInternalException):
             await self._handle_internal_error(context, exception)
 
-        # Special case for unkown commands
+        # Special case for unknown commands
         elif isinstance(exception, commands.CommandNotFound):
             await self.temp_msg(context,
-                                f"Couldn't find command '{context.message.content.split(' ')[0]}'.\n" + \
+                                f"Couldn't find command '{context.message.content.split(' ')[0]}'.\n"
                                 f"Use '{context.prefix}help' to see a full list of commands.")
 
         else:
@@ -125,7 +132,7 @@ class ScrimClient(commands.Bot):
         """
 
         forward_msg = f"{exception.get_header()} {exception.get_description()}{exception.get_help_portion(ctx)}"
-        await self.temp_msg(ctx, forward_msg, delete_delay = 32.0)
+        await self.temp_msg(ctx, forward_msg, delete_delay=32.0)
 
     async def _handle_internal_error(self, ctx: commands.Context, exception: BotBaseInternalException):
         """The default way to handle internal exceptions for commands
@@ -137,11 +144,11 @@ class ScrimClient(commands.Bot):
         """
 
         if exception.log:
-            self.logger.warning(f"command: '{ctx.command.name}' invoked as: '{ctx.message.content}' " + \
+            self.logger.warning(f"command: '{ctx.command.name}' invoked as: '{ctx.message.content}' "
                                 f"caused the exception: {exception.get_message()}")
 
-    async def handle_react_internal_error(self, react: discord.Reaction, user: discord.User,
-                                          exception: BotBaseInternalException):
+    async def handle_react_internal_error(self, react: discord.Reaction, user: discord.Member,
+                                          exception: discord.DiscordException):
         """A custom error handler for reaction-event based internal exceptions
 
         :param react: The reaction associated with the exceptions
@@ -152,18 +159,22 @@ class ScrimClient(commands.Bot):
         :type exception: BotBaseInternalException
         """
 
-        if isinstance(exception, BotBaseInternalException) and exception.log:
-            self.logger.warning(f"reaction: '{react.emoji}' in message: '{react.message.content}' " + \
-                                f"added by: '{user}' caused the exception: {exception.get_message()}")
-        elif isinstance(exception, BotBaseUserException):
-            temporary_message = await react.message.channel.send(f"{exception.get_header()} " + \
+        if isinstance(exception, BotBaseUserException):
+            temporary_message = await react.message.channel.send(f"{exception.get_header()} "
                                                                  f"{exception.get_description()}")
             await temporary_message.delete(delay=8)
+
+        elif isinstance(exception, BotBaseInternalException) and exception.log or \
+                isinstance(exception, discord.DiscordException) and not isinstance(exception, BotBaseInternalException):
+
+            self.logger.warning(f"reaction: '{react.emoji}' in message: '{react.message.content}' "
+                                f"added by: '{user}' caused the exception: {exception}")
 
     async def on_ready(self):
         """Bot initialization logic. Currently just functions to inform the user the bot is connected."""
 
         print(f"Successfully logged in as {self.user.name}, with version {__version__}")
+
 
 if __name__ == "__main__":
     client = ScrimClient()

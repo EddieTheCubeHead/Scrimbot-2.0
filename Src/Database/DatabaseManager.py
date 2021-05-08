@@ -5,16 +5,17 @@ import sqlite3
 import os
 import sys
 import json
-from typing import Optional
+from typing import Optional, List, Tuple
 
 from discord.ext import commands
 
 from Src.Bot.DataClasses.Game import Game
 
-class DatabaseManager():
+
+class DatabaseManager:
     """A class to serve as an abstraction layer between the bot and the database.
 
-    mehtods
+    methods
     -------
 
     fetch_scrim(channel_id)
@@ -29,14 +30,14 @@ class DatabaseManager():
     remove_scrim_channel(channel_id)
         Remove a scrim channel from the database
 
-    check_voice_availabílity(channel_id)
+    check_voice_availability(channel_id)
         Check whether the given channel is already reserved for voice usage in other scrims
 
     games_init_generator()
         A generator that can be used to initialize the games supported by the bot from the games in the database
     """
 
-    def __init__(self, db_folder = "DBFiles"):
+    def __init__(self, db_folder="DBFiles"):
         """The constructor of DatabaseManager
 
         args
@@ -76,20 +77,9 @@ class DatabaseManager():
 
         cursor = self._game_connection.cursor()
 
-        with open(f"{self._path}/SQLScripts/CreateGamesTable.sql") as create_games_table:
-            cursor.execute(create_games_table.read())
-
-        with open(f"{self._path}/SQLScripts/CreateAliasesTable.sql") as create_aliases_table:
-            cursor.execute(create_aliases_table.read())
-
-        with open(f"{self._path}/SQLScripts/CreateMatchesTable.sql") as create_matches_table:
-            cursor.execute(create_matches_table.read())
-
-        with open(f"{self._path}/SQLScripts/CreateParticipantsTable.sql") as create_participants_table:
-            cursor.execute(create_participants_table.read())
-
-        with open(f"{self._path}/SQLScripts/CreateUserEloTable.sql") as create_user_elo_table:
-            cursor.execute(create_user_elo_table.read())
+        for subject in ("Games", "Aliases", "Matches", "Participants", "Elo"):
+            with open(f"{self._path}/SQLScripts/Create{subject}Table.sql") as create_table_script:
+                cursor.execute(create_table_script.read())
 
         with open(f"{self._path}/games_init.json") as games:
             games_dict = json.load(games)
@@ -98,7 +88,7 @@ class DatabaseManager():
             for game in games_dict[category]:
                 cursor.execute("INSERT INTO Games (Name, Colour, Icon, Playercount, Type) VALUES (?, ?, ?, ?, ?)",
                                (game, games_dict[category][game]['colour'], games_dict[category][game]['icon'],
-                               games_dict[category][game]['playercount'], category))
+                                games_dict[category][game]['playercount'], category))
 
                 for alias in games_dict[category][game]['alias']:
                     cursor.execute("INSERT INTO GameAliases (GameName, Alias) VALUES (?, ?)",
@@ -172,7 +162,7 @@ class DatabaseManager():
         cursor.close()
 
     def update_scrim_channel(self, channel_id: int, team_1_voice_id: int = None, team_2_voice_id: int = None,
-                               spectator_voice_id: int = None):
+                             spectator_voice_id: int = None):
         """A method for updating channel data for scrim channels
 
         args
@@ -193,8 +183,7 @@ class DatabaseManager():
 
         cursor = self._server_connection.cursor()
 
-        cursor.execute("UPDATE Scrims SET (Team1VoiceID = ?, Team2VoiceID = ?, SpectatorVoiceID = ?) \
-                                WHERE ChannelID = ?",
+        cursor.execute("UPDATE Scrims SET Team1VoiceID = ?, Team2VoiceID = ?, SpectatorVoiceID = ? WHERE ChannelID = ?",
                        (team_1_voice_id, team_2_voice_id, spectator_voice_id, channel_id))
 
         self._server_connection.commit()
@@ -215,7 +204,7 @@ class DatabaseManager():
 
         cursor = self._server_connection.cursor()
 
-        cursor.execute("DELETE FROM Scrims WHERE ChannelID = ?", channel_id)
+        cursor.execute("DELETE FROM Scrims WHERE ChannelID = ?", [channel_id])
 
     def check_voice_availability(self, channel_id: int) -> Optional[sqlite3.Row]:
         """A method to ensure the given channel id is not reserved for voice usage for other scrims
@@ -233,7 +222,7 @@ class DatabaseManager():
 
         return cursor.fetchone()
 
-    def games_init_generator(self) -> tuple[str, str, str, str, int, Optional[list[str]]]:
+    def games_init_generator(self) -> Tuple[str, str, str, str, int, Optional[List[str]]]:
         """A generator that yields the data of all games stored in the database, one game per iteration.
 
         :return: A tuple containing all the data required in the Game constructor
@@ -250,7 +239,7 @@ class DatabaseManager():
             alias_cursor.execute("SELECT Alias FROM GameAliases WHERE GameName = ?", (game[0],))
             aliases = [alias[0] for alias in alias_cursor.fetchall()]
 
-            yield(*game, aliases)
+            yield *game, aliases
 
     def set_player_elo(self, player_id: int, elo: int, game: Game):
         """A method that updates a player's elo in the table or creates a new record if the player has no elo

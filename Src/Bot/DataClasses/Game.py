@@ -5,7 +5,7 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 
-from typing import Generator, Optional
+from typing import Generator, List, Tuple
 
 from discord.ext import commands
 
@@ -25,7 +25,7 @@ class Game():
 
     _games_dict = {}
 
-    def __init__(self, name: str, colour: str, icon: str, game_type: str, playercount: int, aliases: list[str]):
+    def __init__(self, name: str, colour: str, icon: str, game_type: str, playercount: int, aliases: List[str]):
         """A constructor for the Game-class
 
         args
@@ -41,8 +41,8 @@ class Game():
         :type game_type: str
         :param playercount: The amount of players required for the game
         :type playercount: int
-        :param aliases: A list of game aliases that can be used for creting scrim
-        :type aliases: list[str]
+        :param aliases: A list of game aliases that can be used for creating scrim
+        :type aliases: List[str]
         """
 
         self.name = name
@@ -56,7 +56,7 @@ class Game():
         print(f"Created game {name}")
 
     @classmethod
-    def init_games(cls, games_data_generator: Generator[tuple[str, str, str, str, int, list[str]], None, None]):
+    def init_games(cls, games_data_generator: Tuple[str, str, str, str, int, List[str]]):
         """A classmethod for initializing the list of games based on a given generator.
 
         args
@@ -80,7 +80,7 @@ class Game():
         args
         ----
 
-        :param ctx: The invokation context of the command the conversion is done for
+        :param ctx: The invocation context of the command the conversion is done for
         :type ctx: commands.Context
         :param argument: The argument that should be converted into a game
         :type argument: str
