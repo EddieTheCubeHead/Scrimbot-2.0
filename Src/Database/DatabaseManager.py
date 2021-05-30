@@ -53,7 +53,6 @@ class DatabaseManager(ABC):
         pass
 
     def _init_folders(self):
-        print("Didn't find a database file folder. Creating a new one.")
         try:
             os.mkdir(f"{self.db_folder_path}")
         except OSError:

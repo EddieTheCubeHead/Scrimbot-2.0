@@ -4,11 +4,6 @@ __author__ = "Eetu Asikainen"
 import unittest
 import os
 import shutil
-import sqlite3
-import json
-from typing import Dict, Union, Optional
-
-import Test.test_utils as test_utils
 from Src.Database.ServersDatabaseManager import ServersDatabaseManager
 from Src.Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
 

@@ -4,7 +4,6 @@ __author__ = "Eetu Asikainen"
 import unittest
 import os
 import shutil
-import sqlite3
 import json
 from typing import Dict, Union
 
