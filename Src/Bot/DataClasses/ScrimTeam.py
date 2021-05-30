@@ -8,7 +8,7 @@ import discord
 
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
-from Src.Bot.DataClasses.Game import Game
+from Bot.DataClasses.Game import Game
 from Src.Bot.DataClasses.EmbedField import EmbedField
 
 
@@ -40,7 +40,7 @@ class ScrimTeam(collections.UserList, EmbedField):
         self.inline = True
 
     @classmethod
-    def from_team_data(cls, max_size: int, name: str, voice_channel: discord.VoiceChannel = None):
+    def from_scrim_data(cls, max_size: int, name: str, voice_channel: discord.VoiceChannel = None):
         """Because ScrimTeam subclasses UserList to function as a list of players this classmethod can be used as init
 
         :param max_size: How many players the team fits at maximum. 0 means infinite
@@ -127,6 +127,15 @@ class ScrimTeam(collections.UserList, EmbedField):
         """
 
         return self.max_size and len(self.data) >= self.max_size
+
+    def set_voice_channel(self, voice_channel: discord.VoiceChannel):
+        """A method for updating the voice channel associated with a team, useful
+
+        :param voice_channel: The new voice channel should be associated with the team
+        :type voice_channel: discord.VoiceChannel
+        """
+
+        self._voice_channel = voice_channel
 
     async def move_to_voice(self, *, success_required=True):
         """A method for attempting to move all players of the team into the team's voice channel

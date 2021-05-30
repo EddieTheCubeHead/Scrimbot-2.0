@@ -5,13 +5,14 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 
-from typing import Generator, List, Tuple
+from typing import Generator, List, Tuple, Optional
 
 from discord.ext import commands
 
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 
-class Game():
+
+class Game:
     """A class that houses the data of the supported games. Might get subclassed in the future to implement FFA games.
 
     classmethods
@@ -25,7 +26,8 @@ class Game():
 
     _games_dict = {}
 
-    def __init__(self, name: str, colour: str, icon: str, game_type: str, playercount: int, aliases: List[str]):
+    def __init__(self, name: str, colour: str, icon: str, aliases: List[str], min_team_size: int,
+                 max_team_size: int = None, team_count: int = 2):
         """A constructor for the Game-class
 
         args
@@ -37,33 +39,37 @@ class Game():
         :type colour: str
         :param icon: A link to an icon that should be used in the scrims of the game
         :type icon: str
-        :param game_type: (Functionality TBA) Whether the game is a Team-based or FFA game
-        :type game_type: str
-        :param playercount: The amount of players required for the game
-        :type playercount: int
         :param aliases: A list of game aliases that can be used for creating scrim
         :type aliases: List[str]
+        :param min_team_size: The minimum number of players a team needs
+        :type min_team_size: int
+        :param max_team_size: The maximum number of players a team can hold, default None results in this being equal to
+        min_team_size
+        :type max_team_size: Optional[int]
+        :param team_count: The number of teams the game requires, default 2, 1 results in a FFA game.
+        :type team_count: int
         """
 
         self.name = name
         self.colour = int(colour, 16)
-        self.playercount = playercount
         self.icon = icon
-        self.type = game_type
         self.aliases = aliases
+        self.min_team_size = min_team_size
+        self.max_team_size: int = max_team_size if max_team_size is not None else min_team_size
+        self.team_count = team_count
 
         self._games_dict[name] = self
         print(f"Created game {name}")
 
     @classmethod
-    def init_games(cls, games_data_generator: Tuple[str, str, str, str, int, List[str]]):
+    def init_games(cls, games_data_generator: Tuple[str, str, str, List[str], int, Optional[int], Optional[int]]):
         """A classmethod for initializing the list of games based on a given generator.
 
         args
         ----
 
         :param games_data_generator: A generator function that yields the data for one game instance each call
-        :type games_data_generator: Generator[(str, str, str, str, int, Optional[list[str]]), None, None]
+        :type games_data_generator: Optional[str, str, str, Optional[list[str]], Optional[int], Optional[int]]
         """
 
         while True:

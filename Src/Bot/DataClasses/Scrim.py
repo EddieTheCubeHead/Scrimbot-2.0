@@ -5,16 +5,16 @@ __author__ = "Eetu Asikainen"
 
 import datetime
 import asyncio
-from typing import Optional, Dict, Set, List
+from typing import Optional, Dict, Set
 
 import discord
 from discord.ext import commands
 
 from Src.Bot.DataClasses.ScrimState import ScrimState
-from Src.Bot.DataClasses.Game import Game
+from Bot.DataClasses.Game import Game
 from Src.Bot.DataClasses.ScrimEmbed import ScrimEmbed
-from Src.Bot.DataClasses.ScrimTeam import ScrimTeam
 from Src.Bot.DataClasses.EmbedField import EmbedField
+from Src.Bot.DataClasses.TeamManager import TeamManager
 from Src.Bot.Exceptions.BotMissingScrimException import BotMissingScrimException
 from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
@@ -91,7 +91,7 @@ class Scrim:
         A method for resetting the values back to nulls/empty values after a scrim has been concluded.
     """
 
-    _all_scrims: Dict[str, Scrim] = {}
+    _all_scrims: Dict[int, Scrim] = {}
     _all_participants: Set[discord.Member] = set()
     _all_participant_lock: asyncio.Lock = asyncio.Lock()
     _db_manager: DatabaseManager = None
@@ -132,18 +132,10 @@ class Scrim:
         self._game: Optional[Game] = None
         self._deletion_time: int = 0
 
-        self._participants: Optional[ScrimTeam] = None
-        self._spectators: Optional[ScrimTeam] = None
-        self._queue: Optional[ScrimTeam] = None
-
         self._embed: Optional[ScrimEmbed] = None
         self._message: Optional[discord.Message] = None
 
-        self._cap_1: Optional[discord.Member] = None
-        self._cap_2: Optional[discord.Member] = None
-
-        self._team_1: Optional[ScrimTeam] = None
-        self._team_2: Optional[ScrimTeam] = None
+        self.team_manager: Optional[TeamManager] = None
 
         div_string = "------------------------------------------------------------"
         self._divider: EmbedField = EmbedField(div_string, div_string, False)
@@ -162,7 +154,10 @@ class Scrim:
         :raises: commands.BadArgument
         """
 
-        if ctx.channel.id not in cls._all_scrims:
+        if ctx.channel.id in cls._all_scrims:
+            cls._all_scrims[ctx.channel.id]._last_interaction = datetime.datetime.now()
+            return cls._all_scrims[ctx.channel.id]
+        else:
             db_entry = cls._db_manager.fetch_scrim(ctx.channel.id)
             if not db_entry:
                 raise BotMissingScrimException(ctx)
@@ -176,10 +171,6 @@ class Scrim:
                     spectator_voice = ctx.guild.get_channel(db_entry[3])
 
                 return Scrim(channel, team_1_voice, team_2_voice, spectator_voice)
-
-        else:
-            cls._all_scrims[ctx.channel.id]._last_interaction = datetime.datetime.now()
-            return cls._all_scrims[ctx.channel.id]
 
     @classmethod
     async def get_from_reaction(cls, react: discord.Reaction) -> Optional[Scrim]:
@@ -293,10 +284,7 @@ class Scrim:
         self._game: Game = game
         self._deletion_time: int = deletion_time
 
-        self._participants = ScrimTeam.from_team_data(game.playercount, "Players")
-        self._spectators = ScrimTeam.from_team_data(0, "Spectators")
-        self._queue = ScrimTeam.from_team_data(0, "Queue")
-        self._queue.inline = False
+        self.team_manager = TeamManager(self._game, self._team_1_voice, self._team_2_voice)
 
         self.master = ctx.author
 
@@ -412,15 +400,8 @@ class Scrim:
         async with self._all_participant_lock:
             self._all_participants.difference_update(self._queue)
 
-        self._queue = None
-
         self._participants.name = "Unassigned"
         self._participants.max_size = 0
-
-        max_team_size = int(self._game.playercount / 2)
-
-        self._team_1: ScrimTeam = ScrimTeam.from_team_data(max_team_size, "Team 1", self._team_1_voice)
-        self._team_2: ScrimTeam = ScrimTeam.from_team_data(max_team_size, "Team 2", self._team_2_voice)
 
         async with self._embed_lock:
             self._embed.lock_scrim(self._participants, self._spectators, self._divider, self._team_1, self._team_2)

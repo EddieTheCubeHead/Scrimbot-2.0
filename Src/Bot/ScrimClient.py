@@ -8,12 +8,13 @@ import os
 import discord
 from discord.ext import commands
 
-from Src.Bot.DataClasses.Game import Game
+from Bot.DataClasses.Game import Game
 from Src.Database.DatabaseManager import DatabaseManager
 from Src.Bot.DataClasses.Scrim import Scrim
 from Src.Bot.DataClasses.BotHelpCommand import BotHelpCommand
 from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
+from Src.Bot.ScrimContext import ScrimContext
 
 
 class ScrimClient(commands.Bot):
@@ -71,6 +72,11 @@ class ScrimClient(commands.Bot):
         for cog in os.listdir("Cogs"):
             if cog[-3:] == ".py":
                 self.load_extension(f"Cogs.{cog[:-3]}")
+
+    async def get_context(self, message: discord.Message, *, cls=ScrimContext) -> ScrimContext:
+        """An override for get context to facilitate custom context for the bot"""
+
+        return await super().get_context(message, cls=cls)
 
     async def temp_msg(self, ctx: commands.Context, message: str, *, delete_delay=16.0, delete_original_msg=True):
         """A method for sending a temporary message to the given context.

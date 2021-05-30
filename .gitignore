@@ -2,6 +2,8 @@
 /Src/Bot/secrets.json
 /Src/Database/DBFiles/
 /Src/Bot/scrim_bot.log
+/Src/Database/Disposable*/
+/Src/Database/TestDBFiles/
 
 # Virtual environment
 /venv/

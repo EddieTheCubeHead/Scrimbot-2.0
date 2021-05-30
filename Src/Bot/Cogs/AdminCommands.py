@@ -52,7 +52,7 @@ class AdminCommands(commands.Cog):
         """
 
         if team_1_voice and not team_2_voice:
-            raise BotBaseUserException("If you specify a voice channel for team 1 you must also specify a voice " + \
+            raise BotBaseUserException("If you specify a voice channel for team 1 you must also specify a voice "
                                        "channel for team 2.")
 
         for channel in (team_1_voice, team_2_voice, spectator_voice):

@@ -5,7 +5,7 @@ from typing import Optional, List
 
 import discord
 
-from Src.Bot.DataClasses.Game import Game
+from Bot.DataClasses.Game import Game
 from Src.Bot.DataClasses.ScrimState import ScrimState
 from Src.Bot.DataClasses.ScrimTeam import ScrimTeam
 from Src.Bot.DataClasses.EmbedField import EmbedField
