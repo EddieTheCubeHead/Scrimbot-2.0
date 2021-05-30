@@ -12,6 +12,7 @@ from discord.ext import commands
 
 from Bot.DataClasses.Game import Game
 from Src.Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
+from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
 
 class DatabaseManager(ABC):
@@ -22,24 +23,30 @@ class DatabaseManager(ABC):
         self.path = os.path.join(os.path.dirname(__file__))
         self.db_folder_path: str = f"{self.path}/{db_folder}"
         self.db_file_path: str = f"{self.db_folder_path}/{db_name}"
+        self.connection: Optional[sqlite3.Connection] = None
 
     @classmethod
-    def from_file_path(cls, db_file_path: str):
-        new_manager = cls("", "")
-        new_manager.db_file_path = db_file_path
-
+    @abstractmethod
+    def from_raw_file_path(cls, db_file_path: str):
+        pass
 
     def setup_manager(self):
         # If the bot is run the first time the database needs to be initialized
+        init_database = False
+        if self.db_folder_path:
+            init_database = self.ensure_correct_folder_structure()
+
+        self.connection = sqlite3.connect(self.db_file_path)
+
+        if init_database:
+            self.init_database()
+
+    def ensure_correct_folder_structure(self):
         init_database = not (os.path.isdir(f"{self.db_folder_path}")
                              and os.path.isfile(f"{self.db_file_path}"))
         if not os.path.exists(self.db_folder_path):
             self._init_folders()
-
-
-
-        if init_database:
-            self.init_database()
+        return init_database
 
     @abstractmethod
     def init_database(self):
@@ -54,13 +61,18 @@ class DatabaseManager(ABC):
             sys.exit(1)
 
     def _create_tables(self, *table_names: str):
-        with DatabaseConnectionWrapper(self.db_file_path) as db_cursor:
+        with DatabaseConnectionWrapper(self.connection) as db_cursor:
             for table in table_names:
                 self._run_script(f"Create{table}Table.sql", db_cursor)
 
     def _run_script(self, script: str, cursor: sqlite3.Cursor):
         with open(f"{self.path}/SQLScripts/{script}") as script:
             cursor.execute(script.read())
+
+    def _ensure_valid_connection(self):
+        if self.connection is None:
+            raise BotBaseInternalException(f"Tried to use database in {self.db_file_path} before the connection was "
+                                           f"set up.")
 
     def fetch_scrim(self, channel_id: int) -> Optional[sqlite3.Row]:
         """A method for fetching a row containing the data of a specified scrim from the database
@@ -74,7 +86,7 @@ class DatabaseManager(ABC):
         :rtype: Optional[sqlite3.Row]
         """
 
-        with DatabaseConnectionWrapper(self.db_file_path) as cursor:
+        with DatabaseConnectionWrapper(self.connection) as cursor:
             cursor.execute("SELECT * FROM Scrims WHERE ChannelID = ?", (channel_id,))
             scrim_row = cursor.fetchone()
 
@@ -100,7 +112,7 @@ class DatabaseManager(ABC):
         if self.fetch_scrim(channel_id):
             raise commands.UserInputError(message="This channel is already registered for scrim usage.")
 
-        with DatabaseConnectionWrapper(self.db_file_path) as cursor:
+        with DatabaseConnectionWrapper(self.connection) as cursor:
             cursor.execute("INSERT INTO Scrims (ChannelID, Team1VoiceID, Team2VoiceID, SpectatorVoiceID) \
                             VALUES (?, ?, ?, ?)", (channel_id, team_1_voice_id, team_2_voice_id, spectator_voice_id))
 
@@ -124,7 +136,7 @@ class DatabaseManager(ABC):
         if not self.fetch_scrim(channel_id):
             raise commands.UserInputError(message="This channel is not registered for scrim usage.")
 
-        with DatabaseConnectionWrapper(self.db_file_path) as cursor:
+        with DatabaseConnectionWrapper(self.connection) as cursor:
             cursor.execute("UPDATE Scrims SET Team1VoiceID = ?, Team2VoiceID = ?, SpectatorVoiceID = ? WHERE "
                            "ChannelID = ?", (team_1_voice_id, team_2_voice_id, spectator_voice_id, channel_id))
 
@@ -141,7 +153,7 @@ class DatabaseManager(ABC):
         if not self.fetch_scrim(channel_id):
             raise commands.UserInputError(message="This channel is not registered for scrim usage.")
 
-        with DatabaseConnectionWrapper(self.db_file_path) as cursor:
+        with DatabaseConnectionWrapper(self.connection) as cursor:
             cursor.execute("DELETE FROM Scrims WHERE ChannelID = ?", (channel_id,))
 
     def check_voice_availability(self, channel_id: int) -> Optional[sqlite3.Row]:
@@ -153,7 +165,7 @@ class DatabaseManager(ABC):
         :rtype: Optional[sqlite3.Row]
         """
 
-        with DatabaseConnectionWrapper(self.db_file_path) as cursor:
+        with DatabaseConnectionWrapper(self.connection) as cursor:
             cursor.execute("SELECT * FROM Scrims WHERE (Team1VoiceID = ? OR Team2VoiceID = ? OR SpectatorVoiceID = ?)",
                            (channel_id, channel_id, channel_id))
             registered_row = cursor.fetchone()

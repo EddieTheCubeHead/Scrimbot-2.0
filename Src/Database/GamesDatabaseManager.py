@@ -12,6 +12,7 @@ from discord.ext import commands
 
 from Bot.DataClasses.Game import Game
 from Src.Database.DatabaseManager import DatabaseManager
+from Src.Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
 
 
 def _insert_game(cursor: sqlite3.Cursor, game: Dict[str, Union[str, int]], game_name: str):
@@ -32,13 +33,20 @@ class GamesDatabaseManager(DatabaseManager):
     def __init__(self, db_folder: str = "DBFiles", db_file: str = "games.db"):
         super().__init__(db_folder, db_file)
 
+    @classmethod
+    def from_raw_file_path(cls, db_file_path: str):
+        new_manager = cls("", "")
+        new_manager.db_file_path = db_file_path
+        return new_manager
+
     def init_database(self):
+        super()._ensure_valid_connection()
         self._create_tables("Games", "Aliases", "Matches", "Participants", "UserElos")
 
         with open(f"{self.path}/games_init.json") as games_file:
             games: Dict[str, Dict[str, Union[str, int]]] = json.load(games_file)
 
-        with DatabaseConnectionWrapper(self.db_file_path) as cursor:
+        with DatabaseConnectionWrapper(self.connection) as cursor:
             for game in games:
                 _insert_game(cursor, games[game], game)
 
@@ -49,7 +57,7 @@ class GamesDatabaseManager(DatabaseManager):
         :rtype: tuple[str, str, str, str, int, Optional[list[str]]]
         """
 
-        with DatabaseConnectionWrapper(self.db_file_path) as cursor:
+        with DatabaseConnectionWrapper(self.connection) as cursor:
 
             cursor.execute("SELECT * FROM Games")
             game_rows = cursor.fetchall()

@@ -7,12 +7,11 @@ from typing import Optional
 
 class DatabaseConnectionWrapper:
 
-    def __init__(self, db_file_location: str):
-        self._connection: sqlite3.Connection = sqlite3.connect(db_file_location)
-        self._cursor: Optional[sqlite3.Cursor] = None
+    def __init__(self, db_connection: sqlite3.Connection):
+        self._connection: sqlite3.Connection = db_connection
+        self._cursor: sqlite3.Cursor = db_connection.cursor()
 
     def __enter__(self) -> sqlite3.Cursor:
-        self._cursor = self._connection.cursor()
         return self._cursor
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
