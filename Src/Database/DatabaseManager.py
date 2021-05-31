@@ -40,6 +40,7 @@ class DatabaseManager(ABC):
 
         if init_database:
             self.init_database()
+            self._enable_foreign_keys()
 
     def ensure_correct_folder_structure(self):
         init_database = not (os.path.isdir(f"{self.db_folder_path}")
@@ -73,86 +74,6 @@ class DatabaseManager(ABC):
             raise BotBaseInternalException(f"Tried to use database in {self.db_file_path} before the connection was "
                                            f"set up.")
 
-    def register_scrim_channel(self, channel_id: int, team_1_voice_id: int = None, team_2_voice_id: int = None,
-                               spectator_voice_id: int = None):
-        """A method for registering a new channel for scrim usage
-
-        args
-        ----
-
-        :param channel_id: The channel id of the channel to regiser
-        :type channel_id: int
-        :param team_1_voice_id: The channel id of the optional voice channel for team 1
-        :type team_1_voice_id: Optional[int]
-        :param team_2_voice_id: The channel id of the optional voice channel for team 2
-        :type team_2_voice_id: Optional[int]
-        :param spectator_voice_id: The channel id of the optional spectator voice channel
-        :type spectator_voice_id: Optional[int]
-        """
-
-        if self.fetch_scrim(channel_id):
-            raise commands.UserInputError(message="This channel is already registered for scrim usage.")
-
-        with DatabaseConnectionWrapper(self.connection) as cursor:
-            cursor.execute("INSERT INTO Scrims (ChannelID, Team1VoiceID, Team2VoiceID, SpectatorVoiceID) \
-                            VALUES (?, ?, ?, ?)", (channel_id, team_1_voice_id, team_2_voice_id, spectator_voice_id))
-
-    def update_scrim_channel(self, channel_id: int, team_1_voice_id: int = None, team_2_voice_id: int = None,
-                             spectator_voice_id: int = None):
-        """A method for updating channel data for scrim channels
-
-        args
-        ----
-
-        :param channel_id: The channel id of the channel to update data of
-        :type channel_id: int
-        :param team_1_voice_id: The new channel id of the optional voice channel for team 1
-        :type team_1_voice_id: Optional[int]
-        :param team_2_voice_id: The new channel id of the optional voice channel for team 2
-        :type team_2_voice_id: Optional[int]
-        :param spectator_voice_id: The new channel id of the optional spectator voice channel
-        :type spectator_voice_id: Optional[int]
-        """
-
-        if not self.fetch_scrim(channel_id):
-            raise commands.UserInputError(message="This channel is not registered for scrim usage.")
-
-        with DatabaseConnectionWrapper(self.connection) as cursor:
-            cursor.execute("UPDATE Scrims SET Team1VoiceID = ?, Team2VoiceID = ?, SpectatorVoiceID = ? WHERE "
-                           "ChannelID = ?", (team_1_voice_id, team_2_voice_id, spectator_voice_id, channel_id))
-
-    def remove_scrim_channel(self, channel_id: int):
-        """A method for removing all channel data of the given channel
-
-        args
-        ----
-
-        :param channel_id: The channel id of the channel of which data should be deleted
-        :type channel_id: int
-        """
-
-        if not self.fetch_scrim(channel_id):
-            raise commands.UserInputError(message="This channel is not registered for scrim usage.")
-
-        with DatabaseConnectionWrapper(self.connection) as cursor:
-            cursor.execute("DELETE FROM Scrims WHERE ChannelID = ?", (channel_id,))
-
-    def check_voice_availability(self, channel_id: int) -> Optional[sqlite3.Row]:
-        """A method to ensure the given channel id is not reserved for voice usage for other scrims
-
-        :param channel_id: The channel id of the channel to check availability of
-        :type channel_id: int
-        :return: A row object containing data of the reserved scrim if reserved, otherwise None
-        :rtype: Optional[sqlite3.Row]
-        """
-
-        with DatabaseConnectionWrapper(self.connection) as cursor:
-            cursor.execute("SELECT * FROM Scrims WHERE (Team1VoiceID = ? OR Team2VoiceID = ? OR SpectatorVoiceID = ?)",
-                           (channel_id, channel_id, channel_id))
-            registered_row = cursor.fetchone()
-
-        return registered_row
-
     def set_player_elo(self, player_id: int, elo: int, game: Game):
         """A method that updates a player's elo in the table or creates a new record if the player has no elo
 
@@ -163,3 +84,7 @@ class DatabaseManager(ABC):
         :param game: The game
         :type game:
         """
+
+    def _enable_foreign_keys(self):
+        with DatabaseConnectionWrapper(self.connection) as cursor:
+            cursor.execute("PRAGMA foreign_keys = ON")

@@ -2,7 +2,7 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 import threading
-from typing import Tuple, Type, Optional
+from typing import Tuple, Type, Optional, List
 
 
 class UniqueIdGenerator:
@@ -15,16 +15,16 @@ class UniqueIdGenerator:
         self._nonviable_generator = self._generate_nonviable()
         self._generator_lock: threading.Lock = threading.Lock()
 
-    def generate_viable_id_group(self, group_length=1):
-        return tuple([self.generate_viable_id() for _ in range(group_length)])
+    def generate_viable_id_group(self, group_length=1) -> List[int]:
+        return [self.generate_viable_id() for _ in range(group_length)]
 
-    def generate_viable_id(self):
+    def generate_viable_id(self) -> int:
         return next(self._viable_generator)
 
-    def generate_nonviable_id_group(self, group_length=1):
-        return tuple([self.generate_nonviable_id() for _ in range(group_length)])
+    def generate_nonviable_id_group(self, group_length=1) -> List[int]:
+        return [self.generate_nonviable_id() for _ in range(group_length)]
 
-    def generate_nonviable_id(self):
+    def generate_nonviable_id(self) -> int:
         return next(self._nonviable_generator)
 
     def _generate_viable(self):
