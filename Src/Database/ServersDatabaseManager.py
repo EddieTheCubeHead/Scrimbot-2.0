@@ -13,7 +13,6 @@ from discord.ext import commands
 from Bot.DataClasses.Game import Game
 from Src.Database.DatabaseManager import DatabaseManager
 from Src.Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
-from Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
 
@@ -44,10 +43,10 @@ class ServersDatabaseManager(DatabaseManager):
         """
 
         scrim_text_channel = self._fetch_scrim_text_channel(channel_id)
-        scrim_voice_channels = self._fetch_scrim_voice_channels(channel_id)
         if not scrim_text_channel:
             raise BotBaseInternalException(f"Tried to fetch a scrim with text channel id of {channel_id}, "
                                            f"but found nothing.")
+        scrim_voice_channels = self._fetch_scrim_voice_channels(channel_id)
 
         return scrim_text_channel[0], scrim_voice_channels
 
@@ -65,7 +64,8 @@ class ServersDatabaseManager(DatabaseManager):
         """
 
         if self._fetch_scrim_text_channel(text_channel):
-            raise BotBaseUserException(message="This channel is already registered for scrim usage.")
+            raise BotBaseInternalException(message="This channel is already registered for scrim usage.")
+        self._assert_valid_voice_channels(voice_channel_data)
 
         self._insert_scrim_text_channel(text_channel)
         for voice_channel_id, voice_channel_team in voice_channel_data:
@@ -82,7 +82,7 @@ class ServersDatabaseManager(DatabaseManager):
         """
 
         if not self._fetch_scrim_text_channel(channel_id):
-            raise commands.UserInputError(message="This channel is not registered for scrim usage.")
+            raise BotBaseInternalException(message="This channel is not registered for scrim usage.")
 
         with DatabaseConnectionWrapper(self.connection) as cursor:
             cursor.execute("DELETE FROM ScrimTextChannels WHERE ChannelID = ?", (channel_id,))
@@ -101,7 +101,7 @@ class ServersDatabaseManager(DatabaseManager):
         """
 
         if not self._fetch_scrim_text_channel(channel_id):
-            raise commands.UserInputError(message="This channel is not registered for scrim usage.")
+            raise BotBaseInternalException(message="This channel is not registered for scrim usage.")
 
         self._delete_voice_channel_data(channel_id)
         for voice_channel_id, voice_channel_team in voice_channel_data:
@@ -148,3 +148,36 @@ class ServersDatabaseManager(DatabaseManager):
     def _delete_voice_channel_data(self, channel_id):
         with DatabaseConnectionWrapper(self.connection) as cursor:
             cursor.execute("DELETE FROM ScrimVoiceChannels WHERE ParentTextChannel=?", (channel_id,))
+
+    def _assert_valid_voice_channels(self, voice_channel_data):
+        channel_teams = []
+        for channel_id, channel_team in voice_channel_data:
+            self._assert_free_voice_channel(channel_id)
+            channel_teams.append(channel_team)
+        if channel_teams:
+            _assert_valid_channel_teams(channel_teams)
+
+    def _assert_free_voice_channel(self, channel_id):
+        reserved_channel_data = self.check_voice_availability(channel_id)
+        if reserved_channel_data:
+            raise BotBaseInternalException(f"Channel {channel_id} is already registered for scrim usage.")
+
+
+def _assert_valid_channel_teams(channel_teams):
+    first_team = _assert_valid_first_team(channel_teams)
+    _assert_sequential_teams(channel_teams, first_team)
+
+
+def _assert_valid_first_team(channel_teams):
+    channel_teams.sort()
+    first_team = channel_teams[0]  # should be 0 if lobby team exists, 1 if not
+    valid_first_team_values = (0, 1)
+    if first_team not in valid_first_team_values:
+        raise BotBaseInternalException(f"Invalid teams: {channel_teams}")
+    return first_team
+
+
+def _assert_sequential_teams(channel_teams, first_team):
+    for valid_team, actual_team in enumerate(channel_teams, first_team):
+        if valid_team != actual_team:
+            raise BotBaseInternalException(f"Invalid teams: {channel_teams}")

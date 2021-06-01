@@ -7,9 +7,11 @@ import shutil
 import sqlite3
 from typing import Tuple, Optional, List
 
+import Bot.Exceptions.BotBaseInternalException
 import test_utils
 from Src.Database.ServersDatabaseManager import ServersDatabaseManager
 from Src.Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
+from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
 
 def _setup_disposable_folder_manager(disposable_folder_name: str, disposable_file_name: str) -> \
@@ -41,36 +43,83 @@ class TestServersDatabaseManager(unittest.TestCase):
         cls.manager.setup_manager()
         cls.id_mocker = test_utils.UniqueIdGenerator()
 
-    def test_given_uninitialized_folder_then_folder_created(self):
+    def test_setup_given_uninitialized_folder_then_folder_created(self):
         disposable_folder = "DisposableServersTest"
         disposable_manager = _setup_disposable_folder_manager(disposable_folder, "unused.db")
         disposable_manager.ensure_correct_folder_structure()
         self.assertIn(disposable_folder, os.listdir(disposable_manager.path))
         shutil.rmtree(disposable_manager.db_folder_path)
 
-    def test_given_normal_setup_then_all_tables_initialized(self):
+    def test_setup_given_normal_setup_then_all_tables_initialized(self):
         for table in ("ScrimTextChannels", "ScrimVoiceChannels", "Servers", "ServerAdministrators"):
             self._assert_table_exists(table)
 
-    def test_given_valid_id_then_scrim_found(self):
+    def test_fetch_scrim_given_valid_id__then_scrim_found(self):
         expected_text, expected_voices = self._generate_scrim_data(2)
         self._register_test_channel(expected_text, *expected_voices)
         actual_text, actual_voices = self.manager.fetch_scrim(expected_text)
         self._assert_equal_scrim_channels(actual_text, actual_voices, expected_text, expected_voices)
 
-    def test_given_valid_scrim_data_then_scrim_inserted_successfully(self):
+    def test_fetch_scrim_given_invalid_id_then_exception_raised(self):
+        invalid_text = self.id_mocker.generate_nonviable_id()
+        self.assertRaises(BotBaseInternalException, self.manager.fetch_scrim, invalid_text)
+
+    def test_fetch_scrim_given_scrim_with_no_voice_channels_then_only_text_channel_returned(self):
+        expected_text, empty_voices = self._generate_scrim_data(0)
+        self._register_test_channel(expected_text, *empty_voices)
+        actual_text, actual_voices = self.manager.fetch_scrim(expected_text)
+        self._assert_equal_scrim_channels(expected_text, empty_voices, actual_text, actual_voices)
+
+    def test_register_scrim_channel_given_valid_scrim_data_then_scrim_inserted_successfully(self):
         expected_text, expected_voices = self._generate_scrim_data(4)
         self.manager.register_scrim_channel(expected_text, *expected_voices)
         actual_text, actual_voices = self._fetch_from_registered(expected_text)
         self._assert_equal_scrim_channels(actual_text, actual_voices, expected_text, expected_voices)
 
-    def test_given_text_channel_deleted_then_cascades_to_all_voice_channels(self):
+    def test_register_scrim_channel_given_no_lobby_then_scrim_inserted_successfully(self):
+        expected_text, expected_voices = self._generate_scrim_data(4, include_lobby_channel=False)
+        self.manager.register_scrim_channel(expected_text, *expected_voices)
+        actual_text, actual_voices = self._fetch_from_registered(expected_text)
+        self._assert_equal_scrim_channels(actual_text, actual_voices, expected_text, expected_voices)
+
+    def test_register_scrim_channel_given_reserved_voice_channels_then_exception_raised(self):
+        first_text_id, second_text_id = self.id_mocker.generate_viable_id_group(2)
+        mock_voice_data = self.id_mocker.generate_viable_id(), 1
+        self._register_test_channel(first_text_id, mock_voice_data)
+        self.assertRaises(BotBaseInternalException, self.manager.register_scrim_channel, second_text_id,
+                          mock_voice_data)
+
+    def test_register_scrim_channel_given_scrambled_team_order_and_no_lobby_then_scrim_inserted_successfully(self):
+        expected_text = self.id_mocker.generate_viable_id()
+        expected_voices = self._construct_team_data_with_valid_ids(1, 5, 4, 2, 3)
+        self.manager.register_scrim_channel(expected_text, *expected_voices)
+        actual_text, actual_voices = self._fetch_from_registered(expected_text)
+        self._assert_equal_scrim_channels(actual_text, actual_voices, expected_text, expected_voices)
+
+    def test_register_scrim_channel_given_teams_starting_from_two_then_exception_raised(self):
+        valid_text_id = self.id_mocker.generate_viable_id()
+        invalid_voice_data = self._construct_team_data_with_valid_ids(2, 3, 4)
+        self.assertRaises(BotBaseInternalException, self.manager.register_scrim_channel, valid_text_id,
+                          *invalid_voice_data)
+
+    def test_register_scrim_channel_given_non_sequential_teams_then_exception_raised(self):
+        valid_text_id = self.id_mocker.generate_viable_id()
+        invalid_voice_data = self._construct_team_data_with_valid_ids(1, 2, 3, 4, 6)
+        self.assertRaises(BotBaseInternalException, self.manager.register_scrim_channel, valid_text_id,
+                          *invalid_voice_data)
+
+    def test_register_scrim_channel_given_duplicate_voice_channels_then_exception_raised(self):
+        text_id, empty_voice = self._generate_scrim_data(0)
+        self._register_test_channel(text_id, *empty_voice)
+        self.assertRaises(BotBaseInternalException, self.manager.register_scrim_channel, text_id, empty_voice)
+
+    def test_remove_scrim_channel_given_parent_channel_deleted_then_cascades_to_all_voice_channels(self):
         deleted_text, deleted_voices = self._generate_scrim_data(3)
         self._register_test_channel(deleted_text, *deleted_voices)
         self.manager.remove_scrim_channel(deleted_text)
         self._assert_channels_removed([pair[0] for pair in deleted_voices])
 
-    def test_given_scrim_channels_in_db_when_channel_data_updated_then_correct_values_found(self):
+    def test_update_scrim_voice_channels_when_channel_data_updated_then_correct_voice_values_found(self):
         original_text, original_voices = self._generate_scrim_data(6)
         self._register_test_channel(original_text, * original_voices)
         updated_voices = self._generate_voice_channel_data(6)
@@ -78,12 +127,12 @@ class TestServersDatabaseManager(unittest.TestCase):
         actual_text, actual_voices = self._fetch_from_registered(original_text)
         self._assert_equal_scrim_channels(original_text, updated_voices, actual_text, actual_voices)
 
-    def test_given_voice_channel_in_db_then_channel_availability_returns_data(self):
+    def test_check_voice_availability_given_voice_channel_in_db_then_data_returned(self):
         text_id, voice_data = self._generate_scrim_data(1)
         self._register_test_channel(text_id, *voice_data)
         self.assertIsNotNone(self.manager.check_voice_availability(voice_data[0][0]))
 
-    def test_given_voice_channel_not_in_db_then_channel_availability_returns_none(self):
+    def test_check_voice_availability_given_voice_channel_not_in_db_then_none_returned(self):
         free_voice_id = self.id_mocker.generate_nonviable_id()
         self.assertIsNone(self.manager.check_voice_availability(free_voice_id))
 
@@ -94,6 +143,8 @@ class TestServersDatabaseManager(unittest.TestCase):
 
     def _assert_equal_scrim_channels(self, actual_text, actual_voices, expected_text, expected_voices):
         self.assertEqual(expected_text, actual_text)
+        expected_voices.sort()
+        actual_voices.sort()
         self.assertListEqual(expected_voices, actual_voices)
 
     def _register_test_channel(self, text_channel_id: int, *voice_channel_data: Tuple[int, int]):
@@ -147,6 +198,10 @@ class TestServersDatabaseManager(unittest.TestCase):
             with DatabaseConnectionWrapper(self.manager.connection) as cursor:
                 cursor.execute("SELECT * FROM ScrimVoiceChannels WHERE ChannelID=?", (channel,))
                 self.assertIsNone(cursor.fetchone())
+
+    def _construct_team_data_with_valid_ids(self, *teams):
+        valid_voice_ids = self.id_mocker.generate_viable_id_group(len(teams))
+        return list(zip(valid_voice_ids, teams))
 
 
 if __name__ == '__main__':
