@@ -14,6 +14,10 @@ from Bot.DataClasses.Game import Game
 from Src.Database.DatabaseManager import DatabaseManager
 from Src.Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+from Database.Exceptions.DatabaseMissingRowException import DatabaseMissingRowException
+from Database.Exceptions.DatabaseDuplicateUniqueRowException import DatabaseDuplicateUniqueRowException
+from Database.Exceptions.DatabasePrimaryKeyViolatedException import DatabasePrimaryKeyViolatedException
+from Database.Exceptions.DatabaseForeignKeyViolatedException import DatabaseForeignKeyViolatedException
 
 
 class ServersDatabaseManager(DatabaseManager):
@@ -44,8 +48,7 @@ class ServersDatabaseManager(DatabaseManager):
 
         scrim_text_channel = self._fetch_scrim_text_channel(channel_id)
         if not scrim_text_channel:
-            raise BotBaseInternalException(f"Tried to fetch a scrim with text channel id of {channel_id}, "
-                                           f"but found nothing.")
+            raise DatabaseMissingRowException("ScrimTextChannels", "ChannelID", channel_id)
         scrim_voice_channels = self._fetch_scrim_voice_channels(channel_id)
 
         return scrim_text_channel[0], scrim_voice_channels
@@ -64,7 +67,7 @@ class ServersDatabaseManager(DatabaseManager):
         """
 
         if self._fetch_scrim_text_channel(text_channel):
-            raise BotBaseInternalException(message="This channel is already registered for scrim usage.")
+            raise DatabasePrimaryKeyViolatedException("ScrimTextChannels", ["ChannelID"], [str(text_channel)])
         self._assert_valid_voice_channels(voice_channel_data)
 
         self._insert_scrim_text_channel(text_channel)
@@ -160,7 +163,7 @@ class ServersDatabaseManager(DatabaseManager):
     def _assert_free_voice_channel(self, channel_id):
         reserved_channel_data = self.check_voice_availability(channel_id)
         if reserved_channel_data:
-            raise BotBaseInternalException(f"Channel {channel_id} is already registered for scrim usage.")
+            raise DatabasePrimaryKeyViolatedException("ScrimVoiceChannels", ["ChannelID"], [str(channel_id)])
 
 
 def _assert_valid_channel_teams(channel_teams):
@@ -173,11 +176,11 @@ def _assert_valid_first_team(channel_teams):
     first_team = channel_teams[0]  # should be 0 if lobby team exists, 1 if not
     valid_first_team_values = (0, 1)
     if first_team not in valid_first_team_values:
-        raise BotBaseInternalException(f"Invalid teams: {channel_teams}")
+        raise BotBaseInternalException(f"Invalid teams: {channel_teams}. First team should be 0 or 1.")
     return first_team
 
 
 def _assert_sequential_teams(channel_teams, first_team):
     for valid_team, actual_team in enumerate(channel_teams, first_team):
         if valid_team != actual_team:
-            raise BotBaseInternalException(f"Invalid teams: {channel_teams}")
+            raise BotBaseInternalException(f"Invalid teams: {channel_teams}. All teams should be sequential.")

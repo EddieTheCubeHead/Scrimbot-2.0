@@ -11,6 +11,10 @@ import test_utils
 from Database.ServersDatabaseManager import ServersDatabaseManager
 from Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+from Database.Exceptions.DatabaseMissingRowException import DatabaseMissingRowException
+from Database.Exceptions.DatabaseDuplicateUniqueRowException import DatabaseDuplicateUniqueRowException
+from Database.Exceptions.DatabasePrimaryKeyViolatedException import DatabasePrimaryKeyViolatedException
+from Database.Exceptions.DatabaseForeignKeyViolatedException import DatabaseForeignKeyViolatedException
 
 
 def _setup_disposable_folder_manager(disposable_folder_name: str, disposable_file_name: str) -> \
@@ -61,7 +65,14 @@ class TestServersDatabaseManager(unittest.TestCase):
 
     def test_fetch_scrim_given_invalid_id_then_exception_raised(self):
         invalid_text = self.id_mocker.generate_nonviable_id()
-        self.assertRaises(BotBaseInternalException, self.manager.fetch_scrim, invalid_text)
+        expected_exception = DatabaseMissingRowException("ScrimTextChannels", "ChannelID", str(invalid_text))
+        self._assert_raises_correct_exception(expected_exception, self.manager.fetch_scrim, invalid_text)
+
+    def _assert_raises_correct_exception(self, expected_exception, call, *args, **kwargs):
+        with self.assertRaises(type(expected_exception)) as context:
+            call(*args, **kwargs)
+        self.assertEqual(str(expected_exception),
+                         str(context.exception))
 
     def test_fetch_scrim_given_scrim_with_no_voice_channels_then_only_text_channel_returned(self):
         expected_text, empty_voices = self._generate_scrim_data(0)
@@ -84,9 +95,11 @@ class TestServersDatabaseManager(unittest.TestCase):
     def test_register_scrim_channel_given_reserved_voice_channels_then_exception_raised(self):
         first_text_id, second_text_id = self.id_mocker.generate_viable_id_group(2)
         mock_voice_data = self._construct_team_data_with_valid_ids(1)
+        expected_exception = DatabasePrimaryKeyViolatedException("ScrimVoiceChannels", ["ChannelID"],
+                                                                 [str(mock_voice_data[0][0])])
         self._register_test_channel(first_text_id, *mock_voice_data)
-        self.assertRaises(BotBaseInternalException, self.manager.register_scrim_channel, second_text_id,
-                          *mock_voice_data)
+        self._assert_raises_correct_exception(expected_exception, self.manager.register_scrim_channel, second_text_id,
+                                              *mock_voice_data)
 
     def test_register_scrim_channel_given_scrambled_team_order_and_no_lobby_then_scrim_inserted_successfully(self):
         expected_text = self.id_mocker.generate_viable_id()
@@ -107,10 +120,12 @@ class TestServersDatabaseManager(unittest.TestCase):
         self.assertRaises(BotBaseInternalException, self.manager.register_scrim_channel, valid_text_id,
                           *invalid_voice_data)
 
-    def test_register_scrim_channel_given_duplicate_voice_channels_then_exception_raised(self):
+    def test_register_scrim_channel_given_reserved_text_channels_then_exception_raised(self):
         text_id, empty_voice = self._generate_scrim_data(0)
         self._register_test_channel(text_id, *empty_voice)
-        self.assertRaises(BotBaseInternalException, self.manager.register_scrim_channel, text_id, empty_voice)
+        self._assert_raises_correct_exception(
+            DatabasePrimaryKeyViolatedException("ScrimTextChannels", ["ChannelID"], [str(text_id)]),
+            self.manager.register_scrim_channel, text_id, *empty_voice)
 
     def test_remove_scrim_channel_given_parent_channel_deleted_then_cascades_to_all_voice_channels(self):
         deleted_text, deleted_voices = self._generate_scrim_data(3)

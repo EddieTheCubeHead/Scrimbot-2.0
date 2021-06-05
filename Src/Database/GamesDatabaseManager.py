@@ -75,7 +75,7 @@ class GamesDatabaseManager(DatabaseManager):
                 yield *game, aliases
 
     def insert_player_elo(self, player_id: int, game: str, elo: int = 1700):
-        """A method that updates a player's elo in the table or creates a new record if the player has no elo
+        """A method that inserts a new player elo into the UserElos table
 
         :param player_id: The discord id ("snowflake") of the player whose elo should be updated
         :type player_id: int
@@ -86,7 +86,6 @@ class GamesDatabaseManager(DatabaseManager):
         """
         self._assert_unique_elo(game, player_id)
         if not self._game_exists(game):
-            pass
             raise DatabaseForeignKeyViolatedException("UserElos", "Game", game, "Games", "Name")
         self._insert_player_elo(elo, game, player_id)
 
