@@ -7,10 +7,9 @@ import shutil
 import sqlite3
 from typing import Tuple, Optional, List
 
-import Bot.Exceptions.BotBaseInternalException
 import test_utils
-from Src.Database.ServersDatabaseManager import ServersDatabaseManager
-from Src.Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
+from Database.ServersDatabaseManager import ServersDatabaseManager
+from Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
 
@@ -84,10 +83,10 @@ class TestServersDatabaseManager(unittest.TestCase):
 
     def test_register_scrim_channel_given_reserved_voice_channels_then_exception_raised(self):
         first_text_id, second_text_id = self.id_mocker.generate_viable_id_group(2)
-        mock_voice_data = self.id_mocker.generate_viable_id(), 1
-        self._register_test_channel(first_text_id, mock_voice_data)
+        mock_voice_data = self._construct_team_data_with_valid_ids(1)
+        self._register_test_channel(first_text_id, *mock_voice_data)
         self.assertRaises(BotBaseInternalException, self.manager.register_scrim_channel, second_text_id,
-                          mock_voice_data)
+                          *mock_voice_data)
 
     def test_register_scrim_channel_given_scrambled_team_order_and_no_lobby_then_scrim_inserted_successfully(self):
         expected_text = self.id_mocker.generate_viable_id()

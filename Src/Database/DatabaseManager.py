@@ -74,17 +74,6 @@ class DatabaseManager(ABC):
             raise BotBaseInternalException(f"Tried to use database in {self.db_file_path} before the connection was "
                                            f"set up.")
 
-    def set_player_elo(self, player_id: int, elo: int, game: Game):
-        """A method that updates a player's elo in the table or creates a new record if the player has no elo
-
-        :param player_id: The discord id ("snowflake") of the player whose elo should be updated
-        :type player_id: int
-        :param elo: The new elo value of the player
-        :type elo: int
-        :param game: The game
-        :type game:
-        """
-
     def _enable_foreign_keys(self):
         with DatabaseConnectionWrapper(self.connection) as cursor:
             cursor.execute("PRAGMA foreign_keys = ON")

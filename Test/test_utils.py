@@ -2,7 +2,7 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 import threading
-from typing import Tuple, Type, Optional, List
+from typing import Tuple, Type, Optional, List, Callable
 
 
 class UniqueIdGenerator:

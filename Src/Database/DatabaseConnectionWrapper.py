@@ -2,7 +2,11 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 import sqlite3
+import sys
+import traceback
 from typing import Optional
+
+from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
 
 class DatabaseConnectionWrapper:
