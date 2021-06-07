@@ -160,28 +160,28 @@ class TestGamesDatabaseManager(unittest.TestCase):
     def test_change_user_elo_given_valid_positive_change_then_change_successful(self):
         valid_user_id = self.id_mocker.generate_viable_id()
         initial_elo, change = 1700, 25
-        self._insert_player_elo("Dota 2", valid_user_id, initial_elo)
+        self._insert_player_elo(valid_user_id, "Dota 2", initial_elo)
         self.manager.change_user_elo(valid_user_id, "Dota 2", change)
         self._assert_user_elo_equals(valid_user_id, "Dota 2", initial_elo+change)
 
     def test_change_user_elo_given_valid_negative_change_then_change_successful(self):
         valid_user_id = self.id_mocker.generate_viable_id()
         initial_elo, change = 1700, -25
-        self._insert_player_elo("Dota 2", valid_user_id, initial_elo)
+        self._insert_player_elo(valid_user_id, "Dota 2", initial_elo)
         self.manager.change_user_elo(valid_user_id, "Dota 2", change)
         self._assert_user_elo_equals(valid_user_id, "Dota 2", initial_elo + change)
 
     def test_change_user_elo_given_change_into_negative_then_zero_set_instead(self):
         valid_user_id = self.id_mocker.generate_viable_id()
         initial_elo, change = 20, -25
-        self._insert_player_elo("Dota 2", valid_user_id, initial_elo)
+        self._insert_player_elo(valid_user_id, "Dota 2", initial_elo)
         self.manager.change_user_elo(valid_user_id, "Dota 2", change)
         self._assert_user_elo_equals(valid_user_id, "Dota 2", 0)
 
     def test_fetch_user_elo_given_valid_user_id_then_correct_elo_returned(self):
         valid_user_id = self.id_mocker.generate_viable_id()
         user_elo = 1700
-        self._insert_player_elo("Dota 2", valid_user_id, user_elo)
+        self._insert_player_elo(valid_user_id, "Dota 2", user_elo)
         self.assertEqual(user_elo, self.manager.fetch_user_elo(valid_user_id, "Dota 2"))
 
     def test_fetch_user_elo_given_invalid_user_id_then_error_raised(self):
@@ -193,7 +193,7 @@ class TestGamesDatabaseManager(unittest.TestCase):
     def test_set_user_elo_given_valid_elo_value_and_existing_user_then_operation_successful(self):
         valid_user_id = self.id_mocker.generate_viable_id()
         user_elo = 2500
-        self._insert_player_elo("Dota 2", valid_user_id)
+        self._insert_player_elo(valid_user_id, "Dota 2")
         self.manager.set_user_elo(valid_user_id, "Dota 2", user_elo)
         self._assert_user_elo_equals(valid_user_id, "Dota 2", user_elo)
 
@@ -211,7 +211,7 @@ class TestGamesDatabaseManager(unittest.TestCase):
     def test_set_user_elo_given_too_low_elo_value_and_existing_user_then_error_raised(self):
         valid_user_id = self.id_mocker.generate_viable_id()
         user_elo = -1
-        self._insert_player_elo("Dota 2", valid_user_id)
+        self._insert_player_elo(valid_user_id, "Dota 2")
         self.assertRaises(BotBaseInternalException, self.manager.set_user_elo, valid_user_id, "Dota 2", user_elo)
 
     def test_set_user_elo_given_too_high_elo_value_and_new_user_then_error_raised(self):
@@ -222,7 +222,7 @@ class TestGamesDatabaseManager(unittest.TestCase):
     def test_set_user_elo_given_high_elo_value_and_existing_user_then_operation_successful(self):
         valid_user_id = self.id_mocker.generate_viable_id()
         user_elo = 5001
-        self._insert_player_elo("Dota 2", valid_user_id)
+        self._insert_player_elo(valid_user_id, "Dota 2")
         self.manager.set_user_elo(valid_user_id, "Dota 2", user_elo)
         self._assert_user_elo_equals(valid_user_id, "Dota 2", user_elo)
 
@@ -276,11 +276,11 @@ class TestGamesDatabaseManager(unittest.TestCase):
 
     def _insert_player_elos(self, game, players):
         for player in players:
-            self._insert_player_elo(game, player[0], player[2])
+            self._insert_player_elo(player[0], game, player[2])
 
-    def _insert_player_elo(self, game, player_id, player_elo = 1700):
+    def _insert_player_elo(self, player_id, game, player_elo=1700):
         with DatabaseConnectionWrapper(self.manager.connection) as cursor:
-            cursor.execute("INSERT INTO UserElos(Game, Snowflake, Elo) VALUES (?, ?, ?)", (game, player_id, player_elo))
+            cursor.execute("INSERT INTO UserElos(Snowflake, Game, Elo) VALUES (?, ?, ?)", (player_id, game, player_elo))
 
     def _insert_match_data(self, valid_match_data) -> int:
         self._insert_player_elos(valid_match_data[0], valid_match_data[2])

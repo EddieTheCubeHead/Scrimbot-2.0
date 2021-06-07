@@ -36,7 +36,7 @@ class BotBaseUserException(commands.CommandError):
         :rtype: str
         """
 
-        return "Error:"
+        return "Error: "
 
     def get_description(self) -> str:
         """A method that returns a text description of the error

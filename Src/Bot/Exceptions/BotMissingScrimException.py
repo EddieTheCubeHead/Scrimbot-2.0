@@ -11,7 +11,7 @@ class BotMissingScrimException(BotBaseUserException, commands.CheckFailure):
 
     def __init__(self, context: commands.Context, *, send_help=True):
         self._context = context
-        self.send_help = send_help
+        self._send_help = send_help
 
     def get_description(self) -> str:
         return f"Seems like the channel '{self._context.channel.name}' is not registered for scrim usage."
