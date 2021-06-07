@@ -35,6 +35,22 @@ def _get_game_data_from_dict_item(game_item):
     return (game_name, colour, icon, min_team_size, max_team_size, team_count), aliases
 
 
+def _validate_inserted_elo(elo):
+    if elo < 0:
+        raise BotBaseInternalException("Initial elo values cannot be lower than 0.")
+    if elo > 5000:
+        raise BotBaseInternalException("Initial elo values cannot be higher than 5000.")
+
+
+def _ensure_elo_change_valid(original_elo, change):
+    return 0 if original_elo + change < 0 else original_elo + change
+
+
+def _validate_updated_elo(new_elo):
+    if new_elo < 0:
+        raise BotBaseInternalException("User elo value cannot be lower than 0.")
+
+
 class GamesDatabaseManager(DatabaseManager):
 
     def __init__(self, db_folder: str = "DBFiles", db_file: str = "games.db"):
@@ -74,7 +90,7 @@ class GamesDatabaseManager(DatabaseManager):
 
                 yield *game, aliases
 
-    def insert_player_elo(self, player_id: int, game: str, elo: int = 1700):
+    def insert_user_elo(self, player_id: int, game: str, elo: int = 1700):
         """A method that inserts a new player elo into the UserElos table
 
         :param player_id: The discord id ("snowflake") of the player whose elo should be updated
@@ -84,17 +100,21 @@ class GamesDatabaseManager(DatabaseManager):
         :param game: The game
         :type game: str
         """
-        self._assert_unique_elo(game, player_id)
+        self._assert_unique_elo(player_id, game)
         if not self._game_exists(game):
             raise DatabaseForeignKeyViolatedException("UserElos", "Game", game, "Games", "Name")
+        _validate_inserted_elo(elo)
         self._insert_player_elo(elo, game, player_id)
 
-    def _assert_unique_elo(self, game: str, player_id: int):
+    def _assert_unique_elo(self, player_id: int, game: str):
+        if self._user_elo_exists(player_id, game):
+            raise DatabasePrimaryKeyViolatedException("UserElos", ["Snowflake", "Game"], [str(player_id), game])
+
+    def _user_elo_exists(self, player_id, game):
         with DatabaseConnectionWrapper(self.connection) as cursor:
             cursor.execute("SELECT Count(*) FROM UserElos WHERE Snowflake=? AND Game=?", (player_id, game))
             existing_count = cursor.fetchone()[0]
-        if existing_count > 0:
-            raise DatabasePrimaryKeyViolatedException("UserElos", ["Snowflake", "Game"], [str(player_id), game])
+        return existing_count > 0
 
     def _insert_player_elo(self, elo, game, player_id):
         with DatabaseConnectionWrapper(self.connection) as cursor:
@@ -169,6 +189,34 @@ class GamesDatabaseManager(DatabaseManager):
             cursor.execute("SELECT ParticipantID, Team, FrozenElo FROM Participants WHERE MatchID=?", (match_id,))
             participants = cursor.fetchall()
         return participants
+
+    def change_user_elo(self, user_id, game, change):
+        original_elo = self.fetch_user_elo(user_id, game)
+        new_elo = _ensure_elo_change_valid(original_elo, change)
+        self._update_user_elo(user_id, game, new_elo)
+
+    def _update_user_elo(self, user_id, game, new_elo):
+        _validate_updated_elo(new_elo)
+        with DatabaseConnectionWrapper(self.connection) as cursor:
+            cursor.execute("UPDATE UserElos SET Elo=? WHERE Snowflake=? AND Game=?", (new_elo, user_id, game))
+
+    def fetch_user_elo(self, user_id, game):
+        self._assert_elo_exists(user_id, game)
+        with DatabaseConnectionWrapper(self.connection) as cursor:
+            cursor.execute("SELECT Elo FROM UserElos WHERE Snowflake=? AND Game=?", (user_id, game))
+            elo = cursor.fetchone()[0]
+        return elo
+
+    def _assert_elo_exists(self, user_id, game):
+        if not self._user_elo_exists(user_id, game):
+            raise DatabaseMissingRowException("UserElos", "Snowflake", user_id)
+
+    def set_user_elo(self, user_id, game, user_elo):
+        """NOTE: Very powerful, hard set with minimal validation. Use with care."""
+        if self._user_elo_exists(user_id, game):
+            self._update_user_elo(user_id, game, user_elo)
+        else:
+            self.insert_user_elo(user_id, game, user_elo)
 
 
 # Enable initializing the database without starting the bot by making this file executable and running the
