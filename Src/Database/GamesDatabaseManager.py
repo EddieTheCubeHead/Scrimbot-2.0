@@ -151,6 +151,25 @@ class GamesDatabaseManager(DatabaseManager):
             cursor.execute("INSERT INTO Participants (MatchID, Game, ParticipantID, Team, FrozenElo) "
                            "VALUES (?, ?, ?, ?, ?)", (match_id, game_name, *participant))
 
+    def fetch_match_data(self, match_id):
+        match_data = self._fetch_match(match_id)
+        if not match_data:
+            raise DatabaseMissingRowException("Matches", "MatchID", match_id)
+        participant_data = self._fetch_participants(match_id)
+        return match_data, participant_data
+
+    def _fetch_match(self, match_id):
+        with DatabaseConnectionWrapper(self.connection) as cursor:
+            cursor.execute("SELECT * FROM Matches WHERE MatchID=?", (match_id,))
+            match_data = cursor.fetchone()
+        return match_data
+
+    def _fetch_participants(self, match_id):
+        with DatabaseConnectionWrapper(self.connection) as cursor:
+            cursor.execute("SELECT ParticipantID, Team, FrozenElo FROM Participants WHERE MatchID=?", (match_id,))
+            participants = cursor.fetchall()
+        return participants
+
 
 # Enable initializing the database without starting the bot by making this file executable and running the
 # initialization logic on execution

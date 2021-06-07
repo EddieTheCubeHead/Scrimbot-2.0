@@ -10,6 +10,7 @@ from typing import Dict, Union, Callable
 import Test.test_utils as test_utils
 from Database.GamesDatabaseManager import GamesDatabaseManager
 from Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
+from Database.Exceptions.DatabaseMissingRowException import DatabaseMissingRowException
 from Database.Exceptions.DatabaseDuplicateUniqueRowException import DatabaseDuplicateUniqueRowException
 from Database.Exceptions.DatabasePrimaryKeyViolatedException import DatabasePrimaryKeyViolatedException
 from Database.Exceptions.DatabaseForeignKeyViolatedException import DatabaseForeignKeyViolatedException
@@ -95,9 +96,9 @@ class TestGamesDatabaseManager(unittest.TestCase):
 
     def test_insert_user_elo_given_invalid_game_then_error_raised(self):
         user_id = self.id_mocker.generate_viable_id()
-        self._assert_raises_correct_exception(DatabaseForeignKeyViolatedException("UserElos", "Game", "not valid",
-                                                                                  "Games", "Name"),
-                                              self.manager.insert_player_elo, user_id, "not valid", 1700)
+        self._assert_raises_correct_exception(
+            DatabaseForeignKeyViolatedException("UserElos", "Game", "not valid", "Games", "Name"),
+            self.manager.insert_player_elo, user_id, "not valid", 1700)
 
     def test_add_match_given_valid_data_returns_new_match_id(self):
         valid_match_data = self._generate_mock_match("Dota 2", 2, 5)
@@ -105,6 +106,20 @@ class TestGamesDatabaseManager(unittest.TestCase):
         match_id = self.manager.add_match(*valid_match_data)
         self.assertEqual(int, type(match_id))
         self.assertTrue(match_id > 0)
+
+    def test_fetch_match_given_valid_match_id_returns_correct_data(self):
+        valid_match_data = self._generate_mock_match("CS:GO", 2, 5)
+        valid_match_id = self._insert_match_data(valid_match_data)
+        actual_match_data = self.manager.fetch_match_data(valid_match_id)
+        expected_match = (valid_match_id, valid_match_data[0], valid_match_data[1])
+        expected_players = valid_match_data[2]
+        expected_match_data = (expected_match, expected_players)
+        self.assertTupleEqual(expected_match_data, actual_match_data)
+
+    def test_fetch_match_given_invalid_id_then_error_raised(self):
+        invalid_match_id = self.id_mocker.generate_nonviable_id()
+        expected_exception = DatabaseMissingRowException("Matches", "MatchID", str(invalid_match_id))
+        self._assert_raises_correct_exception(expected_exception, self.manager.fetch_match_data, invalid_match_id)
 
     def _generate_mock_game(self):
         return str(self.id_mocker.generate_viable_id()), "color", "icon", 5, 5, 2
@@ -161,6 +176,26 @@ class TestGamesDatabaseManager(unittest.TestCase):
     def _insert_player_elo(self, game, player):
         with DatabaseConnectionWrapper(self.manager.connection) as cursor:
             cursor.execute("INSERT INTO UserElos(Game, Snowflake, Elo) VALUES (?, ?, ?)", (game, player[0], player[2]))
+
+    def _insert_match_data(self, valid_match_data) -> int:
+        self._insert_player_elos(valid_match_data[0], valid_match_data[2])
+        match_id = self._insert_match(valid_match_data[0], valid_match_data[1])
+        self._insert_participants(match_id, valid_match_data[0], valid_match_data[2])
+        return match_id
+
+    def _insert_match(self, game, winner) -> int:
+        with DatabaseConnectionWrapper(self.manager.connection) as cursor:
+            cursor.execute("INSERT INTO Matches (Game, Winner) VALUES (?, ?)", (game, winner))
+            return cursor.lastrowid
+
+    def _insert_participants(self, match_id, game, participants):
+        for participant in participants:
+            self._insert_participant(match_id, game, participant)
+
+    def _insert_participant(self, match_id, game, participant):
+        with DatabaseConnectionWrapper(self.manager.connection) as cursor:
+            cursor.execute("INSERT INTO Participants(MatchID, Game, ParticipantID, Team, FrozenElo)"
+                           "VALUES (?, ?, ?, ?, ?)", (match_id, game, *participant))
 
 
 if __name__ == '__main__':
