@@ -4,13 +4,9 @@ __author__ = "Eetu Asikainen"
 import sqlite3
 import os
 import sys
-import json
-from typing import Optional, List, Tuple, Dict, Union
+from typing import Optional
 from abc import ABC, abstractmethod
 
-from discord.ext import commands
-
-from Bot.DataClasses.Game import Game
 from Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
@@ -27,7 +23,7 @@ class DatabaseManager(ABC):
 
     @classmethod
     @abstractmethod
-    def from_raw_file_path(cls, db_file_path: str):
+    def from_raw_file_path(cls, db_file_path: str):  # pragma: no cover
         pass
 
     def setup_manager(self):
@@ -50,13 +46,13 @@ class DatabaseManager(ABC):
         return init_database
 
     @abstractmethod
-    def init_database(self):
+    def init_database(self):  # pragma: no cover
         pass
 
     def _init_folders(self):
         try:
             os.mkdir(f"{self.db_folder_path}")
-        except OSError:
+        except OSError:  # pragma: no cover
             print(f"Error creating database folder at {self.db_folder_path}; shutting down.")
             sys.exit(1)
 

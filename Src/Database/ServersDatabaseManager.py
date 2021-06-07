@@ -2,22 +2,13 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 import sqlite3
-import os
-import sys
-import json
-from typing import Optional, List, Tuple, Dict, Union
-from abc import ABC, abstractmethod
+from typing import Optional, List, Tuple
 
-from discord.ext import commands
-
-from Bot.DataClasses.Game import Game
 from Src.Database.DatabaseManager import DatabaseManager
 from Src.Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Database.Exceptions.DatabaseMissingRowException import DatabaseMissingRowException
-from Database.Exceptions.DatabaseDuplicateUniqueRowException import DatabaseDuplicateUniqueRowException
 from Database.Exceptions.DatabasePrimaryKeyViolatedException import DatabasePrimaryKeyViolatedException
-from Database.Exceptions.DatabaseForeignKeyViolatedException import DatabaseForeignKeyViolatedException
 
 
 class ServersDatabaseManager(DatabaseManager):
@@ -43,12 +34,12 @@ class ServersDatabaseManager(DatabaseManager):
         :param channel_id: The unique discord id of the channel of which to fetch scrim data of
         :type channel_id: int
         :return: An sqlite row-object of the data
-        :rtype: Optional[sqlite3.Row]
+        :rtype: Tuple[int, List[Tuple[int, int]]]
         """
 
         scrim_text_channel = self._fetch_scrim_text_channel(channel_id)
         if not scrim_text_channel:
-            raise DatabaseMissingRowException("ScrimTextChannels", "ChannelID", channel_id)
+            raise DatabaseMissingRowException("ScrimTextChannels", "ChannelID", str(channel_id))
         scrim_voice_channels = self._fetch_scrim_voice_channels(channel_id)
 
         return scrim_text_channel[0], scrim_voice_channels
@@ -85,7 +76,7 @@ class ServersDatabaseManager(DatabaseManager):
         """
 
         if not self._fetch_scrim_text_channel(channel_id):
-            raise BotBaseInternalException(message="This channel is not registered for scrim usage.")
+            raise DatabaseMissingRowException("ScrimTextChannels", "ChannelID", str(channel_id))
 
         with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("DELETE FROM ScrimTextChannels WHERE ChannelID = ?", (channel_id,))
@@ -104,13 +95,13 @@ class ServersDatabaseManager(DatabaseManager):
         """
 
         if not self._fetch_scrim_text_channel(channel_id):
-            raise BotBaseInternalException(message="This channel is not registered for scrim usage.")
+            raise DatabaseMissingRowException("ScrimTextChannels", "ChannelID", str(channel_id))
 
         self._delete_voice_channel_data(channel_id)
         for voice_channel_id, voice_channel_team in voice_channel_data:
             self._insert_scrim_voice_channel(voice_channel_id, voice_channel_team, channel_id)
 
-    def check_voice_availability(self, channel_id: int) -> Optional[sqlite3.Row]:
+    def check_voice_availability(self, channel_id: int) -> Optional[Tuple[int, int, int]]:
         """A method to ensure the given channel id is not reserved for voice usage for other scrims
 
         :param channel_id: The channel id of the channel to check availability of
@@ -125,6 +116,12 @@ class ServersDatabaseManager(DatabaseManager):
 
         return registered_row
 
+    def _fetch_scrim_text_channel(self, channel_id) -> Optional:
+        with DatabaseConnectionWrapper(self) as cursor:
+            cursor.execute("SELECT * FROM ScrimTextChannels WHERE ChannelID = ?", (channel_id,))
+            scrim_text_channel = cursor.fetchone()
+        return scrim_text_channel
+
     def _insert_scrim_text_channel(self, channel_id):
         with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("INSERT INTO ScrimTextChannels (ChannelID) \
@@ -134,12 +131,6 @@ class ServersDatabaseManager(DatabaseManager):
         with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("INSERT INTO ScrimVoiceChannels (ChannelID, ChannelTeam, ParentTextChannel)"
                            "VALUES (?, ?, ?)", (voice_channel_id, voice_channel_team, parent_channel_id))
-
-    def _fetch_scrim_text_channel(self, channel_id) -> Optional:
-        with DatabaseConnectionWrapper(self) as cursor:
-            cursor.execute("SELECT * FROM ScrimTextChannels WHERE ChannelID = ?", (channel_id,))
-            scrim_text_channel = cursor.fetchone()
-        return scrim_text_channel
 
     def _fetch_scrim_voice_channels(self, parent_channel_id: int):
         with DatabaseConnectionWrapper(self) as cursor:
@@ -184,3 +175,10 @@ def _assert_sequential_teams(channel_teams, first_team):
     for valid_team, actual_team in enumerate(channel_teams, first_team):
         if valid_team != actual_team:
             raise BotBaseInternalException(f"Invalid teams: {channel_teams}. All teams should be sequential.")
+
+
+# Enable initializing the database without starting the bot by making this file executable and running the
+# initialization logic on execution
+if __name__ == "__main__":  # pragma: no cover
+    init_manager = ServersDatabaseManager()
+    init_manager.setup_manager()

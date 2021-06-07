@@ -133,6 +133,11 @@ class TestServersDatabaseManager(unittest.TestCase):
         self.manager.remove_scrim_channel(deleted_text)
         self._assert_channels_removed([pair[0] for pair in deleted_voices])
 
+    def test_remove_scrim_channel_given_invalid_channel_then_exception_raised(self):
+        invalid_text_id = self.id_mocker.generate_nonviable_id()
+        expected_exception = DatabaseMissingRowException("ScrimTextChannels", "ChannelID", str(invalid_text_id))
+        self._assert_raises_correct_exception(expected_exception, self.manager.remove_scrim_channel, invalid_text_id)
+
     def test_update_scrim_voice_channels_when_channel_data_updated_then_correct_voice_values_found(self):
         original_text, original_voices = self._generate_scrim_data(6)
         self._register_test_channel(original_text, * original_voices)
@@ -140,6 +145,12 @@ class TestServersDatabaseManager(unittest.TestCase):
         self.manager.update_scrim_voice_channels(original_text, updated_voices)
         actual_text, actual_voices = self._fetch_from_registered(original_text)
         self._assert_equal_scrim_channels(original_text, updated_voices, actual_text, actual_voices)
+
+    def test_update_scrim_voice_channels_given_invalid_text_id_then_error_raised(self):
+        invalid_text_id = self.id_mocker.generate_nonviable_id()
+        expected_exception = DatabaseMissingRowException("ScrimTextChannels", "ChannelID", str(invalid_text_id))
+        self._assert_raises_correct_exception(expected_exception, self.manager.update_scrim_voice_channels,
+                                              invalid_text_id, [])
 
     def test_check_voice_availability_given_voice_channel_in_db_then_data_returned(self):
         text_id, voice_data = self._generate_scrim_data(1)

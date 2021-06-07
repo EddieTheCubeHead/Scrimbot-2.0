@@ -1,16 +1,9 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import sqlite3
-import os
-import sys
 import json
 from typing import Optional, List, Tuple, Dict, Union, Any
-from abc import ABC, abstractmethod
 
-from discord.ext import commands
-
-from Bot.DataClasses.Game import Game
 from Database.DatabaseManager import DatabaseManager
 from Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
@@ -18,37 +11,6 @@ from Database.Exceptions.DatabaseMissingRowException import DatabaseMissingRowEx
 from Database.Exceptions.DatabaseDuplicateUniqueRowException import DatabaseDuplicateUniqueRowException
 from Database.Exceptions.DatabasePrimaryKeyViolatedException import DatabasePrimaryKeyViolatedException
 from Database.Exceptions.DatabaseForeignKeyViolatedException import DatabaseForeignKeyViolatedException
-
-
-def _get_data_or_default(dict_entry: Dict[str, Any], key: str, default: Any):
-    return dict_entry[key] if key in dict_entry else default
-
-
-def _get_game_data_from_dict_item(game_item):
-    game_name, game_data = game_item
-    colour = _get_data_or_default(game_data, "colour", "0xffffff")
-    icon = _get_data_or_default(game_data, "icon", "https://cdn.pixabay.com/photo/2012/04/24/12/43/t-39853_960_720.png")
-    min_team_size = _get_data_or_default(game_data, "min_team_size", 5)
-    max_team_size = _get_data_or_default(game_data, "max_team_size", min_team_size)
-    team_count = _get_data_or_default(game_data, "team_count", 2)
-    aliases = _get_data_or_default(game_data, "alias", [])
-    return (game_name, colour, icon, min_team_size, max_team_size, team_count), aliases
-
-
-def _validate_inserted_elo(elo):
-    if elo < 0:
-        raise BotBaseInternalException("Initial elo values cannot be lower than 0.")
-    if elo > 5000:
-        raise BotBaseInternalException("Initial elo values cannot be higher than 5000.")
-
-
-def _ensure_elo_change_valid(original_elo, change):
-    return 0 if original_elo + change < 0 else original_elo + change
-
-
-def _validate_updated_elo(new_elo):
-    if new_elo < 0:
-        raise BotBaseInternalException("User elo value cannot be lower than 0.")
 
 
 class GamesDatabaseManager(DatabaseManager):
@@ -218,8 +180,39 @@ class GamesDatabaseManager(DatabaseManager):
             self.insert_user_elo(user_id, game, user_elo)
 
 
+def _get_data_or_default(dict_entry: Dict[str, Any], key: str, default: Any):
+    return dict_entry[key] if key in dict_entry else default
+
+
+def _get_game_data_from_dict_item(game_item):
+    game_name, game_data = game_item
+    colour = _get_data_or_default(game_data, "colour", "0xffffff")
+    icon = _get_data_or_default(game_data, "icon", "https://cdn.pixabay.com/photo/2012/04/24/12/43/t-39853_960_720.png")
+    min_team_size = _get_data_or_default(game_data, "min_team_size", 5)
+    max_team_size = _get_data_or_default(game_data, "max_team_size", min_team_size)
+    team_count = _get_data_or_default(game_data, "team_count", 2)
+    aliases = _get_data_or_default(game_data, "alias", [])
+    return (game_name, colour, icon, min_team_size, max_team_size, team_count), aliases
+
+
+def _validate_inserted_elo(elo):
+    if elo < 0:
+        raise BotBaseInternalException("Initial elo values cannot be lower than 0.")
+    if elo > 5000:
+        raise BotBaseInternalException("Initial elo values cannot be higher than 5000.")
+
+
+def _ensure_elo_change_valid(original_elo, change):
+    return 0 if original_elo + change < 0 else original_elo + change
+
+
+def _validate_updated_elo(new_elo):
+    if new_elo < 0:
+        raise BotBaseInternalException("User elo value cannot be lower than 0.")
+
+
 # Enable initializing the database without starting the bot by making this file executable and running the
 # initialization logic on execution
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     init_manager = GamesDatabaseManager()
     init_manager.setup_manager()
