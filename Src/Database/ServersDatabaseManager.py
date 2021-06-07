@@ -87,7 +87,7 @@ class ServersDatabaseManager(DatabaseManager):
         if not self._fetch_scrim_text_channel(channel_id):
             raise BotBaseInternalException(message="This channel is not registered for scrim usage.")
 
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("DELETE FROM ScrimTextChannels WHERE ChannelID = ?", (channel_id,))
 
     def update_scrim_voice_channels(self, channel_id: int, voice_channel_data: List[Tuple[int, int]]):
@@ -119,37 +119,37 @@ class ServersDatabaseManager(DatabaseManager):
         :rtype: Optional[sqlite3.Row]
         """
 
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("SELECT * FROM ScrimVoiceChannels WHERE ChannelID=?", (channel_id,))
             registered_row = cursor.fetchone()
 
         return registered_row
 
     def _insert_scrim_text_channel(self, channel_id):
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("INSERT INTO ScrimTextChannels (ChannelID) \
                             VALUES (?)", (channel_id,))
 
     def _insert_scrim_voice_channel(self, voice_channel_id: int, voice_channel_team: int, parent_channel_id: int):
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("INSERT INTO ScrimVoiceChannels (ChannelID, ChannelTeam, ParentTextChannel)"
                            "VALUES (?, ?, ?)", (voice_channel_id, voice_channel_team, parent_channel_id))
 
     def _fetch_scrim_text_channel(self, channel_id) -> Optional:
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("SELECT * FROM ScrimTextChannels WHERE ChannelID = ?", (channel_id,))
             scrim_text_channel = cursor.fetchone()
         return scrim_text_channel
 
     def _fetch_scrim_voice_channels(self, parent_channel_id: int):
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("SELECT * FROM ScrimVoiceChannels WHERE ParentTextChannel=?"
                            "ORDER BY ChannelTeam", (parent_channel_id,))
             raw_rows = cursor.fetchall()
         return [(row[0], row[1]) for row in raw_rows]
 
     def _delete_voice_channel_data(self, channel_id):
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("DELETE FROM ScrimVoiceChannels WHERE ParentTextChannel=?", (channel_id,))
 
     def _assert_valid_voice_channels(self, voice_channel_data):

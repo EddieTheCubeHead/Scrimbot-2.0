@@ -11,8 +11,8 @@ from abc import ABC, abstractmethod
 from discord.ext import commands
 
 from Bot.DataClasses.Game import Game
-from Src.Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
-from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+from Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
+from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
 
 class DatabaseManager(ABC):
@@ -61,7 +61,7 @@ class DatabaseManager(ABC):
             sys.exit(1)
 
     def _create_tables(self, *table_names: str):
-        with DatabaseConnectionWrapper(self.connection) as db_cursor:
+        with DatabaseConnectionWrapper(self) as db_cursor:
             for table in table_names:
                 self._run_script(f"Create{table}Table.sql", db_cursor)
 
@@ -69,11 +69,11 @@ class DatabaseManager(ABC):
         with open(f"{self.path}/SQLScripts/{script}") as script:
             cursor.execute(script.read())
 
-    def _ensure_valid_connection(self):
+    def ensure_valid_connection(self):
         if self.connection is None:
             raise BotBaseInternalException(f"Tried to use database in {self.db_file_path} before the connection was "
                                            f"set up.")
 
     def _enable_foreign_keys(self):
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("PRAGMA foreign_keys = ON")

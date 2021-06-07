@@ -2,18 +2,14 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 import sqlite3
-import sys
-import traceback
-from typing import Optional
-
-from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
 
 class DatabaseConnectionWrapper:
 
-    def __init__(self, db_connection: sqlite3.Connection):
-        self._connection: sqlite3.Connection = db_connection
-        self._cursor: sqlite3.Cursor = db_connection.cursor()
+    def __init__(self, db_manager):
+        db_manager.ensure_valid_connection()
+        self._connection: sqlite3.Connection = db_manager.connection
+        self._cursor: sqlite3.Cursor = self._connection.cursor()
 
     def __enter__(self) -> sqlite3.Cursor:
         return self._cursor

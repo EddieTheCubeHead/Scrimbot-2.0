@@ -151,7 +151,7 @@ class TestServersDatabaseManager(unittest.TestCase):
         self.assertIsNone(self.manager.check_voice_availability(free_voice_id))
 
     def _assert_table_exists(self, table: str):
-        with DatabaseConnectionWrapper(self.manager.connection) as cursor:
+        with DatabaseConnectionWrapper(self.manager) as cursor:
             cursor.execute("SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?;", (table,))
             self.assertEqual(cursor.fetchone()[0], 1, f"Expected to find table '{table}'")
 
@@ -167,11 +167,11 @@ class TestServersDatabaseManager(unittest.TestCase):
             self._insert_scrim_voice_channel(team_voice_id, team_number, text_channel_id)
 
     def _insert_scrim_text_channel(self, text_channel_id):
-        with DatabaseConnectionWrapper(self.manager.connection) as cursor:
+        with DatabaseConnectionWrapper(self.manager) as cursor:
             cursor.execute("INSERT INTO ScrimTextChannels (ChannelID) VALUES (?)", (text_channel_id,))
 
     def _insert_scrim_voice_channel(self, lobby_voice_id, channel_team, text_channel_id):
-        with DatabaseConnectionWrapper(self.manager.connection) as cursor:
+        with DatabaseConnectionWrapper(self.manager) as cursor:
             cursor.execute("INSERT INTO ScrimVoiceChannels (ChannelID, ChannelTeam, ParentTextChannel)"
                            "VALUES (?, ?, ?)", (lobby_voice_id, channel_team, text_channel_id))
 
@@ -182,13 +182,13 @@ class TestServersDatabaseManager(unittest.TestCase):
         return text_channel_id[0], voice_channel_data
 
     def _fetch_scrim_text_channel(self, channel_id) -> sqlite3.Row:
-        with DatabaseConnectionWrapper(self.manager.connection) as cursor:
+        with DatabaseConnectionWrapper(self.manager) as cursor:
             cursor.execute("SELECT * FROM ScrimTextChannels WHERE ChannelID=?", (channel_id,))
             result = cursor.fetchone()
         return result
 
     def _fetch_scrim_voice_channels(self, parent_text_id) -> List[Tuple[int, int]]:
-        with DatabaseConnectionWrapper(self.manager.connection) as cursor:
+        with DatabaseConnectionWrapper(self.manager) as cursor:
             cursor.execute("SELECT * FROM ScrimVoiceChannels WHERE ParentTextChannel=? ORDER BY ChannelTeam",
                            (parent_text_id,))
             raw_rows = cursor.fetchall()
@@ -209,7 +209,7 @@ class TestServersDatabaseManager(unittest.TestCase):
 
     def _assert_channels_removed(self, channels: List[int]):
         for channel in channels:
-            with DatabaseConnectionWrapper(self.manager.connection) as cursor:
+            with DatabaseConnectionWrapper(self.manager) as cursor:
                 cursor.execute("SELECT * FROM ScrimVoiceChannels WHERE ChannelID=?", (channel,))
                 self.assertIsNone(cursor.fetchone())
 

@@ -63,7 +63,6 @@ class GamesDatabaseManager(DatabaseManager):
         return new_manager
 
     def init_database(self):
-        super()._ensure_valid_connection()
         self._create_tables("Games", "Aliases", "Matches", "Participants", "UserElos")
 
         with open(f"{self.path}/games_init.json") as games_file:
@@ -80,7 +79,7 @@ class GamesDatabaseManager(DatabaseManager):
         :rtype: tuple[str, str, str, str, int, Optional[list[str]]]
         """
 
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
 
             cursor.execute("SELECT * FROM Games")
             game_rows = cursor.fetchall()
@@ -111,17 +110,17 @@ class GamesDatabaseManager(DatabaseManager):
             raise DatabasePrimaryKeyViolatedException("UserElos", ["Snowflake", "Game"], [str(player_id), game])
 
     def _user_elo_exists(self, player_id, game):
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("SELECT Count(*) FROM UserElos WHERE Snowflake=? AND Game=?", (player_id, game))
             existing_count = cursor.fetchone()[0]
         return existing_count > 0
 
     def _insert_player_elo(self, elo, game, player_id):
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("INSERT INTO UserElos (Snowflake, Elo, Game) VALUES (?, ?, ?)", (player_id, elo, game))
 
     def _fetch_aliases(self, game):
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("SELECT Alias FROM Aliases WHERE GameName = ?", (game[0],))
             aliases = [alias[0] for alias in cursor.fetchall()]
         return aliases
@@ -132,7 +131,7 @@ class GamesDatabaseManager(DatabaseManager):
         self._insert_game_with_aliases(game_data, aliases)
 
     def _game_exists(self, game_name):
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("SELECT Count(*) FROM Games WHERE Name=?", (game_name,))
             return cursor.fetchone()[0] != 0
 
@@ -141,12 +140,12 @@ class GamesDatabaseManager(DatabaseManager):
         self._insert_aliases(game_data[0], aliases)
 
     def _insert_game(self, game_data):
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("INSERT INTO Games (Name, Colour, Icon, MinTeamSize, MaxTeamSize, TeamCount)"
                            "VALUES (?, ?, ?, ?, ?, ?)", game_data)
 
     def _insert_aliases(self, game_name, aliases):
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             for alias in aliases:
                 cursor.execute("INSERT INTO Aliases (GameName, Alias) VALUES (?, ?)",
                                (game_name, alias))
@@ -157,7 +156,7 @@ class GamesDatabaseManager(DatabaseManager):
         return match_id
 
     def _insert_match(self, game_name: str, winner: int):
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("INSERT INTO Matches (Game, Winner) VALUES (?, ?)",
                            (game_name, winner))
             return cursor.lastrowid
@@ -167,7 +166,7 @@ class GamesDatabaseManager(DatabaseManager):
             self._insert_participant(game_name, match_id, player)
 
     def _insert_participant(self, game_name: str, match_id: int, participant: Tuple[int, int, int]):
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("INSERT INTO Participants (MatchID, Game, ParticipantID, Team, FrozenElo) "
                            "VALUES (?, ?, ?, ?, ?)", (match_id, game_name, *participant))
 
@@ -179,13 +178,13 @@ class GamesDatabaseManager(DatabaseManager):
         return match_data, participant_data
 
     def _fetch_match(self, match_id):
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("SELECT * FROM Matches WHERE MatchID=?", (match_id,))
             match_data = cursor.fetchone()
         return match_data
 
     def _fetch_participants(self, match_id):
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("SELECT ParticipantID, Team, FrozenElo FROM Participants WHERE MatchID=?", (match_id,))
             participants = cursor.fetchall()
         return participants
@@ -197,12 +196,12 @@ class GamesDatabaseManager(DatabaseManager):
 
     def _update_user_elo(self, user_id, game, new_elo):
         _validate_updated_elo(new_elo)
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("UPDATE UserElos SET Elo=? WHERE Snowflake=? AND Game=?", (new_elo, user_id, game))
 
     def fetch_user_elo(self, user_id, game):
         self._assert_elo_exists(user_id, game)
-        with DatabaseConnectionWrapper(self.connection) as cursor:
+        with DatabaseConnectionWrapper(self) as cursor:
             cursor.execute("SELECT Elo FROM UserElos WHERE Snowflake=? AND Game=?", (user_id, game))
             elo = cursor.fetchone()[0]
         return elo

@@ -51,6 +51,14 @@ class TestGamesDatabaseManager(unittest.TestCase):
             for game in games:
                 self._assert_game_exists(game)
 
+    def test_setup_given_manager_used_before_setup_then_error_raised(self):
+        new_manager = GamesDatabaseManager("Foo", "Bar")
+        expected_error_message = f"Tried to use database in {new_manager.db_file_path} " \
+                                 f"before the connection was set up."
+        with self.assertRaises(BotBaseInternalException) as context:
+            new_manager.insert_user_elo(self.id_mocker.generate_viable_id(), "Dota 2")
+        self.assertEqual(expected_error_message, context.exception.get_message())
+
     def test_register_new_game_given_valid_game_with_no_aliases_then_operation_successful(self):
         mock_game = self._generate_mock_game()
         self.manager.register_new_game(mock_game)
@@ -238,23 +246,23 @@ class TestGamesDatabaseManager(unittest.TestCase):
         return game, winner, players
 
     def _assert_table_exists(self, table: str):
-        with DatabaseConnectionWrapper(self.manager.connection) as test_cursor:
+        with DatabaseConnectionWrapper(self.manager) as test_cursor:
             test_cursor.execute("SELECT Count(*) FROM sqlite_master WHERE type='table' AND name=?", (table,))
             self.assertEqual(test_cursor.fetchone()[0], 1, f"Expected to find table '{table}'")
 
     def _assert_game_exists(self, game_name: str):
-        with DatabaseConnectionWrapper(self.manager.connection) as test_cursor:
+        with DatabaseConnectionWrapper(self.manager) as test_cursor:
             test_cursor.execute("SELECT Count(Name) FROM Games WHERE Name=?", (game_name,))
 
             self.assertEqual(1, test_cursor.fetchone()[0])
 
     def _insert_game(self, game_data):
-        with DatabaseConnectionWrapper(self.manager.connection) as cursor:
+        with DatabaseConnectionWrapper(self.manager) as cursor:
             cursor.execute("INSERT INTO Games (Name, Colour, Icon, MinTeamSize, MaxTeamSize, TeamCount)"
                            "VALUES (?, ?, ?, ?, ?, ?)", game_data)
 
     def _fetch_aliases(self, game_name):
-        with DatabaseConnectionWrapper(self.manager.connection) as cursor:
+        with DatabaseConnectionWrapper(self.manager) as cursor:
             cursor.execute("SELECT Alias FROM Aliases WHERE GameName=?", (game_name,))
             return [row[0] for row in cursor.fetchall()]
 
@@ -264,7 +272,7 @@ class TestGamesDatabaseManager(unittest.TestCase):
         self.assertIsNone(result_message, result_message)
 
     def _assert_elo_entry_equals(self, player_id: int, game: str, expected_elo: int):
-        with DatabaseConnectionWrapper(self.manager.connection) as cursor:
+        with DatabaseConnectionWrapper(self.manager) as cursor:
             cursor.execute("SELECT Elo FROM UserElos WHERE Snowflake=? AND Game=?", (player_id, game))
             self.assertEqual(expected_elo, cursor.fetchone()[0])
 
@@ -279,7 +287,7 @@ class TestGamesDatabaseManager(unittest.TestCase):
             self._insert_player_elo(player[0], game, player[2])
 
     def _insert_player_elo(self, player_id, game, player_elo=1700):
-        with DatabaseConnectionWrapper(self.manager.connection) as cursor:
+        with DatabaseConnectionWrapper(self.manager) as cursor:
             cursor.execute("INSERT INTO UserElos(Snowflake, Game, Elo) VALUES (?, ?, ?)", (player_id, game, player_elo))
 
     def _insert_match_data(self, valid_match_data) -> int:
@@ -289,7 +297,7 @@ class TestGamesDatabaseManager(unittest.TestCase):
         return match_id
 
     def _insert_match(self, game, winner) -> int:
-        with DatabaseConnectionWrapper(self.manager.connection) as cursor:
+        with DatabaseConnectionWrapper(self.manager) as cursor:
             cursor.execute("INSERT INTO Matches (Game, Winner) VALUES (?, ?)", (game, winner))
             return cursor.lastrowid
 
@@ -298,12 +306,12 @@ class TestGamesDatabaseManager(unittest.TestCase):
             self._insert_participant(match_id, game, participant)
 
     def _insert_participant(self, match_id, game, participant):
-        with DatabaseConnectionWrapper(self.manager.connection) as cursor:
+        with DatabaseConnectionWrapper(self.manager) as cursor:
             cursor.execute("INSERT INTO Participants(MatchID, Game, ParticipantID, Team, FrozenElo)"
                            "VALUES (?, ?, ?, ?, ?)", (match_id, game, *participant))
 
     def _assert_user_elo_equals(self, user_id, game, actual_elo):
-        with DatabaseConnectionWrapper(self.manager.connection) as cursor:
+        with DatabaseConnectionWrapper(self.manager) as cursor:
             cursor.execute("SELECT Elo FROM UserElos WHERE Snowflake=? AND Game=?", (user_id, game))
             expected_elo = cursor.fetchone()[0]
         self.assertEqual(expected_elo, actual_elo)
