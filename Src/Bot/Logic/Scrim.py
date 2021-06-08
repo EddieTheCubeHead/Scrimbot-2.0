@@ -12,9 +12,9 @@ from discord.ext import commands
 
 from Src.Bot.DataClasses.ScrimState import ScrimState
 from Bot.DataClasses.Game import Game
-from Src.Bot.DataClasses.ScrimEmbed import ScrimEmbed
+from Bot.Logic.ScrimEmbed import ScrimEmbed
 from Src.Bot.DataClasses.EmbedField import EmbedField
-from Src.Bot.DataClasses.TeamManager import TeamManager
+from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Src.Bot.Exceptions.BotMissingScrimException import BotMissingScrimException
 from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
@@ -135,7 +135,7 @@ class Scrim:
         self._embed: Optional[ScrimEmbed] = None
         self._message: Optional[discord.Message] = None
 
-        self.team_manager: Optional[TeamManager] = None
+        self.team_manager: Optional[ScrimTeamsManager] = None
 
         div_string = "------------------------------------------------------------"
         self._divider: EmbedField = EmbedField(div_string, div_string, False)
@@ -284,7 +284,7 @@ class Scrim:
         self._game: Game = game
         self._deletion_time: int = deletion_time
 
-        self.team_manager = TeamManager(self._game, self._team_1_voice, self._team_2_voice)
+        self.team_manager = ScrimTeamsManager(self._game, self._team_1_voice, self._team_2_voice)
 
         self.master = ctx.author
 

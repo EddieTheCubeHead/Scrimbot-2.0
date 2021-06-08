@@ -9,7 +9,7 @@ from Bot.DataClasses.Game import Game
 from Src.Bot.DataClasses.ScrimTeam import ScrimTeam
 
 
-class TeamManager:
+class ScrimTeamsManager:
     """A class to be used inside a Scrim instance, meant for managing the separate teams in the scrim
     """
 

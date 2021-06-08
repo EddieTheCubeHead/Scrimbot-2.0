@@ -10,8 +10,8 @@ from discord.ext import commands
 
 from Bot.DataClasses.Game import Game
 from Src.Database.DatabaseManager import DatabaseManager
-from Src.Bot.DataClasses.Scrim import Scrim
-from Src.Bot.DataClasses.BotHelpCommand import BotHelpCommand
+from Bot.Logic.Scrim import Scrim
+from Bot.Logic.BotHelpCommand import BotHelpCommand
 from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Src.Bot.ScrimContext import ScrimContext

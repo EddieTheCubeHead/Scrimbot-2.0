@@ -40,11 +40,11 @@ class ScrimTeam(collections.UserList, EmbedField):
         self.inline = True
 
     @classmethod
-    def from_scrim_data(cls, max_size: int, name: str, voice_channel: discord.VoiceChannel = None):
+    def from_scrim_data(cls, min_size: int, name: str, voice_channel: discord.VoiceChannel = None):
         """Because ScrimTeam subclasses UserList to function as a list of players this classmethod can be used as init
 
-        :param max_size: How many players the team fits at maximum. 0 means infinite
-        :type max_size: int
+        :param min_size: How many players the team fits at maximum. 0 means infinite
+        :type min_size: int
         :param name: The name of the team
         :type name: str
         :param voice_channel: The voice channel the team should be moved to when the scrim starts
@@ -54,7 +54,7 @@ class ScrimTeam(collections.UserList, EmbedField):
         """
 
         new_team = cls([])
-        new_team.max_size = max_size
+        new_team.max_size = min_size
         new_team.name = name
         new_team._voice_channel = voice_channel
 
