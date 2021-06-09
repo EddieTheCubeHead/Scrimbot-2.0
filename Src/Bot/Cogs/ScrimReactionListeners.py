@@ -6,7 +6,7 @@ from discord.ext import commands
 
 from Src.Bot.DataClasses.ScrimState import ScrimState
 from Src.Bot.ScrimClient import ScrimClient
-from Bot.Logic.Scrim import Scrim
+from Bot.DataClasses.Scrim import Scrim
 
 
 class ScrimReactionListeners(commands.Cog):

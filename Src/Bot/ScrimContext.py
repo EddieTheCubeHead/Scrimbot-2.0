@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
 
-from Bot.Logic.Scrim import Scrim
+from Bot.DataClasses.Scrim import Scrim
 
 
 class ScrimContext(commands.Context):

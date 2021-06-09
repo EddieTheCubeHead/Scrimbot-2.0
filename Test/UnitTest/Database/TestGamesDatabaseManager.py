@@ -66,7 +66,7 @@ class TestGamesDatabaseManager(unittest.TestCase):
 
     def test_register_new_game_given_valid_game_with_aliases_then_operation_successful(self):
         mock_game = self._generate_mock_game()
-        expected_aliases = ["test", "testing", "t"]
+        expected_aliases = ["test_alias", "testing_alias", "t_alias"]
         self.manager.register_new_game(mock_game, expected_aliases)
         self._assert_game_exists(mock_game[0])
         actual_aliases = self._fetch_aliases(mock_game[0])
@@ -79,6 +79,15 @@ class TestGamesDatabaseManager(unittest.TestCase):
         self._insert_game(mock_game)
         self._assert_raises_correct_exception(DatabaseDuplicateUniqueRowException("Games", "Name", mock_game[0]),
                                               self.manager.register_new_game, mock_game)
+
+    def test_register_new_game_given_duplicate_alias_then_error_raised(self):
+        alias = "TestAlias"
+        game_1 = self._generate_mock_game()
+        game_2 = self._generate_mock_game()
+        self._insert_game(game_1)
+        self._insert_aliases(game_1[0], [alias])
+        expected_exception = DatabaseDuplicateUniqueRowException("Aliases", "Alias", alias)
+        self._assert_raises_correct_exception(expected_exception, self.manager.register_new_game, game_2, [alias])
 
     def test_games_init_generator_given_database_exists_then_game_data_returned(self):
         games_data_generator = self.manager.games_init_generator()
@@ -260,6 +269,11 @@ class TestGamesDatabaseManager(unittest.TestCase):
         with DatabaseConnectionWrapper(self.manager) as cursor:
             cursor.execute("INSERT INTO Games (Name, Colour, Icon, MinTeamSize, MaxTeamSize, TeamCount)"
                            "VALUES (?, ?, ?, ?, ?, ?)", game_data)
+
+    def _insert_aliases(self, game, aliases):
+        for alias in aliases:
+            with DatabaseConnectionWrapper(self.manager) as cursor:
+                cursor.execute("INSERT INTO Aliases (GameName, Alias) VALUES (?, ?)", (game, alias))
 
     def _fetch_aliases(self, game_name):
         with DatabaseConnectionWrapper(self.manager) as cursor:

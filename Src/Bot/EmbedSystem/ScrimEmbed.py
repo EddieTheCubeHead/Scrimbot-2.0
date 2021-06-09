@@ -8,7 +8,7 @@ import discord
 from Bot.DataClasses.Game import Game
 from Src.Bot.DataClasses.ScrimState import ScrimState
 from Src.Bot.DataClasses.ScrimTeam import ScrimTeam
-from Src.Bot.DataClasses.EmbedField import EmbedField
+from Bot.EmbedSystem.EmbedField import EmbedField
 
 
 class ScrimEmbed(discord.Embed):

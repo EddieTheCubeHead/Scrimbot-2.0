@@ -12,8 +12,8 @@ from discord.ext import commands
 
 from Src.Bot.DataClasses.ScrimState import ScrimState
 from Bot.DataClasses.Game import Game
-from Bot.Logic.ScrimEmbed import ScrimEmbed
-from Src.Bot.DataClasses.EmbedField import EmbedField
+from Bot.EmbedSystem.ScrimEmbed import ScrimEmbed
+from Bot.EmbedSystem.EmbedField import EmbedField
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Src.Bot.Exceptions.BotMissingScrimException import BotMissingScrimException
 from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException

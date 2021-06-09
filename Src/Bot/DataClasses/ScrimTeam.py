@@ -9,7 +9,7 @@ import discord
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Bot.DataClasses.Game import Game
-from Src.Bot.DataClasses.EmbedField import EmbedField
+from Bot.EmbedSystem.EmbedField import EmbedField
 
 
 class ScrimTeam(collections.UserList, EmbedField):

@@ -87,10 +87,16 @@ class GamesDatabaseManager(DatabaseManager):
             aliases = [alias[0] for alias in cursor.fetchall()]
         return aliases
 
-    def register_new_game(self, game_data: Tuple[str, str, str, int, int, int], aliases: List[str] = []):
+    def register_new_game(self, game_data: Tuple[str, str, str, int, int, int], aliases: List[str] = None):
         if self._game_exists(game_data[0]):
             raise DatabaseDuplicateUniqueRowException("Games", "Name", game_data[0])
+        if aliases:
+            self._validate_aliases(aliases)
         self._insert_game_with_aliases(game_data, aliases)
+
+    def _validate_aliases(self, aliases):
+        for alias in aliases:
+            self._validate_alias(alias)
 
     def _game_exists(self, game_name):
         with DatabaseConnectionWrapper(self) as cursor:
@@ -99,7 +105,8 @@ class GamesDatabaseManager(DatabaseManager):
 
     def _insert_game_with_aliases(self, game_data, aliases):
         self._insert_game(game_data)
-        self._insert_aliases(game_data[0], aliases)
+        if aliases:
+            self._insert_aliases(game_data[0], aliases)
 
     def _insert_game(self, game_data):
         with DatabaseConnectionWrapper(self) as cursor:
@@ -178,6 +185,12 @@ class GamesDatabaseManager(DatabaseManager):
             self._update_user_elo(user_id, game, user_elo)
         else:
             self.insert_user_elo(user_id, game, user_elo)
+
+    def _validate_alias(self, alias):
+        with DatabaseConnectionWrapper(self) as cursor:
+            cursor.execute("SELECT Count(*) FROM Aliases WHERE Alias=?", (alias,))
+            if cursor.fetchone()[0] > 0:
+                raise DatabaseDuplicateUniqueRowException("Aliases", "Alias", alias)
 
 
 def _get_data_or_default(dict_entry: Dict[str, Any], key: str, default: Any):

@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 import unittest
 
-from Bot.DataClasses.EmbedField import EmbedField
+from Bot.EmbedSystem.EmbedField import EmbedField
 
 
 class TestEmbedField(unittest.TestCase):
