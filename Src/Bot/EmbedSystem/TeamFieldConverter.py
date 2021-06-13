@@ -7,10 +7,6 @@ from Bot.EmbedSystem.EmbedField import EmbedField
 from Bot.DataClasses.ScrimTeam import ScrimTeam
 
 
-
-
-
-
 class TeamFieldConverter:
 
     CAPTAIN_MARK = " **(C)**"
@@ -28,7 +24,7 @@ class TeamFieldConverter:
         return players_string or "__empty__"
 
     def _construct_players_string(self):
-        cleaned_player_names = [discord.utils.escape_markdown(player.display_name) for player in self.team.data]
+        cleaned_player_names = [discord.utils.escape_markdown(player.display_name) for player in self.team.players]
         if self.team.is_pickup:
             cleaned_player_names[0] += self.CAPTAIN_MARK
         players_string = "\n".join(cleaned_player_names)
@@ -44,9 +40,9 @@ class TeamFieldConverter:
             return self._construct_fullness_qualifier()
 
     def _construct_fullness_qualifier(self):
-        if self.team.min_size > len(self.team.data):
-            return f" ({self.team.min_size - len(self.team.data)} needed)"
-        elif self.team.max_size > len(self.team.data):
-            return f" (fits {self.team.max_size - len(self.team.data)} more)"
+        if self.team.min_size > len(self.team.players):
+            return f" ({self.team.min_size - len(self.team.players)} needed)"
+        elif self.team.max_size > len(self.team.players):
+            return f" (fits {self.team.max_size - len(self.team.players)} more)"
         else:
             return " (full)"

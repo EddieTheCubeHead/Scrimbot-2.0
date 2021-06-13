@@ -12,7 +12,7 @@ from Bot.DataClasses.Game import Game
 from Bot.EmbedSystem.EmbedField import EmbedField
 
 
-class ScrimTeam(collections.UserList, EmbedField):
+class ScrimTeam:
     """A class that houses the data of a team in a scrim
 
     attributes
@@ -22,87 +22,20 @@ class ScrimTeam(collections.UserList, EmbedField):
         The name of the team. Functionality TBA but is meant to support custom team names
     """
 
-    def __init__(self, data: List[discord.Member]):
+    def __init__(self, name: str, players: List[discord.Member] = None, min_size=0, max_size=0):
         """The constructor of ScrimTeam
 
-        :param data: The data to be stored in the list
-        :type data: Game
+        :param players: The data to be stored in the list
+        :type players: Game
         """
 
-        super().__init__()
-        self.data: List[discord.Member] = data
-
-        self.max_size: int = 0
-        self._voice_channel: Optional[discord.VoiceChannel] = None
-        self.name = ""
+        self.name = name
+        self.players: List[discord.Member] = players if players is not None else []
+        self.min_size: int = min_size
+        self.max_size: int = max_size or min_size
         self.is_pickup = False
         self.winner = False
         self.inline = True
-
-    @classmethod
-    def from_scrim_data(cls, min_size: int, name: str, voice_channel: discord.VoiceChannel = None):
-        """Because ScrimTeam subclasses UserList to function as a list of players this classmethod can be used as init
-
-        :param min_size: How many players the team fits at maximum. 0 means infinite
-        :type min_size: int
-        :param name: The name of the team
-        :type name: str
-        :param voice_channel: The voice channel the team should be moved to when the scrim starts
-        :type voice_channel:
-        :return: A new ScrimTeam object with corresponding data attached
-        :rtype: ScrimTeam
-        """
-
-        new_team = cls([])
-        new_team.max_size = min_size
-        new_team.name = name
-        new_team._voice_channel = voice_channel
-
-        return new_team
-
-    def get_name(self) -> str:
-        """A method for getting the name of the team formatted for embed displaying
-
-        :return: A formatted string representing the team name
-        :rtype: str
-        """
-
-        return f"**{self.name}**{self._get_state_addon()}"
-
-    def _get_state_addon(self) -> str:
-        """A private helper method that returns required addons to the team name based on team state
-
-        :return: A string that represents the scrim state. Might be an empty string, but not None
-        :rtype: str
-        """
-
-        if self.winner:
-            return " _winner_"
-
-        elif self.is_full():
-            return " _(full)_"
-
-        elif self.max_size:
-            return f" _({len(self.data)}/{self.max_size})_"
-
-        else:
-            return ""
-
-    def get_value(self) -> str:
-        """A method for getting the players in the team formatted for embed displaying
-
-        :return: A formatted string with all player names on their own line
-        :rtype: str
-        """
-
-        to_display_raw = self.data[:self.max_size] or self.data
-
-        to_display_ready = [discord.utils.escape_markdown(player.display_name) for player in to_display_raw]
-
-        if self.is_pickup and to_display_ready:
-            to_display_ready[0] = f"**{to_display_ready[0]}**"
-
-        return "\n".join(to_display_ready) or "_empty_"
 
     def blind_remove(self, player: discord.Member) -> bool:
         """A method for attempting to remove a player from the team without checking whether they exist first
@@ -113,20 +46,11 @@ class ScrimTeam(collections.UserList, EmbedField):
         :rtype: bool
         """
 
-        if player in self.data:
-            self.data.remove(player)
+        if player in self.players:
+            self.players.remove(player)
             return True
 
         return False
-
-    def is_full(self) -> bool:
-        """A method to quickly check whether the team is full
-
-        :return: A boolean result
-        :rtype: bool
-        """
-
-        return self.max_size and len(self.data) >= self.max_size
 
     def set_voice_channel(self, voice_channel: discord.VoiceChannel):
         """A method for updating the voice channel associated with a team, useful
@@ -154,7 +78,7 @@ class ScrimTeam(collections.UserList, EmbedField):
             else:
                 return
 
-        for player in self.data:
+        for player in self.players:
             try:
                 await player.move_to(self._voice_channel, reason="ScrimBot: Setting up a scrim.")
             except discord.DiscordException:
