@@ -12,7 +12,7 @@ from Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
 
-def _setup_manager(min_size, max_size, team_count):
+def _setup_manager(min_size = 5, max_size = 5, team_count = 2):
     mock_game = _create_mock_game(min_size, max_size, team_count)
     return ScrimTeamsManager(mock_game)
 
@@ -20,6 +20,12 @@ def _setup_manager(min_size, max_size, team_count):
 def _create_mock_game(min_size, max_size, team_count):
     mock_game = Game("Test", "0xffffff", "icon", min_size, max_size, team_count)
     return mock_game
+
+
+def _fill_teams(manager, max_size, team_count):
+    for team_index in range(team_count):
+        for player_num in range(max_size):
+            manager.add_player(team_index, MagicMock())
 
 
 class TestScrimTeamsManager(unittest.TestCase):
@@ -121,8 +127,173 @@ class TestScrimTeamsManager(unittest.TestCase):
         self.assertEqual(mock_teams, game_teams)
         self._assert_valid_game_teams(game_teams, max_size, min_size, team_count)
 
-    def test_add_player_given_valid_team_name_and_not_full_team_then_insert_successful(self):
-        pass
+    def test_add_player_given_participants_not_full_when_player_added_to_participants_then_insert_successful(self):
+        tester_name = "Tester"
+        manager = _setup_manager()
+        mock_player = MagicMock()
+        mock_player.display_name = tester_name
+        manager.add_player(manager.PARTICIPANTS, mock_player)
+        updated_participants = manager.get_standard_teams()[0]
+        self.assertIn(mock_player, updated_participants.players)
+
+    def test_add_player_given_participants_full_when_player_added_to_participants_then_inserted_to_queue(self):
+        min_size, max_size, team_count = 3, 3, 2
+        tester_name = "Tester"
+        manager = _setup_manager(min_size, max_size, team_count)
+        for i in range(max_size * team_count):
+            manager.add_player(manager.PARTICIPANTS, MagicMock())
+        mock_player = MagicMock()
+        mock_player.display_name = tester_name
+        manager.add_player(manager.PARTICIPANTS, mock_player)
+        updated_queue = manager.get_standard_teams()[2]
+        self.assertIn(mock_player, updated_queue.players)
+
+    def test_add_player_when_added_to_spectators_then_insert_successful(self):
+        tester_name = "Tester"
+        manager = _setup_manager()
+        mock_player = MagicMock()
+        mock_player.display_name = tester_name
+        manager.add_player(manager.SPECTATORS, mock_player)
+        updated_participants = manager.get_standard_teams()[1]
+        self.assertIn(mock_player, updated_participants.players)
+
+    def test_add_player_given_team_not_full_when_added_to_game_teams_with_team_name_then_insert_successful(self):
+        min_size, max_size, team_count = 6, 6, 5
+        tester_name = "Tester"
+        manager = _setup_manager(min_size, max_size, team_count)
+        mock_player = MagicMock()
+        mock_player.display_name = tester_name
+        for team in range(team_count):
+            with self.subTest(f"Team {team + 1}"):
+                manager.add_player(f"Team {team + 1}", mock_player)
+                updated_participants = manager.get_game_teams()[team]
+                self.assertIn(mock_player, updated_participants.players)
+
+    def test_add_player_given_team_not_full_when_added_to_game_teams_with_team_number_then_insert_successful(self):
+        min_size, max_size, team_count = 1, 3, 4
+        tester_name = "Tester"
+        manager = _setup_manager(min_size, max_size, team_count)
+        mock_player = MagicMock()
+        mock_player.display_name = tester_name
+        for team in range(team_count):
+            with self.subTest(f"Team {team + 1}"):
+                manager.add_player(team, mock_player)
+                updated_participants = manager.get_game_teams()[team]
+                self.assertIn(mock_player, updated_participants.players)
+
+    def test_add_player_given_team_full_when_added_to_game_team_then_error_raised(self):
+        min_size, max_size, team_count = 1, 5, 4
+        manager = _setup_manager(min_size, max_size, team_count)
+        _fill_teams(manager, max_size, team_count)
+        tester_name = "Tester"
+        mock_player = MagicMock()
+        mock_player.display_name = tester_name
+        for team in range(team_count):
+            with self.subTest(f"Team {team + 1}"):
+                expected_exception = BotBaseInternalException(f"Tried adding a player into a "
+                                                              f"full team (Team {team + 1})")
+                self._assert_raises_correct_exception(expected_exception, manager.add_player, team, mock_player)
+
+    def test_has_enough_participants_given_no_participants_then_false_returned(self):
+        manager = _setup_manager()
+        self.assertFalse(manager.has_enough_participants)
+
+    def test_has_enough_participants_given_participants_under_min_team_size_times_team_count_then_false_returned(self):
+        min_size, max_size, team_count = 2, 2, 8
+        manager = _setup_manager(min_size, max_size, team_count)
+        for _ in range(min_size*team_count - 1):
+            manager.add_player(manager.PARTICIPANTS, MagicMock())
+        self.assertFalse(manager.has_enough_participants)
+
+    def test_has_enough_participants_given_participants_at_min_team_size_times_team_count_then_true_returned(self):
+        min_size, max_size, team_count = 4, 8, 2
+        manager = _setup_manager(min_size, max_size, team_count)
+        for _ in range(min_size * team_count):
+            manager.add_player(manager.PARTICIPANTS, MagicMock())
+        self.assertTrue(manager.has_enough_participants)
+
+    def test_has_enough_participants_given_participants_at_max_team_size_times_team_count_then_true_returned(self):
+        min_size, max_size, team_count = 5, 9, 5
+        manager = _setup_manager(min_size, max_size, team_count)
+        for _ in range(max_size * team_count):
+            manager.add_player(manager.PARTICIPANTS, MagicMock())
+        self.assertTrue(manager.has_enough_participants)
+
+    def test_remove_player_given_valid_standard_team_when_called_with_player_in_team_then_player_removed(self):
+        manager = _setup_manager()
+        mock_player = MagicMock()
+        for index, team in enumerate([manager.PARTICIPANTS, manager.SPECTATORS, manager.QUEUE]):
+            with self.subTest(team):
+                manager.add_player(team, mock_player)
+                manager.remove_player(team, mock_player)
+                standard_teams = manager.get_standard_teams()
+                self.assertNotIn(mock_player, standard_teams[index].players)
+
+    def test_remove_player_given_valid_game_team_when_called_with_player_in_team_then_player_removed(self):
+        min_size, max_size, team_count = 3, 5, 6
+        manager = _setup_manager(min_size, max_size, team_count)
+        mock_player = MagicMock()
+        for team in range(team_count):
+            with self.subTest(f"Team {team + 1}"):
+                manager.add_player(team, mock_player)
+                manager.remove_player(team, mock_player)
+                game_teams = manager.get_game_teams()
+                self.assertNotIn(mock_player, game_teams[team].players)
+
+    def test_remove_player_given_valid_team_when_called_with_player_not_in_team_then_error_raised(self):
+        manager = _setup_manager()
+        player_name = "Invalid player"
+        mock_player = MagicMock()
+        mock_player.display_name = player_name
+        expected_exception = BotBaseInternalException(f"Tried removing user '{player_name}' from team 'Team 1' "
+                                                      f"even though they are not a member of the team.")
+        self._assert_raises_correct_exception(expected_exception, manager.remove_player, 0, mock_player)
+
+    def test_remove_player_given_queue_has_players_when_removed_from_participants_then_filled_from_queue(self):
+        min_size, max_size, team_count = 3, 5, 6
+        manager = _setup_manager(min_size, max_size, team_count)
+        mock_player = MagicMock()
+        for _ in range(max_size*team_count - 1):
+            manager.add_player(manager.PARTICIPANTS, MagicMock())
+        manager.add_player(manager.PARTICIPANTS, mock_player)
+        manager.add_player(manager.QUEUE, MagicMock())
+        manager.remove_player(manager.PARTICIPANTS, mock_player)
+        standard_teams = manager.get_standard_teams()
+        self.assertEqual(max_size*team_count, len(standard_teams[0].players))
+        self.assertEqual(0, len(standard_teams[2].players))
+
+    def test_set_team_given_valid_move_then_player_removed_from_original_team_and_added_to_new_team(self):
+        manager = _setup_manager()
+        mock_player = MagicMock()
+        manager.add_player(manager.PARTICIPANTS, mock_player)
+        manager.set_team(manager.SPECTATORS, mock_player)
+        standard_teams = manager.get_standard_teams()
+        self.assertEqual(0, len(standard_teams[0].players))
+        self.assertEqual(1, len(standard_teams[1].players))
+
+    def test_set_team_given_valid_move_when_moved_from_full_participants_and_queue_has_people_then_filled(self):
+        min_size, max_size, team_count = 3, 5, 6
+        manager = _setup_manager(min_size, max_size, team_count)
+        mock_player = MagicMock()
+        for _ in range(max_size * team_count - 1):
+            manager.add_player(manager.PARTICIPANTS, MagicMock())
+        manager.add_player(manager.PARTICIPANTS, mock_player)
+        manager.add_player(manager.QUEUE, MagicMock())
+        manager.set_team(manager.SPECTATORS, mock_player)
+        standard_teams = manager.get_standard_teams()
+        self.assertEqual(max_size * team_count, len(standard_teams[0].players))
+        self.assertEqual(0, len(standard_teams[2].players))
+
+    def test_set_team_given_player_not_in_any_team_then_error_raised(self):
+        manager = _setup_manager()
+        player_name = "Invalid player"
+        mock_player = MagicMock()
+        mock_player.display_name = player_name
+        expected_exception = BotBaseInternalException(f"Tried setting team for user '{player_name}' who is not part "
+                                                      f"of the scrim.")
+        self._assert_raises_correct_exception(expected_exception, manager.set_team, manager.SPECTATORS, mock_player)
+        standard_teams = manager.get_standard_teams()
+        self.assertEqual(0, len(standard_teams[0].players))
 
     def _assert_valid_standard_teams(self, standard_teams, max_size, min_size, team_count):
         for team_name in [ScrimTeamsManager.PARTICIPANTS, ScrimTeamsManager.SPECTATORS, ScrimTeamsManager.QUEUE]:

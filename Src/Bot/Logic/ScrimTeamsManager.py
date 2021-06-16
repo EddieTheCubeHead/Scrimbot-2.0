@@ -1,7 +1,9 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from typing import List, Dict
+from typing import List, Dict, Union
+
+import discord
 
 from Bot.DataClasses.Game import Game
 from Bot.DataClasses.ScrimTeam import ScrimTeam
@@ -17,6 +19,16 @@ def _assert_valid_game(game):
                                        " team min size.")
 
 
+def _is_full(team):
+    return len(team.players) >= team.max_size
+
+
+def _assert_valid_removal(player, team):
+    if player not in team.players:
+        raise BotBaseInternalException(f"Tried removing user '{player.display_name}' from team '{team.name}' "
+                                       "even though they are not a member of the team.")
+
+
 class ScrimTeamsManager:
     """A class to be used inside a Scrim instance, meant for managing the separate teams in the scrim
     """
@@ -26,9 +38,10 @@ class ScrimTeamsManager:
 
     def __init__(self, game: Game, team_channels: List[int] = None, lobby: int = None, *, teams: List[ScrimTeam] = None):
         _assert_valid_game(game)
-        self._game = game
-        self._build_standard_teams()
+        self._game: Game = game
+        self._teams: Dict[str, ScrimTeam] = {}
         self._build_teams(teams or [])
+        self._build_standard_teams()
         self._captains = self._build_captains()
         self._team_channels = [lobby]
         self._team_channels = team_channels or []
@@ -37,22 +50,18 @@ class ScrimTeamsManager:
     def is_reserved_name(cls, team_name: str):
         return team_name in [cls.PARTICIPANTS, cls.SPECTATORS, cls.QUEUE]
 
+    @property
+    def has_enough_participants(self):
+        return len(self._teams[self.PARTICIPANTS].players) >= self._teams[self.PARTICIPANTS].min_size
+
     def get_standard_teams(self):
-        return list(self._teams.values())[:3]
+        return list(self._teams.values())[self._game.team_count:]
 
     def get_game_teams(self):
-        if len(self._teams) > 3:
-            return list(self._teams.values())[3:]
-        return []
-
-    def _build_standard_teams(self):
-        self._teams: Dict[str, ScrimTeam] = {
-            self.PARTICIPANTS: ScrimTeam(self.PARTICIPANTS, [], self._game.min_team_size * self._game.team_count,
-                                         self._game.max_team_size * self._game.team_count),
-            self.QUEUE: ScrimTeam(self.QUEUE),
-            self.SPECTATORS: ScrimTeam(self.SPECTATORS)}
+        return list(self._teams.values())[:self._game.team_count]
 
     def _build_teams(self, premade_teams):
+
         teams = []
         for i in range(self._game.team_count):
             if len(premade_teams) > i:
@@ -60,6 +69,13 @@ class ScrimTeamsManager:
             else:
                 self._add_new_team(i+1)
         return teams
+
+    def _build_standard_teams(self):
+        self._teams[self.PARTICIPANTS] = ScrimTeam(self.PARTICIPANTS, [],
+                                                   self._game.min_team_size * self._game.team_count,
+                                                   self._game.max_team_size * self._game.team_count)
+        self._teams[self.SPECTATORS] = ScrimTeam(self.SPECTATORS)
+        self._teams[self.QUEUE] = ScrimTeam(self.QUEUE)
 
     def _add_new_team(self, team_number: int):
         team_name = f"Team {team_number}"
@@ -99,3 +115,50 @@ class ScrimTeamsManager:
         for _ in range(self._game.team_count):
             captains.append(None)
         return captains
+
+    def add_player(self, team: Union[int, str], player: discord.member):
+        self._add_to_team(self._get_team(team), player)
+
+    def _get_team(self, team: Union[int, str]) -> ScrimTeam:
+        if type(team) == str:
+            return self._teams[team]
+        return list(self._teams.values())[team]
+
+    def _add_to_team(self, team: ScrimTeam, player: discord.member):
+        if self._is_full_participant_team(team):
+            self._add_to_team(self._teams[self.QUEUE], player)
+            return
+        if self._is_full_game_team(team):
+            raise BotBaseInternalException(f"Tried adding a player into a full team ({team.name})")
+        team.players.append(player)
+
+    def _is_full_participant_team(self, team: ScrimTeam):
+        return team.name == self.PARTICIPANTS and _is_full(team)
+
+    def _is_full_game_team(self, team):
+        return not self.is_reserved_name(team.name) and _is_full(team)
+
+    def remove_player(self, team: Union[int, str], player: discord.member):
+        self._remove_from_team(self._get_team(team), player)
+
+    def _remove_from_team(self, team: ScrimTeam, player: discord.member):
+        _assert_valid_removal(player, team)
+        if self._fill_participants_from_queue(team):
+            team.players.append(self._teams[self.QUEUE].players.pop(0))
+        team.players.remove(player)
+
+    def _fill_participants_from_queue(self, team):
+        return self._is_full_participant_team(team) and len(self._teams[self.QUEUE].players) > 0
+
+    def set_team(self, team: Union[int, str], player: discord.Member):
+        if not self._blind_remove(player):
+            raise BotBaseInternalException(f"Tried setting team for user '{player.display_name}' who is not part of "
+                                           f"the scrim.")
+        self.add_player(team, player)
+
+    def _blind_remove(self, player) -> bool:
+        for team in self._teams.values():
+            if player in team.players:
+                self._remove_from_team(team, player)
+                return True
+        return False
