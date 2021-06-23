@@ -1,7 +1,6 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import sqlite3
 from typing import Optional, List, Tuple
 
 from Src.Database.DatabaseManager import DatabaseManager

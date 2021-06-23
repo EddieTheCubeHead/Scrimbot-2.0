@@ -1,12 +1,12 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import unittest
 from unittest.mock import MagicMock
 
 import discord
 
-import test_utils
+from Utils.UnittestBase import UnittestBase
+from Utils.TestIdGenerator import TestIdGenerator
 from Bot.EmbedSystem.TeamFieldConverter import TeamFieldConverter
 from Bot.DataClasses.ScrimTeam import ScrimTeam
 
@@ -21,11 +21,11 @@ def _bold(name):
     return f"**{discord.utils.escape_markdown(name)}**"
 
 
-class TestTeamFieldConverter(unittest.TestCase):
+class TestTeamFieldConverter(UnittestBase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.id_mocker = test_utils.UniqueIdGenerator()
+        cls.id_mocker = TestIdGenerator()
 
     def test_convert_given_unlimited_sized_team_then_embed_correctly_formatted(self):
         team_players = self._mock_team_players(4)

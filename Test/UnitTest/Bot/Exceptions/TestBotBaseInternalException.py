@@ -1,12 +1,11 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import unittest
-
+from Utils.UnittestBase import UnittestBase
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
 
-class TestBotBaseUserException(unittest.TestCase):
+class TestBotBaseUserException(UnittestBase):
 
     def test_get_message_given_valid_message_then_correct_message_received(self):
         test_msg = "Test error please ignore"

@@ -7,14 +7,13 @@ import shutil
 import sqlite3
 from typing import Tuple, Optional, List
 
-import test_utils
+from Utils.UnittestBase import UnittestBase
+from Utils.TestIdGenerator import TestIdGenerator
 from Database.ServersDatabaseManager import ServersDatabaseManager
 from Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Database.Exceptions.DatabaseMissingRowException import DatabaseMissingRowException
-from Database.Exceptions.DatabaseDuplicateUniqueRowException import DatabaseDuplicateUniqueRowException
 from Database.Exceptions.DatabasePrimaryKeyViolatedException import DatabasePrimaryKeyViolatedException
-from Database.Exceptions.DatabaseForeignKeyViolatedException import DatabaseForeignKeyViolatedException
 
 
 def _setup_disposable_folder_manager(disposable_folder_name: str, disposable_file_name: str) -> \
@@ -38,13 +37,13 @@ def _parse_voice_channel_rows(raw_rows) -> List[Optional[int]]:
     return parsed_rows
 
 
-class TestServersDatabaseManager(unittest.TestCase):
+class TestServersDatabaseManager(UnittestBase):
 
     @classmethod
     def setUpClass(cls) -> None:
         cls.manager: ServersDatabaseManager = ServersDatabaseManager.from_raw_file_path(":memory:")
         cls.manager.setup_manager()
-        cls.id_mocker = test_utils.UniqueIdGenerator()
+        cls.id_mocker = TestIdGenerator()
 
     def test_setup_given_uninitialized_folder_then_folder_created(self):
         disposable_folder = "DisposableServersTest"

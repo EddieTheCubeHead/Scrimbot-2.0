@@ -1,14 +1,11 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import unittest
-from unittest.mock import MagicMock
-
-from Bot.DataClasses.Scrim import Scrim
+from Utils.UnittestBase import UnittestBase
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 
 
-class TestBotConversionFailureException(unittest.TestCase):
+class TestBotConversionFailureException(UnittestBase):
 
     def test_get_description_given_valid_exception_then_correct_message_constructed(self):
         argument = "Foo"

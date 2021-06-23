@@ -1,21 +1,19 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import unittest
-from typing import Callable
-
+from Utils.UnittestBase import UnittestBase
+from Utils.TestIdGenerator import TestIdGenerator
 from Bot.DataClasses.Game import Game
 from Bot.Providers.GamesProvider import GamesProvider
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
-import test_utils
 
 
-class TestGamesProvider(unittest.TestCase):
+class TestGamesProvider(UnittestBase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.id_mocker = test_utils.UniqueIdGenerator()
+        cls.id_mocker = TestIdGenerator()
 
     def setUp(self) -> None:
         self.provider = GamesProvider()
@@ -95,9 +93,3 @@ class TestGamesProvider(unittest.TestCase):
 
     def _build_fake_game_tuple(self, name: str):
         return name, "0xffffff", "icon_url", 5, 5, 2, [str(self.id_mocker.generate_viable_id()) for _ in range(3)]
-
-    def _assert_raises_correct_exception(self, excepted_exception: Exception, call: Callable, *args, **kwargs):
-        with self.assertRaises(type(excepted_exception)) as context:
-            call(*args, **kwargs)
-
-        self.assertEqual(str(excepted_exception), str(context.exception))

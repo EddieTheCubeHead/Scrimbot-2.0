@@ -1,10 +1,11 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import unittest
-from unittest.mock import MagicMock
-from typing import Callable
 
+from unittest.mock import MagicMock
+
+from Utils.UnittestBase import UnittestBase
+from Utils.TestIdGenerator import TestIdGenerator
 from Bot.DataClasses.Game import Game
 from Bot.DataClasses.ScrimTeam import ScrimTeam
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
@@ -28,7 +29,11 @@ def _fill_teams(manager, max_size, team_count):
             manager.add_player(team_index, MagicMock())
 
 
-class TestScrimTeamsManager(unittest.TestCase):
+class TestScrimTeamsManager(UnittestBase):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.id_generator = TestIdGenerator()
 
     def test_init_given_team_count_zero_then_internal_error_raised(self):
         mock_game = _create_mock_game(5, 5, 0)
@@ -96,6 +101,32 @@ class TestScrimTeamsManager(unittest.TestCase):
         expected_exception = BotBaseUserException("Cannot create a scrim with a premade team with a size incompatible"
                                                   f" with the chosen game ({team_name})")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game, teams=[invalid_team])
+
+    def test_init_given_valid_team_voice_channels_then_corresponding_game_team_channels_set(self):
+        min_size, max_size, team_count = 5, 5, 3
+        mock_game = _create_mock_game(min_size, max_size, team_count)
+        teams_channels = self.id_generator.generate_viable_id_group(team_count)
+        manager = ScrimTeamsManager(mock_game, teams_channels)
+        for team in manager.get_game_teams():
+            self.assertIn(team.voice_channel, teams_channels)
+
+    def test_init_given_valid_lobby_channel_then_standard_team_channels_set(self):
+        min_size, max_size, team_count = 3, 4, 5
+        mock_game = _create_mock_game(min_size, max_size, team_count)
+        lobby_channel = self.id_generator.generate_viable_id()
+        manager = ScrimTeamsManager(mock_game, [], lobby_channel)
+        for team in manager.get_standard_teams():
+            self.assertEqual(team.voice_channel, lobby_channel)
+
+    def test_init_given_too_many_voice_channels_then_only_needed_channels_assigned(self):
+        min_size, max_size, team_count = 2, 7, 4
+        mock_game = _create_mock_game(min_size, max_size, team_count)
+        teams_channels = self.id_generator.generate_viable_id_group(team_count + 1)
+        manager = ScrimTeamsManager(mock_game, teams_channels)
+        for team in manager.get_game_teams():
+            self.assertIn(team.voice_channel, teams_channels)
+        for team in manager.get_standard_teams():
+            self.assertIsNone(team.voice_channel)
 
     def test_get_standard_teams_given_valid_setup_then_all_standard_teams_returned(self):
         min_size, max_size, team_count = 5, 5, 2
@@ -310,9 +341,3 @@ class TestScrimTeamsManager(unittest.TestCase):
         for team in game_teams:
             self.assertEqual(min_size, team.min_size)
             self.assertEqual(max_size, team.max_size)
-
-    def _assert_raises_correct_exception(self, excepted_exception: Exception, call: Callable, *args, **kwargs):
-        with self.assertRaises(type(excepted_exception)) as context:
-            call(*args, **kwargs)
-
-        self.assertEqual(str(excepted_exception), str(context.exception))

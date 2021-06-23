@@ -1,13 +1,13 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import unittest
 from unittest.mock import MagicMock
 
+from Utils.UnittestBase import UnittestBase
 from Bot.Exceptions.BotBaseUserException import BotBaseUserException
 
 
-class TestBotBaseUserException(unittest.TestCase):
+class TestBotBaseUserException(UnittestBase):
 
     def test_get_header_given_valid_construction_then_correct_string_returned(self):
         new_exception = BotBaseUserException("Foo")

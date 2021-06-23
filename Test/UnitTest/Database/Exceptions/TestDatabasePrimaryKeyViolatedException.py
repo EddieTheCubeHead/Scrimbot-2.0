@@ -1,12 +1,11 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import unittest
-
+from Utils.UnittestBase import UnittestBase
 from Database.Exceptions.DatabasePrimaryKeyViolatedException import DatabasePrimaryKeyViolatedException
 
 
-class TestDatabaseMissingRowException(unittest.TestCase):
+class TestDatabaseMissingRowException(UnittestBase):
 
     def test_get_message_given_valid_instance_with_single_column_pk_fields_then_returns_correct_message(self):
         test_exception = DatabasePrimaryKeyViolatedException("example_table", ["example_field"], ["example_value"])

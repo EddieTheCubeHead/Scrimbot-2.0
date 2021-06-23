@@ -1,12 +1,11 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import unittest
-
+from Utils.UnittestBase import UnittestBase
 from Database.Exceptions.DatabaseDuplicateUniqueRowException import DatabaseDuplicateUniqueRowException
 
 
-class TestDatabaseDuplicateUniqueRowException(unittest.TestCase):
+class TestDatabaseDuplicateUniqueRowException(UnittestBase):
 
     def test_get_message_given_valid_instance_then_returns_correct_message(self):
         test_exception = DatabaseDuplicateUniqueRowException("example_table", "example_column", "example_value")

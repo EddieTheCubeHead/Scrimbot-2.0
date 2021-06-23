@@ -1,9 +1,9 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import unittest
 from unittest.mock import MagicMock
 
+from Utils.UnittestBase import UnittestBase
 from Bot.Exceptions.BotMissingScrimException import BotMissingScrimException
 
 
@@ -14,7 +14,7 @@ def _create_mock_context(channel_name, prefix="/"):
     return mock_context
 
 
-class TestDatabaseBaseException(unittest.TestCase):
+class TestDatabaseBaseException(UnittestBase):
 
     def test_get_description_given_valid_exception_then_correct_description_returned(self):
         channel_name = "test-channel"

@@ -1,7 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional
 
 import discord
 
@@ -43,8 +43,8 @@ class ScrimTeamsManager:
         self._build_teams(teams or [])
         self._build_standard_teams()
         self._captains = self._build_captains()
-        self._team_channels = [lobby]
-        self._team_channels = team_channels or []
+        self._add_channels_to_teams(team_channels)
+        self._add_lobby_channel(lobby)
 
     @classmethod
     def is_reserved_name(cls, team_name: str):
@@ -115,6 +115,23 @@ class ScrimTeamsManager:
         for _ in range(self._game.team_count):
             captains.append(None)
         return captains
+
+    def _add_channels_to_teams(self, channels: Optional[List[int]]):
+        if channels:
+            for index, channel in enumerate(channels):
+                self._add_game_team_voice_channel(channel, index)
+
+    def _add_game_team_voice_channel(self, channel, index):
+        if self._is_game_team_index(index):
+            self._get_team(index).voice_channel = channel
+
+    def _is_game_team_index(self, index):
+        return index < self._game.team_count
+
+    def _add_lobby_channel(self, lobby):
+        if lobby:
+            for team in [self.PARTICIPANTS, self.SPECTATORS, self.QUEUE]:
+                self._get_team(team).voice_channel = lobby
 
     def add_player(self, team: Union[int, str], player: discord.member):
         self._add_to_team(self._get_team(team), player)

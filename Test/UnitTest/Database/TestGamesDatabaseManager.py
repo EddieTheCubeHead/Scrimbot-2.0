@@ -5,9 +5,11 @@ import unittest
 import os
 import shutil
 import json
-from typing import Dict, Union, Callable
+from typing import Dict, Union
 
 import Test.test_utils as test_utils
+from Utils.UnittestBase import UnittestBase
+from Utils.TestIdGenerator import TestIdGenerator
 from Database.GamesDatabaseManager import GamesDatabaseManager
 from Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
@@ -26,13 +28,13 @@ def _setup_disposable_folder_manager(disposable_folder_name: str, disposable_fil
     return disposable_folder_manager
 
 
-class TestGamesDatabaseManager(unittest.TestCase):
+class TestGamesDatabaseManager(UnittestBase):
 
     @classmethod
     def setUpClass(cls) -> None:
         cls.manager: GamesDatabaseManager = GamesDatabaseManager.from_raw_file_path(":memory:")
         cls.manager.setup_manager()
-        cls.id_mocker = test_utils.UniqueIdGenerator()
+        cls.id_mocker = TestIdGenerator()
 
     def test_setup_given_uninitialized_folder_then_folder_created(self):
         disposable_folder = "DisposableGamesTest"
@@ -289,12 +291,6 @@ class TestGamesDatabaseManager(unittest.TestCase):
         with DatabaseConnectionWrapper(self.manager) as cursor:
             cursor.execute("SELECT Elo FROM UserElos WHERE Snowflake=? AND Game=?", (player_id, game))
             self.assertEqual(expected_elo, cursor.fetchone()[0])
-
-    def _assert_raises_correct_exception(self, excepted_exception: Exception, call: Callable, *args, **kwargs):
-        with self.assertRaises(type(excepted_exception)) as context:
-            call(*args, **kwargs)
-
-        self.assertEqual(str(excepted_exception), str(context.exception))
 
     def _insert_player_elos(self, game, players):
         for player in players:

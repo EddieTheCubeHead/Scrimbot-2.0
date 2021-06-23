@@ -1,12 +1,11 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import unittest
-
+from Utils.UnittestBase import UnittestBase
 from Bot.EmbedSystem.EmbedField import EmbedField
 
 
-class TestEmbedField(unittest.TestCase):
+class TestEmbedField(UnittestBase):
 
     def test_get_name_given_valid_field_then_correct_string_returned(self):
         name, content = "Foo", "Bar"
