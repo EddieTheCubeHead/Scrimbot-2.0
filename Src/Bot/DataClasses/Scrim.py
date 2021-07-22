@@ -142,7 +142,7 @@ class Scrim:
 
     @classmethod
     async def get_scrim(cls, ctx: commands.Context) -> Scrim:
-        """A classmethod for fetching a scrim based on a ctx object or creating a new instance if needed and appropiate
+        """A classmethod for fetching a scrim based on a ctx object or creating a new instance if needed and appropriate
 
         args
         ----

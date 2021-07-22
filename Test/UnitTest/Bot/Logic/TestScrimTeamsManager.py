@@ -50,6 +50,20 @@ class TestScrimTeamsManager(UnittestBase):
     def test_init_given_team_min_size_larger_than_max_size_when_unlimited_max_size_then_init_successful(self):
         _setup_manager(5, 0, 1)
 
+    def test_init_given_premade_team_with_identical_sizes_as_game_then_init_successful(self):
+        team_name = "Valid team"
+        mock_game = _create_mock_game(5, 6, 2)
+        valid_team = ScrimTeam(team_name, [], 5, 6)
+        manager = ScrimTeamsManager(mock_game, teams=[valid_team])
+        self.assertEqual(team_name, manager.get_game_teams()[0].name)
+
+    def test_init_given_premade_team_with_stricter_but_valid_sizes_as_game_then_init_successful(self):
+        team_name = "Valid team"
+        mock_game = _create_mock_game(4, 7, 2)
+        valid_team = ScrimTeam(team_name, [], 5, 6)
+        manager = ScrimTeamsManager(mock_game, teams=[valid_team])
+        self.assertEqual(team_name, manager.get_game_teams()[0].name)
+
     def test_init_given_premade_team_when_team_name_conflicts_with_standard_teams_then_error_raised(self):
         mock_game = _create_mock_game(5, 5, 2)
         invalid_team = ScrimTeam(ScrimTeamsManager.PARTICIPANTS)
@@ -325,6 +339,50 @@ class TestScrimTeamsManager(UnittestBase):
         self._assert_raises_correct_exception(expected_exception, manager.set_team, manager.SPECTATORS, mock_player)
         standard_teams = manager.get_standard_teams()
         self.assertEqual(0, len(standard_teams[0].players))
+
+    def test_clear_queue_given_players_in_queue_then_all_players_removed(self):
+        manager = _setup_manager()
+        manager.add_player(manager.QUEUE, MagicMock())
+        manager.clear_queue()
+        self.assertEqual(0, len(manager.get_standard_teams()[2].players))
+
+    def test_clear_queue_given_no_players_in_queue_then_nothing_happens(self):
+        manager = _setup_manager()
+        manager.clear_queue()
+        self.assertEqual(0, len(manager.get_standard_teams()[2].players))
+
+    def test_has_full_teams_when_min_team_sizes_met_then_returns_true(self):
+        min_size, max_size, team_count = 3, 5, 6
+        manager = _setup_manager(min_size, max_size, team_count)
+        for team in range(team_count):
+            for player in range(min_size):
+                manager.add_player(team, MagicMock())
+        self.assertTrue(manager.has_full_teams)
+
+    def test_has_full_teams_when_max_team_sizes_met_then_returns_true(self):
+        min_size, max_size, team_count = 3, 5, 6
+        manager = _setup_manager(min_size, max_size, team_count)
+        for team in range(team_count):
+            for player in range(max_size):
+                manager.add_player(team, MagicMock())
+        self.assertTrue(manager.has_full_teams)
+
+    def test_has_full_teams_when_all_min_team_sizes_not_met_then_returns_false(self):
+        min_size, max_size, team_count = 3, 5, 6
+        manager = _setup_manager(min_size, max_size, team_count)
+        for team in range(team_count):
+            for player in range(min_size-1):
+                manager.add_player(team, MagicMock())
+        self.assertFalse(manager.has_full_teams)
+
+    def test_has_participants_when_participants_present_returns_true(self):
+        manager = _setup_manager()
+        manager.add_player(manager.PARTICIPANTS, MagicMock())
+        self.assertTrue(manager.has_participants)
+
+    def test_has_participants_when_no_participants_present_returns_false(self):
+        manager = _setup_manager()
+        self.assertFalse(manager.has_participants)
 
     def _assert_valid_standard_teams(self, standard_teams, max_size, min_size, team_count):
         for team_name in [ScrimTeamsManager.PARTICIPANTS, ScrimTeamsManager.SPECTATORS, ScrimTeamsManager.QUEUE]:

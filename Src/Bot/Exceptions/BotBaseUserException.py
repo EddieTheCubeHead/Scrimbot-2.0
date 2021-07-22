@@ -26,6 +26,9 @@ class BotBaseUserException(commands.CommandError):
         self._message = message
         self._send_help = send_help
 
+    def __str__(self):
+        return f"{self.get_header()}{self.get_description()}"
+
     def get_header(self) -> str:
         """A method that returns a text header for the error (eg. whether it's an error, check failure, etc.).
 

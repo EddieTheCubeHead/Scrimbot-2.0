@@ -36,7 +36,8 @@ class ScrimTeamsManager:
     SPECTATORS = "Spectators"
     QUEUE = "Queue"
 
-    def __init__(self, game: Game, team_channels: List[int] = None, lobby: int = None, *, teams: List[ScrimTeam] = None):
+    def __init__(self, game: Game, team_channels: List[int] = None, lobby: int = None, *,
+                 teams: List[ScrimTeam] = None):
         _assert_valid_game(game)
         self._game: Game = game
         self._teams: Dict[str, ScrimTeam] = {}
@@ -53,6 +54,17 @@ class ScrimTeamsManager:
     @property
     def has_enough_participants(self):
         return len(self._teams[self.PARTICIPANTS].players) >= self._teams[self.PARTICIPANTS].min_size
+
+    @property
+    def has_full_teams(self):
+        for team in self.get_game_teams():
+            if not len(team.players) >= team.min_size:
+                return False
+        return True
+
+    @property
+    def has_participants(self):
+        return len(self._teams[self.PARTICIPANTS].players) > 0
 
     def get_standard_teams(self):
         return list(self._teams.values())[self._game.team_count:]
@@ -101,7 +113,7 @@ class ScrimTeamsManager:
             raise BotBaseUserException(f"Cannot create a scrim with premade teams having identical names ({team.name})")
 
     def _assert_valid_team_size(self, team):
-        if team.min_size != self._game.min_team_size or team.max_size != self._game.max_team_size:
+        if team.min_size < self._game.min_team_size or team.max_size > self._game.max_team_size:
             raise BotBaseUserException("Cannot create a scrim with a premade team with a size incompatible with the"
                                        f" chosen game ({team.name})")
 
@@ -179,3 +191,6 @@ class ScrimTeamsManager:
                 self._remove_from_team(team, player)
                 return True
         return False
+
+    def clear_queue(self):
+        self._get_team(self.QUEUE).players.clear()

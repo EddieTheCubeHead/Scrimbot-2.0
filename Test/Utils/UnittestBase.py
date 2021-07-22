@@ -13,3 +13,4 @@ class UnittestBase(unittest.TestCase):
             call(*args, **kwargs)
 
         self.assertEqual(str(excepted_exception), str(context.exception))
+        return context.exception
