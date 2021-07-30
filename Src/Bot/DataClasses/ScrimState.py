@@ -7,7 +7,6 @@ from enum import Enum
 class ScrimState(Enum):
     """A simple enum class to ease the state management of scrims"""
 
-    INACTIVE = "inactive"
     LFP = "looking for players"
     CAPS_PREP = "waiting to choose captains"
     CAPS = "letting captains pick players"

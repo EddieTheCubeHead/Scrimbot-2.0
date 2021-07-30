@@ -4,6 +4,8 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
+import discord
+
 from Utils.UnittestBase import UnittestBase
 from Utils.TestIdGenerator import TestIdGenerator
 from Bot.DataClasses.Game import Game
@@ -27,6 +29,29 @@ def _fill_teams(manager, max_size, team_count):
     for team_index in range(team_count):
         for player_num in range(max_size):
             manager.add_player(team_index, MagicMock())
+
+
+def generate_mock_voice_state(guild_id: int):
+    mock_guild = MagicMock()
+    mock_channel = MagicMock()
+    mock_voice_state = MagicMock()
+    mock_guild.id = guild_id
+    mock_channel.guild = mock_guild
+    mock_voice_state.channel = mock_channel
+    return mock_voice_state
+
+
+def generate_mock_voice_channel(channel_id: int, guild: discord.Guild = None) -> discord.VoiceChannel:
+    mock_channel = MagicMock()
+    mock_channel.channel_id = channel_id
+    mock_channel.guild = guild
+    return mock_channel
+
+
+def _create_mock_player_with_voice_state(mock_voice_state):
+    new_player = MagicMock()
+    new_player.voice = mock_voice_state
+    return new_player
 
 
 class TestScrimTeamsManager(UnittestBase):
@@ -119,7 +144,8 @@ class TestScrimTeamsManager(UnittestBase):
     def test_init_given_valid_team_voice_channels_then_corresponding_game_team_channels_set(self):
         min_size, max_size, team_count = 5, 5, 3
         mock_game = _create_mock_game(min_size, max_size, team_count)
-        teams_channels = self.id_generator.generate_viable_id_group(team_count)
+        channel_ids = self.id_generator.generate_viable_id_group(team_count)
+        teams_channels = [generate_mock_voice_channel(channel_id) for channel_id in channel_ids]
         manager = ScrimTeamsManager(mock_game, teams_channels)
         for team in manager.get_game_teams():
             self.assertIn(team.voice_channel, teams_channels)
@@ -127,7 +153,7 @@ class TestScrimTeamsManager(UnittestBase):
     def test_init_given_valid_lobby_channel_then_standard_team_channels_set(self):
         min_size, max_size, team_count = 3, 4, 5
         mock_game = _create_mock_game(min_size, max_size, team_count)
-        lobby_channel = self.id_generator.generate_viable_id()
+        lobby_channel = generate_mock_voice_channel(self.id_generator.generate_viable_id())
         manager = ScrimTeamsManager(mock_game, [], lobby_channel)
         for team in manager.get_standard_teams():
             self.assertEqual(team.voice_channel, lobby_channel)
@@ -135,7 +161,8 @@ class TestScrimTeamsManager(UnittestBase):
     def test_init_given_too_many_voice_channels_then_only_needed_channels_assigned(self):
         min_size, max_size, team_count = 2, 7, 4
         mock_game = _create_mock_game(min_size, max_size, team_count)
-        teams_channels = self.id_generator.generate_viable_id_group(team_count + 1)
+        channel_ids = self.id_generator.generate_viable_id_group(team_count + 1)
+        teams_channels = [generate_mock_voice_channel(channel_id) for channel_id in channel_ids]
         manager = ScrimTeamsManager(mock_game, teams_channels)
         for team in manager.get_game_teams():
             self.assertIn(team.voice_channel, teams_channels)
@@ -209,7 +236,7 @@ class TestScrimTeamsManager(UnittestBase):
         mock_player = MagicMock()
         mock_player.display_name = tester_name
         for team in range(team_count):
-            with self.subTest(f"Team {team + 1}"):
+            with self.subTest(f"Adding player to game team with team name (Team {team + 1})"):
                 manager.add_player(f"Team {team + 1}", mock_player)
                 updated_participants = manager.get_game_teams()[team]
                 self.assertIn(mock_player, updated_participants.players)
@@ -221,7 +248,7 @@ class TestScrimTeamsManager(UnittestBase):
         mock_player = MagicMock()
         mock_player.display_name = tester_name
         for team in range(team_count):
-            with self.subTest(f"Team {team + 1}"):
+            with self.subTest(f"Adding player to game team with team number (Team {team + 1})"):
                 manager.add_player(team, mock_player)
                 updated_participants = manager.get_game_teams()[team]
                 self.assertIn(mock_player, updated_participants.players)
@@ -234,7 +261,7 @@ class TestScrimTeamsManager(UnittestBase):
         mock_player = MagicMock()
         mock_player.display_name = tester_name
         for team in range(team_count):
-            with self.subTest(f"Team {team + 1}"):
+            with self.subTest(f"Adding player to full game team (Team {team + 1})"):
                 expected_exception = BotBaseInternalException(f"Tried adding a player into a "
                                                               f"full team (Team {team + 1})")
                 self._assert_raises_correct_exception(expected_exception, manager.add_player, team, mock_player)
@@ -268,7 +295,7 @@ class TestScrimTeamsManager(UnittestBase):
         manager = _setup_manager()
         mock_player = MagicMock()
         for index, team in enumerate([manager.PARTICIPANTS, manager.SPECTATORS, manager.QUEUE]):
-            with self.subTest(team):
+            with self.subTest(f"Remove player from standard team ({team})"):
                 manager.add_player(team, mock_player)
                 manager.remove_player(team, mock_player)
                 standard_teams = manager.get_standard_teams()
@@ -279,7 +306,7 @@ class TestScrimTeamsManager(UnittestBase):
         manager = _setup_manager(min_size, max_size, team_count)
         mock_player = MagicMock()
         for team in range(team_count):
-            with self.subTest(f"Team {team + 1}"):
+            with self.subTest(f"Remove player from team with team name (Team {team + 1})"):
                 manager.add_player(team, mock_player)
                 manager.remove_player(team, mock_player)
                 game_teams = manager.get_game_teams()
@@ -383,6 +410,95 @@ class TestScrimTeamsManager(UnittestBase):
     def test_has_participants_when_no_participants_present_returns_false(self):
         manager = _setup_manager()
         self.assertFalse(manager.has_participants)
+
+    def test_all_players_in_voice_chat_when_all_players_are_in_voice_chat_returns_true(self):
+        min_size, max_size, team_count = 5, 5, 3
+        mock_guild = self._create_mock_guild()
+        manager = self._setup_mock_game_with_voice(max_size, min_size, team_count, mock_guild)
+        mock_voice_state = generate_mock_voice_state(mock_guild.id)
+        for team in range(team_count):
+            for _ in range(min_size):
+                manager.add_player(team, _create_mock_player_with_voice_state(mock_voice_state))
+        self.assertTrue(manager.all_players_in_voice_chat)
+
+    def test_all_players_in_voice_chat_when_one_player_not_in_voice_chat_returns_false(self):
+        min_size, max_size, team_count = 5, 6, 3
+        mock_guild = self._create_mock_guild()
+        manager = self._setup_mock_game_with_voice(max_size, min_size, team_count, mock_guild)
+        mock_voice_state = generate_mock_voice_state(mock_guild.id)
+        for team in range(team_count):
+            for _ in range(min_size):
+                manager.add_player(team, _create_mock_player_with_voice_state(mock_voice_state))
+        manager.add_player(0, MagicMock())
+        self.assertFalse(manager.all_players_in_voice_chat)
+
+    def test_all_players_in_voice_chat_when_one_player_in_wrong_voice_chat_returns_false(self):
+        min_size, max_size, team_count = 5, 7, 3
+        mock_guild = self._create_mock_guild()
+        manager = self._setup_mock_game_with_voice(max_size, min_size, team_count, mock_guild)
+        mock_voice_state = generate_mock_voice_state(mock_guild.id)
+        for team in range(team_count):
+            for _ in range(min_size):
+                manager.add_player(team, _create_mock_player_with_voice_state(mock_voice_state))
+        invalid_player = _create_mock_player_with_voice_state(
+            generate_mock_voice_state(self.id_generator.generate_viable_id()))
+        manager.add_player(0, invalid_player)
+        self.assertFalse(manager.all_players_in_voice_chat)
+
+    def test_try_move_to_voice_when_all_players_present_then_all_players_moved_to_their_teams_voice_channel(self):
+        min_size, max_size, team_count = 5, 5, 3
+        mock_guild = self._create_mock_guild()
+        manager = self._setup_mock_game_with_voice(max_size, min_size, team_count, mock_guild)
+        mock_voice_state = generate_mock_voice_state(mock_guild.id)
+        for team in range(team_count):
+            for _ in range(min_size):
+                manager.add_player(team, _create_mock_player_with_voice_state(mock_voice_state))
+        self.assertTrue(manager.try_move_to_voice())
+        for team in manager.get_game_teams():
+            for player in team.players:
+                player.move_to.assert_called()
+
+    def test_try_move_to_voice_when_one_player_not_in_voice_chat_returns_false(self):
+        min_size, max_size, team_count = 5, 6, 3
+        mock_guild = self._create_mock_guild()
+        manager = self._setup_mock_game_with_voice(max_size, min_size, team_count, mock_guild)
+        mock_voice_state = generate_mock_voice_state(mock_guild.id)
+        for team in range(team_count):
+            for _ in range(min_size):
+                manager.add_player(team, _create_mock_player_with_voice_state(mock_voice_state))
+        manager.add_player(0, MagicMock())
+        self.assertFalse(manager.try_move_to_voice())
+        for team in manager.get_game_teams():
+            for player in team.players:
+                player.move_to.assert_not_called()
+
+    def test_try_move_to_voice_when_one_player_in_wrong_voice_chat_returns_false(self):
+        min_size, max_size, team_count = 5, 7, 3
+        mock_guild = self._create_mock_guild()
+        manager = self._setup_mock_game_with_voice(max_size, min_size, team_count, mock_guild)
+        mock_voice_state = generate_mock_voice_state(mock_guild.id)
+        for team in range(team_count):
+            for _ in range(min_size):
+                manager.add_player(team, _create_mock_player_with_voice_state(mock_voice_state))
+        manager.add_player(0, _create_mock_player_with_voice_state(
+            generate_mock_voice_state(self.id_generator.generate_viable_id())))
+        self.assertFalse(manager.try_move_to_voice())
+        for team in manager.get_game_teams():
+            for player in team.players:
+                player.move_to.assert_not_called()
+
+    def _create_mock_guild(self):
+        guild_id = self.id_generator.generate_viable_id()
+        mock_guild = MagicMock()
+        mock_guild.id = guild_id
+        return mock_guild
+
+    def _setup_mock_game_with_voice(self, max_size, min_size, team_count, mock_guild):
+        mock_game = _create_mock_game(min_size, max_size, team_count)
+        channel_ids = self.id_generator.generate_viable_id_group(team_count)
+        teams_channels = [generate_mock_voice_channel(channel_id, mock_guild) for channel_id in channel_ids]
+        manager = ScrimTeamsManager(mock_game, teams_channels)
+        return manager
 
     def _assert_valid_standard_teams(self, standard_teams, max_size, min_size, team_count):
         for team_name in [ScrimTeamsManager.PARTICIPANTS, ScrimTeamsManager.SPECTATORS, ScrimTeamsManager.QUEUE]:
