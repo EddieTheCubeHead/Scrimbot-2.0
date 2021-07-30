@@ -37,13 +37,20 @@ class Scrim:
         self.teams_manager.clear_queue()
 
     def start(self):
+        self._assert_valid_starting_teams()
+        self._secure_state_change(ScrimState.STARTED, ScrimState.LOCKED, ScrimState.CAPS)
+
+    def _assert_valid_starting_teams(self):
         if not self.teams_manager.has_full_teams:
             raise BotBaseUserException("Could not start the scrim. Some teams lack the minimum number of players "
                                        "required.", send_help=False)
         if self.teams_manager.has_participants:
             raise BotBaseUserException("Could not start the scrim. All participants are not in a team.",
                                        send_help=False)
-        self._secure_state_change(ScrimState.STARTED, ScrimState.LOCKED, ScrimState.CAPS)
 
     def start_with_voice(self):
+        self._assert_valid_starting_teams()
+        self._secure_state_change(ScrimState.VOICE_WAIT, ScrimState.LOCKED, ScrimState.CAPS)
+        if self.teams_manager.try_move_to_voice():
+            pass
         pass

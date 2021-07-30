@@ -96,5 +96,33 @@ class TestScrim(UnittestBase, IsolatedAsyncioTestCase):
     def test_start_with_voice_given_valid_conditions_then_move_voice_called_from_teams_manager(self):
         self.mock_manager.has_participants = False
         self.mock_manager.has_full_teams = True
+        self.mock_manager.all_players_in_voice_chat = True
+        valid_states = (ScrimState.LOCKED, ScrimState.CAPS)
+        for state in valid_states:
+            with self.subTest(f"Starting with voice chat when in valid state: {state.name}"):
+                self.scrim.state = state
+                self.scrim.start_with_voice()
+                self.mock_manager.try_move_to_voice.assert_called()
+
+    def test_start_with_voice_given_invalid_state_then_error_raised(self):
+        self.mock_manager.has_participants = False
+        self.mock_manager.has_full_teams = True
+        self.mock_manager.all_players_in_voice_chat = True
+        invalid_states = (ScrimState.LFP, ScrimState.STARTED, ScrimState.VOICE_WAIT, ScrimState.CAPS_PREP)
+        for state in invalid_states:
+            with self.subTest(f"Starting with voice chat when in invalid state: {state.name}"):
+                self.scrim.state = state
+                expected_exception = BotBaseInternalException("Tried to perform an invalid state change from state "
+                                                              f"{state.name} to {ScrimState.VOICE_WAIT.name}")
+                self._assert_raises_correct_exception(expected_exception, self.scrim.start_with_voice)
+
+    def test_start_with_voice_given_participants_left_then_error_raised(self):
+        mock_ctx = MagicMock()
+        self.mock_manager.has_participants = True
+        self.mock_manager.has_full_teams = True
+        self.mock_manager.all_players_in_voice_chat = True
         self.scrim.state = ScrimState.LOCKED
-        self.scrim.start_with_voice()
+        expected_exception = BotBaseUserException("Could not start the scrim. All participants are not in a team.",
+                                                  send_help=False)
+        actual_exception = self._assert_raises_correct_exception(expected_exception, self.scrim.start_with_voice)
+        self.assertEqual(expected_exception.get_help_portion(mock_ctx), actual_exception.get_help_portion(mock_ctx))

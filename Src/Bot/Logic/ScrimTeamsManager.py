@@ -29,6 +29,20 @@ def _assert_valid_removal(player, team):
                                        "even though they are not a member of the team.")
 
 
+def is_in_guild_voice_chat(guild: discord.Guild, player: discord.Member):
+    return player.voice is not None and player.voice.channel.guild.id == guild.id
+
+
+def has_all_players_in_guild_voice_chat(team: ScrimTeam):
+    return all([is_in_guild_voice_chat(team.voice_channel.guild, player) for player in team.players])
+
+
+async def _move_team_to_voice(team):
+    for player in team.players:
+        if player.voice:
+            await player.move_to(team.voice_channel, reason="Setting up a scrim.")
+
+
 class ScrimTeamsManager:
     """A class to be used inside a Scrim instance, meant for managing the separate teams in the scrim
     """
@@ -36,8 +50,8 @@ class ScrimTeamsManager:
     SPECTATORS = "Spectators"
     QUEUE = "Queue"
 
-    def __init__(self, game: Game, team_channels: List[int] = None, lobby: int = None, *,
-                 teams: List[ScrimTeam] = None):
+    def __init__(self, game: Game, team_channels: List[discord.VoiceChannel] = None, lobby: discord.VoiceChannel = None,
+                 *, teams: List[ScrimTeam] = None):
         _assert_valid_game(game)
         self._game: Game = game
         self._teams: Dict[str, ScrimTeam] = {}
@@ -65,6 +79,10 @@ class ScrimTeamsManager:
     @property
     def has_participants(self):
         return len(self._teams[self.PARTICIPANTS].players) > 0
+
+    @property
+    def all_players_in_voice_chat(self):
+        return all([has_all_players_in_guild_voice_chat(team) for team in self.get_game_teams()])
 
     def get_standard_teams(self):
         return list(self._teams.values())[self._game.team_count:]
@@ -194,3 +212,13 @@ class ScrimTeamsManager:
 
     def clear_queue(self):
         self._get_team(self.QUEUE).players.clear()
+
+    async def try_move_to_voice(self) -> bool:
+        if not self.all_players_in_voice_chat:
+            return False
+        await self._move_players_to_voice()
+        return True
+
+    async def _move_players_to_voice(self):
+        for team in self.get_game_teams():
+            await _move_team_to_voice(team)
