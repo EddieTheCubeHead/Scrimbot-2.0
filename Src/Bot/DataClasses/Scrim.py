@@ -20,8 +20,10 @@ from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Src.Database.DatabaseManager import DatabaseManager
 from Bot.Converters.Convertable import Convertable
+from Bot.Core.ConvertableConstructor import ConvertableConstructor
 
 
+@ConvertableConstructor.convertable
 class Scrim(Convertable):
     """A class that houses data storage and implements data manipulation methods for the scrims themselves
 

@@ -1,20 +1,20 @@
+from __future__ import annotations
+
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from abc import ABC
 
-from Bot.Converters.ConverterBase import ConverterBase
-
 
 class Convertable(ABC):
 
-    converter: ConverterBase = None
+    converter = None
 
     @classmethod
-    def set_converter(cls, converter: ConverterBase):
+    def set_converter(cls, converter):
         cls.converter = converter
         return converter
 
     @classmethod
-    async def convert(cls, argument: str):
+    async def convert(cls, argument: str) -> Convertable:
         return await cls.converter.convert(argument)

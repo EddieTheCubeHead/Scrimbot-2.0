@@ -7,7 +7,10 @@ import discord
 
 from Bot.Converters.Convertable import Convertable
 
+from Bot.Core.ConvertableConstructor import ConvertableConstructor
 
+
+@ConvertableConstructor.convertable
 class ScrimTeam(Convertable):
 
     def __init__(self, name: str, players: List[discord.Member] = None, min_size=0, max_size=0):

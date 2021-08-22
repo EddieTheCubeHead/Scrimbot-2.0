@@ -3,16 +3,19 @@ __author__ = "Eetu Asikainen"
 
 from typing import Tuple, List, Dict, Iterator, Set
 
+from Bot.Converters.ConverterBase import ConverterBase
 from Bot.DataClasses.Game import Game
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 from Bot.Core.ConvertableConstructor import ConvertableConstructor
+from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
 @ConvertableConstructor.converter
-class GameConverter:
+class GameConverter(ConverterBase[Game]):
 
-    def __init__(self):
+    def __init__(self, connection: ConnectionBase):
+        super().__init__(connection)
         self.games: Dict[str, Game] = {}
         self._aliases: Set = set()
 

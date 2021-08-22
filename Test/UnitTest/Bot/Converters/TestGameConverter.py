@@ -1,6 +1,8 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from unittest.mock import MagicMock
+
 from Utils.UnittestBase import UnittestBase
 from Utils.TestIdGenerator import TestIdGenerator
 from Bot.DataClasses.Game import Game
@@ -17,7 +19,8 @@ class TestGameConverter(UnittestBase):
         cls.id_mocker = TestIdGenerator()
 
     def setUp(self) -> None:
-        self.provider = GameConverter()
+        self.connection = MagicMock()
+        self.provider = GameConverter(self.connection)
 
     def test_init_given_normal_init_then_converter_for_game_dataclass_set(self):
         self.assertIn(GameConverter, ConvertableConstructor.converters.values())
