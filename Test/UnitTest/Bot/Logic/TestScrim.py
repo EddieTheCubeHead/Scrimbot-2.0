@@ -2,7 +2,6 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
-from unittest import IsolatedAsyncioTestCase
 
 from Utils.UnittestBase import UnittestBase
 from Utils.TestIdGenerator import TestIdGenerator
@@ -13,7 +12,7 @@ from Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
 
-class TestScrim(UnittestBase, IsolatedAsyncioTestCase):
+class TestScrim(UnittestBase):
 
     @classmethod
     def setUpClass(cls) -> None:

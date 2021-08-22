@@ -4,19 +4,23 @@ __author__ = "Eetu Asikainen"
 from Utils.UnittestBase import UnittestBase
 from Utils.TestIdGenerator import TestIdGenerator
 from Bot.DataClasses.Game import Game
-from Bot.Providers.GamesProvider import GamesProvider
+from Bot.Converters.GameConverter import GameConverter
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
+from Bot.Core.ConvertableConstructor import ConvertableConstructor
 
 
-class TestGamesProvider(UnittestBase):
+class TestGameConverter(UnittestBase):
 
     @classmethod
     def setUpClass(cls) -> None:
         cls.id_mocker = TestIdGenerator()
 
     def setUp(self) -> None:
-        self.provider = GamesProvider()
+        self.provider = GameConverter()
+
+    def test_init_given_normal_init_then_converter_for_game_dataclass_set(self):
+        self.assertIn(GameConverter, ConvertableConstructor.converters.values())
 
     def test_init_games_given_valid_game_data_list_then_all_games_build(self):
         game_names = ["Dota 2", "CS:GO", "Valorant", "Test"]

@@ -14,7 +14,7 @@ from Bot.DataClasses.Scrim import Scrim
 from Bot.Logic.BotHelpCommand import BotHelpCommand
 from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
-from Src.Bot.ScrimContext import ScrimContext
+from Bot.Core.ScrimContext import ScrimContext
 
 
 class ScrimClient(commands.Bot):
@@ -69,7 +69,7 @@ class ScrimClient(commands.Bot):
     def _setup_cogs(self):
         """A private helper method for loading and starting all the cogs of the bot."""
 
-        for cog in os.listdir("Cogs"):
+        for cog in os.listdir("../Cogs"):
             if cog[-3:] == ".py":
                 self.load_extension(f"Cogs.{cog[:-3]}")
 

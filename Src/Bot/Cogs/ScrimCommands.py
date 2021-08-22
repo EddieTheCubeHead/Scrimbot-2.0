@@ -3,12 +3,12 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
 
-from Src.Bot.ScrimClient import ScrimClient
-import Src.Bot.checks as checks
-import Src.Bot.converters as converters
+from Bot.Core.ScrimClient import ScrimClient
+import Bot.Core.checks as checks
+import Bot.Core.converters as converters
 from Bot.DataClasses.Game import Game
 from Src.Bot.DataClasses.ScrimState import ScrimState
-from Src.Bot.ScrimContext import ScrimContext
+from Bot.Core.ScrimContext import ScrimContext
 
 
 class ScrimCommands(commands.Cog):

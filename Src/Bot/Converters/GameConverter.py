@@ -6,9 +6,11 @@ from typing import Tuple, List, Dict, Iterator, Set
 from Bot.DataClasses.Game import Game
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
+from Bot.Core.ConvertableConstructor import ConvertableConstructor
 
 
-class GamesProvider:
+@ConvertableConstructor.converter
+class GameConverter:
 
     def __init__(self):
         self.games: Dict[str, Game] = {}
@@ -20,7 +22,7 @@ class GamesProvider:
 
     def add_game(self, game: Tuple[str, str, str, int, int, int, List[str]]):
         self._assert_valid_game_name(game[0])
-        if len(game) > 6 and game[6]:
+        if len(game) > 6:
             self._assert_valid_aliases(game[6])
         self._raw_add_game(game)
 

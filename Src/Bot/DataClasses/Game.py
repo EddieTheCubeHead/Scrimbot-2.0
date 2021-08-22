@@ -4,8 +4,10 @@ __author__ = "Eetu Asikainen"
 
 from typing import List
 
+from Bot.Converters.Convertable import Convertable
 
-class Game:
+
+class Game(Convertable):
 
     def __init__(self, name: str, colour: str, icon: str, min_team_size: int, max_team_size: int = None,
                  team_count: int = 2, aliases: List[str] = None):

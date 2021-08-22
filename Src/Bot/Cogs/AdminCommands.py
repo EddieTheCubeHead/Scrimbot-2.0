@@ -6,7 +6,7 @@ from typing import Optional
 import discord
 from discord.ext import commands
 
-from Src.Bot.ScrimClient import ScrimClient
+from Bot.Core.ScrimClient import ScrimClient
 from Bot.DataClasses.Scrim import Scrim
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 

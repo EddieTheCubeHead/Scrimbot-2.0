@@ -2,6 +2,7 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 
+import unittest
 from unittest.mock import MagicMock
 
 import discord
@@ -15,7 +16,7 @@ from Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
 
-def _setup_manager(min_size = 5, max_size = 5, team_count = 2):
+def _setup_manager(min_size=5, max_size=5, team_count=2):
     mock_game = _create_mock_game(min_size, max_size, team_count)
     return ScrimTeamsManager(mock_game)
 
@@ -445,6 +446,7 @@ class TestScrimTeamsManager(UnittestBase):
         manager.add_player(0, invalid_player)
         self.assertFalse(manager.all_players_in_voice_chat)
 
+    @unittest.skip("Waiting for scrim task cog")
     def test_try_move_to_voice_when_all_players_present_then_all_players_moved_to_their_teams_voice_channel(self):
         min_size, max_size, team_count = 5, 5, 3
         mock_guild = self._create_mock_guild()
@@ -458,6 +460,7 @@ class TestScrimTeamsManager(UnittestBase):
             for player in team.players:
                 player.move_to.assert_called()
 
+    @unittest.skip("Waiting for scrim task cog")
     def test_try_move_to_voice_when_one_player_not_in_voice_chat_returns_false(self):
         min_size, max_size, team_count = 5, 6, 3
         mock_guild = self._create_mock_guild()
@@ -472,6 +475,7 @@ class TestScrimTeamsManager(UnittestBase):
             for player in team.players:
                 player.move_to.assert_not_called()
 
+    @unittest.skip("Waiting for scrim task cog")
     def test_try_move_to_voice_when_one_player_in_wrong_voice_chat_returns_false(self):
         min_size, max_size, team_count = 5, 7, 3
         mock_guild = self._create_mock_guild()
