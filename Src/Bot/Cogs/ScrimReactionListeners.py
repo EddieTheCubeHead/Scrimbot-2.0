@@ -6,7 +6,7 @@ from discord.ext import commands
 
 from Src.Bot.DataClasses.ScrimState import ScrimState
 from Bot.Core.ScrimClient import ScrimClient
-from Bot.DataClasses.Scrim import Scrim
+from Bot.DataClasses.ScrimChannel import ScrimChannel
 
 
 class ScrimReactionListeners(commands.Cog):
@@ -46,7 +46,7 @@ class ScrimReactionListeners(commands.Cog):
         if user.bot:
             return
 
-        scrim = await Scrim.get_from_reaction(react)
+        scrim = await ScrimChannel.get_from_reaction(react)
         if not scrim:
             return
 
@@ -89,7 +89,7 @@ class ScrimReactionListeners(commands.Cog):
         if user.bot:
             return
 
-        scrim = await Scrim.get_from_reaction(react)
+        scrim = await ScrimChannel.get_from_reaction(react)
         if not scrim:
             return
 

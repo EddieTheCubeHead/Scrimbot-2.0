@@ -13,7 +13,7 @@ from Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
 
-class Scrim:
+class ScrimManager:
 
     def __init__(self, teams_manager: ScrimTeamsManager):
         self.teams_manager = teams_manager

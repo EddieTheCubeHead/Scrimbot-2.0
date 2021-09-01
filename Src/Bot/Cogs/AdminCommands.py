@@ -7,7 +7,7 @@ import discord
 from discord.ext import commands
 
 from Bot.Core.ScrimClient import ScrimClient
-from Bot.DataClasses.Scrim import Scrim
+from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 
 
@@ -109,7 +109,7 @@ class AdminCommands(commands.Cog):
 
         team_1_id, team_2_id, spectator_id = self._sanitize_channels(team_1_voice, team_2_voice, spectator_voice)
         self._client.database_manager.register_scrim_channel(ctx.channel.id, team_1_id, team_2_id, spectator_id)
-        Scrim(ctx.channel, team_1_voice, team_2_voice, spectator_voice)
+        ScrimChannel(ctx.channel, team_1_voice, team_2_voice, spectator_voice)
 
         # I hate constructing strings like this, but backslashes tend to cause unnecessary spaces in the bot message
         success_info = f"Successfully registered the channel '{ctx.channel}' for scrim usage."

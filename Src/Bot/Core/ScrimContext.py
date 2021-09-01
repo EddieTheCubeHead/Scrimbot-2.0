@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
 
-from Bot.DataClasses.Scrim import Scrim
+from Bot.DataClasses.ScrimChannel import ScrimChannel
 
 
 class ScrimContext(commands.Context):
@@ -12,9 +12,9 @@ class ScrimContext(commands.Context):
         super().__init__(**kwargs)
         self._scrim = None
 
-    async def get_scrim(self) -> Scrim:
+    async def get_scrim(self) -> ScrimChannel:
         if self._scrim:
             return self._scrim
 
         else:
-            return await Scrim.get_scrim(self)
+            return await ScrimChannel.get_scrim(self)

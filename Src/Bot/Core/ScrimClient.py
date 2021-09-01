@@ -10,7 +10,7 @@ from discord.ext import commands
 
 from Bot.DataClasses.Game import Game
 from Src.Database.DatabaseManager import DatabaseManager
-from Bot.DataClasses.Scrim import Scrim
+from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.Logic.BotHelpCommand import BotHelpCommand
 from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
@@ -35,7 +35,7 @@ class ScrimClient(commands.Bot):
         self.logger.addHandler(handler)
 
         self.database_manager = DatabaseManager()
-        Scrim.set_database_manager(self.database_manager)
+        ScrimChannel.set_database_manager(self.database_manager)
 
         # Initializing games into memory
         Game.init_games(self.database_manager.games_init_generator())

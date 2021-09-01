@@ -4,14 +4,24 @@ __author__ = "Eetu Asikainen"
 from typing import List, Optional
 
 import discord
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
 
-from Bot.Converters.Convertable import Convertable
+from Bot.DataClasses.Convertable import Convertable
 
-from Bot.Core.ConvertableConstructor import ConvertableConstructor
+from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
 
 
-@ConvertableConstructor.convertable
+@BotDependencyConstructor.convertable
 class ScrimTeam(Convertable):
+
+    name = Column(String, primary_key=True)
+    code = Column(String, unique=True, nullable=True)
+    min_size = Column(Integer, nullable=False)
+    maz_size = Column(Integer, nullable=True, default=None)  # note: None = min_size, while 0 = no limit
+    voice_channel_id = Column(Integer, ForeignKey("VoiceChannels.channel_id"), nullable=True)
+
+    voice_channel = relationship("VoiceChannel", back_populates="teams")
 
     def __init__(self, name: str, players: List[discord.Member] = None, min_size=0, max_size=0):
         """The constructor of ScrimTeam

@@ -6,4 +6,10 @@ from Database.DatabaseConnections.MasterConnection import MasterConnection
 
 
 class TestMasterConnection(UnittestBase):
-    pass
+
+    def setUp(self) -> None:
+        self.db_path = ":memory:"
+        self.connection = MasterConnection(self.db_path)
+
+    def test_init_given_valid_path_then_connection_created(self):
+        pass

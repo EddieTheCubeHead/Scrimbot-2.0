@@ -5,7 +5,7 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
 
-from Bot.DataClasses.Scrim import Scrim
+from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Src.Bot.DataClasses.ScrimState import ScrimState
 from Src.Bot.Exceptions.BotCheckFailure import BotCheckFailure
 
@@ -14,7 +14,7 @@ def free_scrim():
     """A check that requires the channel to be eligible for scrims and not have a currently active scrim."""
 
     async def predicate(ctx: commands.Context):
-        scrim = await Scrim.get_scrim(ctx)
+        scrim = await ScrimChannel.get_scrim(ctx)
         if not scrim.state == ScrimState.INACTIVE:
             raise BotCheckFailure("There is already an active scrim on the channel.")
         return True
@@ -25,7 +25,7 @@ def active_scrim():
     """A check that requires the channel to have an active scrim and the user to have permissions to that scirm."""
 
     async def predicate(ctx: commands.Context):
-        scrim = await Scrim.get_scrim(ctx)
+        scrim = await ScrimChannel.get_scrim(ctx)
         if ctx.author != scrim.master:
             raise BotCheckFailure("Only the scrim creator can do that.")
         elif scrim.state == ScrimState.INACTIVE:
@@ -38,7 +38,7 @@ def require_state(*valid_states: ScrimState):
     """A check that takes a list of valid scrim states and requires the scrim to be in one of them."""
 
     async def predicate(ctx: commands.Context):
-        scrim = await Scrim.get_scrim(ctx)
+        scrim = await ScrimChannel.get_scrim(ctx)
         if scrim.state not in valid_states:
             valid_state_explanation = "To use the command make sure the scrim is "
             if len(valid_states) == 1:

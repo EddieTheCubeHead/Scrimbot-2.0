@@ -7,11 +7,11 @@ from Bot.Converters.ConverterBase import ConverterBase
 from Bot.DataClasses.Game import Game
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
-from Bot.Core.ConvertableConstructor import ConvertableConstructor
+from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
-@ConvertableConstructor.converter
+@BotDependencyConstructor.converter
 class GameConverter(ConverterBase[Game]):
 
     def __init__(self, connection: ConnectionBase):
@@ -37,7 +37,7 @@ class GameConverter(ConverterBase[Game]):
 
     def _get_game_from_alias(self, alias: str) -> Game:
         for game in self.games.values():
-            if alias in game.aliases:
+            if alias in game.alias_list:
                 return game
         raise BotConversionFailureException("Game", alias)
 

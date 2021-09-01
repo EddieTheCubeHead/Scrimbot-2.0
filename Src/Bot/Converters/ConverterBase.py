@@ -1,10 +1,9 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
 
-from Bot.Converters.Convertable import Convertable
+from Bot.DataClasses.Convertable import Convertable
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 T = TypeVar('T', bound=Convertable)

@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
 
-from Bot.Converters.Convertable import Convertable
+from Bot.DataClasses.Convertable import Convertable
 
 T = TypeVar('T', bound=Convertable)
 
