@@ -23,7 +23,7 @@ class Game(Convertable):
 
     aliases = relationship("Alias", back_populates="game")
     elos = relationship("UserElo", back_populates="game")
-    matches = relationship("Match", back_populates="game")
+    scrims = relationship("Scrim", back_populates="game")
 
     def __init__(self, name: str, colour: str, icon: str, min_team_size: int, max_team_size: int = None,
                  team_count: int = 2, aliases: list[Alias] = None):

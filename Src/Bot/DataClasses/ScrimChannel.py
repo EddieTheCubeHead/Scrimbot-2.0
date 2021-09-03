@@ -10,6 +10,7 @@ from sqlalchemy.orm import relationship
 from Bot.DataClasses.Convertable import Convertable
 from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
 from Bot.DataClasses.VoiceChannel import VoiceChannel
+from Bot.DataClasses.Scrim import Scrim
 
 
 @BotDependencyConstructor.convertable
@@ -20,6 +21,7 @@ class ScrimChannel(Convertable):
 
     guild = relationship("Guild", back_populates="scrim_channels")
     voice_channels = relationship("VoiceChannel", back_populates="parent_channel")
+    scrims = relationship("Scrim", back_populates="scrim_channel")
 
     def __init__(self, channel_id: int, guild_id: int, *voice_channels: VoiceChannel):
         """A constructor for the Scrim class
