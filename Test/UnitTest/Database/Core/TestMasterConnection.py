@@ -14,6 +14,6 @@ class TestMasterConnection(UnittestBase):
         self.connection = MasterConnection(self.db_address)
 
     def test_get_session_given_db_address_given_then_session_connected_to_db_recieved(self):
-        session: sqlalchemy.orm.Session = self.connection.get_session()
-        self.assertEqual(self.db_address, session.bind.engine.url.database)
+        with self.connection.get_session() as session:
+            self.assertEqual(self.db_address, session.bind.engine.url.database)
 

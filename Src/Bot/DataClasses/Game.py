@@ -26,7 +26,7 @@ class Game(Convertable):
     matches = relationship("Match", back_populates="game")
 
     def __init__(self, name: str, colour: str, icon: str, min_team_size: int, max_team_size: int = None,
-                 team_count: int = 2, aliases: list[str] = None):
+                 team_count: int = 2, aliases: list[Alias] = None):
         """A constructor for the Game-class
 
         args
@@ -52,7 +52,7 @@ class Game(Convertable):
         self.name = name
         self.colour = int(colour, 16)
         self.icon = icon
-        self.alias_list = aliases
+        self.aliases = aliases or []
         self.min_team_size = min_team_size
         self.max_team_size: int = max_team_size if max_team_size is not None else min_team_size
         self.team_count = team_count

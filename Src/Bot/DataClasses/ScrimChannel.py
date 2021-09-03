@@ -21,7 +21,7 @@ class ScrimChannel(Convertable):
     guild = relationship("Guild", back_populates="scrim_channels")
     voice_channels = relationship("VoiceChannel", back_populates="parent_channel")
 
-    def __init__(self, channel_id: int, guild_id: int, *voice_channels: int):
+    def __init__(self, channel_id: int, guild_id: int, *voice_channels: VoiceChannel):
         """A constructor for the Scrim class
 
         args
@@ -37,4 +37,4 @@ class ScrimChannel(Convertable):
 
         self.channel_id: int = channel_id
         self.guild_id: int = guild_id
-        self._voice_channels: tuple[int] = voice_channels
+        self.voice_channels: list[VoiceChannel] = list(voice_channels)

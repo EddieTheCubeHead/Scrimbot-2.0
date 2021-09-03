@@ -14,3 +14,6 @@ class Alias(Convertable):
 
     game = relationship("Game", back_populates="aliases")
 
+    def __init__(self, name: str, game_name: str):
+        self.name = name
+        self.game_name = game_name

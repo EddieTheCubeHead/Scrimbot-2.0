@@ -27,7 +27,7 @@ class GamesDatabaseManager(DatabaseManager):
     def init_database(self):
         self._create_tables("Games", "Aliases", "Matches", "Participants", "UserElos")
 
-        with open(f"{self.path}/games_init.json") as games_file:
+        with open(f"{self.path}/../Configs/games_init.json") as games_file:
             games: Dict[str, Dict[str, Union[str, int]]] = json.load(games_file)
 
         for game_item in games.items():

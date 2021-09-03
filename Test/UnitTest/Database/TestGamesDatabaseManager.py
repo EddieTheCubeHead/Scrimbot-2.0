@@ -48,7 +48,7 @@ class TestGamesDatabaseManager(UnittestBase):
             self._assert_table_exists(table)
 
     def test_setup_given_normal_setup_then_all_games_initialized(self):
-        with open(f"{self.manager.path}/games_init.json") as games_file:
+        with open(f"{self.manager.path}/../Configs/games_init.json") as games_file:
             games: Dict[str, Dict[str, Union[str, int]]] = json.load(games_file)
             for game in games:
                 self._assert_game_exists(game)
