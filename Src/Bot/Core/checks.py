@@ -1,13 +1,13 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-"""A module containing the custom checks used by the bot."""
-
 from discord.ext import commands
 
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Src.Bot.DataClasses.ScrimState import ScrimState
 from Src.Bot.Exceptions.BotCheckFailure import BotCheckFailure
+
+"""A module containing the custom checks used by the bot."""
 
 
 def free_scrim():
@@ -15,7 +15,7 @@ def free_scrim():
 
     async def predicate(ctx: commands.Context):
         scrim = await ScrimChannel.get_scrim(ctx)
-        if not scrim.state == ScrimState.INACTIVE:
+        if scrim is not None:
             raise BotCheckFailure("There is already an active scrim on the channel.")
         return True
     return commands.check(predicate)
@@ -26,10 +26,10 @@ def active_scrim():
 
     async def predicate(ctx: commands.Context):
         scrim = await ScrimChannel.get_scrim(ctx)
+        if scrim is None:
+            raise BotCheckFailure("That command requires an active scrim on the channel.")
         if ctx.author != scrim.master:
             raise BotCheckFailure("Only the scrim creator can do that.")
-        elif scrim.state == ScrimState.INACTIVE:
-            raise BotCheckFailure("That command requires an active scrim on the channel.")
         return True
     return commands.check(predicate)
 
@@ -48,6 +48,7 @@ def require_state(*valid_states: ScrimState):
             else:
                 valid_state_explanation += ", ".join(*valid_states[:-1])
                 valid_state_explanation += f" or {valid_states[-1]}"
-            raise BotCheckFailure(f"This command is not available when scrim is {scrim.state}.")
+            raise BotCheckFailure(f"This command is not available when scrim is {scrim.state}.\n"
+                                  f"{valid_state_explanation}")
         return True
     return commands.check(predicate)

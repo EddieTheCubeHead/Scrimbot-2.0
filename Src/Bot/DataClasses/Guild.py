@@ -20,3 +20,4 @@ class Guild(Convertable):
     user_elos = relationship("UserElo", back_populates="guild")
     bot_rights = relationship("GuildBotRight", back_populates="guild")
     scrim_channels = relationship("ScrimChannel", back_populates="guild")
+    teams = relationship("Team", back_populates="guild")

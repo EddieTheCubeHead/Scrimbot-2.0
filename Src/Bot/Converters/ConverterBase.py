@@ -6,13 +6,13 @@ from typing import Generic, TypeVar
 from Bot.DataClasses.Convertable import Convertable
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
-T = TypeVar('T', bound=Convertable)
+T = TypeVar('T', bound=Convertable)  # pylint: disable=invalid-name
 
 
-class ConverterBase(Generic[T]):
+class ConverterBase(Generic[T]):  # pylint: disable=too-few-public-methods
 
     def __init__(self, connection: ConnectionBase):  # pragma: no cover
         self.connection: ConnectionBase[T] = connection
 
-    async def convert(self, argument: str) -> T:  # pragma: no cover
+    def convert(self, argument: str) -> T:  # pragma: no cover
         pass

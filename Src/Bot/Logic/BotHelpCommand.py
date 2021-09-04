@@ -82,7 +82,7 @@ class BotHelpCommand(commands.DefaultHelpCommand):
 
     def _matches_optional(self, param: str):
         """A private helper method returning whether a param type string matches typing.Optional[type]"""
-        return re.fullmatch("Optional\[.*\]", param)
+        return re.fullmatch(r"Optional[.*]", param)
 
     def _help_command_builder(self, command: commands.Command, description: str,
                               param_data: List[Tuple[str, str, str]]):

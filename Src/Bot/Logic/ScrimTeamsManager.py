@@ -6,7 +6,7 @@ from typing import List, Dict, Union, Optional
 import discord
 
 from Bot.DataClasses.Game import Game
-from Bot.DataClasses.ScrimTeam import ScrimTeam
+from Bot.DataClasses.Team import Team
 from Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
@@ -33,7 +33,7 @@ def is_in_guild_voice_chat(guild: discord.Guild, player: discord.Member):
     return player.voice is not None and player.voice.channel.guild.id == guild.id
 
 
-def has_all_players_in_guild_voice_chat(team: ScrimTeam):
+def has_all_players_in_guild_voice_chat(team: Team):
     return all([is_in_guild_voice_chat(team.voice_channel.guild, player) for player in team.players])
 
 
@@ -51,10 +51,10 @@ class ScrimTeamsManager:
     QUEUE = "Queue"
 
     def __init__(self, game: Game, team_channels: List[discord.VoiceChannel] = None, lobby: discord.VoiceChannel = None,
-                 *, teams: List[ScrimTeam] = None):
+                 *, teams: List[Team] = None):
         _assert_valid_game(game)
         self._game: Game = game
-        self._teams: Dict[str, ScrimTeam] = {}
+        self._teams: Dict[str, Team] = {}
         self._build_teams(teams or [])
         self._build_standard_teams()
         self._captains = self._build_captains()
@@ -101,17 +101,17 @@ class ScrimTeamsManager:
         return teams
 
     def _build_standard_teams(self):
-        self._teams[self.PARTICIPANTS] = ScrimTeam(self.PARTICIPANTS, [],
-                                                   self._game.min_team_size * self._game.team_count,
-                                                   self._game.max_team_size * self._game.team_count)
-        self._teams[self.SPECTATORS] = ScrimTeam(self.SPECTATORS)
-        self._teams[self.QUEUE] = ScrimTeam(self.QUEUE)
+        self._teams[self.PARTICIPANTS] = Team(self.PARTICIPANTS, [],
+                                              self._game.min_team_size * self._game.team_count,
+                                              self._game.max_team_size * self._game.team_count)
+        self._teams[self.SPECTATORS] = Team(self.SPECTATORS)
+        self._teams[self.QUEUE] = Team(self.QUEUE)
 
     def _add_new_team(self, team_number: int):
         team_name = f"Team {team_number}"
-        self._teams[team_name] = ScrimTeam(team_name, [], self._game.min_team_size, self._game.max_team_size)
+        self._teams[team_name] = Team(team_name, [], self._game.min_team_size, self._game.max_team_size)
 
-    def _add_premade_team(self, team: ScrimTeam):
+    def _add_premade_team(self, team: Team):
         self._assert_valid_team(team)
         self._teams[team.name] = team
 
@@ -166,12 +166,12 @@ class ScrimTeamsManager:
     def add_player(self, team: Union[int, str], player: discord.member):
         self._add_to_team(self._get_team(team), player)
 
-    def _get_team(self, team: Union[int, str]) -> ScrimTeam:
+    def _get_team(self, team: Union[int, str]) -> Team:
         if type(team) == str:
             return self._teams[team]
         return list(self._teams.values())[team]
 
-    def _add_to_team(self, team: ScrimTeam, player: discord.member):
+    def _add_to_team(self, team: Team, player: discord.member):
         if self._is_full_participant_team(team):
             self._add_to_team(self._teams[self.QUEUE], player)
             return
@@ -179,7 +179,7 @@ class ScrimTeamsManager:
             raise BotBaseInternalException(f"Tried adding a player into a full team ({team.name})")
         team.players.append(player)
 
-    def _is_full_participant_team(self, team: ScrimTeam):
+    def _is_full_participant_team(self, team: Team):
         return team.name == self.PARTICIPANTS and _is_full(team)
 
     def _is_full_game_team(self, team):
@@ -188,7 +188,7 @@ class ScrimTeamsManager:
     def remove_player(self, team: Union[int, str], player: discord.member):
         self._remove_from_team(self._get_team(team), player)
 
-    def _remove_from_team(self, team: ScrimTeam, player: discord.member):
+    def _remove_from_team(self, team: Team, player: discord.member):
         _assert_valid_removal(player, team)
         if self._fill_participants_from_queue(team):
             team.players.append(self._teams[self.QUEUE].players.pop(0))

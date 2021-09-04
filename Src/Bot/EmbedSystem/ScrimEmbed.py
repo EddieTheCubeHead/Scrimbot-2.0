@@ -7,7 +7,7 @@ import discord
 
 from Bot.DataClasses.Game import Game
 from Src.Bot.DataClasses.ScrimState import ScrimState
-from Src.Bot.DataClasses.ScrimTeam import ScrimTeam
+from Src.Bot.DataClasses.Team import Team
 from Bot.EmbedSystem.EmbedField import EmbedField
 
 
@@ -39,7 +39,7 @@ class ScrimEmbed(discord.Embed):
         Update the prefix shown on the embed command examples
     """
 
-    def __init__(self, game: Game, is_ranked: bool, participants: ScrimTeam, spectators: ScrimTeam, prefix=None):
+    def __init__(self, game: Game, is_ranked: bool, participants: Team, spectators: Team, prefix=None):
         """A constuctor for ScrimEmbed
 
         args
@@ -50,9 +50,9 @@ class ScrimEmbed(discord.Embed):
         :param is_ranked: Whether the scrim is ranked
         :type is_ranked: bool
         :param participants: The participant ScrimTeam object of the scrim
-        :type participants: ScrimTeam
+        :type participants: Team
         :param spectators: The spectator ScrimTeam object of the scrim
-        :type spectators: ScrimTeam
+        :type spectators: Team
 
         kwargs
         ------
@@ -64,7 +64,7 @@ class ScrimEmbed(discord.Embed):
         super().__init__(title="Status", description=f"Looking for players. {game.playercount} remaining.",
                          color=game.colour)
 
-        self._picking_order: Optional[List[ScrimTeam]] = None
+        self._picking_order: Optional[List[Team]] = None
         self.set_author(name=f"{game.name} {'ranked ' if is_ranked else ''}scrim", icon_url=game.icon)
 
         self.set_footer(text=f"To join players react \U0001F3AE To join spectators react \U0001F441")
@@ -91,18 +91,18 @@ class ScrimEmbed(discord.Embed):
             else:
                 self.add_field(name=field.get_name(), value=field.get_value(), inline=field.inline)
 
-    def update_participants(self, participants: ScrimTeam, spectators: ScrimTeam, queue: ScrimTeam):
+    def update_participants(self, participants: Team, spectators: Team, queue: Team):
         """A method that takes ScrimTeam objects of participants and/or spectators and updates the embed accordingly
 
         args
         ----
 
         :param participants: All participants of the scrim
-        :type participants: ScrimTeam
+        :type participants: Team
         :param spectators: All spectators of the scrim
-        :type spectators: ScrimTeam
+        :type spectators: Team
         :param queue: The queue of players who couldn't fit in the scrim. Can be empty, but not None
-        :type queue: ScrimTeam
+        :type queue: Team
         """
 
         if participants.is_full():
@@ -123,23 +123,23 @@ class ScrimEmbed(discord.Embed):
         else:
             self._update_fields(participants, spectators)
 
-    def lock_scrim(self, unassigned: ScrimTeam, spectators: ScrimTeam, divider: EmbedField, team_1: ScrimTeam,
-                   team_2: ScrimTeam):
+    def lock_scrim(self, unassigned: Team, spectators: Team, divider: EmbedField, team_1: Team,
+                   team_2: Team):
         """A method for updating the embed to match a locked scrim and display required information
 
         args
         ----
 
         :param unassigned: All unassigned players of the scrim
-        :type unassigned: ScrimTeam
+        :type unassigned: Team
         :param spectators: The spectators of the scrim
-        :type spectators: ScrimTeam
+        :type spectators: Team
         :param divider: A divider field between teamless participants and teams
         :type divider: EmbedField
         :param team_1: Team 1 of the scrim
-        :type team_1: ScrimTeam
+        :type team_1: Team
         :param team_2: Team 2 of the scrim
-        :type team_2: ScrimTeam
+        :type team_2: Team
         """
 
         self.description = \
@@ -148,23 +148,23 @@ class ScrimEmbed(discord.Embed):
 
         self.update_teams(unassigned, spectators, divider, team_1, team_2)
 
-    def update_teams(self, unassigned: ScrimTeam, spectators: ScrimTeam, divider: EmbedField, team_1: ScrimTeam,
-                     team_2: ScrimTeam):
+    def update_teams(self, unassigned: Team, spectators: Team, divider: EmbedField, team_1: Team,
+                     team_2: Team):
         """A private helper method for updating the displayed information based on the team dicts
 
         args
         ----
 
         :param unassigned: The unassigned players of the scrim
-        :type unassigned: ScrimTeam
+        :type unassigned: Team
         :param spectators: The spectators of the scrim
-        :type spectators: ScrimTeam
+        :type spectators: Team
         :param divider: A divider field between teamless participants and teams
         :type divider: EmbedField
         :param team_1: Team 1 of the scrim
-        :type team_1: ScrimTeam
+        :type team_1: Team
         :param team_2: Team 2 of the scrim
-        :type team_2: ScrimTeam
+        :type team_2: Team
         """
 
         if len(unassigned) == 0:
@@ -207,20 +207,20 @@ class ScrimEmbed(discord.Embed):
         self.description = description_text
         self.set_footer(text=f"Type '{self._prefix}teams clear' to clear teams")
 
-    def start_scrim(self, spectators: ScrimTeam, divider: EmbedField, team_1: ScrimTeam, team_2: ScrimTeam):
+    def start_scrim(self, spectators: Team, divider: EmbedField, team_1: Team, team_2: Team):
         """A method for updating the embed to match a started scrim
 
         args
         ----
 
         :param spectators: The spectators of the scrim
-        :type spectators: ScrimTeam
+        :type spectators: Team
         :param divider: A divider field between teamless participants and teams
         :type divider: EmbedField
         :param team_1: Team 1 of the scrim
-        :type team_1: ScrimTeam
+        :type team_1: Team
         :param team_2: Team 2 of the scrim
-        :type team_2: ScrimTeam
+        :type team_2: Team
         """
 
         self.description = "Scrim underway."
@@ -229,16 +229,16 @@ class ScrimEmbed(discord.Embed):
 
         self._update_fields(spectators, divider, team_1, team_2)
 
-    def declare_winner(self, team_1: ScrimTeam, team_2: ScrimTeam, winner: int):
+    def declare_winner(self, team_1: Team, team_2: Team, winner: int):
         """A method for declaring a winner and updating the embed to display the final scrim state
 
         args
         ----
 
         :param team_1: Team 1 of the scrim
-        :type team_1: ScrimTeam
+        :type team_1: Team
         :param team_2: Team 2 of the scrim
-        :type team_2: ScrimTeam
+        :type team_2: Team
         :param winner: The team that won given as a number. 0 means tie
         :type winner: int
         """

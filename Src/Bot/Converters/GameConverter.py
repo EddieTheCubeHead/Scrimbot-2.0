@@ -33,8 +33,7 @@ class GameConverter(ConverterBase[Game]):
     def convert(self, argument: str) -> Game:
         if argument in self.games:
             return self.games[argument]
-        else:
-            return self._get_game_from_alias(argument)
+        return self._get_game_from_alias(argument)
 
     def _get_game_from_alias(self, alias: str) -> Game:
         for game in self.games.values():

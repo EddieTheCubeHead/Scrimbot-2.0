@@ -5,8 +5,8 @@ from typing import Type, get_args, Union
 
 from Bot.DataClasses.Convertable import Convertable
 from Bot.Converters.ConverterBase import ConverterBase
-from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 from Bot.Exceptions.BuildException import BuildException
+from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
 def get_convertable_type(derived_class: Union[Type[ConverterBase], Type[ConnectionBase]]) -> str:
@@ -22,9 +22,9 @@ def _get_generic_from_base(derived_class: Union[Type[ConverterBase], Type[Connec
         # noinspection PyUnresolvedReferences
         base_class = derived_class.__orig_bases__[0]
         generic = get_args(base_class)[0]
-    except Exception:
+    except Exception as exception:
         raise BuildException(f"Class '{derived_class.__name__}' lacks generic convertable info or does not inherit "
-                             f"neither of ConverterBase or ConnectionBase.")
+                             f"neither of ConverterBase or ConnectionBase.") from exception
     return generic
 
 

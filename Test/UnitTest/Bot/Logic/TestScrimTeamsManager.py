@@ -10,7 +10,7 @@ import discord
 from Utils.UnittestBase import UnittestBase
 from Utils.TestIdGenerator import TestIdGenerator
 from Bot.DataClasses.Game import Game
-from Bot.DataClasses.ScrimTeam import ScrimTeam
+from Bot.DataClasses.Team import Team
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
@@ -79,20 +79,20 @@ class TestScrimTeamsManager(UnittestBase):
     def test_init_given_premade_team_with_identical_sizes_as_game_then_init_successful(self):
         team_name = "Valid team"
         mock_game = _create_mock_game(5, 6, 2)
-        valid_team = ScrimTeam(team_name, [], 5, 6)
+        valid_team = Team(team_name, [], 5, 6)
         manager = ScrimTeamsManager(mock_game, teams=[valid_team])
         self.assertEqual(team_name, manager.get_game_teams()[0].name)
 
     def test_init_given_premade_team_with_stricter_but_valid_sizes_as_game_then_init_successful(self):
         team_name = "Valid team"
         mock_game = _create_mock_game(4, 7, 2)
-        valid_team = ScrimTeam(team_name, [], 5, 6)
+        valid_team = Team(team_name, [], 5, 6)
         manager = ScrimTeamsManager(mock_game, teams=[valid_team])
         self.assertEqual(team_name, manager.get_game_teams()[0].name)
 
     def test_init_given_premade_team_when_team_name_conflicts_with_standard_teams_then_error_raised(self):
         mock_game = _create_mock_game(5, 5, 2)
-        invalid_team = ScrimTeam(ScrimTeamsManager.PARTICIPANTS)
+        invalid_team = Team(ScrimTeamsManager.PARTICIPANTS)
         expected_exception = BotBaseUserException("Cannot create a scrim with a premade team name conflicting with a "
                                                   "name reserved for standard teams"
                                                   f" ({ScrimTeamsManager.PARTICIPANTS})")
@@ -101,8 +101,8 @@ class TestScrimTeamsManager(UnittestBase):
     def test_init_given_duplicate_premade_team_names_then_error_raised(self):
         mock_game = _create_mock_game(5, 5, 2)
         duplicate_name = "Duplicate team"
-        team_1 = ScrimTeam(duplicate_name, [], 5, 5)
-        team_2 = ScrimTeam(duplicate_name, [], 5, 5)
+        team_1 = Team(duplicate_name, [], 5, 5)
+        team_2 = Team(duplicate_name, [], 5, 5)
         expected_exception = BotBaseUserException("Cannot create a scrim with premade teams having identical names"
                                                   f" ({duplicate_name})")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game, teams=[team_1, team_2])
@@ -110,8 +110,8 @@ class TestScrimTeamsManager(UnittestBase):
     def test_init_given_duplicate_premade_team_names_when_name_conflicts_with_standard_teams_then_error_raised(self):
         mock_game = _create_mock_game(5, 5, 2)
         duplicate_name = ScrimTeamsManager.SPECTATORS
-        team_1 = ScrimTeam(duplicate_name)
-        team_2 = ScrimTeam(duplicate_name)
+        team_1 = Team(duplicate_name)
+        team_2 = Team(duplicate_name)
         expected_exception = BotBaseUserException("Cannot create a scrim with a premade team name conflicting with a "
                                                   "name reserved for standard teams"
                                                   f" ({duplicate_name})")
@@ -120,7 +120,7 @@ class TestScrimTeamsManager(UnittestBase):
     def test_init_given_invalid_sized_premade_team_min_players_then_error_raised(self):
         mock_game = _create_mock_game(5, 5, 2)
         team_name = "Invalid team"
-        invalid_team = ScrimTeam(team_name, [], 3, 5)
+        invalid_team = Team(team_name, [], 3, 5)
         expected_exception = BotBaseUserException("Cannot create a scrim with a premade team with a size incompatible"
                                                   f" with the chosen game ({team_name})")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game, teams=[invalid_team])
@@ -128,7 +128,7 @@ class TestScrimTeamsManager(UnittestBase):
     def test_init_given_invalid_sized_premade_team_max_players_then_error_raised(self):
         mock_game = _create_mock_game(5, 5, 2)
         team_name = "Invalid team"
-        invalid_team = ScrimTeam(team_name, [], 5, 7)
+        invalid_team = Team(team_name, [], 5, 7)
         expected_exception = BotBaseUserException("Cannot create a scrim with a premade team with a size incompatible"
                                                   f" with the chosen game ({team_name})")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game, teams=[invalid_team])
@@ -137,7 +137,7 @@ class TestScrimTeamsManager(UnittestBase):
         mock_game = _create_mock_game(5, 5, 2)
         team_name = "Invalid team"
         mock_players = [MagicMock() for _ in range(6)]
-        invalid_team = ScrimTeam(team_name, mock_players, 5, 5)
+        invalid_team = Team(team_name, mock_players, 5, 5)
         expected_exception = BotBaseUserException("Cannot create a scrim with a premade team with a size incompatible"
                                                   f" with the chosen game ({team_name})")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game, teams=[invalid_team])
@@ -185,7 +185,7 @@ class TestScrimTeamsManager(UnittestBase):
     def test_get_game_teams_given_valid_setup_with_partly_premade_teams_then_correct_teams_returned(self):
         min_size, max_size, team_count = 5, 6, 4
         mock_game = _create_mock_game(min_size, max_size, team_count)
-        mock_team = ScrimTeam("Premade team", [], min_size, max_size)
+        mock_team = Team("Premade team", [], min_size, max_size)
         manager = ScrimTeamsManager(mock_game, teams=[mock_team])
         game_teams = manager.get_game_teams()
         self.assertEqual(mock_team, game_teams[0])
@@ -194,7 +194,7 @@ class TestScrimTeamsManager(UnittestBase):
     def test_get_game_teams_given_valid_setup_with_only_premade_teams_then_correct_teams_returned(self):
         min_size, max_size, team_count = 5, 6, 4
         mock_game = _create_mock_game(min_size, max_size, team_count)
-        mock_teams = [ScrimTeam(f"Premade {i + 1}", [], min_size, max_size) for i in range(team_count)]
+        mock_teams = [Team(f"Premade {i + 1}", [], min_size, max_size) for i in range(team_count)]
         manager = ScrimTeamsManager(mock_game, teams=mock_teams)
         game_teams = manager.get_game_teams()
         self.assertEqual(mock_teams, game_teams)

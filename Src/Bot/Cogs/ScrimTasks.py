@@ -44,5 +44,5 @@ def setup(client: ScrimClient):
     :type client: ScrimClient
     """
 
-    client.add_cog(ScrimReactionListeners(client))
+    client.add_cog(ScrimTasks(client))
     print(f"Using cog {__name__}, with version {__version__}")

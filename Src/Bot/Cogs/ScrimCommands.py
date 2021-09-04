@@ -3,12 +3,11 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
 
+from Bot.Core import checks
+from Bot.Core import converters
 from Bot.Core.ScrimClient import ScrimClient
-import Bot.Core.checks as checks
-import Bot.Core.converters as converters
-from Bot.DataClasses.Game import Game
-from Src.Bot.DataClasses.ScrimState import ScrimState
 from Bot.Core.ScrimContext import ScrimContext
+from Bot.DataClasses.Game import Game
 
 
 class ScrimCommands(commands.Cog):
@@ -34,7 +33,6 @@ class ScrimCommands(commands.Cog):
 
     @commands.command(aliases=['s'])
     @commands.guild_only()
-    @checks.require_state(ScrimState.INACTIVE)
     @checks.free_scrim()
     async def scrim(self, ctx: ScrimContext, game: Game, deletion_time: int = 0):
         """A command that creates a scrim of the specified game on the channel
@@ -95,7 +93,6 @@ class ScrimCommands(commands.Cog):
         :param ctx: The invocation context of the command
         :type ctx: commands.Context
         """
-        pass
 
     @commands.command(aliases=["begin"])
     @commands.guild_only()

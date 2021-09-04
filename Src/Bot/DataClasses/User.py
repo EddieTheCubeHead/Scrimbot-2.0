@@ -7,7 +7,6 @@ from sqlalchemy.orm import relationship
 
 from Bot.DataClasses.Convertable import Convertable
 from Bot.DataClasses.GuildBotRight import GuildBotRight
-from Bot.DataClasses.Participant import Participant
 
 
 class User(Convertable):
@@ -17,4 +16,4 @@ class User(Convertable):
 
     guild_bot_rights = relationship("GuildBotRight", back_populates="user")
     elos = relationship("UserElo", back_populates="user")
-    matches = relationship("Participant", back_populates="user")
+    teams = relationship("Team", secondary="TeamMembers", back_populates="members")

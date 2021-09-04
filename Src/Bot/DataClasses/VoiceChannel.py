@@ -12,7 +12,6 @@ class VoiceChannel(Convertable):
     team = Column(Integer, nullable=False)
 
     parent_channel = relationship("ScrimChannel", back_populates="voice_channels")
-    teams = relationship("ScrimTeam", back_populates="voice_channel")
 
     def __init__(self, channel_id: int, parent_channel_id: int, team: int):
         """A constructor for the Scrim class

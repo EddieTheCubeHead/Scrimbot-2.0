@@ -8,20 +8,20 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
 from Bot.DataClasses.Convertable import Convertable
+from Bot.DataClasses.TeamMember import TeamMember
 
-from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
 
+class Team(Convertable):
 
-@BotDependencyConstructor.convertable
-class ScrimTeam(Convertable):
+    team_id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)  # TODO: when teams are more refined, create check for these two
+    code = Column(String, nullable=False)  # columns should be unique per guild with global guild (id=0) considered
+    guild_id = Column(Integer, ForeignKey("Guilds.guild_id"), nullable=False)
+    channel_id = Column(Integer, nullable=True)  # TODO: implement check for not allowing channels on global teams
 
-    name = Column(String, primary_key=True)
-    code = Column(String, unique=True, nullable=True)
-    min_size = Column(Integer, nullable=False)
-    maz_size = Column(Integer, nullable=True, default=None)  # note: None = min_size, while 0 = no limit
-    voice_channel_id = Column(Integer, ForeignKey("VoiceChannels.channel_id"), nullable=True)
-
-    voice_channel = relationship("VoiceChannel", back_populates="teams")
+    guild = relationship("Guild", back_populates="teams")
+    members = relationship("User", secondary="TeamMembers", back_populates="teams")
+    scrims = relationship("Scrim", secondary="ParticipantTeams", back_populates="teams")
 
     def __init__(self, name: str, players: List[discord.Member] = None, min_size=0, max_size=0):
         """The constructor of ScrimTeam

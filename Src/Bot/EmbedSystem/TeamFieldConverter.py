@@ -4,14 +4,14 @@ __author__ = "Eetu Asikainen"
 import discord
 
 from Bot.EmbedSystem.EmbedField import EmbedField
-from Bot.DataClasses.ScrimTeam import ScrimTeam
+from Bot.DataClasses.Team import Team
 
 
 class TeamFieldConverter:
 
     CAPTAIN_MARK = " **(C)**"
 
-    def __init__(self, team: ScrimTeam):
+    def __init__(self, team: Team):
         self.team = team
 
     def convert(self):
