@@ -9,6 +9,7 @@ from Bot.DataClasses.Convertable import Convertable
 from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
 from Bot.DataClasses.Alias import Alias
 from Bot.DataClasses.UserElo import UserElo
+from Bot.DataClasses.Scrim import Scrim
 
 
 @BotDependencyConstructor.convertable

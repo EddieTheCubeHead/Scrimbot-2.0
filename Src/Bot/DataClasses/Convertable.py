@@ -11,7 +11,7 @@ class _Convertable:
 
     @declared_attr
     def __tablename__(self):
-        return inflect.engine().plural(self.__name__)
+        return inflect.engine().plural(self.__name__)  # pylint: disable=no-member
 
     converter = None
 

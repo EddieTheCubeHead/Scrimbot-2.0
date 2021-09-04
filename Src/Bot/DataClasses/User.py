@@ -2,7 +2,7 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 
-from sqlalchemy import Column, String, Integer, Boolean
+from sqlalchemy import Column, Integer
 from sqlalchemy.orm import relationship
 
 from Bot.DataClasses.Convertable import Convertable

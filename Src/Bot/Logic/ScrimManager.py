@@ -53,4 +53,3 @@ class ScrimManager:
         self._secure_state_change(ScrimState.VOICE_WAIT, ScrimState.LOCKED, ScrimState.CAPS)
         if self.teams_manager.try_move_to_voice():
             pass
-        pass

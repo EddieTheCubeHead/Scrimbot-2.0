@@ -36,13 +36,11 @@ class TeamFieldConverter:
     def _get_name_qualifier(self):
         if not self.team.max_size:
             return ""
-        else:
-            return self._construct_fullness_qualifier()
+        return self._construct_fullness_qualifier()
 
     def _construct_fullness_qualifier(self):
         if self.team.min_size > len(self.team.players):
             return f" ({self.team.min_size - len(self.team.players)} needed)"
-        elif self.team.max_size > len(self.team.players):
+        if self.team.max_size > len(self.team.players):
             return f" (fits {self.team.max_size - len(self.team.players)} more)"
-        else:
-            return " (full)"
+        return " (full)"

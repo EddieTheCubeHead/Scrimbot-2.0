@@ -9,7 +9,7 @@ from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 T = TypeVar('T', bound=Convertable)  # pylint: disable=invalid-name
 
 
-class ConverterBase(Generic[T]):  # pylint: disable=too-few-public-methods
+class ConverterBase(Generic[T]):
 
     def __init__(self, connection: ConnectionBase):  # pragma: no cover
         self.connection: ConnectionBase[T] = connection

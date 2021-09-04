@@ -1,8 +1,6 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from typing import Type
-
 from discord.ext import commands
 
 from Bot.Exceptions.BotBaseUserException import BotBaseUserException

@@ -2,11 +2,11 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 import json
-from typing import Optional, List, Tuple, Dict, Union, Any
+from typing import List, Tuple, Dict, Union, Any
 
+from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Database.DatabaseManager import DatabaseManager
 from Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
-from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Database.Exceptions.DatabaseMissingRowException import DatabaseMissingRowException
 from Database.Exceptions.DatabaseDuplicateUniqueRowException import DatabaseDuplicateUniqueRowException
 from Database.Exceptions.DatabasePrimaryKeyViolatedException import DatabasePrimaryKeyViolatedException
@@ -27,7 +27,7 @@ class GamesDatabaseManager(DatabaseManager):
     def init_database(self):
         self._create_tables("Games", "Aliases", "Matches", "Participants", "UserElos")
 
-        with open(f"{self.path}/../Configs/games_init.json") as games_file:
+        with open(f"{self.path}/../Configs/games_init.json", encoding="utf-8") as games_file:
             games: Dict[str, Dict[str, Union[str, int]]] = json.load(games_file)
 
         for game_item in games.items():

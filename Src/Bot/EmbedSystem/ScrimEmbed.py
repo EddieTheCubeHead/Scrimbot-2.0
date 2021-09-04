@@ -6,8 +6,8 @@ from typing import Optional, List
 import discord
 
 from Bot.DataClasses.Game import Game
-from Src.Bot.DataClasses.ScrimState import ScrimState
-from Src.Bot.DataClasses.Team import Team
+from Bot.DataClasses.Team import Team
+from Bot.DataClasses.ScrimState import ScrimState
 from Bot.EmbedSystem.EmbedField import EmbedField
 
 
@@ -67,7 +67,7 @@ class ScrimEmbed(discord.Embed):
         self._picking_order: Optional[List[Team]] = None
         self.set_author(name=f"{game.name} {'ranked ' if is_ranked else ''}scrim", icon_url=game.icon)
 
-        self.set_footer(text=f"To join players react \U0001F3AE To join spectators react \U0001F441")
+        self.set_footer(text="To join players react \U0001F3AE To join spectators react \U0001F441")
 
         self._state: ScrimState = ScrimState.LFP
         self._playerreq: int = game.playercount
@@ -110,7 +110,7 @@ class ScrimEmbed(discord.Embed):
             description = f"{self._playerreq} players present. Type '{self._prefix}lock' to lock the current players."
 
         else:
-            description = f"Looking for players."
+            description = "Looking for players."
 
             if self._playerreq:
                 description += f" {self._playerreq - len(participants)} remaining."

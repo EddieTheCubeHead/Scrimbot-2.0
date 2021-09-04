@@ -7,7 +7,6 @@ from sqlalchemy.orm import relationship
 
 from Bot.DataClasses.Convertable import Convertable
 from Bot.DataClasses.ParticipantTeam import ParticipantTeam
-from Bot.DataClasses.Team import Team
 
 
 class Scrim(Convertable):

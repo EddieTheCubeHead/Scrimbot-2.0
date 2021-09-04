@@ -10,7 +10,7 @@ from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConn
 
 
 @BotDependencyConstructor.converter
-class ScrimChannelConverter(ConverterBase[ScrimChannel]):  # pylint: disable=too-few-public-methods
+class ScrimChannelConverter(ConverterBase[ScrimChannel]):
 
     connection: ScrimChannelConnection = None
 

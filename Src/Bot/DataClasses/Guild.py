@@ -6,7 +6,6 @@ from sqlalchemy import Column, String, Integer, Boolean
 from sqlalchemy.orm import relationship
 
 from Bot.DataClasses.Convertable import Convertable
-from Bot.DataClasses.ScrimChannel import ScrimChannel
 
 
 class Guild(Convertable):

@@ -3,7 +3,7 @@ max-line-length=120
 
 [MASTER]
 disable=
-    C0114, C0115, C0116
+    C0114, C0115, C0116, R0903
 init-hook='import sys; sys.path.append("C:\\Users\\EddieTheCubeHead\\PycharmProjects\\Scrimbot-2.0")'
 
 [BASIC]

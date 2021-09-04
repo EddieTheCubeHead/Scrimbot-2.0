@@ -7,8 +7,6 @@ from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Src.Bot.DataClasses.ScrimState import ScrimState
 from Src.Bot.Exceptions.BotCheckFailure import BotCheckFailure
 
-"""A module containing the custom checks used by the bot."""
-
 
 def free_scrim():
     """A check that requires the channel to be eligible for scrims and not have a currently active scrim."""

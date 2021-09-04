@@ -15,6 +15,4 @@ class ScrimContext(commands.Context):
     async def get_scrim(self) -> ScrimChannel:
         if self._scrim:
             return self._scrim
-
-        else:
-            return await ScrimChannel.get_scrim(self)
+        return await ScrimChannel.get_scrim(self)

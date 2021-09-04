@@ -34,7 +34,7 @@ def is_in_guild_voice_chat(guild: discord.Guild, player: discord.Member):
 
 
 def has_all_players_in_guild_voice_chat(team: Team):
-    return all([is_in_guild_voice_chat(team.voice_channel.guild, player) for player in team.players])
+    return all(is_in_guild_voice_chat(team.voice_channel.guild, player) for player in team.players)
 
 
 async def _move_team_to_voice(team):
@@ -82,7 +82,7 @@ class ScrimTeamsManager:
 
     @property
     def all_players_in_voice_chat(self):
-        return all([has_all_players_in_guild_voice_chat(team) for team in self.get_game_teams()])
+        return all(has_all_players_in_guild_voice_chat(team) for team in self.get_game_teams())
 
     def get_standard_teams(self):
         return list(self._teams.values())[self._game.team_count:]
@@ -167,7 +167,7 @@ class ScrimTeamsManager:
         self._add_to_team(self._get_team(team), player)
 
     def _get_team(self, team: Union[int, str]) -> Team:
-        if type(team) == str:
+        if isinstance(team, str):
             return self._teams[team]
         return list(self._teams.values())[team]
 

@@ -31,4 +31,3 @@ class MasterConnection:
             raise  # TODO inspect error handling here: this is not good, also remove the no cover
         finally:
             session.close()
-

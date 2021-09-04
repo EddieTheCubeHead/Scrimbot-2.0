@@ -61,8 +61,8 @@ class DatabaseManager(ABC):
             for table in table_names:
                 self._run_script(f"Create{table}Table.sql", db_cursor)
 
-    def _run_script(self, script: str, cursor: sqlite3.Cursor):
-        with open(f"{self.path}/SQLScripts/{script}") as script:
+    def _run_script(self, script_file: str, cursor: sqlite3.Cursor):
+        with open(f"{self.path}/SQLScripts/{script_file}", encoding="utf-8") as script:
             cursor.execute(script.read())
 
     def ensure_valid_connection(self):
