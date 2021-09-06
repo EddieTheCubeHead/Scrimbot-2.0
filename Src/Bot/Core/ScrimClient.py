@@ -1,77 +1,75 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import json
+import asyncio
 import logging
 import os
+import sys
+from pathlib import Path
 
 import discord
 from discord.ext import commands
 
-from Bot.DataClasses.Game import Game
-from Src.Database.DatabaseManager import DatabaseManager
-from Bot.DataClasses.ScrimChannel import ScrimChannel
+from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
+from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
+from Bot.Converters.GameConverter import GameConverter
+from Bot.DataClasses.Guild import Guild
+from Bot.DataClasses.Prefix import Prefix
+from Database.DatabaseConnections import GameConnection
+from Configs.Config import Config
 from Bot.Logic.BotHelpCommand import BotHelpCommand
 from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Bot.Core.ScrimContext import ScrimContext
 
 
+def _setup_logging(folder_path):
+    # Logging setup code stolen from discord.py docs
+    logger = logging.getLogger('discord')
+    logger.setLevel(logging.DEBUG)
+    handler = logging.FileHandler(filename=f'{folder_path}/scrim_bot.log', encoding='utf-8', mode='w')
+    handler.setFormatter(logging.Formatter('%(asctime)s || %(levelname)s || %(name)s || %(message)s'))
+    logger.addHandler(handler)
+    return logger
+
+
 class ScrimClient(commands.Bot):
     """The class that implements the discord.py bot class. The heart of the bot."""
 
-    def __init__(self):
+    def __init__(self, constructor: BotDependencyConstructor, loop=None):
         """The constructor of ScrimClient. Running this starts the bot on the created instance."""
 
         intents = discord.Intents.default()
         intents.members = True
-        super().__init__(command_prefix=self.get_prefix, intents=intents, help_command=BotHelpCommand())
+        super().__init__(command_prefix=self.get_prefix, intents=intents, help_command=BotHelpCommand(), loop=loop)
+        constructor.build()
 
-        # Logging setup code stolen from discord.py docs
-        self.logger = logging.getLogger('discord')
-        self.logger.setLevel(logging.DEBUG)
-        handler = logging.FileHandler(filename='scrim_bot.log', encoding='utf-8', mode='w')
-        handler.setFormatter(logging.Formatter('%(asctime)s || %(levelname)s || %(name)s || %(message)s'))
-        self.logger.addHandler(handler)
-
-        self.database_manager = DatabaseManager()
-        ScrimChannel.set_database_manager(self.database_manager)
-
-        # Initializing games into memory
-        Game.init_games(self.database_manager.games_init_generator())
-
-        # Cogs are loaded as extensions so I can abuse the ability to reload them without restarting the bot if I decide
-        # to try and automate the deployment pipeline more in the future.
-        self._setup_cogs()
-
-        with open("secrets.json") as secret_file:
-            self._secrets = json.load(secret_file)
-
+        self.connected = asyncio.Event()
+        self.logger = _setup_logging(Config.file_folder)
         self.description = "A discord bot for organizing scrims."
-        self.run(self._secrets["token"])
+
+    def setup_cogs(self):
+        """A private helper method for loading and starting all the cogs of the bot."""
+        parent_path = rf"{Path(os.path.join(os.path.dirname(__file__))).parent}"
+        for cog in os.listdir(rf"{parent_path}\Cogs"):
+            if cog[-3:] == ".py" and not cog.startswith("_"):
+                self.load_extension(f".{cog[:-3]}", package="Bot.Cogs")
+
+    async def start_bot(self):
+        print("Attempting a connection to Discord...")
+        await self.start(Config.token)
 
     async def get_prefix(self, message: discord.Message):
         """An overridden method from the base class required for custom prefix support (TBA)"""
 
-        return "/"
+        guild_data = await Guild.convert(message.guild.id)
+        return guild_data.prefixes or Config.default_prefix
 
-    async def get_deletion_time(self, context: commands.Context) -> int:
-        """A method that should return the guild's custom idle scrim deletion time, functionality TBA
+    async def get_deletion_time(self, guild: discord.Guild) -> int:
+        """A method that should return the guild's custom idle scrim deletion time, functionality TBA"""
 
-        :param context: The invocation context of a command that caused the deletion time query
-        :type context: commands.Context
-        :returns: The default scrim deletion time for the scrim in context
-        :rtype: int
-        """
-
-        return 15
-
-    def _setup_cogs(self):
-        """A private helper method for loading and starting all the cogs of the bot."""
-
-        for cog in os.listdir("../Cogs"):
-            if cog[-3:] == ".py":
-                self.load_extension(f"Cogs.{cog[:-3]}")
+        guild_data = await Guild.convert(guild.id)
+        return guild_data.scrim_timeout or Config.default_timeout
 
     async def get_context(self, message: discord.Message, *, cls=ScrimContext) -> ScrimContext:
         """An override for get context to facilitate custom context for the bot"""
@@ -180,7 +178,8 @@ class ScrimClient(commands.Bot):
         """Bot initialization logic. Currently just functions to inform the user the bot is connected."""
 
         print(f"Successfully logged in as {self.user.name}, with version {__version__}")
+        self.connected.set()
 
 
 if __name__ == "__main__":
-    client = ScrimClient()
+    client = ScrimClient(BotDependencyConstructor(f"{Config.file_folder}/{Config.database_name}"))

@@ -15,7 +15,7 @@ from Database.Exceptions.DatabaseForeignKeyViolatedException import DatabaseFore
 
 class GamesDatabaseManager(DatabaseManager):
 
-    def __init__(self, db_folder: str = "DBFiles", db_file: str = "games.db"):
+    def __init__(self, db_folder: str = "DataFiles", db_file: str = "games.db"):
         super().__init__(db_folder, db_file)
 
     @classmethod
@@ -27,7 +27,7 @@ class GamesDatabaseManager(DatabaseManager):
     def init_database(self):
         self._create_tables("Games", "Aliases", "Matches", "Participants", "UserElos")
 
-        with open(f"{self.path}/../Configs/games_init.json", encoding="utf-8") as games_file:
+        with open(f"{self.path}/../Configs/games.json", encoding="utf-8") as games_file:
             games: Dict[str, Dict[str, Union[str, int]]] = json.load(games_file)
 
         for game_item in games.items():

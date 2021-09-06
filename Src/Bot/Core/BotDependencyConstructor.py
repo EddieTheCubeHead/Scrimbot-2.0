@@ -6,6 +6,7 @@ from typing import Type, get_args, Union
 from Bot.DataClasses.Convertable import Convertable
 from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Exceptions.BuildException import BuildException
+from Database.Core.MasterConnection import MasterConnection
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
@@ -34,8 +35,8 @@ class BotDependencyConstructor:
     converters: dict[str, Type[ConverterBase]] = {}
     connections: dict[str, Type[ConnectionBase]] = {}
 
-    def __init__(self, db_path: str):
-        self._db_path = db_path
+    def __init__(self, db_master_connection: MasterConnection):
+        self._db_master_connection = db_master_connection
 
     @classmethod
     def convertable(cls, convertable: Type[Convertable]) -> Type[Convertable]:
@@ -66,7 +67,7 @@ class BotDependencyConstructor:
 
     def _build_convertable(self, convertable: str):
         self._assert_dependencies_fulfilled(convertable)
-        connection = self.connections[convertable](self._db_path)
+        connection = self.connections[convertable](self._db_master_connection)
         converter = self.converters[convertable](connection)
         self.convertables[convertable].set_converter(converter)
 

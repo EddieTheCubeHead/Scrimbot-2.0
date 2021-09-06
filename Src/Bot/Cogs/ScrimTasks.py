@@ -30,7 +30,7 @@ class ScrimTasks(commands.Cog):
         self._client = client
 
     @tasks.loop(seconds=5)
-    def try_waiting_voice_player_move(self):
+    async def try_waiting_voice_player_move(self):
         pass
 
 

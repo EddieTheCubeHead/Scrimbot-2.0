@@ -12,7 +12,7 @@ from Database.Exceptions.DatabasePrimaryKeyViolatedException import DatabasePrim
 
 class ServersDatabaseManager(DatabaseManager):
 
-    def __init__(self, db_folder: str = "DBFiles", db_file: str = "servers.db"):
+    def __init__(self, db_folder: str = "DataFiles", db_file: str = "servers.db"):
         super().__init__(db_folder, db_file)
 
     @classmethod

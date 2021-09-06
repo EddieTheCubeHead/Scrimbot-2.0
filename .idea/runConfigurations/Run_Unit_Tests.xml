@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Tests" type="tests" factoryName="Unittests" singleton="false">
+  <configuration default="false" name="Run Unit Tests" type="tests" factoryName="Unittests" singleton="false">
     <module name="scrimbot2.0" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />

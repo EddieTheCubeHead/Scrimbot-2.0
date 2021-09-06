@@ -4,6 +4,7 @@ __author__ = "Eetu Asikainen"
 
 from sqlalchemy import Column, Integer, ForeignKey
 from Bot.DataClasses.Convertable import Convertable
+from Bot.DataClasses.Team import Team
 
 
 class ParticipantTeam(Convertable):

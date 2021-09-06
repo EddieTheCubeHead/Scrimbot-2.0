@@ -81,7 +81,7 @@ class AdminCommands(commands.Cog):
         args
         ----
 
-        :param ctx: The invokation context of the command
+        :param ctx: The invocation context of the command
         :type ctx: commands.Context
         :param team_1_voice: The voice channel assigned to team 1. If blank tries to find from channel group
         :type team_1_voice: Optional[discord.VoiceChannel]
