@@ -5,7 +5,7 @@ from typing import Any
 
 from sqlalchemy.exc import NoResultFound
 
-from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Database.Core.MasterConnection import MasterConnection
@@ -35,7 +35,7 @@ class TestScrimChannelConnection(ConnectionUnittest[ScrimChannel]):
         self.connection: ScrimChannelConnection = ScrimChannelConnection(self.master)
 
     def test_init_given_normal_init_then_connection_for_scrim_channel_dataclass_set(self):
-        self.assertIn(ScrimChannelConnection, BotDependencyConstructor.connections.values())
+        self.assertIn(ScrimChannelConnection, BotDependencyInjector.dependencies)
 
     def test_get_channel_given_valid_id_then_channel_returned_with_voice_channels(self):
         channel_id = self.id_generator.generate_viable_id()

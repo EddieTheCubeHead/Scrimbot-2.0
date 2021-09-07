@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
@@ -9,10 +11,10 @@ from Bot.Exceptions.BuildException import BuildException
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 from Utils.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestIdGenerator import TestIdGenerator
-from Bot.Core.BotDependencyConstructor import BotDependencyConstructor, get_convertable_type
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 
 
-class TestConstructor(BotDependencyConstructor):  # isolate test cases here to allow resetting constructor
+class TestInjector(BotDependencyInjector):  # isolate test cases here to allow resetting constructor
     pass
 
 
@@ -23,136 +25,215 @@ class TestBotDependencyConstructor(AsyncUnittestBase):
         cls.id_generator = TestIdGenerator()
 
     def setUp(self) -> None:
-        TestConstructor.convertables = {}
-        TestConstructor.converters = {}
-        TestConstructor.connections = {}
+        TestInjector.singletons = {}
 
-    async def test_build_given_convertable_converter_and_connection_present_then_injected_and_constructed(self):
+    async def test_singleton_given_convertable_converter_and_connection_singletons_then_dependencies_injected(self):
 
-        @TestConstructor.convertable
-        class MockConvertable(Convertable):
+        class MockSingletonConvertable(Convertable):
             id = Column(Integer, primary_key=True)
 
             def __init__(self, message: str):
                 self.message = message
 
-        @TestConstructor.converter
-        class MockConvertableConverter(ConverterBase[MockConvertable]):
-            async def convert(self, argument: str):
-                return MockConvertable(f"Converted {self.connection.get_from_id(int(argument))}")
+            @classmethod
+            @TestInjector.inject
+            def set_converter(cls, converter: MockSingeltonConverter):
+                super().set_converter(converter)
 
-        @TestConstructor.connection
-        class MockConvertableConnection(ConnectionBase[MockConvertable]):
-            def get_from_id(self, object_id: int):
+        @TestInjector.singleton
+        class MockSingeltonConverter(ConverterBase[MockSingletonConvertable]):
+
+            @TestInjector.inject
+            def __init__(self, connection: MockSingletonConnection):
+                super().__init__(connection)
+
+            async def convert(self, argument: str):
+                return MockSingletonConvertable(f"Converted {self.connection.get_from_id(int(argument))}")
+
+        @TestInjector.singleton
+        class MockSingletonConnection(ConnectionBase[MockSingletonConvertable]):
+
+            @staticmethod
+            def get_from_id(object_id: int):
                 return f"Entry {object_id}"
 
-        constructor = TestConstructor("Database.Path")
-        constructor.build()
         mock_entry = str(self.id_generator.generate_viable_id())
-        self.assertEqual(f"Converted Entry {mock_entry}", (await MockConvertable.convert(mock_entry)).message)
+        self.assertEqual(f"Converted Entry {mock_entry}", (await MockSingletonConvertable.convert(mock_entry)).message)
 
-    def test_build_given_convertable_with_no_converter_but_connection_then_error_raised_with_missing_converter(self):
-        @TestConstructor.convertable
-        class MockConvertable2(Convertable):
+    async def test_instance_given_convertable_converter_and_connection_singletons_then_dependencies_injected(self):
+
+        class MockInstanceConvertable(Convertable):
             id = Column(Integer, primary_key=True)
 
-        @TestConstructor.converter
-        class MockConvertableConverter(ConverterBase[Convertable]):
+            def __init__(self, message: str):
+                self.message = message
+
+            @classmethod
+            @TestInjector.inject
+            def set_converter(cls, converter: MockInstanceConverter):
+                super().set_converter(converter)
+
+        @TestInjector.instance
+        class MockInstanceConverter(ConverterBase[MockInstanceConvertable]):
+
+            @TestInjector.inject
+            def __init__(self, connection: MockInstanceConnection):
+                super().__init__(connection)
+
+            async def convert(self, argument: str):
+                return MockInstanceConvertable(f"Converted {self.connection.get_from_id(int(argument))}")
+
+        @TestInjector.instance
+        class MockInstanceConnection(ConnectionBase[MockInstanceConvertable]):
+
+            @staticmethod
+            def get_from_id(object_id: int):
+                return f"Entry {object_id}"
+
+        mock_entry = str(self.id_generator.generate_viable_id())
+        self.assertEqual(f"Converted Entry {mock_entry}", (await MockInstanceConvertable.convert(mock_entry)).message)
+
+    def test_inject_given_function_with_default_arguments_then_default_arguments_not_injected(self):
+
+        @BotDependencyInjector.instance
+        class Injectable:
+
+            def __init__(self, value: int = 1):
+                self.value = value
+
+        @BotDependencyInjector.inject
+        def default_test(argument: Injectable, another: Injectable = Injectable(2)):
+            return another.value > argument.value
+
+        self.assertTrue(default_test())
+
+    def test_inject_given_method_then_self_argument_not_injected(self):
+
+        @BotDependencyInjector.singleton
+        class Injectable:
+
+            def __init__(self, value: int = 1):
+                self.value = value
+
+        class Dependent:
+
+            @BotDependencyInjector.inject
+            def __init__(self, injectable: Injectable):
+                self.injectable = injectable
+
+        self.assertEqual(Injectable().value, Dependent().injectable.value)
+
+    def test_inject_given_args_list_then_args_not_injected(self):
+
+        @BotDependencyInjector.singleton
+        class Injectable:
+
+            def __init__(self, value: bool = True):
+                self.value = value
+
+        @BotDependencyInjector.inject
+        def args_test(argument: Injectable, *args):
+            return argument.value and not args
+
+        self.assertTrue(args_test)
+
+    def test_inject_given_kwargs_then_kwargs_not_injected(self):
+
+        @BotDependencyInjector.singleton
+        class Injectable:
+
+            def __init__(self, value: bool = True):
+                self.value = value
+
+        @BotDependencyInjector.inject
+        def kwargs_test(argument: Injectable, **kwargs):
+            return argument.value and not kwargs
+
+        self.assertTrue(kwargs_test)
+
+    def test_inject_given_class_method_with_default_args_and_kwargs_then_only_dependencies_injected(self):
+
+        @BotDependencyInjector.singleton
+        class Injectable:
+
+            def __init__(self, value: bool = True):
+                self.value = value
+
+        class Dependent:
+
+            @BotDependencyInjector.inject
+            def __init__(self, injectable: Injectable, default: bool = True, *args, **kwargs):
+                self.injectable = injectable
+                self.default = default
+                self.args = args
+                self.kwargs = kwargs
+
+            def __bool__(self):
+                return self.injectable and self.default and not self.args and not self.kwargs
+
+        self.assertTrue(Dependent())
+
+    def test_inject_given_dependency_with_no_resolution_then_error_raised_with_missing_dependency(self):
+
+        class DependentClass:
+            @TestInjector.inject
+            def __init__(self, dependency: Dependency):
+                self.dependency = dependency
+
+        class Dependency:
             pass
 
-        @TestConstructor.connection
-        class MockConvertableConnection(ConnectionBase[MockConvertable2]):
+        expected_exception = BuildException(f"Could not inject argument dependency because type '{Dependency.__name__}'"
+                                            f" is not registered as a dependency.")
+        self._assert_raises_correct_exception(expected_exception, DependentClass)
+
+    def test_inject_given_dependency_with_no_annotation_then_error_raised_with_missing_annotation(self):
+
+        class DependentClass:
+            @TestInjector.inject
+            def __init__(self, dependency):
+                self.dependency = dependency
+
+        expected_exception = BuildException(f"Could not inject argument dependency because it doesn't have a type"
+                                            f" annotation.")
+        self._assert_raises_correct_exception(expected_exception, DependentClass)
+
+    def test_singleton_given_instance_dependency_of_same_type_then_error_raised_with_duplicate_annotation(self):
+
+        @BotDependencyInjector.instance
+        class DuplicatedDependency:
             pass
 
-        expected_exception = BuildException("Could not find associated converter for convertable"
-                                            " 'MockConvertable2' during bot initialization.")
-        constructor = TestConstructor("Database.Path")
-        self._assert_raises_correct_exception(expected_exception, constructor.build)
+        expected_exception = BuildException(f"Could not register dependency {DuplicatedDependency.__name__} as a "
+                                            f"dependency with identical name already exists.")
+        self._assert_raises_correct_exception(expected_exception, BotDependencyInjector.singleton, DuplicatedDependency)
 
-    def test_build_given_convertable_with_no_converter_and_connection_then_error_raised_with_missing_converter(self):
-        @TestConstructor.convertable
-        class MockConvertable3(Convertable):
-            id = Column(Integer, primary_key=True)
+    def test_singleton_given_singleton_dependency_of_same_type_then_error_raised_with_duplicate_annotation(self):
 
-        @TestConstructor.converter
-        class InvalidConverter(ConverterBase[Convertable]):
+        @BotDependencyInjector.singleton
+        class DuplicatedDependency:
             pass
 
-        @TestConstructor.connection
-        class InvalidConnection(ConnectionBase[Convertable]):
+        expected_exception = BuildException(f"Could not register dependency {DuplicatedDependency.__name__} as a "
+                                            f"dependency with identical name already exists.")
+        self._assert_raises_correct_exception(expected_exception, BotDependencyInjector.singleton, DuplicatedDependency)
+
+    def test_instance_given_instance_dependency_of_same_type_then_error_raised_with_duplicate_annotation(self):
+
+        @BotDependencyInjector.instance
+        class DuplicatedDependency:
             pass
 
-        expected_exception = BuildException("Could not find associated converter for convertable"
-                                            " 'MockConvertable3' during bot initialization.")
-        constructor = TestConstructor("Database.Path")
-        self._assert_raises_correct_exception(expected_exception, constructor.build)
+        expected_exception = BuildException(f"Could not register dependency {DuplicatedDependency.__name__} as a "
+                                            f"dependency with identical name already exists.")
+        self._assert_raises_correct_exception(expected_exception, BotDependencyInjector.instance, DuplicatedDependency)
 
-    def test_build_given_convertable_with_converter_but_no_connection_then_error_raised_with_missing_connection(self):
-        @TestConstructor.convertable
-        class MockConvertable4(Convertable):
-            id = Column(Integer, primary_key=True)
+    def test_instance_given_singleton_dependency_of_same_type_then_error_raised_with_duplicate_annotation(self):
 
-        @TestConstructor.converter
-        class MockConvertableConverter(ConverterBase[MockConvertable4]):
+        @BotDependencyInjector.singleton
+        class DuplicatedDependency:
             pass
 
-        @TestConstructor.connection
-        class InvalidConnection(ConnectionBase[Convertable]):
-            pass
-
-        expected_exception = BuildException("Could not find associated connection for convertable"
-                                            " 'MockConvertable4' during bot initialization.")
-        constructor = TestConstructor("Database.Path")
-        self._assert_raises_correct_exception(expected_exception, constructor.build)
-
-    def test_build_given_duplicate_converters_then_error_raised_with_duplicate_info(self):
-        @TestConstructor.convertable
-        class MockConvertable5(Convertable):
-            id = Column(Integer, primary_key=True)
-
-        @TestConstructor.converter
-        class MockConvertableConverter(ConverterBase[MockConvertable5]):
-            pass
-
-        class InvalidConverter(ConverterBase[MockConvertable5]):
-            pass
-
-        expected_exception = BuildException(f"Received duplicate converters for convertable "
-                                            f"'{MockConvertable5.__name__}' ({MockConvertableConverter.__name__} and "
-                                            f"{InvalidConverter.__name__}).")
-        self._assert_raises_correct_exception(expected_exception, TestConstructor.converter, InvalidConverter)
-
-    def test_build_given_duplicate_connections_then_error_raised_with_duplicate_info(self):
-        @TestConstructor.convertable
-        class MockConvertable6(Convertable):
-            id = Column(Integer, primary_key=True)
-
-        @TestConstructor.connection
-        class MockConvertableConnection(ConnectionBase[MockConvertable6]):
-            pass
-
-        class InvalidConnection(ConnectionBase[MockConvertable6]):
-            pass
-
-        expected_exception = BuildException(f"Received duplicate connections for convertable "
-                                            f"'{MockConvertable6.__name__}' ({MockConvertableConnection.__name__} and "
-                                            f"{InvalidConnection.__name__}).")
-        self._assert_raises_correct_exception(expected_exception, TestConstructor.connection, InvalidConnection)
-
-    def test_get_convertable_name_given_no_generic_type_then_error_raised_with_disclaimer(self):
-        class InvalidClass:
-            pass
-
-        expected_exception = BuildException(f"Class '{InvalidClass.__name__}' lacks generic convertable info "
-                                            f"or does not inherit neither of ConverterBase or ConnectionBase.")
-        self._assert_raises_correct_exception(expected_exception, get_convertable_type, InvalidClass)
-
-    def test_get_convertable_name_given_wrong_generic_type_then_error_raised_with_disclaimer(self):
-        invalid_type = int
-
-        class InvalidClass(ConverterBase[invalid_type]):
-            pass
-
-        expected_exception = BuildException(f"Class '{InvalidClass.__name__}' has generic type "
-                                            f"'{invalid_type.__name__}' which is not a subtype of Convertable")
-        self._assert_raises_correct_exception(expected_exception, get_convertable_type, InvalidClass)
+        expected_exception = BuildException(f"Could not register dependency {DuplicatedDependency.__name__} as a "
+                                            f"dependency with identical name already exists.")
+        self._assert_raises_correct_exception(expected_exception, BotDependencyInjector.instance, DuplicatedDependency)

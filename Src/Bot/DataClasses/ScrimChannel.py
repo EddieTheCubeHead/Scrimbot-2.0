@@ -3,15 +3,18 @@ from __future__ import annotations
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
+if TYPE_CHECKING:
+    from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
 from Bot.DataClasses.Convertable import Convertable
-from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 
 
-@BotDependencyConstructor.convertable
 class ScrimChannel(Convertable):
 
     channel_id = Column(Integer, primary_key=True)
@@ -38,3 +41,8 @@ class ScrimChannel(Convertable):
         self.channel_id: int = channel_id
         self.guild_id: int = guild_id
         self.voice_channels: list[VoiceChannel] = list(voice_channels)
+
+    @classmethod
+    @BotDependencyInjector.inject
+    def set_converter(cls, converter: ScrimChannelConverter):
+        super().set_converter(converter)

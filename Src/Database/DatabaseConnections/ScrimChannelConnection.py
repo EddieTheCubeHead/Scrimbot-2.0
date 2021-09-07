@@ -3,12 +3,12 @@ __author__ = "Eetu Asikainen"
 
 from sqlalchemy.orm import subqueryload
 
-from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
-@BotDependencyConstructor.connection
+@BotDependencyInjector.singleton
 class ScrimChannelConnection(ConnectionBase[ScrimChannel]):
 
     def get_channel(self, channel_id: int) -> ScrimChannel:

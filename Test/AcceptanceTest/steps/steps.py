@@ -10,7 +10,7 @@ from behave import *
 from behave.api.async_step import async_run_until_complete
 
 from AcceptanceTest.steps.discord_mocker import *
-from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimClient import ScrimClient
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Database.Core.MasterConnection import MasterConnection
@@ -19,7 +19,7 @@ from Utils.test_utils import get_cogs_messages
 
 @given("a bot")
 def step_impl(context):
-    constructor = BotDependencyConstructor(MasterConnection(":memory:"))
+    constructor = BotDependencyInjector(MasterConnection(":memory:"))
     context.client = ScrimClient(constructor)
 
 

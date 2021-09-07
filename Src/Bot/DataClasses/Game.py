@@ -1,18 +1,23 @@
+from __future__ import annotations
+
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import relationship
 
+if TYPE_CHECKING:
+    from Bot.Converters.GameConverter import GameConverter
 from Bot.DataClasses.Convertable import Convertable
-from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.Alias import Alias
 from Bot.DataClasses.UserElo import UserElo
 from Bot.DataClasses.Scrim import Scrim
 
 
-@BotDependencyConstructor.convertable
 class Game(Convertable):
 
     name = Column(String, primary_key=True)
@@ -57,3 +62,8 @@ class Game(Convertable):
         self.min_team_size = min_team_size
         self.max_team_size: int = max_team_size if max_team_size is not None else min_team_size
         self.team_count = team_count
+
+    @classmethod
+    @BotDependencyInjector.inject
+    def set_converter(cls, converter: GameConverter):
+        super().set_converter(converter)

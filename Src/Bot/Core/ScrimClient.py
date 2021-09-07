@@ -10,7 +10,7 @@ from pathlib import Path
 import discord
 from discord.ext import commands
 
-from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
 from Bot.Converters.GameConverter import GameConverter
 from Bot.DataClasses.Guild import Guild
@@ -36,13 +36,12 @@ def _setup_logging(folder_path):
 class ScrimClient(commands.Bot):
     """The class that implements the discord.py bot class. The heart of the bot."""
 
-    def __init__(self, constructor: BotDependencyConstructor, loop=None):
+    def __init__(self, constructor: BotDependencyInjector, loop=None):
         """The constructor of ScrimClient. Running this starts the bot on the created instance."""
 
         intents = discord.Intents.default()
         intents.members = True
         super().__init__(command_prefix=self.get_prefix, intents=intents, help_command=BotHelpCommand(), loop=loop)
-        constructor.build()
 
         self.connected = asyncio.Event()
         self.logger = _setup_logging(Config.file_folder)
@@ -182,4 +181,4 @@ class ScrimClient(commands.Bot):
 
 
 if __name__ == "__main__":
-    client = ScrimClient(BotDependencyConstructor(f"{Config.file_folder}/{Config.database_name}"))
+    client = ScrimClient(BotDependencyInjector(f"{Config.file_folder}/{Config.database_name}"))

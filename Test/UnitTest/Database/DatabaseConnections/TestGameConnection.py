@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from sqlalchemy.exc import NoResultFound
 
-from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.Alias import Alias
 from Bot.DataClasses.Game import Game
 from Configs.Config import Config
@@ -43,7 +43,7 @@ class TestGameConnection(ConnectionUnittest[Game]):
         self.connection: GameConnection = GameConnection(self.master)
 
     def test_init_given_normal_init_then_connection_for_game_dataclass_set(self):
-        self.assertIn(GameConnection, BotDependencyConstructor.connections.values())
+        self.assertIn(GameConnection, BotDependencyInjector.dependencies)
 
     def test_init_given_no_games_in_db_then_loads_config(self):
         games_config = Config.games_dict

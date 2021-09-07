@@ -10,7 +10,7 @@ from Bot.DataClasses.Game import Game
 from Bot.Converters.GameConverter import GameConverter
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
-from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 
 
 class TestGameConverter(UnittestBase):
@@ -24,7 +24,7 @@ class TestGameConverter(UnittestBase):
         self.converter = GameConverter(self.connection)
 
     def test_init_given_normal_init_then_converter_for_game_dataclass_set(self):
-        self.assertIn(GameConverter, BotDependencyConstructor.converters.values())
+        self.assertIn(GameConverter, BotDependencyInjector.dependencies)
 
     def test_init_games_given_valid_game_data_list_then_all_games_build(self):
         game_names = ["Dota 2", "CS:GO", "Valorant", "Test"]
