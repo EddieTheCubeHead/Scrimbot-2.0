@@ -8,11 +8,11 @@ from Bot.DataClasses.Alias import Alias
 from Bot.DataClasses.Game import Game
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
-from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
-@BotDependencyConstructor.converter
+@BotDependencyInjector.singleton
 class GameConverter(ConverterBase[Game]):
 
     def __init__(self, connection: ConnectionBase):

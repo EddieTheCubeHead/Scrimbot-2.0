@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Utils.UnittestBase import UnittestBase
 from Utils.TestIdGenerator import TestIdGenerator
 from Bot.DataClasses.ScrimChannel import ScrimChannel
@@ -23,7 +23,7 @@ class TestScrimChannelConverter(UnittestBase):
         self.converter = ScrimChannelConverter(self.mock_database_connection)
 
     def test_init_given_normal_init_then_converter_for_game_dataclass_set(self):
-        self.assertIn(ScrimChannelConverter, BotDependencyConstructor.converters.values())
+        self.assertIn(ScrimChannelConverter, BotDependencyInjector.dependencies)
 
     def test_convert_given_valid_id_then_channel_returned(self):
         mock_id = self.id_generator.generate_viable_id()

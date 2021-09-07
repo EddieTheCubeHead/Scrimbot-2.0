@@ -6,6 +6,7 @@ from typing import Generic, TypeVar
 from Bot.DataClasses.Convertable import Convertable
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
+
 T = TypeVar('T', bound=Convertable)  # pylint: disable=invalid-name
 
 

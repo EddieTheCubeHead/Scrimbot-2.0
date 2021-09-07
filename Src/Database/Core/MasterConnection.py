@@ -9,12 +9,16 @@ import sqlalchemy.orm
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.Convertable import Convertable
+from Configs.Config import Config
 
 
+@BotDependencyInjector.singleton
 class MasterConnection:
 
-    def __init__(self, db_address: str, debug=False):
+    def __init__(self, db_address: str = None, debug=False):
+        db_address = db_address or f"{Config.file_folder}/{Config.database_name}"
         self.engine = sqlalchemy.create_engine(f"sqlite:///{db_address}", echo=debug)
         self.session = sqlalchemy.orm.sessionmaker()
         self.session.configure(bind=self.engine)

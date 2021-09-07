@@ -1,13 +1,13 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.Core.BotDependencyConstructor import BotDependencyConstructor
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.Alias import Alias
 from Bot.DataClasses.Game import Game
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
-@BotDependencyConstructor.connection
+@BotDependencyInjector.singleton
 class GameConnection(ConnectionBase[Game]):
 
     def get_game(self, search: str):
