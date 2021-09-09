@@ -4,10 +4,10 @@ __author__ = "Eetu Asikainen"
 from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
-from Bot.DataClasses.Convertable import Convertable
+from Bot.DataClasses.DataClass import DataClass
 
 
-class VoiceChannel(Convertable):
+class VoiceChannel(DataClass):
 
     channel_id = Column(Integer, primary_key=True)
     parent_channel_id = Column(Integer, ForeignKey("ScrimChannels.channel_id"), nullable=False)

@@ -3,18 +3,16 @@ __author__ = "Eetu Asikainen"
 
 import asyncio
 import io
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
-from discord.ext import commands
 from behave import *
 from behave.api.async_step import async_run_until_complete
 
-from AcceptanceTest.steps.discord_mocker import *
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimClient import ScrimClient
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Database.Core.MasterConnection import MasterConnection
-from Utils.test_utils import get_cogs_messages
+from Utils.test_utils import get_cogs_messages, create_mock_context
 
 
 @given("a bot")
@@ -51,11 +49,8 @@ def step_impl(context):
 @async_run_until_complete
 async def step_impl(context, command: str):
     for row in context.table[1:]:
-        guild = create_mock_guild(row[2])
-        user = create_mock_author(row[0], guild)
-        channel = create_mock_channel(row[1], guild)
-        message = create_mock_message(guild, channel, user, command)
-        with patch("discord.ext.commands.Bot.get_context", create_mock_context(guild, user, message)):
+        mock_context = create_mock_context(int(row[2]), int(row[1]), int(row[0]), command)
+        with patch("discord.ext.commands.Bot.get_context", mock_context):
             await context.client.on_message(command)
 
 

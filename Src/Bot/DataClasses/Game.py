@@ -11,14 +11,14 @@ from sqlalchemy.orm import relationship
 
 if TYPE_CHECKING:
     from Bot.Converters.GameConverter import GameConverter
-from Bot.DataClasses.Convertable import Convertable
+from Bot.DataClasses.DataClass import DataClass
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.Alias import Alias
 from Bot.DataClasses.UserElo import UserElo
 from Bot.DataClasses.Scrim import Scrim
 
 
-class Game(Convertable):
+class Game(DataClass):
 
     name = Column(String, primary_key=True)
     colour = Column(String, default="0xffffff")

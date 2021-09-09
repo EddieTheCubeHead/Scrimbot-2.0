@@ -5,11 +5,11 @@ __author__ = "Eetu Asikainen"
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
-from Bot.DataClasses.Convertable import Convertable
+from Bot.DataClasses.DataClass import DataClass
 from Bot.DataClasses.ParticipantTeam import ParticipantTeam
 
 
-class Scrim(Convertable):
+class Scrim(DataClass):
 
     scrim_id = Column(Integer, primary_key=True, autoincrement=True)
     channel_id = Column(Integer, ForeignKey("ScrimChannels.channel_id"), nullable=False)

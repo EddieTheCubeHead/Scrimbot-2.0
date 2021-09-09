@@ -4,9 +4,9 @@ __author__ = "Eetu Asikainen"
 from typing import Generic, TypeVar, Any, get_args
 
 from Utils.UnittestBase import UnittestBase
-from Bot.DataClasses.Convertable import Convertable
+from Bot.DataClasses.DataClass import DataClass
 
-T = TypeVar('T', bound=Convertable)
+T = TypeVar('T', bound=DataClass)
 
 
 class ConnectionUnittest(UnittestBase, Generic[T]):

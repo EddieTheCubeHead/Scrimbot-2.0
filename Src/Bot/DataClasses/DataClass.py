@@ -8,12 +8,12 @@ from typing import TYPE_CHECKING
 import inflect
 from sqlalchemy.orm import declared_attr, declarative_base
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma no-cover
     from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 
 
-class _Convertable:
+class _DataClass:
 
     @declared_attr
     def __tablename__(self):
@@ -28,10 +28,10 @@ class _Convertable:
         return converter
 
     @classmethod
-    async def convert(cls, argument: str) -> _Convertable:
+    async def convert(cls, argument: str) -> _DataClass:
         if not cls.converter:
             cls.set_converter()
         return await cls.converter.convert(argument)
 
 
-Convertable = declarative_base(cls=_Convertable)
+DataClass = declarative_base(cls=_DataClass)

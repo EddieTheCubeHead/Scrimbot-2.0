@@ -5,10 +5,10 @@ from abc import ABC
 from typing import TypeVar, Generic
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
-from Bot.DataClasses.Convertable import Convertable
+from Bot.DataClasses.DataClass import DataClass
 from Database.Core.MasterConnection import MasterConnection
 
-T = TypeVar('T', bound=Convertable)  # pylint: disable=invalid-name
+T = TypeVar('T', bound=DataClass)  # pylint: disable=invalid-name
 
 
 class ConnectionBase(ABC, Generic[T]):  # pylint: disable=too-few-public-methods

@@ -5,12 +5,12 @@ __author__ = "Eetu Asikainen"
 from sqlalchemy import Column, Integer, Boolean
 from sqlalchemy.orm import relationship
 
-from Bot.DataClasses.Convertable import Convertable
+from Bot.DataClasses.DataClass import DataClass
 from Bot.DataClasses.Prefix import Prefix
 from Configs.Config import Config
 
 
-class Guild(Convertable):
+class Guild(DataClass):
 
     guild_id = Column(Integer, primary_key=True)
     scrim_timeout = Column(Integer, default=Config.default_timeout)

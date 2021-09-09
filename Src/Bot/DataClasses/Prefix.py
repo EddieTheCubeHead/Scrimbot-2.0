@@ -1,10 +1,10 @@
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
-from Bot.DataClasses.Convertable import Convertable
+from Bot.DataClasses.DataClass import DataClass
 
 
-class Prefix(Convertable):
+class Prefix(DataClass):
 
     prefix = Column(String, primary_key=True)
     guild_id = Column(Integer, ForeignKey("Guilds.guild_id"), primary_key=True)

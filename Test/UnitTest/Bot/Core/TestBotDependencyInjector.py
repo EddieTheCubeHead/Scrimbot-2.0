@@ -5,7 +5,7 @@ __author__ = "Eetu Asikainen"
 
 from sqlalchemy import Column, Integer
 
-from Bot.DataClasses.Convertable import Convertable
+from Bot.DataClasses.DataClass import DataClass
 from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Exceptions.BuildException import BuildException
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
@@ -27,9 +27,9 @@ class TestBotDependencyConstructor(AsyncUnittestBase):
     def setUp(self) -> None:
         TestInjector.singletons = {}
 
-    async def test_singleton_given_convertable_converter_and_connection_singletons_then_dependencies_injected(self):
+    async def test_singleton_given_dataclass_converter_and_connection_singletons_then_dependencies_injected(self):
 
-        class MockSingletonConvertable(Convertable):
+        class MockSingletonDataClass(DataClass):
             id = Column(Integer, primary_key=True)
 
             def __init__(self, message: str):
@@ -41,28 +41,28 @@ class TestBotDependencyConstructor(AsyncUnittestBase):
                 super().set_converter(converter)
 
         @TestInjector.singleton
-        class MockSingeltonConverter(ConverterBase[MockSingletonConvertable]):
+        class MockSingeltonConverter(ConverterBase[MockSingletonDataClass]):
 
             @TestInjector.inject
             def __init__(self, connection: MockSingletonConnection):
                 super().__init__(connection)
 
             async def convert(self, argument: str):
-                return MockSingletonConvertable(f"Converted {self.connection.get_from_id(int(argument))}")
+                return MockSingletonDataClass(f"Converted {self.connection.get_from_id(int(argument))}")
 
         @TestInjector.singleton
-        class MockSingletonConnection(ConnectionBase[MockSingletonConvertable]):
+        class MockSingletonConnection(ConnectionBase[MockSingletonDataClass]):
 
             @staticmethod
             def get_from_id(object_id: int):
                 return f"Entry {object_id}"
 
         mock_entry = str(self.id_generator.generate_viable_id())
-        self.assertEqual(f"Converted Entry {mock_entry}", (await MockSingletonConvertable.convert(mock_entry)).message)
+        self.assertEqual(f"Converted Entry {mock_entry}", (await MockSingletonDataClass.convert(mock_entry)).message)
 
-    async def test_instance_given_convertable_converter_and_connection_singletons_then_dependencies_injected(self):
+    async def test_instance_given_dataclass_converter_and_connection_singletons_then_dependencies_injected(self):
 
-        class MockInstanceConvertable(Convertable):
+        class MockInstanceDataClass(DataClass):
             id = Column(Integer, primary_key=True)
 
             def __init__(self, message: str):
@@ -74,24 +74,24 @@ class TestBotDependencyConstructor(AsyncUnittestBase):
                 super().set_converter(converter)
 
         @TestInjector.instance
-        class MockInstanceConverter(ConverterBase[MockInstanceConvertable]):
+        class MockInstanceConverter(ConverterBase[MockInstanceDataClass]):
 
             @TestInjector.inject
             def __init__(self, connection: MockInstanceConnection):
                 super().__init__(connection)
 
             async def convert(self, argument: str):
-                return MockInstanceConvertable(f"Converted {self.connection.get_from_id(int(argument))}")
+                return MockInstanceDataClass(f"Converted {self.connection.get_from_id(int(argument))}")
 
         @TestInjector.instance
-        class MockInstanceConnection(ConnectionBase[MockInstanceConvertable]):
+        class MockInstanceConnection(ConnectionBase[MockInstanceDataClass]):
 
             @staticmethod
             def get_from_id(object_id: int):
                 return f"Entry {object_id}"
 
         mock_entry = str(self.id_generator.generate_viable_id())
-        self.assertEqual(f"Converted Entry {mock_entry}", (await MockInstanceConvertable.convert(mock_entry)).message)
+        self.assertEqual(f"Converted Entry {mock_entry}", (await MockInstanceDataClass.convert(mock_entry)).message)
 
     def test_inject_given_function_with_default_arguments_then_default_arguments_not_injected(self):
 

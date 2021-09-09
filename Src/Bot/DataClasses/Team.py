@@ -7,11 +7,11 @@ import discord
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from Bot.DataClasses.Convertable import Convertable
+from Bot.DataClasses.DataClass import DataClass
 from Bot.DataClasses.TeamMember import TeamMember
 
 
-class Team(Convertable):
+class Team(DataClass):
 
     team_id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)  # TODO: when teams are more refined, create check for these two

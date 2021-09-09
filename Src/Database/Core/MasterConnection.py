@@ -10,7 +10,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
-from Bot.DataClasses.Convertable import Convertable
+from Bot.DataClasses.DataClass import DataClass
 from Configs.Config import Config
 
 
@@ -22,7 +22,7 @@ class MasterConnection:
         self.engine = sqlalchemy.create_engine(f"sqlite:///{db_address}", echo=debug)
         self.session = sqlalchemy.orm.sessionmaker()
         self.session.configure(bind=self.engine)
-        Convertable.metadata.create_all(self.engine)
+        DataClass.metadata.create_all(self.engine)
 
     @contextmanager
     def get_session(self) -> ContextManager[Session]:

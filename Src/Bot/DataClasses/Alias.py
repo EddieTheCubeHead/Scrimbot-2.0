@@ -5,10 +5,10 @@ __author__ = "Eetu Asikainen"
 from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from Bot.DataClasses.Convertable import Convertable
+from Bot.DataClasses.DataClass import DataClass
 
 
-class Alias(Convertable):
+class Alias(DataClass):
     name = Column(String, primary_key=True)
     game_name = Column(String, ForeignKey("Games.name"), nullable=False)
 

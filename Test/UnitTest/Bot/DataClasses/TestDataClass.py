@@ -5,26 +5,26 @@ from unittest.mock import AsyncMock, MagicMock
 
 import inflect
 
-from Bot.DataClasses.Convertable import Convertable
+from Bot.DataClasses.DataClass import DataClass
 from Utils.AsyncUnittestBase import AsyncUnittestBase
 
 
-class TestConvertable(AsyncUnittestBase):
+class TestDataClass(AsyncUnittestBase):
 
     def setUp(self) -> None:
-        self.convertable = Convertable
+        self.data_class = DataClass
 
     def test_init_tablename_is_plural_of_class_name(self):
-        self.assertEqual(inflect.engine().plural(Convertable.__name__), self.convertable.__tablename__)
+        self.assertEqual(inflect.engine().plural(DataClass.__name__), self.data_class.__tablename__)
 
     def test_set_provider_given_valid_provider_then_provider_set(self):
         mock_converter = MagicMock
-        Convertable.set_converter(mock_converter)
-        self.assertEqual(self.convertable.converter, mock_converter)
+        DataClass.set_converter(mock_converter)
+        self.assertEqual(self.data_class.converter, mock_converter)
 
     async def test_convert_given_string_then_provider_provide_called(self):
         mock_converter = AsyncMock()
         test_string = "Test"
-        self.convertable.converter = mock_converter
-        await self.convertable.convert(test_string)
+        self.data_class.converter = mock_converter
+        await self.data_class.convert(test_string)
         mock_converter.convert.assert_called_with(test_string)

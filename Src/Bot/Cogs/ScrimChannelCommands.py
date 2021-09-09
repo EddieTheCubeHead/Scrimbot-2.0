@@ -6,12 +6,14 @@ from typing import Optional
 import discord
 from discord.ext import commands
 
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimClient import ScrimClient
 from Bot.DataClasses.ScrimChannel import ScrimChannel
+from Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 
 
-class AdminCommands(commands.Cog):
+class ScrimChannelCommands(commands.Cog):
     """A cog housing the upkeep and maintenance related commands of the bot
 
     Commands
@@ -20,7 +22,8 @@ class AdminCommands(commands.Cog):
         A command to register a channel as a channel that can be used for scrims
     """
 
-    def __init__(self, client: ScrimClient):
+    @BotDependencyInjector.inject
+    def __init__(self, client: ScrimClient, embed_builder: ResponseBuilder):
         """The constructor of the AdminCommands cog.
 
         args
@@ -31,6 +34,7 @@ class AdminCommands(commands.Cog):
         """
 
         self._client = client
+        self._embed_builder = embed_builder
 
     def _sanitize_channels(self, team_1_voice: Optional[discord.VoiceChannel],
                            team_2_voice: Optional[discord.VoiceChannel],
@@ -92,32 +96,33 @@ class AdminCommands(commands.Cog):
         """
 
         # Try to automatically assign voice channels if the category is of the right size
-        if not team_1_voice:
+        #if not team_1_voice:
 
-            if 2 <= len(ctx.channel.category.voice_channels) <= 4 and len(ctx.channel.category.text_channels) <= 3:
-                voice_candidates = ctx.channel.category.voice_channels
+        #    if 2 <= len(ctx.channel.category.voice_channels) <= 4 and len(ctx.channel.category.text_channels) <= 3:
+        #        voice_candidates = ctx.channel.category.voice_channels
 
-                for channel in voice_candidates:
-                    if self._client.database_manager.check_voice_availability(channel.id):
-                        break
+        #        for channel in voice_candidates:
+        #            if self._client.database_manager.check_voice_availability(channel.id):
+        #                break
 
-                else:
-                    if len(voice_candidates) == 2:
-                        voice_candidates.append(None)
+        #        else:
+        #            if len(voice_candidates) == 2:
+        #                voice_candidates.append(None)
 
-                    team_1_voice, team_2_voice, spectator_voice = voice_candidates[:3]
+        #            team_1_voice, team_2_voice, spectator_voice = voice_candidates[:3]
 
-        team_1_id, team_2_id, spectator_id = self._sanitize_channels(team_1_voice, team_2_voice, spectator_voice)
-        self._client.database_manager.register_scrim_channel(ctx.channel.id, team_1_id, team_2_id, spectator_id)
-        ScrimChannel(ctx.channel, team_1_voice, team_2_voice, spectator_voice)
+        #team_1_id, team_2_id, spectator_id = self._sanitize_channels(team_1_voice, team_2_voice, spectator_voice)
+        #self._client.database_manager.register_scrim_channel(ctx.channel.id, team_1_id, team_2_id, spectator_id)
+        #ScrimChannel(ctx.channel, team_1_voice, team_2_voice, spectator_voice)
 
         # I hate constructing strings like this, but backslashes tend to cause unnecessary spaces in the bot message
-        success_info = f"Successfully registered the channel '{ctx.channel}' for scrim usage."
-        success_info += "\nAssociated voice channels:"
-        success_info += f"\nTeam 1: {team_1_voice or 'not set'}"
-        success_info += f"\nTeam 2: {team_2_voice or 'not set'}"
-        success_info += f"\nSpectators: {spectator_voice or 'not set'}"
-        await self._client.temp_msg(ctx, success_info)
+        #success_info = f"Successfully registered the channel '{ctx.channel}' for scrim usage."
+        #success_info += "\nAssociated voice channels:"
+        #success_info += f"\nTeam 1: {team_1_voice or 'not set'}"
+        #success_info += f"\nTeam 2: {team_2_voice or 'not set'}"
+        #success_info += f"\nSpectators: {spectator_voice or 'not set'}"
+
+        ##? await self._embed_builder.send(ctx, scrim_channel)
 
 
 def setup(client: ScrimClient):
@@ -130,5 +135,5 @@ def setup(client: ScrimClient):
     :type client: ScrimClient
     """
 
-    client.add_cog(AdminCommands(client))
+    client.add_cog(ScrimChannelCommands(client))
     print(f"Using cog {__name__}, with version {__version__}")

@@ -5,11 +5,11 @@ __author__ = "Eetu Asikainen"
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
-from Bot.DataClasses.Convertable import Convertable
+from Bot.DataClasses.DataClass import DataClass
 from Bot.DataClasses.GuildMember import GuildMember
 
 
-class User(Convertable):
+class User(DataClass):
 
     user_id = Column(Integer, primary_key=True)
     global_rights_level = Column(Integer, default=0)
