@@ -3,8 +3,9 @@ __author__ = "Eetu Asikainen"
 
 from discord import Embed
 
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.ScrimChannel import ScrimChannel
-from Bot.EmbedSystem.EmbedBuilderBase import EmbedBuilderBase
+from Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
 
 
 def _create_channel_mention(channel_id):
@@ -12,7 +13,8 @@ def _create_channel_mention(channel_id):
 
 
 # noinspection PyMethodMayBeStatic
-class ScrimChannelEmbedBuilder(EmbedBuilderBase):
+@BotDependencyInjector.instance
+class ScrimChannelEmbedBuilder(ResponseBuilder):
 
     def build(self, scrim_channel: ScrimChannel) -> Embed:
         description = "Associated voice channels:" if scrim_channel.voice_channels else "No associated voice channels."

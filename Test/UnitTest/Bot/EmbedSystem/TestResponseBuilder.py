@@ -1,7 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Utils.AsyncUnittestBase import AsyncUnittestBase
@@ -32,27 +32,27 @@ class TestResponseBuilder(AsyncUnittestBase):
 
     async def test_send_given_embed_data_and_no_text_then_only_embed_response_sent(self):
         ctx = create_mock_context(1, 1, 1, ":ping")
-        _embed_builder = MagicMock()
         _embed = MagicMock()
-        _embed_builder.build = MagicMock(return_value=_embed)
-        await self.builder.send(ctx, embed_data=_embed_builder)
+        _embed_build = MagicMock(return_value=_embed)
+        with patch("Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
+            await self.builder.send(ctx, displayable=MagicMock())
         ctx.send.assert_called_with(None, embed=_embed, delete_after=None)
 
     async def test_send_given_embed_data_and_text_then_text_and_embed_response_sent(self):
         ctx = create_mock_context(1, 1, 1, ":ping")
         _response = "Pong!"
-        _embed_builder = MagicMock()
         _embed = MagicMock()
-        _embed_builder.build = MagicMock(return_value=_embed)
-        await self.builder.send(ctx, _response, embed_data=_embed_builder)
+        _embed_build = MagicMock(return_value=_embed)
+        with patch("Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
+            await self.builder.send(ctx, _response, displayable=MagicMock())
         ctx.send.assert_called_with(_response, embed=_embed, delete_after=None)
 
     async def test_send_given_embed_data_text_and_deletion_time_then_temporary_text_and_embed_response_sent(self):
         ctx = create_mock_context(1, 1, 1, ":ping")
-        _response = "Pong!"
-        _embed_builder = MagicMock()
-        _embed = MagicMock()
-        _embed_builder.build = MagicMock(return_value=_embed)
         deletion_timeout = 15.5
-        await self.builder.send(ctx, _response, embed_data=_embed_builder, delete_after=deletion_timeout)
+        _response = "Pong!"
+        _embed = MagicMock()
+        _embed_build = MagicMock(return_value=_embed)
+        with patch("Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
+            await self.builder.send(ctx, _response, displayable=MagicMock(), delete_after=deletion_timeout)
         ctx.send.assert_called_with(_response, embed=_embed, delete_after=deletion_timeout)
