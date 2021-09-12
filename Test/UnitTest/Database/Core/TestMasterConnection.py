@@ -1,6 +1,8 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from unittest.mock import MagicMock
+
 import sqlalchemy.orm
 
 from Utils.UnittestBase import UnittestBase
@@ -11,9 +13,12 @@ class TestMasterConnection(UnittestBase):
 
     def setUp(self) -> None:
         self.db_address = ":memory:"
-        self.connection = MasterConnection(self.db_address)
+        self.config = MagicMock()
+        self.connection = MasterConnection(self.config, self.db_address)
 
-    def test_get_session_given_db_address_given_then_session_connected_to_db_recieved(self):
-        with self.connection.get_session() as session:
-            self.assertEqual(self.db_address, session.bind.engine.url.database)
+    def test_build_given_file_imported_then_singleton_dependency_created(self):
+        self._assert_singleton_dependency(MasterConnection)
+
+    def test_get_session_given_db_address_given_then_session_connected_to_db_received(self):
+        self.assertEqual(self.db_address, self.connection.session().bind.engine.url.database)
 

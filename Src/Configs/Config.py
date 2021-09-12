@@ -5,6 +5,8 @@ import json
 import os
 from pathlib import Path
 
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
+
 
 def _get_config(config_name: str):
     with open(os.path.join(os.path.dirname(__file__), f"{config_name}.json"), encoding="utf-8") as config_file:
@@ -16,7 +18,8 @@ def _construct_path(file_folder: str) -> str:
     return str(Path(os.path.join(os.path.dirname(__file__))).parent.parent.joinpath(file_folder).absolute())
 
 
-class _Config:
+@BotDependencyInjector.singleton
+class Config:
 
     def __init__(self):
         self._games_dict = _get_config("games")
@@ -25,7 +28,7 @@ class _Config:
         configs = _get_config("configs")
         self._file_folder = _construct_path(configs.pop("FileFolder", "DataFiles"))
         self._database_name = configs.pop("DataBaseName", "ScrimBotDatabase")
-        self._default_prefix = configs.pop("DefaultPrefix", ":")
+        self._default_prefix = configs.pop("DefaultPrefix", ";")
         self._default_timeout = configs.pop("DefaultTimeout", 15)
 
     @property
@@ -51,6 +54,3 @@ class _Config:
     @property
     def default_timeout(self) -> int:
         return self._default_timeout
-
-
-Config = _Config()

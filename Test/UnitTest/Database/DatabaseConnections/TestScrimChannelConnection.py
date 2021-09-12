@@ -1,6 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+import unittest
 from typing import Any
 
 from sqlalchemy.exc import NoResultFound
@@ -8,6 +9,7 @@ from sqlalchemy.exc import NoResultFound
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.VoiceChannel import VoiceChannel
+from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
 from Utils.ConnectionUnittest import ConnectionUnittest
 from Utils.TestIdGenerator import TestIdGenerator
@@ -25,22 +27,24 @@ def _generate_voice_channels(voice_ids, parent_channel_id) -> list[VoiceChannel]
 class TestScrimChannelConnection(ConnectionUnittest[ScrimChannel]):
 
     _GUILD_ID = 1
+    config: Config = None
 
     @classmethod
     def setUpClass(cls) -> None:
         cls.id_generator = TestIdGenerator()
-        cls.master = MasterConnection(":memory:")
+        cls.config = Config()
+        cls.master = MasterConnection(cls.config, ":memory:")
 
     def setUp(self) -> None:
         self.connection: ScrimChannelConnection = ScrimChannelConnection(self.master)
 
-    def test_init_given_normal_init_then_connection_for_scrim_channel_dataclass_set(self):
-        self.assertIn(ScrimChannelConnection, BotDependencyInjector.dependencies)
+    def test_build_given_file_imported_then_singleton_dependency_created(self):
+        self._assert_singleton_dependency(ScrimChannelConnection)
 
     def test_get_channel_given_valid_id_then_channel_returned_with_voice_channels(self):
         channel_id = self.id_generator.generate_viable_id()
         voice_ids = self.id_generator.generate_viable_id_group(4)
-        self._insert_channel(channel_id, voice_ids)
+        self._insert_channel(channel_id, *voice_ids)
         actual = self.connection.get_channel(channel_id)
         self._assert_successful_fetch(actual)
         self._assert_has_voices(actual, voice_ids)
@@ -58,15 +62,48 @@ class TestScrimChannelConnection(ConnectionUnittest[ScrimChannel]):
         self.connection.add_channel(channel)
         self._assert_channel_in_database(channel_id, voice_ids)
 
-    def _insert_channel(self, channel_id, voice_ids):
+    def test_add_channel_given_valid_channel_then_channel_and_voices_returned(self):
+        channel_id = self.id_generator.generate_viable_id()
+        voice_ids = self.id_generator.generate_viable_id_group(4)
+        voice_channels: list[VoiceChannel] = _generate_voice_channels(voice_ids, channel_id)
+        channel: ScrimChannel = ScrimChannel(channel_id, self._GUILD_ID, *voice_channels)
+        actual = self.connection.add_channel(channel)
+        self.assertEqual(channel_id, actual.channel_id)
+        self._assert_has_voices(actual, voice_ids)
+
+    def test_exists_text_given_not_registered_id_then_none_returned(self):
+        channel_id = self.id_generator.generate_nonviable_id()
+        self.assertIsNone(self.connection.exists_text(channel_id))
+
+    def test_exists_text_given_registered_id_then_channel_data_returned(self):
+        channel_id = self.id_generator.generate_viable_id()
+        voice_ids = self.id_generator.generate_viable_id_group(4)
+        self._insert_channel(channel_id, *voice_ids)
+        actual = self.connection.exists_text(channel_id)
+        self.assertEqual(channel_id, actual.channel_id)
+        self._assert_has_voices(actual, voice_ids)
+
+    def test_exists_voice_given_not_registered_id_then_none_returned(self):
+        channel_id = self.id_generator.generate_nonviable_id()
+        self.assertIsNone(self.connection.exists_voice(channel_id))
+
+    def test_exists_voice_given_registered_id_then_channel_data_returned(self):
+        channel_id = self.id_generator.generate_nonviable_id()
+        parent_id = self.id_generator.generate_viable_id()
+        self._insert_channel(parent_id, channel_id)
+        actual = self.connection.exists_voice(channel_id).voice_channels
+        self.assertIn(channel_id, [channel.channel_id for channel in actual])
+
+    def _insert_channel(self, channel_id, *voice_ids):
         voice_channels: list[VoiceChannel] = _generate_voice_channels(voice_ids, channel_id)
         channel: ScrimChannel = ScrimChannel(channel_id, self._GUILD_ID, *voice_channels)
         with self.master.get_session() as session:
             session.add(channel)
 
     def _assert_has_voices(self, actual: ScrimChannel, voice_ids):
-        for voice_id in voice_ids:
-            self.assertIn(voice_id, [voice.channel_id for voice in actual.voice_channels])
+        for voice_id, voice_channel in zip(voice_ids, actual.voice_channels):
+            self.assertEqual(voice_id, voice_channel.channel_id)
+            self.assertEqual(actual.channel_id, voice_channel.parent_channel_id)
 
     def _assert_channel_in_database(self, channel_id, voice_ids):
         with self.master.get_session() as session:

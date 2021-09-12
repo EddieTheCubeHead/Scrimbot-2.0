@@ -44,7 +44,7 @@
     "alias": [ "ttt" ]
   },
   "Civilization V": {
-    "min_team_size": 4,
+    "min_team_size": 2,
     "max_team_size": 6,
     "team_count": 1,
     "icon": "https://images.sftcdn.net/images/t_optimized,f_auto/p/6ab5bc4e-96d8-11e6-b45f-00163ec9f5fa/2860980152/civilization-v-logo.png",
@@ -52,7 +52,7 @@
     "alias": [ "civ 5", "civ5", "civilization5" ]
   },
   "Civilization VI": {
-    "min_team_size": 4,
+    "min_team_size": 2,
     "max_team_size": 0,
     "team_count": 1,
     "icon": "https://mlpnk72yciwc.i.optimole.com/cqhiHLc.WqA8~2eefa/w:350/h:350/q:75/rt:fill/g:ce/https://bleedingcool.com/wp-content/uploads/2017/10/Civilization-VI-atlas.jpg",
@@ -61,7 +61,7 @@
   },
   "Among Us": {
     "min_team_size": 6,
-    "max_team_size": 10,
+    "max_team_size": 15,
     "team_count": 1,
     "icon": "https://www.scarsdalelibrary.org/sites/default/files/2021-02/among_us.jpg",
     "colour": "0xff0000",

@@ -15,8 +15,8 @@ Feature: ScrimFunctionalities
   # Bot should always update the embed message to reflect the state of the scrim
 
   Scenario: Registering a channel with no voice channels
-    Given a bot
-    When ':register' is called with
+    Given an initialized bot
+    When ';register' is called with
       | user | channel | guild |
       | 1    | 1       | 1     |
     Then channel '1' registered

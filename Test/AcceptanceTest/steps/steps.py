@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 import asyncio
 import io
-from unittest.mock import patch
+from unittest.mock import patch, AsyncMock, MagicMock
 
 from behave import *
 from behave.api.async_step import async_run_until_complete
@@ -11,14 +11,25 @@ from behave.api.async_step import async_run_until_complete
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimClient import ScrimClient
 from Bot.DataClasses.ScrimChannel import ScrimChannel
+from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
-from Utils.test_utils import get_cogs_messages, create_mock_context
+from Utils.test_utils import get_cogs_messages, create_mock_context, create_mock_message, create_mock_guild, \
+    create_mock_author, create_mock_channel
 
 
-@given("a bot")
+@given("an uninitialized bot")
 def step_impl(context):
-    constructor = BotDependencyInjector(MasterConnection(":memory:"))
-    context.client = ScrimClient(constructor)
+    config = Config()
+    BotDependencyInjector.dependencies[MasterConnection] = MasterConnection(config, ":memory:")
+    context.client = ScrimClient(config)
+
+
+@given("an initialized bot")
+def step_impl(context):
+    config = Config()
+    BotDependencyInjector.dependencies[MasterConnection] = MasterConnection(config, ":memory:")
+    context.client = ScrimClient(config)
+    context.client.setup_cogs()
 
 
 @when("bot is started")
@@ -48,10 +59,14 @@ def step_impl(context):
 @when("'{command}' is called with")
 @async_run_until_complete
 async def step_impl(context, command: str):
-    for row in context.table[1:]:
-        mock_context = create_mock_context(int(row[2]), int(row[1]), int(row[0]), command)
-        with patch("discord.ext.commands.Bot.get_context", mock_context):
-            await context.client.on_message(command)
+    for row in context.table:
+        mock_guild = create_mock_guild(row[2])
+        mock_author = create_mock_author(row[0], mock_guild)
+        mock_channel = create_mock_channel(row[1], mock_guild)
+        mock_channel.delete = AsyncMock()
+        mock_message = create_mock_message(mock_guild, mock_channel, mock_author, command)
+        with patch("Bot.Core.ScrimClient.ScrimClient.user", MagicMock()):
+            await context.client.on_message(mock_message)
 
 
 @then("channel '{channel_id}' registered")

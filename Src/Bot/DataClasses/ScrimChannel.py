@@ -19,7 +19,7 @@ from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 
 
-class ScrimChannel(DataClass, Displayable):
+class ScrimChannel(DataClass):
 
     channel_id = Column(Integer, primary_key=True)
     guild_id = Column(Integer, ForeignKey("Guilds.guild_id"), nullable=False)
@@ -33,11 +33,7 @@ class ScrimChannel(DataClass, Displayable):
         self.guild_id: int = guild_id
         self.voice_channels: list[VoiceChannel] = list(voice_channels)
 
-    @BotDependencyInjector.inject
-    def build(self, embed_builder: ScrimChannelEmbedBuilder) -> Embed:
-        return embed_builder.build(self)
-
     @classmethod
     @BotDependencyInjector.inject
-    def set_converter(cls, converter: ScrimChannelConverter):
+    def set_converter(cls, converter: ScrimChannelConverter):  # pragma: no cover
         super().set_converter(converter)

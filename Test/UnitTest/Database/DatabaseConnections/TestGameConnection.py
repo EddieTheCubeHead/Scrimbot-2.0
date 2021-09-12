@@ -1,6 +1,8 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from unittest.mock import MagicMock
+
 from sqlalchemy.exc import NoResultFound
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
@@ -11,6 +13,28 @@ from Database.Core.MasterConnection import MasterConnection
 from Utils.ConnectionUnittest import ConnectionUnittest
 from Utils.TestIdGenerator import TestIdGenerator
 from Database.DatabaseConnections.GameConnection import GameConnection
+
+
+_test_games = {
+  "Dota 2": {
+    "min_team_size": 5,
+    "icon": "https://i.imgur.com/OlWIlyY.jpg?1",
+    "colour": "0xce0000",
+    "alias": [ "dota2", "dota" ]
+  },
+  "CS:GO": {
+    "min_team_size": 5,
+    "icon": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/6d/6d448876809d7b79aa8f070271c07b1296459400_full.jpg",
+    "colour": "0xff8c1a",
+    "alias": [ "cs", "counterstrike", "csgo" ]
+  },
+  "Overwatch": {
+    "min_team_size": 6,
+    "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Overwatch_circle_logo.svg/1200px-Overwatch_circle_logo.svg.png",
+    "colour": "0xffa31a",
+    "alias": [ "ow", "overwatch" ]
+  }
+}
 
 
 def _construct_game(name, data) -> Game:
@@ -30,30 +54,34 @@ def _construct_games(games_dict) -> list[Game]:
 class TestGameConnection(ConnectionUnittest[Game]):
 
     master: MasterConnection = None
+    config: Config = None
 
+    # noinspection PyPropertyAccess
     @classmethod
     def setUpClass(cls) -> None:
         cls.id_generator = TestIdGenerator()
-        cls.master = MasterConnection(":memory:")
+        cls.config = MagicMock()
+        cls.config.games_dict = _test_games
+        cls.master = MasterConnection(cls.config, ":memory:")
         with cls.master.get_session() as session:
-            games = _construct_games(Config.games_dict)
+            games = _construct_games(cls.config.games_dict)
             session.add_all(games)
 
     def setUp(self) -> None:
         self.connection: GameConnection = GameConnection(self.master)
 
-    def test_init_given_normal_init_then_connection_for_game_dataclass_set(self):
-        self.assertIn(GameConnection, BotDependencyInjector.dependencies)
+    def test_build_given_file_imported_then_singleton_dependency_created(self):
+        self._assert_singleton_dependency(GameConnection)
 
     def test_init_given_no_games_in_db_then_loads_config(self):
-        games_config = Config.games_dict
+        games_config = self.config.games_dict
         for game in games_config:
             with self.subTest(f"Initializing games from config ({game})"):
                 actual = self.connection.get_game(game)
                 self._assert_successful_fetch(actual)
 
     def test_get_game_when_querying_with_an_alias_then_corresponding_game_found(self):
-        aliases = ["dota", "cs", "t"]
+        aliases = ["dota", "cs", "ow"]
         for alias in aliases:
             with self.subTest(f"Querying games with an alias ({alias})"):
                 actual = self.connection.get_game(alias)

@@ -1,45 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="games" uuid="2048ac4b-b32c-474a-bb87-8f11ec74ee05">
+    <data-source source="LOCAL" name="Memory" uuid="a2dd29b4-196e-4c3b-9519-b583bbd5978a">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\EddieTheCubeHead\PycharmProjects\scrimbot2.0\venv\Src\Database\DBFiles\games.db</jdbc-url>
+      <jdbc-url>jdbc:sqlite::memory:</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="servers" uuid="b84ba3a0-a1eb-4c87-ba57-4d8d8926379e">
+    <data-source source="LOCAL" name="Bot DB" uuid="16656496-0da1-42e4-89a0-7719bc15beb8">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\EddieTheCubeHead\PycharmProjects\scrimbot2.0\venv\Src\Database\DBFiles\servers.db</jdbc-url>
-    </data-source>
-    <data-source source="LOCAL" name="games [2]" uuid="1550de44-fe82-4896-ab35-b418d5061c21">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\EddieTheCubeHead\PycharmProjects\scrimbot2.0\Src\Database\DBFiles\games.db</jdbc-url>
-      <libraries>
-        <library>
-          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.31.1/license.txt</url>
-        </library>
-        <library>
-          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.31.1/sqlite-jdbc-3.31.1.jar</url>
-        </library>
-      </libraries>
-    </data-source>
-    <data-source source="LOCAL" name="games_test" uuid="1d2f0dde-7c6e-4435-a050-b0a8eabfb9a2">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\EddieTheCubeHead\PycharmProjects\scrimbot2.0\Src\Database\TestDBFiles\games_test.db</jdbc-url>
-      <libraries>
-        <library>
-          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.31.1/license.txt</url>
-        </library>
-        <library>
-          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.31.1/sqlite-jdbc-3.31.1.jar</url>
-        </library>
-      </libraries>
+      <jdbc-url>jdbc:sqlite:C:\Users\EddieTheCubeHead\PycharmProjects\Scrimbot-2.0\DataFiles\BotDataBase</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
 </project>

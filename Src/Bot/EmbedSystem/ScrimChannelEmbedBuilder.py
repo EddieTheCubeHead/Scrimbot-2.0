@@ -17,9 +17,10 @@ def _create_channel_mention(channel_id):
 class ScrimChannelEmbedBuilder(ResponseBuilder):
 
     def build(self, scrim_channel: ScrimChannel) -> Embed:
-        description = "Associated voice channels:" if scrim_channel.voice_channels else "No associated voice channels."
-        embed = Embed(title=_create_channel_mention(scrim_channel.channel_id), description=description)
+        description = "Channel data:"
+        embed = Embed(title="New scrim channel registered successfully!", description=description)
+        embed.add_field(name="Text channel", value=_create_channel_mention(scrim_channel.channel_id))
         for voice_channel in scrim_channel.voice_channels:
-            embed.add_field(name=f"Team {voice_channel.team}" if voice_channel.team else "Lobby",
+            embed.add_field(name=f"Team {voice_channel.team} voice" if voice_channel.team else "Voice lobby",
                             value=_create_channel_mention(voice_channel.channel_id))
         return embed

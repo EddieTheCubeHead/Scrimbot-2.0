@@ -23,8 +23,8 @@ class TestGameConverter(UnittestBase):
         self.connection = MagicMock()
         self.converter = GameConverter(self.connection)
 
-    def test_init_given_normal_init_then_converter_for_game_dataclass_set(self):
-        self.assertIn(GameConverter, BotDependencyInjector.dependencies)
+    def test_build_given_file_imported_then_singleton_dependency_created(self):
+        self._assert_singleton_dependency(GameConverter)
 
     def test_init_games_given_valid_game_data_list_then_all_games_build(self):
         game_names = ["Dota 2", "CS:GO", "Valorant", "Test"]

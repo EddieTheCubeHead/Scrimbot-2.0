@@ -6,7 +6,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 from typing import Tuple, Type, Optional
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, AsyncMock
 
 import discord
 
@@ -32,11 +32,12 @@ def get_cogs_messages():
             yield rf"Using cog Bot.Cogs.{cog[:-3]}, with version {__version__}"
 
 
-def _create_mock_author(member_id: int, guild: discord.Guild) -> discord.Member:
+def create_mock_author(member_id: int, guild: discord.Guild) -> discord.Member:
     mock_member = MagicMock()
     mock_member.id = member_id
     mock_member.guild = guild
     mock_member.display_name = f"User{member_id}"
+    mock_member.bot = False
     return mock_member
 
 
@@ -54,7 +55,7 @@ def create_mock_guild(guild_id: int) -> discord.Guild:
     return mock_guild
 
 
-def _create_mock_message(guild: discord.Guild, channel: discord.TextChannel, author: discord.Member, message: str) \
+def create_mock_message(guild: discord.Guild, channel: discord.TextChannel, author: discord.Member, message: str) \
         -> discord.Message:
     mock_message = MagicMock()
     mock_message.id = _ID_GENERATOR.generate_viable_id()
@@ -66,11 +67,18 @@ def _create_mock_message(guild: discord.Guild, channel: discord.TextChannel, aut
     return mock_message
 
 
+def _create_mock_bot():
+    mock_bot = AsyncMock()
+    mock_bot.can_run = AsyncMock(return_value=True)
+    return mock_bot
+
+
 def create_mock_context(guild_id: int, channel_id: int, author_id: int,
                         message: str) -> ScrimContext:
     mock_context = MagicMock(spec=ScrimContext)
     mock_context.guild = create_mock_guild(guild_id)
     mock_context.channel = create_mock_channel(channel_id, mock_context.guild)
-    mock_context.author = _create_mock_author(author_id, mock_context.guild)
-    mock_context.message = _create_mock_message(mock_context.guild, mock_context.channel, mock_context.author, message)
+    mock_context.author = create_mock_author(author_id, mock_context.guild)
+    mock_context.message = create_mock_message(mock_context.guild, mock_context.channel, mock_context.author, message)
+    mock_context.bot = _create_mock_bot()
     return mock_context

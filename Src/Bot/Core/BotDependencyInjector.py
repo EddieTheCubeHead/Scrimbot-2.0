@@ -16,7 +16,7 @@ def _is_method_target_argument(arg):
 
 
 # Used for differentiating instance dependencies from singleton dependencies in dependency dict
-class _InstanceSentinel:
+class InstanceSentinel:
     pass
 
 
@@ -34,11 +34,11 @@ class BotDependencyInjector:
 
     @classmethod
     def instance(cls, dependency_class: type):
-        cls._add_dependency(dependency_class, _InstanceSentinel())
+        cls._add_dependency(dependency_class, InstanceSentinel())
         return dependency_class
 
     @classmethod
-    def _add_dependency(cls, dependency_class: type, default_value: Union[None, _InstanceSentinel]):
+    def _add_dependency(cls, dependency_class: type, default_value: Union[None, InstanceSentinel]):
         if dependency_class in cls.dependencies:
             raise BuildException(f"Could not register dependency {dependency_class.__name__} as a dependency with"
                                  f" identical name already exists.")
@@ -81,7 +81,7 @@ class BotDependencyInjector:
 
     @classmethod
     def _get_dependency(cls, annotation):
-        if type(cls.dependencies[annotation]) is _InstanceSentinel:
+        if type(cls.dependencies[annotation]) is InstanceSentinel:
             return annotation()
         if not cls.dependencies[annotation]:
             cls.dependencies[annotation] = annotation()

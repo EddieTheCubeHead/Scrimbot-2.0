@@ -23,7 +23,7 @@ class TestDataClass(AsyncUnittestBase):
         self.assertEqual(self.data_class.converter, mock_converter)
 
     async def test_convert_given_string_then_provider_provide_called(self):
-        mock_converter = AsyncMock()
+        mock_converter = MagicMock()
         test_string = "Test"
         self.data_class.converter = mock_converter
         await self.data_class.convert(test_string)

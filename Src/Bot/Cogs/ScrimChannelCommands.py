@@ -33,9 +33,8 @@ class ScrimChannelCommands(commands.Cog):
         :type voice_channels: list[VoiceChannel]
         """
 
-        created = self._channel_converter.add(ctx.channel.id, voice_channels)
-        await self._response_builder.send("New scrim channel registered successfully! Channel info:",
-                                          displayable=created)
+        created = self._channel_converter.add(ctx.channel.id, ctx.guild.id, *voice_channels)
+        await self._response_builder.send(ctx, displayable=created)
 
 
 def setup(client: ScrimClient):

@@ -10,12 +10,14 @@ from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
+from Database.DatabaseConnections.GameConnection import GameConnection
 
 
 @BotDependencyInjector.singleton
 class GameConverter(ConverterBase[Game]):
 
-    def __init__(self, connection: ConnectionBase):
+    @BotDependencyInjector.inject
+    def __init__(self, connection: GameConnection):
         super().__init__(connection)
         self.games: Dict[str, Game] = {}
         self._reserved_alias_names: Set = set()

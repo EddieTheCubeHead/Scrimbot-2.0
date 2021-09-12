@@ -17,8 +17,9 @@ from Configs.Config import Config
 @BotDependencyInjector.singleton
 class MasterConnection:
 
-    def __init__(self, db_address: str = None, debug=False):
-        db_address = db_address or f"{Config.file_folder}/{Config.database_name}"
+    @BotDependencyInjector.inject
+    def __init__(self, config: Config, db_address: str = None, debug=False):
+        db_address = db_address or f"{config.file_folder}/{config.database_name}"
         self.engine = sqlalchemy.create_engine(f"sqlite:///{db_address}", echo=debug)
         self.session = sqlalchemy.orm.sessionmaker()
         self.session.configure(bind=self.engine)
@@ -28,6 +29,7 @@ class MasterConnection:
     def get_session(self) -> ContextManager[Session]:
         session = self.session()
         try:
+            session.expire_on_commit = False
             yield session
             session.commit()
         except SQLAlchemyError:  # pragma: no cover

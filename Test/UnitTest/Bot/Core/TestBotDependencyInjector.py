@@ -37,17 +37,17 @@ class TestBotDependencyConstructor(AsyncUnittestBase):
 
             @classmethod
             @TestInjector.inject
-            def set_converter(cls, converter: MockSingeltonConverter):
+            def set_converter(cls, converter: MockSingletonConverter):
                 super().set_converter(converter)
 
         @TestInjector.singleton
-        class MockSingeltonConverter(ConverterBase[MockSingletonDataClass]):
+        class MockSingletonConverter(ConverterBase[MockSingletonDataClass]):
 
             @TestInjector.inject
             def __init__(self, connection: MockSingletonConnection):
                 super().__init__(connection)
 
-            async def convert(self, argument: str):
+            def convert(self, argument: str):
                 return MockSingletonDataClass(f"Converted {self.connection.get_from_id(int(argument))}")
 
         @TestInjector.singleton
@@ -80,7 +80,7 @@ class TestBotDependencyConstructor(AsyncUnittestBase):
             def __init__(self, connection: MockInstanceConnection):
                 super().__init__(connection)
 
-            async def convert(self, argument: str):
+            def convert(self, argument: str):
                 return MockInstanceDataClass(f"Converted {self.connection.get_from_id(int(argument))}")
 
         @TestInjector.instance

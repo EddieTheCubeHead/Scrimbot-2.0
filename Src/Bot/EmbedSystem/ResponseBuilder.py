@@ -5,12 +5,13 @@ from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
 
 from discord import Embed
+from discord.ext.commands import Context
 
-from Bot.DataClasses.Displayable import Displayable
+from Bot.DataClasses.DataClass import DataClass
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 
 
-T = TypeVar('T', bound=Displayable)  # pylint: disable=invalid-name
+T = TypeVar('T', bound=DataClass)  # pylint: disable=invalid-name
 
 
 # this class is critical for making cogs easily testable and thus it's ok to have some static functions
@@ -18,12 +19,14 @@ T = TypeVar('T', bound=Displayable)  # pylint: disable=invalid-name
 @BotDependencyInjector.instance
 class ResponseBuilder(Generic[T]):
 
-    async def send(self, ctx, text=None, *, displayable: T = None, delete_after=None):
+    async def send(self, ctx: Context, text=None, *, displayable: T = None, delete_after=None, delete_parent=True):
+        if delete_parent:
+            await ctx.message.delete()
         if displayable is None:
             await ctx.send(text, delete_after=delete_after)
         else:
             await ctx.send(text, embed=self.build(displayable), delete_after=delete_after)
 
     @abstractmethod
-    def build(self, displayable: T) -> Embed:  # pragma: no-cover
+    def build(self, displayable: T) -> Embed:  # pragma: no cover
         pass

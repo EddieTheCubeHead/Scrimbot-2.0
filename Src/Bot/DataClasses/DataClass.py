@@ -31,7 +31,7 @@ class _DataClass:
     async def convert(cls, argument: str) -> _DataClass:
         if not cls.converter:
             cls.set_converter()
-        return await cls.converter.convert(argument)
+        return cls.converter.convert(argument)
 
 
 DataClass = declarative_base(cls=_DataClass)
