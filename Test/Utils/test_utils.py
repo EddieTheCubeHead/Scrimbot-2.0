@@ -58,12 +58,23 @@ def create_mock_guild(guild_id: int) -> discord.Guild:
 def create_mock_message(guild: discord.Guild, channel: discord.TextChannel, author: discord.Member, message: str) \
         -> discord.Message:
     mock_message = MagicMock()
+    _populate_message(author, channel, guild, message, mock_message)
+    return mock_message
+
+
+def _populate_message(author, channel, guild, message, mock_message):
     mock_message.id = _ID_GENERATOR.generate_viable_id()
     mock_message.guild = guild
     mock_message.channel = channel
     mock_message.content = message
     mock_message.author = author
     mock_message.created_at = datetime.now()
+
+
+def create_async_mock_message(guild: discord.Guild, channel: discord.TextChannel, author: discord.Member,
+                              message: str) -> discord.Message:
+    mock_message = AsyncMock()
+    _populate_message(author, channel, guild, message, mock_message)
     return mock_message
 
 
@@ -81,4 +92,5 @@ def create_mock_context(guild_id: int, channel_id: int, author_id: int,
     mock_context.author = create_mock_author(author_id, mock_context.guild)
     mock_context.message = create_mock_message(mock_context.guild, mock_context.channel, mock_context.author, message)
     mock_context.bot = _create_mock_bot()
+    mock_context.send = AsyncMock()
     return mock_context

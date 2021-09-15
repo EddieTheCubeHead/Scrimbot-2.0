@@ -20,3 +20,7 @@ Feature: ScrimFunctionalities
       | user | channel | guild |
       | 1    | 1       | 1     |
     Then channel '1' registered
+    And embed received with fields
+      | name                                       | value         |
+      | New scrim channel registered successfully! | Channel data: |
+      | Text channel                               | <#1>          |
