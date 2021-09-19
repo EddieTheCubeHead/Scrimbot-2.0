@@ -4,16 +4,15 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import MagicMock
 
 from Bot.DataClasses.Alias import Alias
-from Utils.UnittestBase import UnittestBase
-from Utils.TestIdGenerator import TestIdGenerator
+from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.DataClasses.Game import Game
 from Bot.Converters.GameConverter import GameConverter
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 
 
-class TestGameConverter(UnittestBase):
+class TestGameConverter(AsyncUnittestBase):
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -76,23 +75,24 @@ class TestGameConverter(UnittestBase):
         self.converter.add_game(game_1)
         self._assert_raises_correct_exception(expected_exception, self.converter.add_game, game_2)
 
-    def test_convert_given_existing_game_name_then_correct_game_returned(self):
+    async def test_convert_given_existing_game_name_then_correct_game_returned(self):
         game_name = "Dota 2"
         new_game = Game(game_name, "0xffffff", "icon_url", 5, 5, 2, [Alias("dota", game_name)])
         self.converter.games[game_name] = new_game
-        self.assertEqual(new_game, self.converter.convert(game_name))
+        self.assertEqual(new_game, await self.converter.convert(MagicMock(), game_name))
 
-    def test_convert_given_existing_alias_then_correct_game_returned(self):
+    async def test_convert_given_existing_alias_then_correct_game_returned(self):
         game_name = "Dota 2"
         game_alias = Alias("dota", game_name)
         new_game = Game(game_name, "0xffffff", "icon_url", 5, 5, 2, [game_alias])
         self.converter.games[game_name] = new_game
-        self.assertEqual(new_game, self.converter.convert(game_alias.name))
+        self.assertEqual(new_game, await self.converter.convert(MagicMock(), game_alias.name))
 
-    def test_convert_given_argument_with_no_hits_then_error_raised(self):
+    async def test_convert_given_argument_with_no_hits_then_error_raised(self):
         invalid_argument = "Nonexistent"
         expected_exception = BotConversionFailureException("Game", invalid_argument)
-        self._assert_raises_correct_exception(expected_exception, self.converter.convert, invalid_argument)
+        await self._async_assert_raises_correct_exception(expected_exception, self.converter.convert, MagicMock(),
+                                                          invalid_argument)
 
     def _build_fake_games_tuples(self, *names: str):
         games_tuples = []

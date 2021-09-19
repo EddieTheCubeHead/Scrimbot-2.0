@@ -10,8 +10,10 @@ from pathlib import Path
 import discord
 from discord.ext import commands
 
+from Bot.Converters.GuildConverter import GuildConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
+from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
 from Bot.Converters.GameConverter import GameConverter
 from Bot.Core.ContextProvider import ContextProvider
 from Bot.DataClasses.Guild import Guild
@@ -25,7 +27,7 @@ from Bot.Core.ScrimContext import ScrimContext
 
 
 def _setup_logging(folder_path):
-    # Logging setup code stolen from discord.py docs
+    # Logging setup code mostly stolen from discord.py docs
     logger = logging.getLogger('discord')
     logger.setLevel(logging.DEBUG)
     handler = logging.FileHandler(filename=f'{folder_path}/scrim_bot.log', encoding='utf-8', mode='w')
@@ -38,21 +40,25 @@ class ScrimClient(commands.Bot):
     """The class that implements the discord.py bot class. The heart of the bot."""
 
     @BotDependencyInjector.inject
-    def __init__(self, config: Config, context_provider: ContextProvider, loop=None):
-        """The constructor of ScrimClient. Running this starts the bot on the created instance."""
+    def __init__(self, config: Config, context_provider: ContextProvider, guild_converter: GuildConverter,
+                 event_loop=None):
+        """The constructor of ScrimClient. Running this only creates an instance, setup_cogs and start_bot are still
+        required to be ran for the bot to start."""
 
         intents = discord.Intents.default()
         intents.members = True
-        super().__init__(command_prefix=self.get_prefix, intents=intents, help_command=BotHelpCommand(), loop=loop)
+        super().__init__(command_prefix=self.get_prefix, intents=intents, help_command=BotHelpCommand(), loop=event_loop)
 
         self.connected = asyncio.Event()
         self.context_provider = context_provider
+        self.guild_converter = guild_converter
         self.config = config
         self.logger = _setup_logging(self.config.file_folder)
         self.description = "A discord bot for organizing scrims."
 
     def setup_cogs(self):
         """A private helper method for loading and starting all the cogs of the bot."""
+
         parent_path = rf"{Path(os.path.join(os.path.dirname(__file__))).parent}"
         for cog in os.listdir(rf"{parent_path}\Cogs"):
             if cog[-3:] == ".py" and not cog.startswith("_"):
@@ -63,15 +69,15 @@ class ScrimClient(commands.Bot):
         await self.start(self.config.token)
 
     async def get_prefix(self, message: discord.Message):
-        """An overridden method from the base class required for custom prefix support (TBA)"""
+        """An overridden method from the base class required for custom prefix support"""
 
-        guild_data = await Guild.convert(message.guild.id)
+        guild_data = self.guild_converter.get_guild(message.guild.id)
         return guild_data.prefixes or self.config.default_prefix
 
     async def get_deletion_time(self, guild: discord.Guild) -> int:
-        """A method that should return the guild's custom idle scrim deletion time, functionality TBA"""
+        """A method that returns the idle scrim deletion time for a given guild."""
 
-        guild_data = await Guild.convert(guild.id)
+        guild_data = await self.guild_converter.get_guild(guild.id)
         return guild_data.scrim_timeout or self.config.default_timeout
 
     async def get_context(self, message: discord.Message, *, cls=None) -> ScrimContext:

@@ -3,8 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.VoiceChannel import VoiceChannel
-from Utils.TestIdGenerator import TestIdGenerator
-from Utils.EmbedUnittest import EmbedUnittest
+from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Utils.TestBases.EmbedUnittest import EmbedUnittest
 from Bot.EmbedSystem.ScrimChannelEmbedBuilder import ScrimChannelEmbedBuilder
 
 

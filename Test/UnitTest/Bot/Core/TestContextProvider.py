@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import MagicMock, AsyncMock
 
 from Bot.Core.ScrimContext import ScrimContext
-from Utils.AsyncUnittestBase import AsyncUnittestBase
+from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Bot.Core.ContextProvider import ContextProvider
 
 

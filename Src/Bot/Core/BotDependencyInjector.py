@@ -75,7 +75,7 @@ class BotDependencyInjector:
         if annotation in cls.dependencies:
             return annotation
         for dependency in cls.dependencies:
-            if annotation == str(dependency).split(".")[-1][:-2]:
+            if annotation == str(dependency).split(".")[-1][:-2] or annotation == str(dependency):
                 return dependency
         return None
 

@@ -9,19 +9,22 @@ from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimClient import ScrimClient
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Bot.EmbedSystem.ScrimChannelEmbedBuilder import ScrimChannelEmbedBuilder
+from Bot.Logic.ScrimChannelManager import ScrimChannelManager
 
 
 class ScrimChannelCommands(commands.Cog):
     """A cog housing the channel maintenance related commands of the bot"""
 
     @BotDependencyInjector.inject
-    def __init__(self, response_builder: ScrimChannelEmbedBuilder, channel_converter: ScrimChannelConverter):
+    def __init__(self, response_builder: ScrimChannelEmbedBuilder, channel_converter: ScrimChannelConverter,
+                 scrim_channel_manager: ScrimChannelManager):
         self._response_builder: ScrimChannelEmbedBuilder = response_builder
         self._channel_converter: ScrimChannelConverter = channel_converter
+        self._channel_manager: scrim_channel_manager = scrim_channel_manager
 
     @commands.command()
     @commands.guild_only()
-    async def register(self, ctx: commands.Context, *voice_channels: Greedy[VoiceChannel]):
+    async def register(self, ctx: commands.Context, voice_channels: Greedy[VoiceChannel]):
         """A command that registers a channel as viable for scrim usage and assigns associated voice channels.
 
         args
@@ -33,6 +36,7 @@ class ScrimChannelCommands(commands.Cog):
         :type voice_channels: list[VoiceChannel]
         """
 
+        voice_channels = self._channel_manager.enumerate_teams(voice_channels)
         created = self._channel_converter.add(ctx.channel.id, ctx.guild.id, *voice_channels)
         await self._response_builder.send(ctx, displayable=created)
 

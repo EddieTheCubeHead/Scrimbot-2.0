@@ -1,7 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Utils.AsyncUnittestBase import AsyncUnittestBase
+from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
 
 class TestScrimTasks(AsyncUnittestBase):

@@ -7,7 +7,7 @@ from discord import Message
 from discord.ext.commands import Bot
 
 from Bot.Core.ContextProvider import ContextProvider
-from Utils.ResponseLoggerContext import ResponseLoggerContext
+from Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 
 
 class ResponseMessageCatcher(ContextProvider):

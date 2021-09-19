@@ -1,9 +1,16 @@
+from __future__ import annotations
+
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
+
+from typing import Optional, TYPE_CHECKING
 
 from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
+if TYPE_CHECKING:
+    from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.DataClass import DataClass
 
 
@@ -15,20 +22,12 @@ class VoiceChannel(DataClass):
 
     parent_channel = relationship("ScrimChannel", back_populates="voice_channels")
 
-    def __init__(self, channel_id: int, parent_channel_id: int, team: int):
-        """A constructor for the Scrim class
-
-        args
-        ----
-
-        :param channel_id: The text channel the scrim is registered to
-        :type channel_id: discord.TextChannel
-        :param parent_channel_id: The server id of the server the scrim belongs to
-        :type parent_channel_id: int
-        :param team: The voice channels that are associated with the scrim
-        :type team: list[int]
-        """
-
+    def __init__(self, channel_id: int, parent_channel_id: int, team: int = None):
         self.channel_id: int = channel_id
         self.parent_channel_id: int = parent_channel_id
-        self.team: int = team
+        self.team: Optional[int] = team
+
+    @classmethod
+    @BotDependencyInjector.inject
+    def set_converter(cls, converter: VoiceChannelConverter):  # pragma: no cover
+        super().set_converter(converter)

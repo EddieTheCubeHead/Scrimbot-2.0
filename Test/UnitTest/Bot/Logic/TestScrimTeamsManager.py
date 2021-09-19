@@ -7,8 +7,8 @@ from unittest.mock import MagicMock
 
 import discord
 
-from Utils.UnittestBase import UnittestBase
-from Utils.TestIdGenerator import TestIdGenerator
+from Utils.TestBases.UnittestBase import UnittestBase
+from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.DataClasses.Game import Game
 from Bot.DataClasses.Team import Team
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager

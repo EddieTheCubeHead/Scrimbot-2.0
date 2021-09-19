@@ -3,6 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from typing import Generic, TypeVar
 
+from discord.ext.commands import Context
+
 from Bot.DataClasses.DataClass import DataClass
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
@@ -14,5 +16,5 @@ class ConverterBase(Generic[T]):
     def __init__(self, connection: ConnectionBase):  # pragma: no cover
         self.connection: ConnectionBase[T] = connection
 
-    def convert(self, argument: str) -> T:  # pragma: no cover
+    async def convert(self, ctx: Context, argument: str) -> T:  # pragma: no cover
         pass

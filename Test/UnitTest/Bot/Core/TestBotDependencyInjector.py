@@ -3,14 +3,17 @@ from __future__ import annotations
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from unittest.mock import MagicMock
+
+from discord.ext.commands import Context
 from sqlalchemy import Column, Integer
 
 from Bot.DataClasses.DataClass import DataClass
 from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Exceptions.BuildException import BuildException
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
-from Utils.AsyncUnittestBase import AsyncUnittestBase
-from Utils.TestIdGenerator import TestIdGenerator
+from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 
 
@@ -47,7 +50,7 @@ class TestBotDependencyConstructor(AsyncUnittestBase):
             def __init__(self, connection: MockSingletonConnection):
                 super().__init__(connection)
 
-            def convert(self, argument: str):
+            async def convert(self, ctx: Context, argument: str):
                 return MockSingletonDataClass(f"Converted {self.connection.get_from_id(int(argument))}")
 
         @TestInjector.singleton
@@ -58,7 +61,8 @@ class TestBotDependencyConstructor(AsyncUnittestBase):
                 return f"Entry {object_id}"
 
         mock_entry = str(self.id_generator.generate_viable_id())
-        self.assertEqual(f"Converted Entry {mock_entry}", (await MockSingletonDataClass.convert(mock_entry)).message)
+        self.assertEqual(f"Converted Entry {mock_entry}",
+                         (await MockSingletonDataClass.convert(MagicMock(), mock_entry)).message)
 
     async def test_instance_given_dataclass_converter_and_connection_singletons_then_dependencies_injected(self):
 
@@ -80,7 +84,7 @@ class TestBotDependencyConstructor(AsyncUnittestBase):
             def __init__(self, connection: MockInstanceConnection):
                 super().__init__(connection)
 
-            def convert(self, argument: str):
+            async def convert(self, ctx: Context, argument: str):
                 return MockInstanceDataClass(f"Converted {self.connection.get_from_id(int(argument))}")
 
         @TestInjector.instance
@@ -91,7 +95,8 @@ class TestBotDependencyConstructor(AsyncUnittestBase):
                 return f"Entry {object_id}"
 
         mock_entry = str(self.id_generator.generate_viable_id())
-        self.assertEqual(f"Converted Entry {mock_entry}", (await MockInstanceDataClass.convert(mock_entry)).message)
+        self.assertEqual(f"Converted Entry {mock_entry}",
+                         (await MockInstanceDataClass.convert(MagicMock(), mock_entry)).message)
 
     def test_inject_given_function_with_default_arguments_then_default_arguments_not_injected(self):
 

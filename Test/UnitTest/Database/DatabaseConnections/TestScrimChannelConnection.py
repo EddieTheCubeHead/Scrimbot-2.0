@@ -1,19 +1,14 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import unittest
-from typing import Any
-
 from sqlalchemy.exc import NoResultFound
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
-from Utils.ConnectionUnittest import ConnectionUnittest
-from Utils.TestIdGenerator import TestIdGenerator
-from Utils.UnittestBase import UnittestBase
+from Utils.TestBases.ConnectionUnittest import ConnectionUnittest
+from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
 
 

@@ -3,9 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-import sqlalchemy.orm
-
-from Utils.UnittestBase import UnittestBase
+from Utils.TestBases.UnittestBase import UnittestBase
 from Database.Core.MasterConnection import MasterConnection
 
 

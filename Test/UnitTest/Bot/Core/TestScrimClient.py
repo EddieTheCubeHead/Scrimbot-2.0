@@ -7,13 +7,11 @@ import os
 import unittest
 from unittest.mock import MagicMock, patch, AsyncMock
 
-from Bot.DataClasses.Guild import Guild
-from Bot.DataClasses.Prefix import Prefix
 from Configs.Config import Config
-from Utils.TestIdGenerator import TestIdGenerator
-from Utils.test_utils import get_cogs_messages
+from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Utils.TestHelpers.test_utils import get_cogs_messages
 from Bot.Core.ScrimClient import ScrimClient
-from Utils.AsyncUnittestBase import AsyncUnittestBase
+from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
 
 class TestScrimClient(AsyncUnittestBase):
@@ -27,8 +25,10 @@ class TestScrimClient(AsyncUnittestBase):
         self.config = MagicMock()
         self.config.file_folder = Config().file_folder
         self.config.token = Config().token
+        self.config.default_prefix = ";"
         self.context_provider = AsyncMock()
-        self.client = ScrimClient(self.config, self.context_provider, self.loop)
+        self.guild_converter = MagicMock()
+        self.client = ScrimClient(self.config, self.context_provider, self.guild_converter, self.loop)
 
     @patch('sys.stdout', new_callable=io.StringIO)
     async def test_setup_cogs_when_called_then_cogs_loaded(self, print_catcher):
@@ -49,26 +49,47 @@ class TestScrimClient(AsyncUnittestBase):
         await self.client.close()
 
     async def test_get_prefix_when_no_guild_specific_prefix_then_default_prefix_returned(self):
-        mock_message = self._mock_prefixes([])
+        mock_bot_guild = self._mock_bot_guild_with_prefixes([])
+        mock_message = MagicMock()
+        mock_message.guild.id = mock_bot_guild.guild_id
+        self.guild_converter.get_guild = MagicMock(return_value=mock_bot_guild)
         self.assertEqual(self.config.default_prefix, await self.client.get_prefix(mock_message))
+        self.guild_converter.get_guild.assert_called_with(mock_bot_guild.guild_id)
 
     async def test_get_prefix_when_guild_has_one_prefix_then_guild_prefix_returned(self):
-        prefixes = [f"{Config.default_prefix}:"]
-        mock_message = self._mock_prefixes(prefixes)
+        prefixes = [f"{self.config.default_prefix}:"]
+        mock_bot_guild = self._mock_bot_guild_with_prefixes(prefixes)
+        mock_message = MagicMock()
+        mock_message.guild.id = mock_bot_guild.guild_id
+        self.guild_converter.get_guild = MagicMock(return_value=mock_bot_guild)
         self.assertEqual(prefixes, await self.client.get_prefix(mock_message))
+        self.guild_converter.get_guild.assert_called_with(mock_bot_guild.guild_id)
 
     async def test_get_prefix_when_guild_has_multiple_prefixes_then_all_guild_prefix_returned(self):
         prefixes = ["1", "2", "3"]
-        mock_message = self._mock_prefixes(prefixes)
+        mock_bot_guild = self._mock_bot_guild_with_prefixes(prefixes)
+        mock_message = MagicMock()
+        mock_message.guild.id = mock_bot_guild.guild_id
+        self.guild_converter.get_guild = MagicMock(return_value=mock_bot_guild)
         self.assertEqual(prefixes, await self.client.get_prefix(mock_message))
+        self.guild_converter.get_guild.assert_called_with(mock_bot_guild.guild_id)
 
     async def test_get_deletion_time_when_no_guild_specific_time_then_default_time_returned(self):
-        mock_guild = self._mock_timeout(None)
-        self.assertEqual(self.config.default_timeout, await self.client.get_deletion_time(mock_guild))
+        mock_bot_guild = self._mock_bot_guild_with_timeout(None)
+        mock_discord_guild = MagicMock()
+        mock_discord_guild.id = mock_bot_guild.guild_id
+        self.guild_converter.get_guild = AsyncMock(return_value=mock_bot_guild)
+        self.assertEqual(self.config.default_timeout, await self.client.get_deletion_time(mock_discord_guild))
+        self.guild_converter.get_guild.assert_called_with(mock_bot_guild.guild_id)
 
     async def test_get_deletion_time_when_guild_specific_time_exists_then_guild_deletion_time_returned(self):
-        mock_guild = self._mock_timeout(self.config.default_timeout + 1)
-        self.assertEqual(self.config.default_timeout + 1, await self.client.get_deletion_time(mock_guild))
+        guild_id = self.id_mocker.generate_viable_id()
+        mock_discord_guild = MagicMock()
+        mock_discord_guild.id = guild_id
+        mock_bot_guild = self._mock_bot_guild_with_timeout(self.config.default_timeout + 1)
+        self.guild_converter.get_guild = AsyncMock(return_value=mock_bot_guild)
+        self.assertEqual(self.config.default_timeout + 1, await self.client.get_deletion_time(mock_discord_guild))
+        self.guild_converter.get_guild.assert_called_with(guild_id)
 
     async def test_get_context_given_provider_exists_then_called_with_super_and_message(self):
         mock_message = MagicMock()
@@ -78,21 +99,14 @@ class TestScrimClient(AsyncUnittestBase):
         self.assertEqual("<super: <class 'ScrimClient'>, <ScrimClient object>>", str(await_args[0][0]))
         self.assertEqual(mock_message, await_args[0][1])
 
-    def _mock_timeout(self, timeout):
+    def _mock_bot_guild_with_timeout(self, timeout):
         mock_guild = MagicMock()
-        mock_guild.id = self.id_mocker.generate_viable_id()
+        mock_guild.guild_id = self.id_mocker.generate_viable_id()
         mock_guild.scrim_timeout = timeout
-        mock_converter = MagicMock()
-        mock_converter.convert = MagicMock(return_value=mock_guild)
-        Guild.set_converter(mock_converter)
         return mock_guild
 
-    def _mock_prefixes(self, prefixes):
-        mock_message = MagicMock()
-        mock_message.guild.id = self.id_mocker.generate_viable_id()
-        mock_converter = MagicMock()
+    def _mock_bot_guild_with_prefixes(self, prefixes):
         mock_guild = MagicMock()
+        mock_guild.guild_id = self.id_mocker.generate_viable_id()
         mock_guild.prefixes = prefixes
-        mock_converter.convert = MagicMock(return_value=mock_guild)
-        Guild.set_converter(mock_converter)
-        return mock_message
+        return mock_guild

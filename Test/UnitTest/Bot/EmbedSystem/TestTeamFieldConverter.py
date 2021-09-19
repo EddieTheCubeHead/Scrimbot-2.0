@@ -5,8 +5,8 @@ from unittest.mock import MagicMock
 
 import discord
 
-from Utils.UnittestBase import UnittestBase
-from Utils.TestIdGenerator import TestIdGenerator
+from Utils.TestBases.UnittestBase import UnittestBase
+from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.EmbedSystem.TeamFieldConverter import TeamFieldConverter
 from Bot.DataClasses.Team import Team
 

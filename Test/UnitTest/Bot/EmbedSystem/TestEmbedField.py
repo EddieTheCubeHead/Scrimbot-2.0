@@ -1,7 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Utils.UnittestBase import UnittestBase
+from Utils.TestBases.UnittestBase import UnittestBase
 from Bot.EmbedSystem.EmbedField import EmbedField
 
 

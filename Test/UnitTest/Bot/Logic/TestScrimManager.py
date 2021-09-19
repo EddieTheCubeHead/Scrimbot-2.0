@@ -3,8 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Utils.UnittestBase import UnittestBase
-from Utils.TestIdGenerator import TestIdGenerator
+from Utils.TestBases.UnittestBase import UnittestBase
+from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.Logic.ScrimManager import ScrimManager
 from Bot.DataClasses.ScrimState import ScrimState

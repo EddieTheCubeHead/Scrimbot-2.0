@@ -16,9 +16,10 @@ class ResponseLoggerContext(ScrimContext):
 
     @classmethod
     def _add_sent(cls, text: str, *, embed: Embed = None, delete_after: float = None):
-        print("Saved message")
         cls.sent_queue.put({"text": text, "embed": embed, "delete_after": delete_after})
 
     @classmethod
     def get_oldest_embed(cls):
+        if not cls.sent_queue.queue:
+            raise AssertionError("Tried getting a sent message while none exist!")
         return cls.sent_queue.get()["embed"]

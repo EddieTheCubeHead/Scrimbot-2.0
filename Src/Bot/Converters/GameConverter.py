@@ -3,6 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from typing import Tuple, List, Dict, Iterator, Set
 
+from discord.ext.commands import Context
+
 from Bot.Converters.ConverterBase import ConverterBase
 from Bot.DataClasses.Alias import Alias
 from Bot.DataClasses.Game import Game
@@ -32,7 +34,7 @@ class GameConverter(ConverterBase[Game]):
             self._assert_valid_aliases(game[6])
         self._raw_add_game(game)
 
-    def convert(self, argument: str) -> Game:
+    async def convert(self, ctx: Context, argument: str) -> Game:
         if argument in self.games:
             return self.games[argument]
         return self._get_game_from_alias(argument)

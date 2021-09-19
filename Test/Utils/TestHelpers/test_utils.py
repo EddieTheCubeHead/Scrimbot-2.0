@@ -11,7 +11,8 @@ from unittest.mock import MagicMock, AsyncMock
 import discord
 
 from Bot.Core.ScrimContext import ScrimContext
-from Utils.TestIdGenerator import TestIdGenerator
+from Bot import Cogs
+from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 _ID_GENERATOR = TestIdGenerator()
@@ -26,8 +27,7 @@ def assert_tuple_with_correct_types(actual: Tuple, *tuple_fields: Type) -> Optio
 
 
 def get_cogs_messages():
-    root = str(Path(os.path.join(os.path.dirname(__file__))).parent.parent.absolute())
-    for cog in os.listdir(rf"{root}\Src\Bot\Cogs"):
+    for cog in os.listdir(os.path.dirname(Cogs.__file__)):
         if re.match(r"^[^_][a-zA-Z]*\.py$", cog):
             yield rf"Using cog Bot.Cogs.{cog[:-3]}, with version {__version__}"
 

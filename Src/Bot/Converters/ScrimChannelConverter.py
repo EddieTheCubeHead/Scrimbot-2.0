@@ -4,6 +4,7 @@ __author__ = "Eetu Asikainen"
 from functools import lru_cache
 
 import discord
+from discord.ext.commands import Context
 
 from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
@@ -22,7 +23,7 @@ class ScrimChannelConverter(ConverterBase[ScrimChannel]):
     def __init__(self, connection: ScrimChannelConnection):
         super().__init__(connection)
 
-    def convert(self, argument: str) -> ScrimChannel:
+    async def convert(self, ctx: Context, argument: str) -> ScrimChannel:
         return self.get_from_id(int(argument))
 
     def add(self, channel_id: int, guild_id: int, *voice_channels: VoiceChannel):

@@ -5,13 +5,12 @@ from unittest.mock import MagicMock
 
 from sqlalchemy.exc import NoResultFound
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.Alias import Alias
 from Bot.DataClasses.Game import Game
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
-from Utils.ConnectionUnittest import ConnectionUnittest
-from Utils.TestIdGenerator import TestIdGenerator
+from Utils.TestBases.ConnectionUnittest import ConnectionUnittest
+from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Database.DatabaseConnections.GameConnection import GameConnection
 
 

@@ -1,8 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
-from Utils.UnittestBase import UnittestBase
+from Utils.TestBases.UnittestBase import UnittestBase
 from Configs.Config import Config
 
 

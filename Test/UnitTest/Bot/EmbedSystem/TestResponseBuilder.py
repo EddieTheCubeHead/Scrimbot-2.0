@@ -4,9 +4,9 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import MagicMock, patch, AsyncMock
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
-from Utils.AsyncUnittestBase import AsyncUnittestBase
+from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
-from Utils.test_utils import create_mock_context
+from Utils.TestHelpers.test_utils import create_mock_context
 
 
 class TestResponseBuilder(AsyncUnittestBase):

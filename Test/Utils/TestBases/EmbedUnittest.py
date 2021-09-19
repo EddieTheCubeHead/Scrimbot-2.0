@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from discord import Embed
 
-from Utils.UnittestBase import UnittestBase
+from Utils.TestBases.UnittestBase import UnittestBase
 
 
 class EmbedUnittest(UnittestBase):

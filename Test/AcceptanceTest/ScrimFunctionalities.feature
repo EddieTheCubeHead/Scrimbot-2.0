@@ -24,3 +24,21 @@ Feature: ScrimFunctionalities
       | name                                       | value         |
       | New scrim channel registered successfully! | Channel data: |
       | Text channel                               | <#1>          |
+
+  Scenario: Registering a channel with a lobby channel and two team voice channels
+    Given an initialized bot
+    And exists discord voice channels
+      | guild | channel |
+      | 1     | 3       |
+      | 1     | 4       |
+      | 1     | 5       |
+    When ';register l:3 4 5' is called with
+      | user | channel | guild |
+      | 1    | 2       | 1     |
+    Then embed received with fields
+      | name                                       | value         |
+      | New scrim channel registered successfully! | Channel data: |
+      | Text channel                               | <#2>          |
+      | Voice lobby                                | <#3>          |
+      | Team 1 voice                               | <#4>          |
+      | Team 2 voice                               | <#5>          |

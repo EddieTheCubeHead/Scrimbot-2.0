@@ -7,8 +7,8 @@ from Bot.DataClasses.Guild import Guild
 from Bot.DataClasses.Prefix import Prefix
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
-from Utils.TestIdGenerator import TestIdGenerator
-from Utils.UnittestBase import UnittestBase
+from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Utils.TestBases.UnittestBase import UnittestBase
 from Database.DatabaseConnections.GuildConnection import GuildConnection
 
 

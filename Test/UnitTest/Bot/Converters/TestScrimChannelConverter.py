@@ -3,17 +3,15 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Bot.Exceptions.BotBaseUserException import BotBaseUserException
-from Utils.UnittestBase import UnittestBase
-from Utils.TestIdGenerator import TestIdGenerator
+from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
-from Utils.test_utils import create_mock_channel, create_mock_guild
 
 
-class TestScrimChannelConverter(UnittestBase):
+class TestScrimChannelConverter(AsyncUnittestBase):
 
     GUILD_ID = 1
 
@@ -30,23 +28,23 @@ class TestScrimChannelConverter(UnittestBase):
     def test_build_given_file_imported_then_singleton_dependency_created(self):
         self._assert_singleton_dependency(ScrimChannelConverter)
 
-    def test_convert_given_valid_id_then_channel_returned(self):
+    async def test_convert_given_valid_id_then_channel_returned(self):
         mock_id = self.id_generator.generate_viable_id()
         mock_method = MagicMock()
         self.mock_database_connection.get_channel = mock_method
         expected = ScrimChannel(mock_id, self.GUILD_ID)
         mock_method.return_value = expected
-        actual = self.converter.convert(str(mock_id))
+        actual = await self.converter.convert(MagicMock(), str(mock_id))
         self._assert_identical_data(actual, expected)
 
-    def test_convert_given_called_twice_then_cache_utilized(self):
+    async def test_convert_given_called_twice_then_cache_utilized(self):
         mock_id = self.id_generator.generate_viable_id()
         mock_method = MagicMock()
         self.mock_database_connection.get_channel = mock_method
         expected = ScrimChannel(mock_id, self.GUILD_ID)
         mock_method.return_value = expected
-        self.converter.convert(str(mock_id))
-        self.converter.convert(str(mock_id))
+        await self.converter.convert(MagicMock(), str(mock_id))
+        await self.converter.convert(MagicMock(), str(mock_id))
         self.mock_database_connection.get_channel.assert_called_once_with(mock_id)
 
     def test_add_given_new_channel_id_with_no_voice_channels_then_channel_added(self):

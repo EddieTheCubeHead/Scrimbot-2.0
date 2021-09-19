@@ -7,9 +7,9 @@ import shutil
 import json
 from typing import Dict, Union
 
-import Utils.test_utils as test_utils
-from Utils.UnittestBase import UnittestBase
-from Utils.TestIdGenerator import TestIdGenerator
+import Utils.TestHelpers.test_utils as test_utils
+from Utils.TestBases.UnittestBase import UnittestBase
+from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Database.GamesDatabaseManager import GamesDatabaseManager
 from Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException

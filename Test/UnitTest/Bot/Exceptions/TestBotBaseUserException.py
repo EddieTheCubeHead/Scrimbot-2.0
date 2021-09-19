@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Utils.UnittestBase import UnittestBase
+from Utils.TestBases.UnittestBase import UnittestBase
 from Bot.Exceptions.BotBaseUserException import BotBaseUserException
 
 
