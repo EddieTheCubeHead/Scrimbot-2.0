@@ -42,3 +42,22 @@ Feature: ScrimFunctionalities
       | Voice lobby                                | <#3>          |
       | Team 1 voice                               | <#4>          |
       | Team 2 voice                               | <#5>          |
+
+  Scenario: Registering a channel in a group with automatic voice channel detection
+    Given an initialized bot
+    And exists channel group '6' in guild '2'
+      | channel type | channel name | channel id |
+      | text         | scrim-1      | 7          |
+      | voice        | Lobby        | 8          |
+      | voice        | Team 1       | 9          |
+      | voice        | Team 2       | 10         |
+    When ';register auto' is called with
+      | user | channel | guild |
+      | 1    | 7       | 2     |
+    Then embed received with fields
+      | name                                       | value         |
+      | New scrim channel registered successfully! | Channel data: |
+      | Text channel                               | <#7>          |
+      | Voice lobby                                | <#8>          |
+      | Team 1 voice                               | <#9>          |
+      | Team 2 voice                               | <#10>         |

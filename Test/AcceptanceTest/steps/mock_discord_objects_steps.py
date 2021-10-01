@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 from behave import *
 
 from Utils.TestHelpers.MockDiscordConverter import MockDiscordConverter
-from Utils.TestHelpers.test_utils import create_mock_channel, create_mock_guild
+from Utils.TestHelpers.test_utils import create_mock_channel, create_mock_guild, create_mock_channel_group
 
 
 @given("exists discord voice channels")
@@ -21,6 +21,20 @@ def step_impl(context):
             mock_guild = create_mock_guild(int(row[0]))
             mock_guilds[row[0]] = mock_guild
         mocked_channel = create_mock_channel(int(row[1]), mock_guild)
+        name_matches = _create_voice_channel_conversion_matches(row[1])
+        mock_voice_converter.add_mock_call(name_matches, mocked_channel, (["guild", "id"], mock_guild.id))
+
+
+@given("exists channel group '{group_id}' in guild '{guild_id}'")
+def step_impl(context, group_id, guild_id):
+    mock_voice_converter = MockDiscordConverter()
+    context.patcher.add_patch("discord.ext.commands.converter.VoiceChannelConverter", mock_voice_converter)
+    mock_guild = create_mock_guild(int(guild_id))
+    mock_group = create_mock_channel_group(group_id, mock_guild)
+    for row in context.table:
+        mocked_channel = create_mock_channel(row[2], mock_guild)
+        mocked_channel.category = mock_group
+        mocked_channel.category_id = mock_group.id
         name_matches = _create_voice_channel_conversion_matches(row[1])
         mock_voice_converter.add_mock_call(name_matches, mocked_channel, (["guild", "id"], mock_guild.id))
 
