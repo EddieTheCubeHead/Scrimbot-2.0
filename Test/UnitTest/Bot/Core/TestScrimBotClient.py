@@ -10,11 +10,11 @@ from unittest.mock import MagicMock, patch, AsyncMock
 from Configs.Config import Config
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Utils.TestHelpers.test_utils import get_cogs_messages
-from Bot.Core.ScrimClient import ScrimClient
+from Bot.Core.ScrimBotClient import ScrimBotClient
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
 
-class TestScrimClient(AsyncUnittestBase):
+class TestScrimBotClient(AsyncUnittestBase):
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -28,7 +28,8 @@ class TestScrimClient(AsyncUnittestBase):
         self.config.default_prefix = ";"
         self.context_provider = AsyncMock()
         self.guild_converter = MagicMock()
-        self.client = ScrimClient(self.config, self.context_provider, self.guild_converter, self.loop)
+        self.logger = MagicMock()
+        self.client = ScrimBotClient(self.config, self.logger, self.context_provider, self.guild_converter, self.loop)
 
     @patch('sys.stdout', new_callable=io.StringIO)
     async def test_setup_cogs_when_called_then_cogs_loaded(self, print_catcher):
@@ -96,7 +97,7 @@ class TestScrimClient(AsyncUnittestBase):
         await self.client.get_context(mock_message)
         await_args = self.context_provider.get_context.await_args
         # TODO fix this atrocity or learn to live with it
-        self.assertEqual("<super: <class 'ScrimClient'>, <ScrimClient object>>", str(await_args[0][0]))
+        self.assertEqual("<super: <class 'ScrimBotClient'>, <ScrimBotClient object>>", str(await_args[0][0]))
         self.assertEqual(mock_message, await_args[0][1])
 
     def _mock_bot_guild_with_timeout(self, timeout):

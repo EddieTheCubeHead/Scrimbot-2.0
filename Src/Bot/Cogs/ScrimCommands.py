@@ -5,7 +5,7 @@ from discord.ext import commands
 
 from Bot.Core import checks
 from Bot.Core import converters
-from Bot.Core.ScrimClient import ScrimClient
+from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.Core.ScrimContext import ScrimContext
 from Bot.DataClasses.Game import Game
 
@@ -19,14 +19,14 @@ class ScrimCommands(commands.Cog):
         Creates a scrim of the specified game, that will be deleted after the given amount of time
     """
 
-    def __init__(self, client: ScrimClient):
+    def __init__(self, client: ScrimBotClient):
         """The constructor of the ScrimCommands cog.
 
         args
         ----
 
         :param client: The client instance associated with this cog.
-        :type client: ScrimClient
+        :type client: ScrimBotClient
         """
 
         self._client = client
@@ -165,14 +165,14 @@ class ScrimCommands(commands.Cog):
         await ctx.message.delete()
 
 
-def setup(client: ScrimClient):
+def setup(client: ScrimBotClient):
     """A method for adding the cog to the bot
 
     args
     ----
 
     :param client: The instance of the bot the cog should be added into
-    :type client: ScrimClient
+    :type client: ScrimBotClient
     """
 
     client.add_cog(ScrimCommands(client))

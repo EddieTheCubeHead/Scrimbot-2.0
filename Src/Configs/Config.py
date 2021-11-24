@@ -15,7 +15,7 @@ def _get_config(config_name: str):
 
 
 def _construct_path(file_folder: str) -> str:
-    return str(Path(os.path.join(os.path.dirname(__file__))).parent.parent.joinpath(file_folder).absolute())
+    return str(Path(os.path.dirname(__file__)).parent.parent.joinpath(file_folder).absolute())
 
 
 @BotDependencyInjector.singleton

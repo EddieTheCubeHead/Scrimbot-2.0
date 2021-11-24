@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 from behave import *
 from behave.api.async_step import async_run_until_complete
 
-from Utils.TestHelpers.embed_test_helper import parse_embed_from_table, assert_same_embed_text
+from Utils.TestHelpers.embed_test_helper import parse_embed_from_table, create_error_embed, assert_same_embed_text
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 from Utils.TestHelpers.test_utils import create_mock_guild, create_mock_author, create_mock_channel,\
@@ -37,4 +37,11 @@ async def step_impl(context, channel_id):
 @async_run_until_complete
 async def step_impl(context):
     embed = parse_embed_from_table(context.table)
+    assert_same_embed_text(embed, ResponseLoggerContext.get_oldest_embed())
+
+
+@then("error received with message '{error_message}'")
+@async_run_until_complete
+async def step_impl(context, error_message):
+    embed = create_error_embed(error_message)
     assert_same_embed_text(embed, ResponseLoggerContext.get_oldest_embed())

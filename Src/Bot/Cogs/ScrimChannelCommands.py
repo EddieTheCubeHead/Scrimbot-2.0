@@ -9,7 +9,7 @@ from discord.ext.commands import Greedy
 from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
 from Bot.Converters.VoiceChannelGroupConverter import VoiceChannelGroupConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
-from Bot.Core.ScrimClient import ScrimClient
+from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Bot.EmbedSystem.ScrimChannelEmbedBuilder import ScrimChannelEmbedBuilder
 from Bot.Logic.ScrimChannelManager import ScrimChannelManager
@@ -47,6 +47,6 @@ class ScrimChannelCommands(commands.Cog):
         await self._response_builder.send(ctx, displayable=created)
 
 
-def setup(client: ScrimClient):
+def setup(client: ScrimBotClient):
     client.add_cog(ScrimChannelCommands())
     print(f"Using cog {__name__}, with version {__version__}")

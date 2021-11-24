@@ -27,6 +27,20 @@ Feature: Channel registration
       | New scrim channel registered successfully! | Channel data: |
       | Text channel                               | <#1>          |
 
+  Scenario: Registering a channel that is already registered
+    Given an initialized bot
+    When ';register' is called with
+      | user | channel | guild |
+      | 1    | 18      | 5     |
+    And ';register' is called with
+      | user | channel | guild |
+      | 1    | 18      | 5     |
+    Then embed received with fields
+      | name                                       | value         |
+      | New scrim channel registered successfully! | Channel data: |
+      | Text channel                               | <#18>         |
+    And error received with message 'Channel <\#18> is already registered for scrim usage'
+
   Scenario: Registering a channel with a lobby channel and two team voice channels
     Given an initialized bot
     And exists discord voice channels

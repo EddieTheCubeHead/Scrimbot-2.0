@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from discord.ext import commands
 from discord.ext import tasks
 
-from Bot.Core.ScrimClient import ScrimClient
+from Bot.Core.ScrimBotClient import ScrimBotClient
 
 
 class ScrimTasks(commands.Cog):
@@ -18,14 +18,14 @@ class ScrimTasks(commands.Cog):
     scrim_reaction_remove_listener(react, user)
         A listener for processing removed reactions
     """
-    def __init__(self, client: ScrimClient):
+    def __init__(self, client: ScrimBotClient):
         """A constructor for the ScrimReactionListeners cog
 
         args
         ----
 
         :param client: The client instance associated with this cog
-        :type client: ScrimClient
+        :type client: ScrimBotClient
         """
         self._client = client
 
@@ -34,14 +34,14 @@ class ScrimTasks(commands.Cog):
         pass
 
 
-def setup(client: ScrimClient):
+def setup(client: ScrimBotClient):
     """A method for adding the cog to the bot
 
     args
     ----
 
     :param client: The instance of the bot the cog should be added into
-    :type client: ScrimClient
+    :type client: ScrimBotClient
     """
 
     client.add_cog(ScrimTasks(client))

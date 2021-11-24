@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 
 from Src.Bot.DataClasses.ScrimState import ScrimState
-from Bot.Core.ScrimClient import ScrimClient
+from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 
 
@@ -20,14 +20,14 @@ class ScrimReactionListeners(commands.Cog):
     scrim_reaction_remove_listener(react, user)
         A listener for processing removed reactions
     """
-    def __init__(self, client: ScrimClient):
+    def __init__(self, client: ScrimBotClient):
         """A constructor for the ScrimReactionListeners cog
 
         args
         ----
 
         :param client: The client instance associated with this cog
-        :type client: ScrimClient
+        :type client: ScrimBotClient
         """
         self._client = client
 
@@ -110,14 +110,14 @@ class ScrimReactionListeners(commands.Cog):
             await self._client.handle_react_internal_error(react, user, exception)
 
 
-def setup(client: ScrimClient):
+def setup(client: ScrimBotClient):
     """A method for adding the cog to the bot
 
     args
     ----
 
     :param client: The instance of the bot the cog should be added into
-    :type client: ScrimClient
+    :type client: ScrimBotClient
     """
 
     client.add_cog(ScrimReactionListeners(client))

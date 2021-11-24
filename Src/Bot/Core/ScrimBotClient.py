@@ -16,6 +16,7 @@ from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
 from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
 from Bot.Converters.GameConverter import GameConverter
 from Bot.Core.ContextProvider import ContextProvider
+from Bot.Core.ScrimBotLogger import ScrimBotLogger
 from Bot.DataClasses.Guild import Guild
 from Bot.DataClasses.Prefix import Prefix
 from Configs.Config import Config
@@ -26,22 +27,12 @@ from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Bot.Core.ScrimContext import ScrimContext
 
 
-def _setup_logging(folder_path):
-    # Logging setup code mostly stolen from discord.py docs
-    logger = logging.getLogger('discord')
-    logger.setLevel(logging.DEBUG)
-    handler = logging.FileHandler(filename=f'{folder_path}/scrim_bot.log', encoding='utf-8', mode='w')
-    handler.setFormatter(logging.Formatter('%(asctime)s || %(levelname)s || %(name)s || %(message)s'))
-    logger.addHandler(handler)
-    return logger
-
-
-class ScrimClient(commands.Bot):
+class ScrimBotClient(commands.Bot):
     """The class that implements the discord.py bot class. The heart of the bot."""
 
     @BotDependencyInjector.inject
-    def __init__(self, config: Config, context_provider: ContextProvider, guild_converter: GuildConverter,
-                 event_loop=None):
+    def __init__(self, config: Config, logger: ScrimBotLogger, context_provider: ContextProvider,
+                 guild_converter: GuildConverter, event_loop=None):
         """The constructor of ScrimClient. Running this only creates an instance, setup_cogs and start_bot are still
         required to be ran for the bot to start."""
 
@@ -53,7 +44,7 @@ class ScrimClient(commands.Bot):
         self.context_provider = context_provider
         self.guild_converter = guild_converter
         self.config = config
-        self.logger = _setup_logging(self.config.file_folder)
+        self.logger = logger
         self.description = "A discord bot for organizing scrims."
 
     def setup_cogs(self):
@@ -161,6 +152,6 @@ class ScrimClient(commands.Bot):
 
 if __name__ == "__main__":  # pragma: no cover
     loop = asyncio.get_event_loop()
-    client = ScrimClient()
+    client = ScrimBotClient()
     client.setup_cogs()
     loop.run_until_complete(client.start_bot())
