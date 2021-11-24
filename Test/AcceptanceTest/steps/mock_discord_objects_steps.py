@@ -31,11 +31,17 @@ def step_impl(context, group_id, guild_id):
     context.patcher.add_patch("discord.ext.commands.converter.VoiceChannelConverter", mock_voice_converter)
     mock_guild = create_mock_guild(int(guild_id))
     mock_group = create_mock_channel_group(group_id, mock_guild)
+    context.patcher.add_channel_group(mock_group)
     for row in context.table:
-        mocked_channel = create_mock_channel(row[2], mock_guild)
+        mocked_channel = create_mock_channel(int(row[2]), mock_guild)
+        mocked_channel.name = row[1]
         mocked_channel.category = mock_group
         mocked_channel.category_id = mock_group.id
-        name_matches = _create_voice_channel_conversion_matches(row[1])
+        name_matches = _create_voice_channel_conversion_matches(mocked_channel.name)
+        if row[0] == "voice":
+            mock_group.voice_channels.append(mocked_channel)
+        elif row[0] == "text":
+            mock_group.text_channels.append(mocked_channel)
         mock_voice_converter.add_mock_call(name_matches, mocked_channel, (["guild", "id"], mock_guild.id))
 
 

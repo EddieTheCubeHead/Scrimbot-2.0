@@ -36,13 +36,13 @@ class ScrimChannelCommands(commands.Cog):
 
         :param ctx: The invocation context of the command
         :type ctx: commands.Context
-        :param voice_channels: The voice channels that should be associated with this scrim
-        :type voice_channels: list[VoiceChannel]
         :param group_channels: If provided, will try to construct voice channels automatically from channel group
         :type voice_channels: Optional[VoiceChannelGroupConverter]
+        :param voice_channels: The voice channels that should be associated with this scrim
+        :type voice_channels: list[VoiceChannel]
         """
 
-        voice_channels = self._channel_manager.enumerate_teams(voice_channels or group_channels)
+        voice_channels = self._channel_manager.enumerate_teams(voice_channels or group_channels or [])
         created = self._channel_converter.add(ctx.channel.id, ctx.guild.id, *voice_channels)
         await self._response_builder.send(ctx, displayable=created)
 

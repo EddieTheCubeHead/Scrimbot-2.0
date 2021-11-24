@@ -50,11 +50,13 @@ def create_mock_channel(channel_id: int, guild: discord.Guild) -> discord.TextCh
 
 
 def create_mock_channel_group(group_id: int, guild: discord.Guild) -> discord.CategoryChannel:
-    mock_channel = MagicMock()
-    mock_channel.id = group_id
-    mock_channel.name = str(group_id)
-    mock_channel.guild = guild
-    return mock_channel
+    mock_channel_group = MagicMock()
+    mock_channel_group.id = group_id
+    mock_channel_group.name = str(group_id)
+    mock_channel_group.guild = guild
+    mock_channel_group.voice_channels = []
+    mock_channel_group.text_channels = []
+    return mock_channel_group
 
 
 def create_mock_guild(guild_id: int) -> discord.Guild:

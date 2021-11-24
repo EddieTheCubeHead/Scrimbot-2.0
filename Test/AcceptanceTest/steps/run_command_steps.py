@@ -21,6 +21,7 @@ async def step_impl(context, command: str):
         mock_author = create_mock_author(int(row[0]), mock_guild)
         mock_channel = create_mock_channel(int(row[1]), mock_guild)
         mock_message = create_async_mock_message(mock_guild, mock_channel, mock_author, command)
+        context.patcher.try_add_group(mock_channel)
         with context.patcher.patch_all():
             await context.client.on_message(mock_message)
 
