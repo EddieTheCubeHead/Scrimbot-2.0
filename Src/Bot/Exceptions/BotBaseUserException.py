@@ -2,81 +2,25 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
+from discord.ext.commands import Context
+
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
+from Bot.Exceptions.BotBaseException import BotBaseException
 
 
-class BotBaseUserException(commands.CommandError):
-    """A base class for all the exceptions caused by the user activity (input/actions) thrown by the bot."""
+class BotBaseUserException(BotBaseException, commands.CommandError):
 
-    def __init__(self, message: str, *, send_help=True):
-        """The constructor of the exception
+    @BotDependencyInjector.inject
+    def __init__(self, message: str, embed_builder: ExceptionEmbedBuilder, *, send_help=True):
+        self.message = message
+        self.send_help = send_help
+        self._embed_builder = embed_builder
 
-        args
-        ----
+    async def resolve(self, ctx: Context):
+        await self._embed_builder.send(ctx, displayable=self)
 
-        :param message: The error message displayed to the user.
-        :type message: str
+    @staticmethod
+    def get_help_portion(ctx: commands.Context) -> str:
+        return f"{ctx.prefix}help {ctx.command.name}"
 
-        kwargs
-        ------
-
-        :param send_help: Whether the help command format should be sent as part of the exception handling, default True
-        :type send_help: bool
-        """
-
-        self._message = message
-        self._send_help = send_help
-
-    def __str__(self):
-        return f"{self.get_header()}{self.get_description()}"
-
-    def get_header(self) -> str:
-        """A method that returns a text header for the error (eg. whether it's an error, check failure, etc.).
-
-        args
-        ----
-
-        :return: A corresponding header
-        :rtype: str
-        """
-
-        return "Error: "
-
-    def get_description(self) -> str:
-        """A method that returns a text description of the error
-
-        args
-        ----
-
-        :return: A string detailing the exception's occurrence reason
-        :rtype: str
-        """
-
-        return self._message
-
-    def get_help_portion(self, ctx: commands.Context) -> str:
-        """A method that returns a string that represents the help description that should be sent to the user
-
-        Should not be overridden. Instead override _construct_help_portion()
-
-        :return: A string that tells user which help commands can be used to get more help about the error
-        :rtype: str
-        """
-
-        if not self._send_help:
-            return ""
-
-        return f"\n\n{self._construct_help_portion(ctx)}"
-
-    def _construct_help_portion(self, ctx: commands.Context) -> str:
-        """A private method that should be overridden for custom help portion implementations
-
-        args
-        ----
-
-        :param ctx: The context of the command that caused the error
-        :type ctx: commands.Context
-        :return: A string that tells user which help commands can be used to get more info about the error
-        :rtype: str
-        """
-
-        return f"To get help with this command, use the command '{ctx.prefix}help {ctx.command.name}'"

@@ -11,6 +11,7 @@ from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Bot.Exceptions.BotBaseUserException import BotBaseUserException
+from Bot.Exceptions.BotReservedChannelException import BotReservedChannelException
 from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
 
 
@@ -34,8 +35,7 @@ class ScrimChannelConverter(ConverterBase[ScrimChannel]):
 
     def _validate_free_channels(self, channel_id, *voice_channels: VoiceChannel):
         if self.connection.exists_text(channel_id):
-            raise BotBaseUserException(f"Could not register channel <#{channel_id}> for scrim usage because the "
-                                       f"channel is already registered.")
+            raise BotReservedChannelException(channel_id)
         for voice_channel in voice_channels:
             self._validate_voice_channel(channel_id, voice_channel)
 

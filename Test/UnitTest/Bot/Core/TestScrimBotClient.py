@@ -7,6 +7,10 @@ import os
 import unittest
 from unittest.mock import MagicMock, patch, AsyncMock
 
+from discord.ext.commands import CommandNotFound
+
+from Bot.Exceptions.BotBaseException import BotBaseException
+from Bot.Exceptions.BotUnrecognizedCommandException import BotUnrecognizedCommandException
 from Configs.Config import Config
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Utils.TestHelpers.test_utils import get_cogs_messages
@@ -99,6 +103,27 @@ class TestScrimBotClient(AsyncUnittestBase):
         # TODO fix this atrocity or learn to live with it
         self.assertEqual("<super: <class 'ScrimBotClient'>, <ScrimBotClient object>>", str(await_args[0][0]))
         self.assertEqual(mock_message, await_args[0][1])
+
+    async def test_handle_exception_given_bot_exception_then_exception_resolve_called(self):
+        mock_exception = AsyncMock(BotBaseException)
+        mock_context = AsyncMock()
+        await self.client.on_command_error(mock_context, mock_exception)
+        mock_exception.resolve.assert_called_with(mock_context)
+
+    async def test_invoke_given_ctx_with_command_then_super_invoke_called(self):
+        mock_context = AsyncMock()
+        mock_command = AsyncMock()
+        mock_context.command = mock_command
+        with patch("discord.ext.commands.bot.BotBase.invoke") as super_invoke:
+            await self.client.invoke(mock_context)
+            super_invoke.assert_called_with(mock_context)
+
+    async def test_invoke_given_no_command_then_bot_unrecognized_command_exception_raised(self):
+        mock_context = AsyncMock()
+        mock_context.command = None
+        mock_context.invoked_with = "faulty_command"
+        expected_exception = BotUnrecognizedCommandException(mock_context)
+        await self._async_assert_raises_correct_exception(expected_exception, self.client.invoke, mock_context)
 
     def _mock_bot_guild_with_timeout(self, timeout):
         mock_guild = MagicMock()

@@ -11,6 +11,7 @@ from Configs.Config import Config
 @BotDependencyInjector.singleton
 class ScrimBotLogger(Logger):
 
+    @BotDependencyInjector.inject
     def __init__(self, config: Config):
         super().__init__("ScrimBotLogger")
         self.setLevel(DEBUG)

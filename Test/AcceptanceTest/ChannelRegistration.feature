@@ -39,7 +39,7 @@ Feature: Channel registration
       | name                                       | value         |
       | New scrim channel registered successfully! | Channel data: |
       | Text channel                               | <#18>         |
-    And error received with message 'Channel <\#18> is already registered for scrim usage'
+    And error and help received with messages 'Text channel <\#18> is already registered for scrim usage.' and ';register'
 
   Scenario: Registering a channel with a lobby channel and two team voice channels
     Given an initialized bot

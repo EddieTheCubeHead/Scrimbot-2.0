@@ -9,22 +9,21 @@ from pathlib import Path
 
 import discord
 from discord.ext import commands
+from discord.ext.commands import Context
 
 from Bot.Converters.GuildConverter import GuildConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
-from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
-from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
-from Bot.Converters.GameConverter import GameConverter
 from Bot.Core.ContextProvider import ContextProvider
 from Bot.Core.ScrimBotLogger import ScrimBotLogger
-from Bot.DataClasses.Guild import Guild
-from Bot.DataClasses.Prefix import Prefix
+from Bot.Exceptions.BotBaseException import BotBaseException
+from Bot.Exceptions.BotUnrecognizedCommandException import BotUnrecognizedCommandException
 from Configs.Config import Config
-from Database.DatabaseConnections import GameConnection
 from Bot.Logic.BotHelpCommand import BotHelpCommand
 from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Bot.Core.ScrimContext import ScrimContext
+from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
+from Bot.DataClasses.Guild import Guild
 
 
 class ScrimBotClient(commands.Bot):
@@ -50,7 +49,7 @@ class ScrimBotClient(commands.Bot):
     def setup_cogs(self):
         """A private helper method for loading and starting all the cogs of the bot."""
 
-        parent_path = rf"{Path(os.path.join(os.path.dirname(__file__))).parent}"
+        parent_path = rf"{Path(os.path.dirname(__file__)).parent}"
         for cog in os.listdir(rf"{parent_path}\Cogs"):
             if cog[-3:] == ".py" and not cog.startswith("_"):
                 self.load_extension(f".{cog[:-3]}", package="Bot.Cogs")
@@ -76,20 +75,17 @@ class ScrimBotClient(commands.Bot):
 
         return await self.context_provider.get_context(super(), message)
 
+    async def invoke(self, ctx: Context):
+        if ctx.command:
+            await super().invoke(ctx)
+        elif ctx.invoked_with:
+            raise BotUnrecognizedCommandException(ctx)
+
     async def on_command_error(self, context: commands.Context, exception: Exception):
         """An override for the default discord.py command error handler"""
 
-        if isinstance(exception, BotBaseUserException):
-            await self._handle_user_error(context, exception)
-
-        elif isinstance(exception, BotBaseInternalException):
-            await self._handle_internal_error(context, exception)
-
-        # Special case for unknown commands
-        elif isinstance(exception, commands.CommandNotFound):
-            await self.temp_msg(context,
-                                f"Couldn't find command '{context.message.content.split(' ')[0]}'.\n"
-                                f"Use '{context.prefix}help' to see a full list of commands.")
+        if isinstance(exception, BotBaseException):
+            await exception.resolve(context)
 
         else:
             self.logger.error(str(exception))

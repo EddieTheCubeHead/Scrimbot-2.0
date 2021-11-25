@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Bot.Exceptions.BotBaseUserException import BotBaseUserException
+from Bot.Exceptions.BotReservedChannelException import BotReservedChannelException
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.DataClasses.ScrimChannel import ScrimChannel
@@ -71,8 +72,7 @@ class TestScrimChannelConverter(AsyncUnittestBase):
     def test_add_given_already_registered_text_channel_then_user_exception_raised(self):
         channel_id, guild_id = self.id_generator.generate_viable_id_group(2)
         self.mock_database_connection.exists_text = MagicMock(return_value=ScrimChannel(channel_id, guild_id))
-        expected_exception = BotBaseUserException(f"Could not register channel <#{channel_id}> for scrim usage because "
-                                                  f"the channel is already registered.")
+        expected_exception = BotReservedChannelException(channel_id)
         self._assert_raises_correct_exception(expected_exception, self.converter.add, channel_id, guild_id)
 
     def test_add_given_already_used_voice_channel_then_user_exception_raised(self):

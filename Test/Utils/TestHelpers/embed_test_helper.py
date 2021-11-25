@@ -19,11 +19,14 @@ def parse_embed_from_table(table: list[tuple[str, str]]) -> Embed:
     return embed
 
 
-def create_error_embed(error_message: str) -> Embed:
-    embed = Embed(title="ScrimBot: Error", description="An error happened while processing command 'register'")
+def create_error_embed(error_message: str, help_command: str = None) -> Embed:
+    embed = Embed(title="ScrimBot Error", description="An error happened while processing command 'register'")
     embed.add_field(name="Error message:", value=error_message)
+    if help_command:
+        embed.add_field(name="To get help:", value=help_command)
     embed.set_footer(text="If you think this behaviour is unintended, please report it in the bot repository in GitHub "
                           "at https://github.com/EddieTheCubeHead/Scrimbot-2.0")
+    return embed
 
 
 def assert_same_embed_text(expected: Embed, actual: Embed):

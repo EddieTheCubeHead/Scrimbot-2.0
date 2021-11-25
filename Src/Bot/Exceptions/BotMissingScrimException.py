@@ -11,21 +11,5 @@ class BotMissingScrimException(BotBaseUserException, commands.CheckFailure):
 
     def __init__(self, context: commands.Context, *, send_help=True):
         self._context = context
-        self._send_help = send_help
-
-    def get_description(self) -> str:
-        return f"Seems like the channel '{self._context.channel.name}' is not registered for scrim usage."
-
-    def _construct_help_portion(self, ctx: commands.Context) -> str:
-        """An override from the parent class
-
-        args
-        ----
-
-        :param ctx: The context of the command that caused the error
-        :type ctx: commands.Context
-        :return: A string that tells user which help commands can be used to get more info about the error
-        :rtype: str
-        """
-
-        return f"To get help with registering channels, use the command '{ctx.prefix}help register'"
+        self.send_help = send_help
+        self.message = f"Seems like the channel '{context.channel.name}' is not registered for scrim usage."

@@ -9,6 +9,7 @@ from sqlalchemy.orm import relationship
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.DataClass import DataClass
 from Configs.Config import Config
+from Bot.DataClasses.Prefix import Prefix
 
 
 class Guild(DataClass):

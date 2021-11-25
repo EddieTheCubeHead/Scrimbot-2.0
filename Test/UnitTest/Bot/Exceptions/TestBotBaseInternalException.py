@@ -1,21 +1,42 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from unittest.mock import MagicMock
+
 from Utils.TestBases.UnittestBase import UnittestBase
 from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 
 
 class TestBotBaseUserException(UnittestBase):
 
-    def test_get_message_given_valid_message_then_correct_message_received(self):
-        test_msg = "Test error please ignore"
-        new_exception = BotBaseInternalException(test_msg)
-        self.assertEqual(test_msg, new_exception.get_message())
+    def setUp(self) -> None:
+        self.logger = MagicMock()
 
-    def test_init_given_logging_not_specified_then_logging_enabled(self):
-        new_exception = BotBaseInternalException("Foo")
-        self.assertTrue(new_exception.log)
+    def test_resolve_given_logging_enabled_then_warning_logged(self):
+        ctx = MagicMock()
+        ctx.command.name = "test"
+        ctx.message.content = ";test args"
+        error_message = "Test error to be logged"
+        new_exception = BotBaseInternalException(error_message, self.logger, log=True)
+        new_exception.resolve(ctx)
+        self.logger.warning.assert_called_with(f"command: '{ctx.command.name}' invoked as: '{ctx.message.content}' "
+                                               f"caused an unspecified exception with the following message:"
+                                               f" '{error_message}'")
 
-    def test_init_given_logging_disabled_then_value_set_correctly(self):
-        new_exception = BotBaseInternalException("Foo", log=False)
-        self.assertFalse(new_exception.log)
+    def test_resolve_given_logging_disabled_then_nothing_happens(self):
+        ctx = MagicMock()
+        error_message = "Test error to be logged"
+        new_exception = BotBaseInternalException(error_message, self.logger, log=False)
+        new_exception.resolve(ctx)
+        self.logger.warning.assert_not_called()
+
+    def test_resolve_given_logging_not_specified_then_warning_logged(self):
+        ctx = MagicMock()
+        ctx.command.name = "test"
+        ctx.message.content = ";test args"
+        error_message = "Test error to be logged"
+        new_exception = BotBaseInternalException(error_message, self.logger)
+        new_exception.resolve(ctx)
+        self.logger.warning.assert_called_with(f"command: '{ctx.command.name}' invoked as: '{ctx.message.content}' "
+                                               f"caused an unspecified exception with the following message:"
+                                               f" '{error_message}'")

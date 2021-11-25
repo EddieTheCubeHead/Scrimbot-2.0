@@ -25,8 +25,8 @@ class ResponseBuilder(Generic[T]):
         if displayable is None:
             await ctx.send(text, delete_after=delete_after)
         else:
-            await ctx.send(text, embed=self.build(displayable), delete_after=delete_after)
+            await ctx.send(text, embed=self.build(ctx, displayable), delete_after=delete_after)
 
     @abstractmethod
-    def build(self, displayable: T) -> Embed:  # pragma: no cover
+    def build(self, ctx: Context, displayable: T) -> Embed:  # pragma: no cover
         pass

@@ -45,3 +45,11 @@ async def step_impl(context):
 async def step_impl(context, error_message):
     embed = create_error_embed(error_message)
     assert_same_embed_text(embed, ResponseLoggerContext.get_oldest_embed())
+
+
+@then("error and help received with messages '{error_message}' and '{command}'")
+@async_run_until_complete
+async def step_impl(context, error_message, command):
+    error_message = error_message.replace("\\", "")
+    embed = create_error_embed(error_message, f"{command[0]}help {command[1:]}")
+    assert_same_embed_text(embed, ResponseLoggerContext.get_oldest_embed())
