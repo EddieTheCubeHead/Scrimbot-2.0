@@ -37,14 +37,12 @@ class ScrimChannelConverter(ConverterBase[ScrimChannel]):
         if self.connection.exists_text(channel_id):
             raise BotReservedChannelException(channel_id)
         for voice_channel in voice_channels:
-            self._validate_voice_channel(channel_id, voice_channel)
+            self._validate_voice_channel(voice_channel)
 
-    def _validate_voice_channel(self, channel_id, voice_channel):
+    def _validate_voice_channel(self, voice_channel):
         reserved_data = self.connection.exists_voice(voice_channel.channel_id)
         if reserved_data:
-            raise BotBaseUserException(f"Could not register channel <#{channel_id}> for scrim usage because voice "
-                                       f"channel <#{voice_channel.channel_id}> is already associated with scrim "
-                                       f"channel <#{reserved_data.channel_id}>.")
+            raise BotReservedChannelException(voice_channel.channel_id, parent_channel_id=reserved_data.channel_id)
 
     @lru_cache
     def get_from_id(self, channel_id: int):

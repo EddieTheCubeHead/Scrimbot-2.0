@@ -69,21 +69,19 @@ class TestScrimChannelConverter(AsyncUnittestBase):
                 self.converter.add(channel_id, guild_id, *voice_channels)
                 self._assert_channel_added(channel_id, guild_id, *voice_channels)
 
-    def test_add_given_already_registered_text_channel_then_user_exception_raised(self):
+    def test_add_given_already_registered_text_channel_then_exception_raised(self):
         channel_id, guild_id = self.id_generator.generate_viable_id_group(2)
         self.mock_database_connection.exists_text = MagicMock(return_value=ScrimChannel(channel_id, guild_id))
         expected_exception = BotReservedChannelException(channel_id)
         self._assert_raises_correct_exception(expected_exception, self.converter.add, channel_id, guild_id)
 
-    def test_add_given_already_used_voice_channel_then_user_exception_raised(self):
+    def test_add_given_already_used_voice_channel_then_exception_raised(self):
         channel_id, guild_id = self.id_generator.generate_viable_id_group(2)
         reserved_id = self.id_generator.generate_nonviable_id()
         voice_channels = self._generate_mock_voice_channels(channel_id, 1, 1)
-        taken_voice = VoiceChannel(reserved_id, voice_channels[0].channel_id, 2)
+        taken_voice = VoiceChannel(voice_channels[0].channel_id, reserved_id, 2)
         self.mock_database_connection.exists_voice = MagicMock(return_value=taken_voice)
-        expected_exception = BotBaseUserException(f"Could not register channel <#{channel_id}> for scrim usage because "
-                                                  f"voice channel <#{voice_channels[0].channel_id}> is already "
-                                                  f"associated with scrim channel <#{reserved_id}>.")
+        expected_exception = BotReservedChannelException(taken_voice.channel_id, parent_channel_id=reserved_id)
         self._assert_raises_correct_exception(expected_exception, self.converter.add, channel_id, guild_id,
                                               *voice_channels)
 

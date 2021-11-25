@@ -59,6 +59,29 @@ Feature: Channel registration
       | Team 1 voice                               | <#4>          |
       | Team 2 voice                               | <#5>          |
 
+  Scenario: Registering a channel with a reserved voice channel
+    Given an initialized bot
+    And exists discord voice channels
+      | guild | channel |
+      | 4     | 19      |
+      | 4     | 20      |
+      | 4     | 21      |
+      | 4     | 22      |
+      | 4     | 23      |
+    When ';register 21 22' is called with
+      | user | channel | guild |
+      | 1    | 19      | 4     |
+    And ';register 22 23' is called with
+      | user | channel | guild |
+      | 1    | 20      | 4     |
+    Then embed received with fields
+      | name                                       | value         |
+      | New scrim channel registered successfully! | Channel data: |
+      | Text channel                               | <#19>         |
+      | Team 1 voice                               | <#21>         |
+      | Team 2 voice                               | <#22>         |
+    And error and help received with messages 'Voice channel <\#22> is already associated with scrim channel <\#19>.' and ';register'
+
   Scenario: Registering a channel in a group with automatic voice channel detection, lobby channel and two team channels
     Given an initialized bot
     And exists channel group '6' in guild '2'
