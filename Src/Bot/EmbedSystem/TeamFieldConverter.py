@@ -24,7 +24,7 @@ class TeamFieldConverter:
         return players_string or "__empty__"
 
     def _construct_players_string(self):
-        cleaned_player_names = [discord.utils.escape_markdown(player.display_name) for player in self.team.players]
+        cleaned_player_names = [discord.utils.escape_markdown(player.display_name) for player in self.team.members]
         if self.team.is_pickup:
             cleaned_player_names[0] += self.CAPTAIN_MARK
         players_string = "\n".join(cleaned_player_names)
@@ -39,8 +39,8 @@ class TeamFieldConverter:
         return self._construct_fullness_qualifier()
 
     def _construct_fullness_qualifier(self):
-        if self.team.min_size > len(self.team.players):
-            return f" ({self.team.min_size - len(self.team.players)} needed)"
-        if self.team.max_size > len(self.team.players):
-            return f" (fits {self.team.max_size - len(self.team.players)} more)"
+        if self.team.min_size > len(self.team.members):
+            return f" ({self.team.min_size - len(self.team.members)} needed)"
+        if self.team.max_size > len(self.team.members):
+            return f" (fits {self.team.max_size - len(self.team.members)} more)"
         return " (full)"

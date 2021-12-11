@@ -3,33 +3,26 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
 
+
 from Bot.Core import checks
 from Bot.Core import converters
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.Core.ScrimContext import ScrimContext
 from Bot.DataClasses.Game import Game
+from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
+from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
+from Configs.Config import Config
 
 
 class ScrimCommands(commands.Cog):
-    """A cog housing the commands directly related to creating and manipulating scrims
+    """A cog housing the commands directly related to creating and manipulating scrims"""
 
-    Commands
-    --------
-    scrim(ctx, game, deletion_time = 0)
-        Creates a scrim of the specified game, that will be deleted after the given amount of time
-    """
-
-    def __init__(self, client: ScrimBotClient):
-        """The constructor of the ScrimCommands cog.
-
-        args
-        ----
-
-        :param client: The client instance associated with this cog.
-        :type client: ScrimBotClient
-        """
-
-        self._client = client
+    @BotDependencyInjector.inject
+    def __init__(self, response_builder: ScrimEmbedBuilder, config: Config, scrims_manager: ActiveScrimsManager):
+        self._response_builder = response_builder
+        self._config = config
+        self._scrims_manager = scrims_manager
 
     @commands.command(aliases=['s'])
     @commands.guild_only()

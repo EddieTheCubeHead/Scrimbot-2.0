@@ -8,7 +8,7 @@ from Src.Bot.DataClasses.ScrimState import ScrimState
 from Src.Bot.Exceptions.BotCheckFailure import BotCheckFailure
 
 
-def free_scrim():
+def free_scrim() -> callable(commands.Context):
     """A check that requires the channel to be eligible for scrims and not have a currently active scrim."""
 
     async def predicate(ctx: commands.Context):

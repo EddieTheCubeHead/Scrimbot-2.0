@@ -13,7 +13,6 @@ class TestScrimChannelCommands(AsyncUnittestBase):
 
     def setUp(self) -> None:
         self.response_builder = AsyncMock()
-        self.conversion_result = None
         self.mock_text_converter = MagicMock()
         self.mock_voice_manager = MagicMock()
         self.cog = ScrimChannelCommands(self.response_builder, self.mock_text_converter, self.mock_voice_manager)

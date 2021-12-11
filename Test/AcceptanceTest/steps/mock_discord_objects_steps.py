@@ -1,8 +1,6 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from unittest.mock import MagicMock
-
 from behave import *
 
 from Utils.TestHelpers.MockDiscordConverter import MockDiscordConverter

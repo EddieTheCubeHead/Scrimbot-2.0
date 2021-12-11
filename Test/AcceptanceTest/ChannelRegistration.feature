@@ -5,7 +5,7 @@ Feature: Channel registration
   #  - This creates a scrim capable text channel with no associated voice channels
   # Successful channel registration should always have a formatted embed as feedback
   #  - The embed is named "New scrim channel registered successfully" and contains fields for all registered channels
-  #  - All channel fields have channel usage (text channe/voice lobby/team n channel) and mention the channel
+  #  - All channel fields have channel usage (text channel/voice lobby/team n channel) and mention the channel
   # Channel registration can be done by manually giving channels for voice channels
   #  - Channel mentions happen with discord converter format (name/mention/id)
   #  - Team channels are registered in order, lobby channel is indicated with "l:"-prefix
@@ -15,6 +15,8 @@ Feature: Channel registration
   #  - If there is exactly one channel that doesn't follow the format, that channel is assigned as the lobby channel
   #  - If there are exactly 2 voice channels in the group, they are assigned to teams 1 and 2 respectively
   #  - If there is exactly 1 voice channel in the group, it is assigned as lobby channel
+  # If text channel or voice channel is already registered for another scrim this is communicated through an exception
+  #  - This exception is displayed in an embed like the rest of exceptions of the bot
 
   Scenario: Registering a channel with no voice channels
     Given an initialized bot

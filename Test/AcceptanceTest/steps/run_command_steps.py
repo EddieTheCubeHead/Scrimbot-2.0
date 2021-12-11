@@ -13,9 +13,20 @@ from Utils.TestHelpers.test_utils import create_mock_guild, create_mock_author, 
     create_async_mock_message
 
 
+@step("channel '{channel}' registered for scrims in guild '{guild}'")
+@async_run_until_complete
+async def step_impl(context, channel, guild):
+    context.table = [["1", channel, guild]]
+    await call_command(';register', context)
+
+
 @when("'{command}' is called with")
 @async_run_until_complete
 async def step_impl(context, command: str):
+    await call_command(command, context)
+
+
+async def call_command(command, context):
     for row in context.table:
         mock_guild = create_mock_guild(int(row[2]))
         mock_author = create_mock_author(int(row[0]), mock_guild)

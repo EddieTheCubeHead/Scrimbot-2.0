@@ -5,10 +5,12 @@ from typing import List, Optional
 
 import discord
 from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import relationship
 
 from Bot.DataClasses.DataClass import DataClass
 from Bot.DataClasses.TeamMember import TeamMember
+from Bot.DataClasses.User import User
 
 
 class Team(DataClass):
@@ -20,10 +22,10 @@ class Team(DataClass):
     channel_id = Column(Integer, nullable=True)  # TODO: implement check for not allowing channels on global teams
 
     guild = relationship("Guild", back_populates="teams")
-    members = relationship("User", secondary="TeamMembers", back_populates="teams")
+    members = association_proxy("team_members", "user", creator=lambda user: TeamMember(user=user))
     scrims = relationship("Scrim", secondary="ParticipantTeams", back_populates="teams")
 
-    def __init__(self, name: str, players: List[discord.Member] = None, min_size=0, max_size=0):
+    def __init__(self, name: str, players: List[User] = None, min_size=0, max_size=0):
         """The constructor of ScrimTeam
 
         :param name: The name of the team
@@ -36,7 +38,7 @@ class Team(DataClass):
         """
 
         self.name = name
-        self.players: List[discord.Member] = players if players is not None else []
+        self.members: List[User] = players if players is not None else []
         self.min_size: int = min_size
         self.max_size: int = max_size or min_size
         self.voice_channel: Optional[discord.VoiceChannel] = None
