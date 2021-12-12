@@ -23,4 +23,3 @@ class BotBaseUserException(BotBaseException, commands.CommandError):
     @staticmethod
     def get_help_portion(ctx: commands.Context) -> str:
         return f"{ctx.prefix}help {ctx.command.name}"
-

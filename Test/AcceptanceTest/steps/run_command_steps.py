@@ -18,6 +18,7 @@ from Utils.TestHelpers.test_utils import create_mock_guild, create_mock_author, 
 async def step_impl(context, channel, guild):
     context.table = [["1", channel, guild]]
     await call_command(';register', context)
+    ResponseLoggerContext.get_oldest_embed()
 
 
 @when("'{command}' is called with")

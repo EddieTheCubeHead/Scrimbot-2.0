@@ -17,5 +17,6 @@ class EmbedUnittest(UnittestBase):
             self.assertEqual(expected[0], actual.name)
             self.assertEqual(expected[1], actual.value)
             if len(expected) > 2:
-                self.assertEqual(expected[2], actual.inline)
+                self.assertEqual(expected[2], actual.inline, f"Expected field to {'not ' if not expected[2] else ''}be "
+                                                             f"inlined, but it was{' not' if expected[2] else ''}.")
 

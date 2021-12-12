@@ -13,8 +13,8 @@ class ScrimBotLogger(Logger):
 
     @BotDependencyInjector.inject
     def __init__(self, config: Config):
-        super().__init__("ScrimBotLogger")
+        super().__init__("BOT")
         self.setLevel(DEBUG)
         handler = logging.FileHandler(filename=f'{config.file_folder}/scrim_bot.log', encoding='utf-8', mode='w')
-        handler.setFormatter(logging.Formatter('%(asctime)s || %(levelname)s || %(message)s'))
+        handler.setFormatter(logging.Formatter('%(name)s || %(asctime)s || %(levelname)s || %(message)s'))
         self.addHandler(handler)

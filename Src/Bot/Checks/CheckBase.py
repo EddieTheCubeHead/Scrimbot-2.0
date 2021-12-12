@@ -11,10 +11,10 @@ class CheckBase(ABC):
     @classmethod
     def decorate(cls):
         async def check_decorator(ctx: Context):
-            return cls.check(ctx)
+            return await cls.check(ctx)
         return check(check_decorator)
 
     @classmethod
     @abstractmethod
-    def check(cls, ctx: Context):
+    async def check(cls, ctx: Context):
         pass

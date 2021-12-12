@@ -1,7 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from typing import Tuple, List, Dict, Iterator, Set
+from typing import Tuple, List, Dict, Iterator, Set, Any, Union
 
 from discord.ext.commands import Context
 
@@ -18,21 +18,24 @@ from Database.DatabaseConnections.GameConnection import GameConnection
 @BotDependencyInjector.singleton
 class GameConverter(ConverterBase[Game]):
 
+    MISSING_TEXTURE = "https://upload.wikimedia.org/wikipedia/commons/5/59/Minecraft_missing_texture_block.svg"
+
     @BotDependencyInjector.inject
     def __init__(self, connection: GameConnection):
         super().__init__(connection)
         self.games: Dict[str, Game] = {}
         self._reserved_alias_names: Set = set()
 
-    def init_games(self, games: Iterator[Tuple[str, str, str, int, int, int, List[Alias]]]):
-        for game in games:
-            self.add_game(game)
+    def init_games(self, games: dict[str, dict[str, Union[str, int, list[str]]]]):
+        for game, data in games.items():
+            self._init_aliases(game, data)
+            self.add_game(game, data)
 
-    def add_game(self, game: Tuple[str, str, str, int, int, int, List[Alias]]):
-        self._assert_valid_game_name(game[0])
-        if len(game) > 6:
-            self._assert_valid_aliases(game[6])
-        self._raw_add_game(game)
+    def add_game(self, game: str, data: dict[str, Union[str, int, list[Alias]]]):
+        self._assert_valid_game_name(game)
+        if "alias" in data:
+            self._assert_valid_aliases(data["alias"])
+        self._raw_add_game(game, data)
 
     async def convert(self, ctx: Context, argument: str) -> Game:
         if argument in self.games:
@@ -45,9 +48,17 @@ class GameConverter(ConverterBase[Game]):
                 return game
         raise BotConversionFailureException("Game", alias)
 
-    def _raw_add_game(self, game: Tuple[str, str, str, int, int, int, List[Alias]]):
-        self.games[game[0]] = Game(*game)
-        self.connection.add(game)
+    @staticmethod
+    def _init_aliases(game_name: str, game_data: dict[str, Union[str, int, list[str]]]):
+        if "alias" in game_data:
+            game_data["alias"] = [Alias(alias, game_name) for alias in game_data["alias"]]
+
+    def _raw_add_game(self, game: str, data: dict[str, Union[str, int, list[Alias]]]):
+        min_team_size = data.pop("min_team_size")
+        self.games[game] = Game(game, data.pop("colour", "0xffffff"), data.pop("icon", self.MISSING_TEXTURE),
+                                min_team_size, data.pop("max_team_size", min_team_size), data.pop("team_count", 2),
+                                data.pop("alias", []))
+        self.connection.add(self.games[game])
 
     def _assert_valid_game_name(self, game_name):
         if game_name in self.games:

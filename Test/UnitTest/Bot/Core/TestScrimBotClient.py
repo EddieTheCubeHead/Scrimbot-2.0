@@ -32,8 +32,10 @@ class TestScrimBotClient(AsyncUnittestBase):
         self.config.default_prefix = ";"
         self.context_provider = AsyncMock()
         self.guild_converter = MagicMock()
+        self.game_converter = MagicMock()
         self.logger = MagicMock()
-        self.client = ScrimBotClient(self.config, self.logger, self.context_provider, self.guild_converter, self.loop)
+        self.client = ScrimBotClient(self.config, self.logger, self.context_provider, self.guild_converter,
+                                     self.game_converter, self.loop)
 
     @patch('sys.stdout', new_callable=io.StringIO)
     async def test_setup_cogs_when_called_then_cogs_loaded(self, print_catcher):
@@ -52,6 +54,11 @@ class TestScrimBotClient(AsyncUnittestBase):
         self.assertEqual(f"Attempting a connection to Discord...\n"
                          f"Successfully logged in as ScrimBot2.0, with version {__version__}\n", output)
         await self.client.close()
+
+    def test_load_games_when_called_then_games_loaded_by_converter(self):
+        self.config.games_dict = MagicMock()
+        self.client.load_games()
+        self.game_converter.init_games.assert_called_with(self.config.games_dict)
 
     async def test_get_prefix_when_no_guild_specific_prefix_then_default_prefix_returned(self):
         mock_bot_guild = self._mock_bot_guild_with_prefixes([])

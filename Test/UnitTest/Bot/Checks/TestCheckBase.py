@@ -17,7 +17,7 @@ class TestCheck(CheckBase):
     check_call_counter = 0
 
     @classmethod
-    def check(cls, ctx: Context):
+    async def check(cls, ctx: Context):
         cls.check_call_counter += 1
         return True
 

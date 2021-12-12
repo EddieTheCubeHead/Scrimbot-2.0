@@ -9,6 +9,7 @@ from behave import *
 from behave.api.async_step import async_run_until_complete
 
 from Bot.Core.ScrimBotLogger import ScrimBotLogger
+from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
 from Utils.TestHelpers.DiscordPatcher import DiscordPatcher
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimBotClient import ScrimBotClient
@@ -32,6 +33,10 @@ def step_impl(context):
     logger = ScrimBotLogger(config)
     BotDependencyInjector.dependencies[MasterConnection] = MasterConnection(config, ":memory:")
     context.client = ScrimBotClient(config, logger, ResponseMessageCatcher())
+    try:
+        context.client.load_games()
+    except BotBaseInternalException as _:
+        pass
     context.client.setup_cogs()
     context.patcher = DiscordPatcher()
 
@@ -41,6 +46,7 @@ def step_impl(context):
 @patch('sys.stdout', new_callable=io.StringIO)
 async def step_impl(context, print_capture):
     context.print_capture = print_capture
+    context.client.load_games()
     context.client.setup_cogs()
     asyncio.create_task(context.client.start_bot())
     await context.client.connected.wait()

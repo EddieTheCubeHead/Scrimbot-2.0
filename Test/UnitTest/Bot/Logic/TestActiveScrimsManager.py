@@ -42,7 +42,8 @@ class TestActiveScrimsManager(UnittestBase):
     def test_create_scrim_given_scrim_channel_and_game_then_scrim_manager_created_correctly(self):
         mock_game = _create_mock_game(2, 5)
         mock_scrim_channel = self._create_mock_channel()
-        self.manager.create_scrim(mock_scrim_channel, mock_game)
+        scrim = self.manager.create_scrim(mock_scrim_channel, mock_game)
+        self.assertEqual(mock_game, scrim.teams_manager.game)
         self._assert_scrim_created_correctly(mock_scrim_channel, mock_game)
 
     def _create_mock_channel(self) -> ScrimChannel:

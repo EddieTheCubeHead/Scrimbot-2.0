@@ -11,6 +11,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import Context
 
+from Bot.Converters.GameConverter import GameConverter
 from Bot.Converters.GuildConverter import GuildConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ContextProvider import ContextProvider
@@ -31,7 +32,7 @@ class ScrimBotClient(commands.Bot):
 
     @BotDependencyInjector.inject
     def __init__(self, config: Config, logger: ScrimBotLogger, context_provider: ContextProvider,
-                 guild_converter: GuildConverter, event_loop=None):
+                 guild_converter: GuildConverter, game_converter: GameConverter, event_loop=None):
         """The constructor of ScrimClient. Running this only creates an instance, setup_cogs and start_bot are still
         required to be ran for the bot to start."""
 
@@ -42,6 +43,7 @@ class ScrimBotClient(commands.Bot):
         self.connected = asyncio.Event()
         self.context_provider = context_provider
         self.guild_converter = guild_converter
+        self.game_converter = game_converter
         self.config = config
         self.logger = logger
         self.description = "A discord bot for organizing scrims."
@@ -53,6 +55,9 @@ class ScrimBotClient(commands.Bot):
         for cog in os.listdir(rf"{parent_path}\Cogs"):
             if cog[-3:] == ".py" and not cog.startswith("_"):
                 self.load_extension(f".{cog[:-3]}", package="Bot.Cogs")
+
+    def load_games(self):
+        self.game_converter.init_games(self.config.games_dict)
 
     async def start_bot(self):
         print("Attempting a connection to Discord...")
@@ -149,5 +154,6 @@ class ScrimBotClient(commands.Bot):
 if __name__ == "__main__":  # pragma: no cover
     loop = asyncio.get_event_loop()
     client = ScrimBotClient()
+    client.load_games()
     client.setup_cogs()
     loop.run_until_complete(client.start_bot())

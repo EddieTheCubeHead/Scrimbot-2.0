@@ -4,6 +4,7 @@ __author__ = "Eetu Asikainen"
 from typing import List, Dict, Union, Optional
 
 import discord
+from discord.ext.commands import Context
 
 from Bot.DataClasses.Game import Game
 from Bot.DataClasses.Team import Team
@@ -40,9 +41,9 @@ async def _move_team_to_voice(team):
             await player.move_to(team.voice_channel, reason="Setting up a scrim.")
 
 
-def _assert_valid_removal(player, team):
+def _assert_valid_removal(ctx, player, team):
     if player not in team.members:
-        raise BotInvalidPlayerRemoval(player, team)
+        raise BotInvalidPlayerRemoval(ctx, player, team)
 
 
 class ScrimTeamsManager:
@@ -187,11 +188,11 @@ class ScrimTeamsManager:
     def _is_full_game_team(self, team):
         return not self.is_reserved_name(team.name) and _is_full(team)
 
-    def remove_player(self, team: Union[int, str], player: discord.member):
-        self._remove_from_team(self._get_team(team), player)
+    def remove_player(self, ctx: Context, team: Union[int, str], player: discord.member):
+        self._remove_from_team(ctx, self._get_team(team), player)
 
-    def _remove_from_team(self, team: Team, player: discord.member):
-        _assert_valid_removal(player, team)
+    def _remove_from_team(self, ctx: Context, team: Team, player: discord.member):
+        _assert_valid_removal(ctx, player, team)
         if self._fill_participants_from_queue(team):
             team.members.append(self._teams[self.QUEUE].members.pop(0))
         team.members.remove(player)
@@ -199,16 +200,16 @@ class ScrimTeamsManager:
     def _fill_participants_from_queue(self, team):
         return self._is_full_participant_team(team) and len(self._teams[self.QUEUE].members) > 0
 
-    def set_team(self, team: Union[int, str], player: discord.Member):
-        if not self._blind_remove(player):
+    def set_team(self, ctx: Context, team: Union[int, str], player: discord.Member):
+        if not self._blind_remove(ctx, player):
             raise BotBaseInternalException(f"Tried setting team for user '{player.display_name}' who is not part of "
                                            f"the scrim.")
         self.add_player(team, player)
 
-    def _blind_remove(self, player) -> bool:
+    def _blind_remove(self, ctx: Context, player: discord.Member) -> bool:
         for team in self._teams.values():
             if player in team.members:
-                self._remove_from_team(team, player)
+                self._remove_from_team(ctx, team, player)
                 return True
         return False
 

@@ -20,9 +20,11 @@ class ActiveScrimsManager:
     def __init__(self):
         self.scrims: dict[int, ScrimManager] = {}
 
-    def create_scrim(self, scrim_channel: ScrimChannel, game: Game):
+    def create_scrim(self, scrim_channel: ScrimChannel, game: Game) -> ScrimManager:
         teams_manager = ScrimTeamsManager(game, *_create_voice_channels(scrim_channel))
-        self.scrims[scrim_channel.channel_id] = ScrimManager(teams_manager)
+        created_scrim = ScrimManager(teams_manager)
+        self.scrims[scrim_channel.channel_id] = created_scrim
+        return created_scrim
 
     def try_get_scrim(self, channel_id: int):
         return self.scrims.get(channel_id, None)

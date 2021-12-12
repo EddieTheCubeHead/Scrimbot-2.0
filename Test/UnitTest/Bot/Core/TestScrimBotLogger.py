@@ -56,6 +56,6 @@ class TestScrimBotLogger(UnittestBase):
     def _assert_logged(self, messages: list[str]):
         with open(f"{self.file_folder}/scrim_bot.log", encoding="utf-8", mode="r") as log_file:
             for expected, actual in zip(messages, log_file):
-                regex = r"^[\d]{4}-[\d]{2}-[\d]{2} [\d]{2}:[\d]{2}:[\d]{2},[\d]{3} \|\| " + expected + r"$"
+                regex = r"^BOT \|\| [\d]{4}-[\d]{2}-[\d]{2} [\d]{2}:[\d]{2}:[\d]{2},[\d]{3} \|\| " + expected + r"$"
                 self.assertRegex(actual, regex)
 
