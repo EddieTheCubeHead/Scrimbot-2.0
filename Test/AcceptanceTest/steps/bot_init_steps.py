@@ -8,13 +8,13 @@ from unittest.mock import patch
 from behave import *
 from behave.api.async_step import async_run_until_complete
 
-from Bot.Core.ScrimBotLogger import ScrimBotLogger
-from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+from Bot.Core.Logging.BotClientLogger import BotClientLogger
 from Utils.TestHelpers.DiscordPatcher import DiscordPatcher
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
+from Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 from Utils.TestHelpers.ResponseMessageCatcher import ResponseMessageCatcher
 from Utils.TestHelpers.test_utils import get_cogs_messages
 
@@ -22,21 +22,21 @@ from Utils.TestHelpers.test_utils import get_cogs_messages
 @given("an uninitialized bot")
 def step_impl(context):
     config = Config()
-    logger = ScrimBotLogger(config)
+    logger = BotClientLogger(config)
     BotDependencyInjector.dependencies[MasterConnection] = MasterConnection(config, ":memory:")
+    ResponseLoggerContext.reset()
     context.client = ScrimBotClient(config, logger, ResponseMessageCatcher())
 
 
 @given("an initialized bot")
 def step_impl(context):
     config = Config()
-    logger = ScrimBotLogger(config)
+    logger = BotClientLogger(config)
     BotDependencyInjector.dependencies[MasterConnection] = MasterConnection(config, ":memory:")
     context.client = ScrimBotClient(config, logger, ResponseMessageCatcher())
-    try:
-        context.client.load_games()
-    except BotBaseInternalException as _:
-        pass
+    ResponseLoggerContext.reset()
+    context.client.setup_logging()
+    context.client.load_games()
     context.client.setup_cogs()
     context.patcher = DiscordPatcher()
 

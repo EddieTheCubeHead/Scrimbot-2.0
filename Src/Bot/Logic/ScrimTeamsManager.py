@@ -11,15 +11,15 @@ from Bot.DataClasses.Team import Team
 from Bot.DataClasses.TeamMember import TeamMember
 from Bot.DataClasses.User import User
 from Bot.Exceptions.BotBaseUserException import BotBaseUserException
-from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
 from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
 
 
 def _assert_valid_game(game):
     if game.team_count < 1:
-        raise BotBaseInternalException("Tried to initialize a teams manager for a game with less than 1 teams.")
+        raise BotBaseInternalClientException("Tried to initialize a teams manager for a game with less than 1 teams.")
     if game.max_team_size and game.min_team_size > game.max_team_size:
-        raise BotBaseInternalException("Tried to initialize a teams manager for a game with smaller team max size than"
+        raise BotBaseInternalClientException("Tried to initialize a teams manager for a game with smaller team max size than"
                                        " team min size.")
 
 
@@ -179,7 +179,7 @@ class ScrimTeamsManager:
             self._add_to_team(self._teams[self.QUEUE], player)
             return
         if self._is_full_game_team(team):
-            raise BotBaseInternalException(f"Tried adding a player into a full team ({team.name})")
+            raise BotBaseInternalClientException(f"Tried adding a player into a full team ({team.name})")
         team.members.append(player)
 
     def _is_full_participant_team(self, team: Team):
@@ -202,7 +202,7 @@ class ScrimTeamsManager:
 
     def set_team(self, ctx: Context, team: Union[int, str], player: discord.Member):
         if not self._blind_remove(ctx, player):
-            raise BotBaseInternalException(f"Tried setting team for user '{player.display_name}' who is not part of "
+            raise BotBaseInternalClientException(f"Tried setting team for user '{player.display_name}' who is not part of "
                                            f"the scrim.")
         self.add_player(team, player)
 

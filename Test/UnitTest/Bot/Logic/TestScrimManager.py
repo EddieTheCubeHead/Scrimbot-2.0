@@ -9,7 +9,7 @@ from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.Logic.ScrimManager import ScrimManager
 from Bot.DataClasses.ScrimState import ScrimState
 from Bot.Exceptions.BotBaseUserException import BotBaseUserException
-from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
 
 
 class TestScrimManager(UnittestBase):
@@ -47,7 +47,7 @@ class TestScrimManager(UnittestBase):
         for state in invalid_states:
             with self.subTest(f"Locking with invalid state: {state.name}"):
                 self.scrim_manager.state = state
-                expected_exception = BotBaseInternalException("Tried to perform an invalid state change from state "
+                expected_exception = BotBaseInternalClientException("Tried to perform an invalid state change from state "
                                                               f"{state.name} to {ScrimState.LOCKED.name}")
                 self._assert_raises_correct_exception(expected_exception, self.scrim_manager.lock)
                 self.mock_teams_manager.clear_queue.assert_not_called()
@@ -111,7 +111,7 @@ class TestScrimManager(UnittestBase):
         for state in invalid_states:
             with self.subTest(f"Starting with voice chat when in invalid state: {state.name}"):
                 self.scrim_manager.state = state
-                expected_exception = BotBaseInternalException("Tried to perform an invalid state change from state "
+                expected_exception = BotBaseInternalClientException("Tried to perform an invalid state change from state "
                                                               f"{state.name} to {ScrimState.VOICE_WAIT.name}")
                 self._assert_raises_correct_exception(expected_exception, self.scrim_manager.start_with_voice)
 

@@ -18,12 +18,14 @@ from Utils.TestHelpers.test_utils import create_mock_guild, create_mock_author, 
 async def step_impl(context, channel, guild):
     context.table = [["1", channel, guild]]
     await call_command(';register', context)
-    ResponseLoggerContext.get_oldest_embed()
+    ResponseLoggerContext.get_oldest()
 
 
 @when("'{command}' is called with")
 @async_run_until_complete
 async def step_impl(context, command: str):
+    context.latest_command = command.split(" ")[0][1:]
+    context.latest_prefix = command[0]
     await call_command(command, context)
 
 
@@ -49,19 +51,30 @@ async def step_impl(context, channel_id):
 @async_run_until_complete
 async def step_impl(context):
     embed = parse_embed_from_table(context.table)
-    assert_same_embed_text(embed, ResponseLoggerContext.get_oldest_embed())
+    context.latest_fetched = ResponseLoggerContext.get_oldest()
+    assert_same_embed_text(embed, context.latest_fetched.embeds[0])
 
 
 @then("error received with message '{error_message}'")
 @async_run_until_complete
 async def step_impl(context, error_message):
-    embed = create_error_embed(error_message)
-    assert_same_embed_text(embed, ResponseLoggerContext.get_oldest_embed())
+    embed = create_error_embed(error_message, context.latest_command)
+    context.latest_fetched = ResponseLoggerContext.get_oldest()
+    assert_same_embed_text(embed, context.latest_fetched.embeds[0])
 
 
-@then("error and help received with messages '{error_message}' and '{command}'")
+@then("error and help received with message '{error_message}'")
 @async_run_until_complete
-async def step_impl(context, error_message, command):
+async def step_impl(context, error_message):
     error_message = error_message.replace("\\", "")
-    embed = create_error_embed(error_message, f"{command[0]}help {command[1:]}")
-    assert_same_embed_text(embed, ResponseLoggerContext.get_oldest_embed())
+    embed = create_error_embed(error_message, context.latest_command,
+                               f"{context.latest_prefix}help {context.latest_command}")
+    context.latest_fetched = ResponseLoggerContext.get_oldest()
+    assert_same_embed_text(embed, context.latest_fetched.embeds[0])
+
+
+@step("team joining emojis reacted by bot")
+def step_impl(context):
+    message = context.latest_fetched
+    assert "\U0001F3AE" in message.test_reactions
+    assert "\U0001F441" in message.test_reactions

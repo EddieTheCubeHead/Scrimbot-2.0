@@ -99,3 +99,8 @@ class TestGameConnection(ConnectionUnittest[Game]):
         with self.master.get_session() as session:
             session.query(Game).filter(Game.name == game_name).one()
             session.query(Alias).filter(Alias.name == alias).one()
+
+    def test_get_all_given_called_then_all_games_from_database_returned(self):
+        games = self.connection.get_all()
+        for game_name in self.config.games_dict:
+            self.assertIn(game_name, [game.name for game in games])

@@ -23,6 +23,5 @@ class GuildConnection(ConnectionBase):
         from Bot.DataClasses.Guild import Guild
         new_guild = Guild(guild_id=guild_id, prefixes=[])
         with self._master_connection.get_session() as session:
-            
             session.add(new_guild)
         return new_guild

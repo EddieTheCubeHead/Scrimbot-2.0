@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 import json
 from typing import List, Tuple, Dict, Union, Any
 
-from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
 from Database.DatabaseManager import DatabaseManager
 from Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
 from Database.Exceptions.DatabaseMissingRowException import DatabaseMissingRowException
@@ -210,9 +210,9 @@ def _get_game_data_from_dict_item(game_item):
 
 def _validate_inserted_elo(elo):
     if elo < 0:
-        raise BotBaseInternalException("Initial elo values cannot be lower than 0.")
+        raise BotBaseInternalClientException("Initial elo values cannot be lower than 0.")
     if elo > 5000:
-        raise BotBaseInternalException("Initial elo values cannot be higher than 5000.")
+        raise BotBaseInternalClientException("Initial elo values cannot be higher than 5000.")
 
 
 def _ensure_elo_change_valid(original_elo, change):
@@ -221,7 +221,7 @@ def _ensure_elo_change_valid(original_elo, change):
 
 def _validate_updated_elo(new_elo):
     if new_elo < 0:
-        raise BotBaseInternalException("User elo value cannot be lower than 0.")
+        raise BotBaseInternalClientException("User elo value cannot be lower than 0.")
 
 
 # Enable initializing the database without starting the bot by making this file executable and running the

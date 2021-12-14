@@ -21,7 +21,7 @@ from Bot.DataClasses.Scrim import Scrim
 class Game(DataClass):
 
     name = Column(String, primary_key=True)
-    colour = Column(String, default="0xffffff")
+    _colour = Column(String, default="0xffffff")
     icon = Column(String, nullable=False)
     min_team_size = Column(Integer, nullable=False)
     max_team_size = Column(Integer, nullable=True, default=None)  # note: None = min_size, while 0 = no limit
@@ -35,12 +35,16 @@ class Game(DataClass):
                  team_count: int = 2, aliases: list[Alias] = None):
 
         self.name = name
-        self.colour = int(colour, 16)
+        self._colour = colour
         self.icon = icon
         self.aliases = aliases or []
         self.min_team_size = min_team_size
         self.max_team_size: int = max_team_size if max_team_size is not None else min_team_size
         self.team_count = team_count
+
+    @property
+    def colour(self):
+        return int(self._colour, 16)
 
     @classmethod
     @BotDependencyInjector.inject

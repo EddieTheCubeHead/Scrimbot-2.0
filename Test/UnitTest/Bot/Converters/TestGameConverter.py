@@ -1,6 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+import unittest
 from typing import Any
 from unittest.mock import MagicMock
 
@@ -9,7 +10,7 @@ from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.DataClasses.Game import Game
 from Bot.Converters.GameConverter import GameConverter
-from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 
 
@@ -20,8 +21,9 @@ class TestGameConverter(AsyncUnittestBase):
         cls.id_mocker = TestIdGenerator()
 
     def setUp(self) -> None:
+        self.system_logger = MagicMock()
         self.connection = MagicMock()
-        self.converter = GameConverter(self.connection)
+        self.converter = GameConverter(self.connection, self.system_logger)
 
     def test_build_given_file_imported_then_singleton_dependency_created(self):
         self._assert_singleton_dependency(GameConverter)
@@ -33,7 +35,7 @@ class TestGameConverter(AsyncUnittestBase):
         for name in game_names:
             self.assertIn(name, self.converter.games)
 
-    def test_init_games_given_duplicate_aliases_then_error_raised(self):
+    def test_init_games_given_duplicate_aliases_then_error_logged_but_not_raised(self):
         shared_alias = "Test"
         games = {"CS:GO": {"colour": "0xffffff",
                            "icon": "icon_url",
@@ -43,10 +45,22 @@ class TestGameConverter(AsyncUnittestBase):
                             "icon": "icon_url",
                             "min_team_size": 5,
                             "alias": [shared_alias]}}
-        expected_exception = \
-            BotBaseInternalException(f"Cannot initialize two games with the same alias ('{shared_alias}')")
-        self._assert_raises_correct_exception(expected_exception, self.converter.init_games,
-                                              games)
+        self.converter.init_games(games)
+        self.system_logger.info.assert_called_with(f"An exception occurred during bot operation: \"Cannot "
+                                                      f"initialize two games with the same alias ('Test')\"")
+
+    def test_init_games_given_games_in_database_then_all_database_games_initialized(self):
+        db_game = Game("Test", "0xffffff", "icon_url", 5)
+        self.connection.get_all.return_value = [db_game]
+        self.converter.init_games({})
+        self.assertIn(db_game.name, self.converter.games)
+
+    def test_init_games_given_game_in_database_and_in_config_then_error_logged_but_not_raised(self):
+        db_game = Game("Test", "0xffffff", "icon_url", 5)
+        self.connection.get_all.return_value = [db_game]
+        self.converter.init_games({"Test": {}})
+        self.system_logger.info.assert_called_with(f"An exception occurred during bot operation: \"Cannot "
+                                                      f"initialize two games with the same name ('Test')\"")
 
     def test_add_game_given_valid_game_then_successful(self):
         new_game_name = "New game"
@@ -61,7 +75,7 @@ class TestGameConverter(AsyncUnittestBase):
         game_1 = {"colour": "0xffffff", "icon": "icon_url", "min_team_size": 5}
         game_2 = {"colour": "0xffffff", "icon": "icon_url", "min_team_size": 5}
         expected_exception = \
-            BotBaseInternalException(f"Cannot initialize two games with the same name ('{shared_name}')")
+            BotBaseInternalClientException(f"Cannot initialize two games with the same name ('{shared_name}')")
         self.converter.add_game(shared_name, game_1)
         self._assert_raises_correct_exception(expected_exception, self.converter.add_game, shared_name, game_2)
 
@@ -76,7 +90,7 @@ class TestGameConverter(AsyncUnittestBase):
                             "min_team_size": 5,
                             "alias": [Alias(shared_alias, "Dota 2")]}}
         expected_exception = \
-            BotBaseInternalException(f"Cannot initialize two games with the same alias ('{shared_alias}')")
+            BotBaseInternalClientException(f"Cannot initialize two games with the same alias ('{shared_alias}')")
         self.converter.add_game("CS:GO", games.pop("CS:GO"))
         self._assert_raises_correct_exception(expected_exception, self.converter.add_game, "Dota 2",
                                               games.pop("Dota 2"))

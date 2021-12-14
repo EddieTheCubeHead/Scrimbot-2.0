@@ -27,11 +27,11 @@ def parse_embed_from_table(table: Table) -> Embed:
     return embed
 
 
-def create_error_embed(error_message: str, help_command: str = None) -> Embed:
-    embed = Embed(title="ScrimBot Error", description="An error happened while processing command 'register'")
+def create_error_embed(error_message: str, command: str, help_portion: str = None) -> Embed:
+    embed = Embed(title="ScrimBot Error", description=f"An error happened while processing command '{command}'")
     embed.add_field(name="Error message:", value=error_message)
-    if help_command:
-        embed.add_field(name="To get help:", value=help_command)
+    if help_portion:
+        embed.add_field(name="To get help:", value=help_portion)
     embed.set_footer(text="If you think this behaviour is unintended, please report it in the bot repository in GitHub "
                           "at https://github.com/EddieTheCubeHead/Scrimbot-2.0")
     return embed

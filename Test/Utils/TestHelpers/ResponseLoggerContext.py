@@ -2,24 +2,58 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 import queue
+from collections import OrderedDict
+from datetime import datetime
+from unittest.mock import MagicMock, AsyncMock
 
-from discord import Embed
+from discord import Message
 from Bot.Core.ScrimContext import ScrimContext
+from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+
+
+class LoggedMessage(Message):
+
+    def __init__(self, *args, **kwargs):
+        self.test_reactions = []
+        super().__init__(*args, **kwargs)
+
+    async def add_reaction(self, emoji):
+        self.test_reactions.append(emoji)
 
 
 class ResponseLoggerContext(ScrimContext):
-    sent_queue = queue.Queue()
+    sent_dict = OrderedDict()
+    dict_index = 0
+    id_mocker = TestIdGenerator()
 
     async def send(self, content=None, *, tts=False, embed=None, file=None, files=None, delete_after=None, nonce=None,
                    allowed_mentions=None, reference=None, mention_author=None):
-        self._add_sent(content, embed=embed, delete_after=delete_after)
+        message = LoggedMessage(state=AsyncMock(),
+                                channel=self.channel,
+                                data={"content": content, "embeds": [embed.to_dict()],
+                                      "id": str(self.id_mocker.generate_viable_id()),
+                                      "webhook_id": str(self.id_mocker.generate_viable_id()),
+                                      "edited_timestamp": str(datetime.now()),
+                                      "pinned": False,
+                                      "tts": tts,
+                                      "attachments": [],
+                                      "type": "default",
+                                      "mention_everyone": False})
+        self._add_sent(message.id, message)
+        return message
 
     @classmethod
-    def _add_sent(cls, text: str, *, embed: Embed = None, delete_after: float = None):
-        cls.sent_queue.put({"text": text, "embed": embed, "delete_after": delete_after})
+    def _add_sent(cls, message_id: int, message: Message):
+        cls.sent_dict[message_id] = message
 
     @classmethod
-    def get_oldest_embed(cls):
-        if not cls.sent_queue.queue:
+    def get_oldest(cls) -> Message:
+        if cls.dict_index >= len(cls.sent_dict):
             raise AssertionError("Tried getting a sent message while none exist!")
-        return cls.sent_queue.get()["embed"]
+        message = list(cls.sent_dict.items())[cls.dict_index][1]
+        cls.dict_index += 1
+        return message
+
+    @classmethod
+    def reset(cls):
+        cls.dict_index = len(cls.sent_dict.items())

@@ -8,7 +8,7 @@ from typing import Optional
 from abc import ABC, abstractmethod
 
 from Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
-from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
 
 
 class DatabaseManager(ABC):
@@ -67,7 +67,7 @@ class DatabaseManager(ABC):
 
     def ensure_valid_connection(self):
         if self.connection is None:
-            raise BotBaseInternalException(f"Tried to use database in {self.db_file_path} before the connection was "
+            raise BotBaseInternalClientException(f"Tried to use database in {self.db_file_path} before the connection was "
                                            f"set up.")
 
     def _enable_foreign_keys(self):

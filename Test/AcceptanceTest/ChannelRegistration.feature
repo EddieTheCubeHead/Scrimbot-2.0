@@ -41,7 +41,7 @@ Feature: Channel registration
       | name                                       | value         |
       | New scrim channel registered successfully! | Channel data: |
       | Text channel                               | <#18>         |
-    And error and help received with messages 'Text channel <\#18> is already registered for scrim usage.' and ';register'
+    And error and help received with message 'Text channel <\#18> is already registered for scrim usage.'
 
   Scenario: Registering a channel with a lobby channel and two team voice channels
     Given an initialized bot
@@ -82,7 +82,7 @@ Feature: Channel registration
       | Text channel                               | <#19>         |
       | Team 1 voice                               | <#21>         |
       | Team 2 voice                               | <#22>         |
-    And error and help received with messages 'Voice channel <\#22> is already associated with scrim channel <\#19>.' and ';register'
+    And error and help received with message 'Voice channel <\#22> is already associated with scrim channel <\#19>.'
 
   Scenario: Registering a channel in a group with automatic voice channel detection, lobby channel and two team channels
     Given an initialized bot

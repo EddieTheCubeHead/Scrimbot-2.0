@@ -3,6 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock, patch, AsyncMock
 
+from discord import Message
+
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
@@ -63,3 +65,14 @@ class TestResponseBuilder(AsyncUnittestBase):
         with patch("Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
             await self.builder.send(self.ctx, _response, displayable=MagicMock(), delete_after=deletion_timeout)
         self.ctx.send.assert_called_with(_response, embed=_embed, delete_after=deletion_timeout)
+
+    async def test_send_given_called_successfully_then_message_object_returned(self):
+        deletion_timeout = 15.5
+        _response = "Pong!"
+        _embed = MagicMock()
+        _embed_build = MagicMock(return_value=_embed)
+        self.ctx.send.return_value = MagicMock()
+        with patch("Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
+            message = await self.builder.send(self.ctx, _response, displayable=MagicMock(),
+                                              delete_after=deletion_timeout)
+        self.assertEqual(self.ctx.send.return_value, message)

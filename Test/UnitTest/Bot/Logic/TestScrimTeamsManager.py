@@ -16,7 +16,7 @@ from Bot.DataClasses.Game import Game
 from Bot.DataClasses.Team import Team
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.Exceptions.BotBaseUserException import BotBaseUserException
-from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
 
 
 def _setup_manager(min_size=5, max_size=5, team_count=2):
@@ -60,13 +60,13 @@ class TestScrimTeamsManager(UnittestBase):
 
     def test_init_given_team_count_zero_then_internal_error_raised(self):
         mock_game = _create_mock_game(5, 5, 0)
-        expected_exception = BotBaseInternalException("Tried to initialize a teams manager for a game with less than 1 "
+        expected_exception = BotBaseInternalClientException("Tried to initialize a teams manager for a game with less than 1 "
                                                       "teams.")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game)
 
     def test_init_given_team_min_size_larger_than_max_size_when_max_size_not_zero_then_internal_error_raised(self):
         mock_game = _create_mock_game(5, 3, 1)
-        expected_exception = BotBaseInternalException("Tried to initialize a teams manager for a game with smaller team"
+        expected_exception = BotBaseInternalClientException("Tried to initialize a teams manager for a game with smaller team"
                                                       " max size than team min size.")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game)
 
@@ -254,7 +254,7 @@ class TestScrimTeamsManager(UnittestBase):
         mock_player = self._create_mock_user()
         for team in range(team_count):
             with self.subTest(f"Adding player to full game team (Team {team + 1})"):
-                expected_exception = BotBaseInternalException(f"Tried adding a player into a "
+                expected_exception = BotBaseInternalClientException(f"Tried adding a player into a "
                                                               f"full team (Team {team + 1})")
                 self._assert_raises_correct_exception(expected_exception, manager.add_player, team, mock_player)
 
@@ -354,7 +354,7 @@ class TestScrimTeamsManager(UnittestBase):
         player_name = "Invalid player"
         mock_player = self._create_mock_user()
         mock_player.display_name = player_name
-        expected_exception = BotBaseInternalException(f"Tried setting team for user '{player_name}' who is not part "
+        expected_exception = BotBaseInternalClientException(f"Tried setting team for user '{player_name}' who is not part "
                                                       f"of the scrim.")
         self._assert_raises_correct_exception(expected_exception, manager.set_team, MagicMock(), manager.SPECTATORS,
                                               mock_player)

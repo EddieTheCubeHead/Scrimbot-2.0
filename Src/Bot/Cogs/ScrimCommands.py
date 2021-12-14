@@ -15,6 +15,7 @@ from Bot.DataClasses.Game import Game
 from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
 from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 from Bot.Converters.GameConverter import GameConverter
+from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
 from Configs.Config import Config
 
 
@@ -48,7 +49,9 @@ class ScrimCommands(commands.Cog):
 
         scrim_channel = self._scrim_channel_converter.get_from_id(ctx.channel.id)
         scrim = self._scrims_manager.create_scrim(scrim_channel, game)
-        await self._response_builder.send(ctx, displayable=scrim)
+        message = await self._response_builder.send(ctx, displayable=scrim)
+        await message.add_reaction(emoji="\U0001F3AE")  # video game controller
+        await message.add_reaction(emoji="\U0001F441")  # eye
 
     @commands.command(aliases=["l", "lockteams"])
     @commands.guild_only()

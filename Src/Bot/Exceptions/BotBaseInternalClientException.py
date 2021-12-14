@@ -3,19 +3,31 @@ __author__ = "Eetu Asikainen"
 
 from logging import WARNING, DEBUG, INFO, ERROR, CRITICAL
 
-from discord.ext import commands
 from discord.ext.commands import Context
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
-from Bot.Core.ScrimBotLogger import ScrimBotLogger
+from Bot.Core.Logging.BotClientLogger import BotClientLogger
 from Bot.Exceptions.BotBaseException import BotBaseException
 
 
-class BotBaseInternalException(BotBaseException):
+def log_with_level(log, logger, message):
+    if log == DEBUG:
+        logger.debug(message)
+    if log == INFO:
+        logger.info(message)
+    if log == WARNING:
+        logger.warning(message)
+    if log == ERROR:
+        logger.error(message)
+    if log == CRITICAL:
+        logger.critical(message)
+
+
+class BotBaseInternalClientException(BotBaseException):
     """A base class for all the exceptions excepted in the code that should get handled silently internally."""
 
     @BotDependencyInjector.inject
-    def __init__(self, message: str, logger: ScrimBotLogger, *, log: int = WARNING):
+    def __init__(self, message: str, logger: BotClientLogger, *, log: int = WARNING):
         self.log = log
         self.logger = logger
         self.message = message
@@ -23,13 +35,4 @@ class BotBaseInternalException(BotBaseException):
     def resolve(self, ctx: Context):
         message = f"command: '{ctx.command.name}' invoked as: '{ctx.message.content}' caused an unspecified " \
                   f"exception with the following message: '{self.message}'"
-        if self.log == DEBUG:
-            self.logger.debug(message)
-        if self.log == INFO:
-            self.logger.info(message)
-        if self.log == WARNING:
-            self.logger.warning(message)
-        if self.log == ERROR:
-            self.logger.error(message)
-        if self.log == CRITICAL:
-            self.logger.critical(message)
+        log_with_level(self.log, self.logger, message)

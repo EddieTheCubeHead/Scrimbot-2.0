@@ -39,10 +39,9 @@ class ScrimEmbedBuilder(ResponseBuilder[ScrimManager]):
             if team.name == ScrimTeamsManager.QUEUE and not team.members:
                 continue
             embed.add_field(name=team.name, value=self._build_team_participants(ctx, team), inline=True)
-        game_teams = displayable.teams_manager.get_game_teams()
-        if game_teams and displayable.state is not ScrimState.LFP:
+        if displayable.state is not ScrimState.LFP:
             embed.add_field(name=self.DIVIDER_STRING, value=self.DIVIDER_STRING)
-            for team in game_teams:
+            for team in displayable.teams_manager.get_game_teams():
                 embed.add_field(name=team.name, value=self._build_team_participants(ctx, team))
 
     def _build_team_participants(self, ctx: Context, team: Team):
@@ -50,4 +49,4 @@ class ScrimEmbedBuilder(ResponseBuilder[ScrimManager]):
             member_names = [self._nickname_service.get_name(ctx, player.user_id) for player in team.members]
             cleaned_names = [remove_markdown(name) for name in member_names]
             return "\n".join(cleaned_names)
-        return "__empty__"
+        return "_empty_"

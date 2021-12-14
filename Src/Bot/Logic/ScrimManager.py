@@ -10,7 +10,7 @@ import discord
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.DataClasses.ScrimState import ScrimState
 from Bot.Exceptions.BotBaseUserException import BotBaseUserException
-from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
 
 
 class ScrimManager:
@@ -26,7 +26,7 @@ class ScrimManager:
     def _secure_state_change(self, target_state: ScrimState, *valid_states: ScrimState):
         with self.thread_lock:
             if self.state not in valid_states:
-                raise BotBaseInternalException("Tried to perform an invalid state change from state "
+                raise BotBaseInternalClientException("Tried to perform an invalid state change from state "
                                                f"{self.state.name} to {target_state.name}")
             self.state = target_state
 

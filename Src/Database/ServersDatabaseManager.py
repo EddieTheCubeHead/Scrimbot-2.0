@@ -5,7 +5,7 @@ from typing import Optional, List, Tuple
 
 from Src.Database.DatabaseManager import DatabaseManager
 from Src.Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
-from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
 from Database.Exceptions.DatabaseMissingRowException import DatabaseMissingRowException
 from Database.Exceptions.DatabasePrimaryKeyViolatedException import DatabasePrimaryKeyViolatedException
 
@@ -166,14 +166,14 @@ def _assert_valid_first_team(channel_teams):
     first_team = channel_teams[0]  # should be 0 if lobby team exists, 1 if not
     valid_first_team_values = (0, 1)
     if first_team not in valid_first_team_values:
-        raise BotBaseInternalException(f"Invalid teams: {channel_teams}. First team should be 0 or 1.")
+        raise BotBaseInternalClientException(f"Invalid teams: {channel_teams}. First team should be 0 or 1.")
     return first_team
 
 
 def _assert_sequential_teams(channel_teams, first_team):
     for valid_team, actual_team in enumerate(channel_teams, first_team):
         if valid_team != actual_team:
-            raise BotBaseInternalException(f"Invalid teams: {channel_teams}. All teams should be sequential.")
+            raise BotBaseInternalClientException(f"Invalid teams: {channel_teams}. All teams should be sequential.")
 
 
 # Enable initializing the database without starting the bot by making this file executable and running the

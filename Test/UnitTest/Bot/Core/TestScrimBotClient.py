@@ -3,9 +3,11 @@ __author__ = "Eetu Asikainen"
 
 import asyncio
 import io
+import logging
 import os
 import unittest
-from unittest.mock import MagicMock, patch, AsyncMock
+from logging import DEBUG
+from unittest.mock import MagicMock, patch, AsyncMock, call
 
 from discord.ext.commands import CommandNotFound
 
@@ -34,8 +36,20 @@ class TestScrimBotClient(AsyncUnittestBase):
         self.guild_converter = MagicMock()
         self.game_converter = MagicMock()
         self.logger = MagicMock()
+        self.logger.handler = MagicMock()
         self.client = ScrimBotClient(self.config, self.logger, self.context_provider, self.guild_converter,
                                      self.game_converter, self.loop)
+
+    def test_setup_logging_when_called_then_discord_logger_setup(self):
+        with patch("logging.getLogger", MagicMock()) as mock_logging:
+            mock_logger = MagicMock()
+            mock_logging.return_value = mock_logger
+            self.client.setup_logging()
+            calls = mock_logging.call_args_list
+            self.assertEqual(calls[0], call("discord"))
+            self.assertEqual(calls[1], call("sqlalchemy.engine"))
+            mock_logger.addHandler.assert_called_with(self.logger.handler)
+            mock_logger.setLevel.assert_called_with(DEBUG)
 
     @patch('sys.stdout', new_callable=io.StringIO)
     async def test_setup_cogs_when_called_then_cogs_loaded(self, print_catcher):

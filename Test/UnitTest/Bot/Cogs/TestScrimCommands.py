@@ -1,7 +1,7 @@
 __version__ = "ver"
 __author__ = "Eetu Asikainen"
 
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, call
 
 from Bot.Cogs.ScrimCommands import ScrimCommands
 from Bot.DataClasses.Game import Game
@@ -37,3 +37,19 @@ class TestScrimCommands(AsyncUnittestBase):
         self.scrim_channel_converter.get_from_id.assert_called_with(ctx.channel.id)
         self.active_scrims_manager.create_scrim.assert_called_with(mock_scrim_channel, game)
         self.response_builder.send.assert_called_with(ctx, displayable=result_scrim)
+
+    async def test_scrim_given_called_with_game_then_team_joining_reactions_added(self):
+        game = Game("Test", "0xffffff", "icon_url", 5)
+        ctx = AsyncMock()
+        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.scrim = None
+        result_scrim = MagicMock()
+        mock_scrim_channel = MagicMock()
+        scrim_message = AsyncMock()
+        self.scrim_channel_converter.get_from_id.return_value = mock_scrim_channel
+        self.active_scrims_manager.create_scrim.return_value = result_scrim
+        self.response_builder.send.return_value = scrim_message
+        await self.cog.scrim(ctx, game)
+        calls = scrim_message.add_reaction.call_args_list
+        self.assertEqual(calls[0], call(emoji="\U0001F3AE"))
+        self.assertEqual(calls[1], call(emoji="\U0001F441"))

@@ -1,14 +1,17 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from logging import INFO
 from typing import Tuple, List, Dict, Iterator, Set, Any, Union
 
 from discord.ext.commands import Context
 
 from Bot.Converters.ConverterBase import ConverterBase
+from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
 from Bot.DataClasses.Alias import Alias
 from Bot.DataClasses.Game import Game
-from Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
+from Bot.Exceptions.BotBaseInternalSystemException import BotBaseInternalSystemException
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
@@ -19,17 +22,24 @@ from Database.DatabaseConnections.GameConnection import GameConnection
 class GameConverter(ConverterBase[Game]):
 
     MISSING_TEXTURE = "https://upload.wikimedia.org/wikipedia/commons/5/59/Minecraft_missing_texture_block.svg"
+    connection: GameConnection
 
     @BotDependencyInjector.inject
-    def __init__(self, connection: GameConnection):
+    def __init__(self, connection: GameConnection, system_logger: BotSystemLogger):
         super().__init__(connection)
         self.games: Dict[str, Game] = {}
+        self._system_logger = system_logger
         self._reserved_alias_names: Set = set()
 
     def init_games(self, games: dict[str, dict[str, Union[str, int, list[str]]]]):
+        for db_game in self.connection.get_all():
+            self.games[db_game.name] = db_game
         for game, data in games.items():
             self._init_aliases(game, data)
-            self.add_game(game, data)
+            try:
+                self.add_game(game, data)
+            except BotBaseInternalClientException as exception:
+                BotBaseInternalSystemException(exception.message, self._system_logger, log=INFO).resolve()
 
     def add_game(self, game: str, data: dict[str, Union[str, int, list[Alias]]]):
         self._assert_valid_game_name(game)
@@ -62,10 +72,11 @@ class GameConverter(ConverterBase[Game]):
 
     def _assert_valid_game_name(self, game_name):
         if game_name in self.games:
-            raise BotBaseInternalException(f"Cannot initialize two games with the same name ('{game_name}')")
+            raise BotBaseInternalClientException(f"Cannot initialize two games with the same name ('{game_name}')")
 
     def _assert_valid_aliases(self, aliases: List[Alias]):
         for alias in aliases:
             if alias.name in self._reserved_alias_names:
-                raise BotBaseInternalException(f"Cannot initialize two games with the same alias ('{alias.name}')")
+                raise BotBaseInternalClientException(f"Cannot initialize two games with the same alias "
+                                                     f"('{alias.name}')")
             self._reserved_alias_names.add(alias.name)

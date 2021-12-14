@@ -51,8 +51,8 @@ class TestScrimEmbedBuilder(EmbedUnittest):
         self.assertEqual("Status", actual.title)
         self.assertEqual(f"Looking for players, {self.mock_game.team_count * self.mock_game.min_team_size} more "
                          f"required.", actual.description)
-        self._assert_correct_fields(actual, ("Participants", "__empty__"),
-                                            ("Spectators", "__empty__"))
+        self._assert_correct_fields(actual, ("Participants", "_empty_"),
+                                            ("Spectators", "_empty_"))
         self.assertEqual("To join players react \U0001F3AE To join spectators react \U0001F441", actual.footer.text)
 
     def test_build_given_scrim_with_participants_then_scrim_embed_with_participants_returned_and_no_queue(self):
@@ -64,7 +64,7 @@ class TestScrimEmbedBuilder(EmbedUnittest):
         self.assertEqual(f"Looking for players, {self.mock_game.team_count * self.mock_game.min_team_size} more "
                          f"required.", actual.description)
         self._assert_correct_fields(actual, ("Participants", "Tester 1\nTester 2"),
-                                            ("Spectators", "__empty__"))
+                                            ("Spectators", "_empty_"))
         self.assertEqual("To join players react \U0001F3AE To join spectators react \U0001F441", actual.footer.text)
 
     def test_build_given_scrim_with_players_in_queue_then_scrim_embed_with_queued_players_returned(self):
@@ -77,7 +77,7 @@ class TestScrimEmbedBuilder(EmbedUnittest):
         self.assertEqual(f"Looking for players, {self.mock_game.team_count * self.mock_game.min_team_size} more "
                          f"required.", actual.description)
         self._assert_correct_fields(actual, ("Participants", "Tester 1\nTester 2", True),
-                                            ("Spectators", "__empty__", True),
+                                            ("Spectators", "_empty_", True),
                                             ("Queue", "Tester 3", True))
         self.assertEqual("To join players react \U0001F3AE To join spectators react \U0001F441", actual.footer.text)
 
@@ -89,7 +89,7 @@ class TestScrimEmbedBuilder(EmbedUnittest):
         self.assertEqual("Status", actual.title)
         self.assertEqual(f"Looking for players, {self.mock_game.team_count * self.mock_game.min_team_size} more "
                          f"required.", actual.description)
-        self._assert_correct_fields(actual, ("Participants", "__empty__", True),
+        self._assert_correct_fields(actual, ("Participants", "_empty_", True),
                                     ("Spectators", "Tester 1\nTester 2", True))
         self.assertEqual("To join players react \U0001F3AE To join spectators react \U0001F441", actual.footer.text)
 

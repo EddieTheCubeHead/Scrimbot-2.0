@@ -4,7 +4,6 @@ __author__ = "Eetu Asikainen"
 import asyncio
 import logging
 import os
-import sys
 from pathlib import Path
 
 import discord
@@ -15,23 +14,22 @@ from Bot.Converters.GameConverter import GameConverter
 from Bot.Converters.GuildConverter import GuildConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ContextProvider import ContextProvider
-from Bot.Core.ScrimBotLogger import ScrimBotLogger
+from Bot.Core.Logging.BotClientLogger import BotClientLogger
 from Bot.Exceptions.BotBaseException import BotBaseException
+from Bot.Exceptions.BotBaseInternalSystemException import BotBaseInternalSystemException
 from Bot.Exceptions.BotUnrecognizedCommandException import BotUnrecognizedCommandException
 from Configs.Config import Config
 from Bot.Logic.BotHelpCommand import BotHelpCommand
-from Src.Bot.Exceptions.BotBaseInternalException import BotBaseInternalException
+from Src.Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
 from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Bot.Core.ScrimContext import ScrimContext
-from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
-from Bot.DataClasses.Guild import Guild
 
 
 class ScrimBotClient(commands.Bot):
     """The class that implements the discord.py bot class. The heart of the bot."""
 
     @BotDependencyInjector.inject
-    def __init__(self, config: Config, logger: ScrimBotLogger, context_provider: ContextProvider,
+    def __init__(self, config: Config, logger: BotClientLogger, context_provider: ContextProvider,
                  guild_converter: GuildConverter, game_converter: GameConverter, event_loop=None):
         """The constructor of ScrimClient. Running this only creates an instance, setup_cogs and start_bot are still
         required to be ran for the bot to start."""
@@ -47,6 +45,12 @@ class ScrimBotClient(commands.Bot):
         self.config = config
         self.logger = logger
         self.description = "A discord bot for organizing scrims."
+
+    def setup_logging(self):
+        loggers = (logging.getLogger("discord"), logging.getLogger("sqlalchemy.engine"))
+        for logger in loggers:
+            logger.addHandler(self.logger.handler)
+            logger.setLevel(logging.DEBUG)
 
     def setup_cogs(self):
         """A private helper method for loading and starting all the cogs of the bot."""
@@ -92,9 +96,11 @@ class ScrimBotClient(commands.Bot):
         if isinstance(exception, BotBaseException):
             await exception.resolve(context)
 
-        else:
-            self.logger.error(str(exception))
-            raise exception
+        elif isinstance(exception, BotBaseInternalSystemException):
+            await exception.resolve()
+
+        self.logger.error(str(exception))
+        raise exception
 
     async def _handle_user_error(self, ctx: commands.Context, exception: BotBaseUserException):
         """The default way to handle user related exceptions for commands
@@ -108,13 +114,13 @@ class ScrimBotClient(commands.Bot):
         forward_msg = f"{exception.get_header()} {exception.get_description()}{exception.get_help_portion(ctx)}"
         await self.temp_msg(ctx, forward_msg, delete_delay=32.0)
 
-    async def _handle_internal_error(self, ctx: commands.Context, exception: BotBaseInternalException):
+    async def _handle_internal_error(self, ctx: commands.Context, exception: BotBaseInternalClientException):
         """The default way to handle internal exceptions for commands
 
         :param ctx: The context of the raised error
         :type ctx: commands.Context
         :param exception: The raised exception
-        :type exception: BotBaseInternalException
+        :type exception: BotBaseInternalClientException
         """
 
         if exception.log:
@@ -130,7 +136,7 @@ class ScrimBotClient(commands.Bot):
         :param user: The user who added the reaction
         :type user: discord.User
         :param exception: The raised exception
-        :type exception: BotBaseInternalException
+        :type exception: BotBaseInternalClientException
         """
 
         if isinstance(exception, BotBaseUserException):
@@ -138,8 +144,8 @@ class ScrimBotClient(commands.Bot):
                                                                  f"{exception.get_description()}")
             await temporary_message.delete(delay=8)
 
-        elif isinstance(exception, BotBaseInternalException) and exception.log or \
-                isinstance(exception, discord.DiscordException) and not isinstance(exception, BotBaseInternalException):
+        elif isinstance(exception, BotBaseInternalClientException) and exception.log or \
+                isinstance(exception, discord.DiscordException) and not isinstance(exception, BotBaseInternalClientException):
 
             self.logger.warning(f"reaction: '{react.emoji}' in message: '{react.message.content}' "
                                 f"added by: '{user}' caused the exception: {exception}")
@@ -154,6 +160,7 @@ class ScrimBotClient(commands.Bot):
 if __name__ == "__main__":  # pragma: no cover
     loop = asyncio.get_event_loop()
     client = ScrimBotClient()
+    client.setup_logging()
     client.load_games()
     client.setup_cogs()
     loop.run_until_complete(client.start_bot())

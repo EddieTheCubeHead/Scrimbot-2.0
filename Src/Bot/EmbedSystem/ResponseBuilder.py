@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
 
-from discord import Embed
+from discord import Embed, Message
 from discord.ext.commands import Context
 
 from Bot.DataClasses.DataClass import DataClass
@@ -19,13 +19,14 @@ T = TypeVar('T', bound=DataClass)  # pylint: disable=invalid-name
 @BotDependencyInjector.instance
 class ResponseBuilder(Generic[T]):
 
-    async def send(self, ctx: Context, text=None, *, displayable: T = None, delete_after=None, delete_parent=True):
+    async def send(self, ctx: Context, text=None, *, displayable: T = None, delete_after=None, delete_parent=True) \
+            -> Message:
         if delete_parent:
             await ctx.message.delete()
         if displayable is None:
-            await ctx.send(text, delete_after=delete_after)
+            return await ctx.send(text, delete_after=delete_after)
         else:
-            await ctx.send(text, embed=self.build(ctx, displayable), delete_after=delete_after)
+            return await ctx.send(text, embed=self.build(ctx, displayable), delete_after=delete_after)
 
     @abstractmethod
     def build(self, ctx: Context, displayable: T) -> Embed:  # pragma: no cover
