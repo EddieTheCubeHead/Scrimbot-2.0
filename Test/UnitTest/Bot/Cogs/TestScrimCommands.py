@@ -53,3 +53,17 @@ class TestScrimCommands(AsyncUnittestBase):
         calls = scrim_message.add_reaction.call_args_list
         self.assertEqual(calls[0], call(emoji="\U0001F3AE"))
         self.assertEqual(calls[1], call(emoji="\U0001F441"))
+
+    async def test_scrim_given_called_successfully_then_message_saved_to_scrim_manager(self):
+        game = Game("Test", "0xffffff", "icon_url", 5)
+        ctx = AsyncMock()
+        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.scrim = None
+        result_scrim = MagicMock()
+        mock_scrim_channel = MagicMock()
+        scrim_message = AsyncMock()
+        self.scrim_channel_converter.get_from_id.return_value = mock_scrim_channel
+        self.active_scrims_manager.create_scrim.return_value = result_scrim
+        self.response_builder.send.return_value = scrim_message
+        await self.cog.scrim(ctx, game)
+        self.assertEqual(scrim_message, result_scrim.message)

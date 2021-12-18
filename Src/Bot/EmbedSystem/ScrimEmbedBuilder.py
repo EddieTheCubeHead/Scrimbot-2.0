@@ -14,6 +14,12 @@ from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.DataClasses.ScrimState import ScrimState
 
 
+def _build_team_participants(team: Team):
+    if team.members:
+        return "\n".join([f"<#{member.user_id}>" for member in team.members])
+    return "_empty_"
+
+
 @BotDependencyInjector.singleton
 class ScrimEmbedBuilder(ResponseBuilder[ScrimManager]):
 
@@ -28,25 +34,18 @@ class ScrimEmbedBuilder(ResponseBuilder[ScrimManager]):
         min_players = game.team_count * game.min_team_size
         embed = Embed(title="Status", description=f"Looking for players, {min_players} more required.",
                       color=game.colour)
-        self._build_fields(ctx, embed, displayable)
+        self._build_fields(embed, displayable)
         embed.set_author(name=f"{game.name} scrim", icon_url=game.icon)
         embed.set_footer(text="To join players react \U0001F3AE To join spectators react \U0001F441")
         return embed
 
-    def _build_fields(self, ctx: Context, embed: Embed, displayable: ScrimManager):
+    def _build_fields(self, embed: Embed, displayable: ScrimManager):
         embed.clear_fields()
         for team in displayable.teams_manager.get_standard_teams():
             if team.name == ScrimTeamsManager.QUEUE and not team.members:
                 continue
-            embed.add_field(name=team.name, value=self._build_team_participants(ctx, team), inline=True)
+            embed.add_field(name=team.name, value=_build_team_participants(team), inline=True)
         if displayable.state is not ScrimState.LFP:
             embed.add_field(name=self.DIVIDER_STRING, value=self.DIVIDER_STRING)
             for team in displayable.teams_manager.get_game_teams():
-                embed.add_field(name=team.name, value=self._build_team_participants(ctx, team))
-
-    def _build_team_participants(self, ctx: Context, team: Team):
-        if team.members:
-            member_names = [self._nickname_service.get_name(ctx, player.user_id) for player in team.members]
-            cleaned_names = [remove_markdown(name) for name in member_names]
-            return "\n".join(cleaned_names)
-        return "_empty_"
+                embed.add_field(name=team.name, value=_build_team_participants(team))

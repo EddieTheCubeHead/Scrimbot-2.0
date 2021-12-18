@@ -4,8 +4,10 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 import threading
+from typing import Optional
 
 import discord
+from discord import Message
 
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.DataClasses.ScrimState import ScrimState
@@ -18,6 +20,7 @@ class ScrimManager:
     def __init__(self, teams_manager: ScrimTeamsManager):
         self.teams_manager = teams_manager
         self.state = ScrimState.LFP
+        self.message: Optional[Message] = None
         self.thread_lock = threading.Lock()
 
     def add_participant(self, participant: discord.Member):

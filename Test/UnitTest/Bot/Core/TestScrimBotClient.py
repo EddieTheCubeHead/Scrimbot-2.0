@@ -12,6 +12,7 @@ from unittest.mock import MagicMock, patch, AsyncMock, call
 from discord.ext.commands import CommandNotFound
 
 from Bot.Exceptions.BotBaseException import BotBaseException
+from Bot.Exceptions.BotBaseInternalSystemException import BotBaseInternalSystemException
 from Bot.Exceptions.BotUnrecognizedCommandException import BotUnrecognizedCommandException
 from Configs.Config import Config
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
@@ -121,7 +122,6 @@ class TestScrimBotClient(AsyncUnittestBase):
         mock_message = MagicMock()
         await self.client.get_context(mock_message)
         await_args = self.context_provider.get_context.await_args
-        # TODO fix this atrocity or learn to live with it
         self.assertEqual("<super: <class 'ScrimBotClient'>, <ScrimBotClient object>>", str(await_args[0][0]))
         self.assertEqual(mock_message, await_args[0][1])
 
@@ -130,6 +130,19 @@ class TestScrimBotClient(AsyncUnittestBase):
         mock_context = AsyncMock()
         await self.client.on_command_error(mock_context, mock_exception)
         mock_exception.resolve.assert_called_with(mock_context)
+
+    async def test_handle_exception_given_bot_system_exception_then_exception_resolve_called(self):
+        mock_exception = AsyncMock(BotBaseInternalSystemException)
+        mock_context = AsyncMock()
+        await self.client.on_command_error(mock_context, mock_exception)
+        mock_exception.resolve.assert_called_with()
+
+    async def test_handle_exception_given_non_bot_exception_then_exception_logged_and_raised(self):
+        mock_exception = AsyncMock()
+        mock_exception.__str__.return_value = "Test"
+        mock_context = AsyncMock()
+        await self.client.on_command_error(mock_context, mock_exception)
+        self.logger.critical.assert_called_with("Test")
 
     async def test_invoke_given_ctx_with_command_then_super_invoke_called(self):
         mock_context = AsyncMock()

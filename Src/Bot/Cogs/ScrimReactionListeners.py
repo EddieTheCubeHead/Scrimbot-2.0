@@ -1,9 +1,13 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import discord
+from discord import Reaction, Member, DiscordException
 from discord.ext import commands
 
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
+from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
+from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Src.Bot.DataClasses.ScrimState import ScrimState
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.DataClasses.ScrimChannel import ScrimChannel
@@ -20,19 +24,14 @@ class ScrimReactionListeners(commands.Cog):
     scrim_reaction_remove_listener(react, user)
         A listener for processing removed reactions
     """
-    def __init__(self, client: ScrimBotClient):
-        """A constructor for the ScrimReactionListeners cog
 
-        args
-        ----
-
-        :param client: The client instance associated with this cog
-        :type client: ScrimBotClient
-        """
-        self._client = client
+    @BotDependencyInjector.inject
+    def __init__(self, scrim_manager: ActiveScrimsManager, embed_builder: ScrimEmbedBuilder):
+        self.scrim_manager = scrim_manager
+        self.embed_builder = embed_builder
 
     @commands.Cog.listener("on_reaction_add")
-    async def scrim_reaction_add_listener(self, react: discord.Reaction, user: discord.Member):
+    async def scrim_reaction_add_listener(self, react: Reaction, user: Member):
         """A listener responsible for processing reactions added to scrim messages
 
         args
@@ -46,13 +45,13 @@ class ScrimReactionListeners(commands.Cog):
         if user.bot:
             return
 
-        scrim = await ScrimChannel.get_from_reaction(react)
+        scrim = self.scrim_manager.try_get_scrim(react.message.channel.id)
         if not scrim:
             return
 
         try:
-            if react.emoji == "\U0001F3AE" and scrim.state == ScrimState.LFP:
-                await scrim.add_player(user)
+            if react.emoji == "\U0001F3AE" and scrim.state.name is ScrimState.LFP.name:
+                scrim.teams_manager.add_player(ScrimTeamsManager.PARTICIPANTS, user)
 
             elif react.emoji == "\U0001F441" and scrim.state == ScrimState.LFP:
                 await scrim.add_spectator(user)
@@ -69,12 +68,14 @@ class ScrimReactionListeners(commands.Cog):
             else:
                 await react.remove(user)
 
-        except discord.DiscordException as exception:
+        except DiscordException as exception:
             await react.remove(user)
             await self._client.handle_react_internal_error(react, user, exception)
 
+        await self.embed_builder.edit(react.message, displayable=scrim)
+
     @commands.Cog.listener("on_reaction_remove")
-    async def scrim_reaction_remove_listener(self, react: discord.Reaction, user: discord.Member):
+    async def scrim_reaction_remove_listener(self, react: Reaction, user: Member):
         """A listener responsible for processing reactions removed from scrim messages
 
         args
@@ -106,7 +107,7 @@ class ScrimReactionListeners(commands.Cog):
             elif react.emoji == "\U0001F451" and scrim.state == ScrimState.CAPS_PREP:
                 await scrim.remove_captain(user)
 
-        except discord.DiscordException as exception:
+        except DiscordException as exception:
             await self._client.handle_react_internal_error(react, user, exception)
 
 
@@ -120,5 +121,5 @@ def setup(client: ScrimBotClient):
     :type client: ScrimBotClient
     """
 
-    client.add_cog(ScrimReactionListeners(client))
+    client.add_cog(ScrimReactionListeners())
     print(f"Using cog {__name__}, with version {__version__}")

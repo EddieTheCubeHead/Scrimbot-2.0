@@ -20,6 +20,9 @@ class LoggedMessage(Message):
     async def add_reaction(self, emoji):
         self.test_reactions.append(emoji)
 
+    async def edit(self, **fields):
+        ResponseLoggerContext.add_sent(self.id, self)
+
 
 class ResponseLoggerContext(ScrimContext):
     sent_dict = OrderedDict()
@@ -39,11 +42,11 @@ class ResponseLoggerContext(ScrimContext):
                                       "attachments": [],
                                       "type": "default",
                                       "mention_everyone": False})
-        self._add_sent(message.id, message)
+        self.add_sent(message.id, message)
         return message
 
     @classmethod
-    def _add_sent(cls, message_id: int, message: Message):
+    def add_sent(cls, message_id: int, message: Message):
         cls.sent_dict[message_id] = message
 
     @classmethod

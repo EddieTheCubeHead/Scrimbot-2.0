@@ -97,10 +97,10 @@ class ScrimBotClient(commands.Bot):
             await exception.resolve(context)
 
         elif isinstance(exception, BotBaseInternalSystemException):
-            await exception.resolve()
+            exception.resolve()
 
-        self.logger.error(str(exception))
-        raise exception
+        else:
+            self.logger.critical(str(exception))
 
     async def _handle_user_error(self, ctx: commands.Context, exception: BotBaseUserException):
         """The default way to handle user related exceptions for commands

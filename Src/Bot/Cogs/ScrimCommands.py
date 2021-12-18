@@ -52,6 +52,7 @@ class ScrimCommands(commands.Cog):
         message = await self._response_builder.send(ctx, displayable=scrim)
         await message.add_reaction(emoji="\U0001F3AE")  # video game controller
         await message.add_reaction(emoji="\U0001F441")  # eye
+        scrim.message = message
 
     @commands.command(aliases=["l", "lockteams"])
     @commands.guild_only()

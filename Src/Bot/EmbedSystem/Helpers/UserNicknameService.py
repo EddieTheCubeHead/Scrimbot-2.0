@@ -12,8 +12,8 @@ from Bot.Core.BotDependencyInjector import BotDependencyInjector
 @BotDependencyInjector.singleton
 class UserNicknameService:
 
-    def get_name(self, ctx: Context, user_id: int) -> str:
-        member: Member = self.cached_get_name(ctx, user_id)
+    def get_name(self, guild: Guild, user_id: int) -> str:
+        member: Member = self.cached_get_name(guild, user_id)
         return member.display_name
 
     @BotCache

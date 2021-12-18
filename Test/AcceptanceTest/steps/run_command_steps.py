@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 
 from behave import *
 from behave.api.async_step import async_run_until_complete
+from discord import Reaction, Emoji
 
 from Utils.TestHelpers.embed_test_helper import parse_embed_from_table, create_error_embed, assert_same_embed_text
 from Bot.DataClasses.ScrimChannel import ScrimChannel
@@ -13,12 +14,22 @@ from Utils.TestHelpers.test_utils import create_mock_guild, create_mock_author, 
     create_async_mock_message
 
 
-@step("channel '{channel}' registered for scrims in guild '{guild}'")
+@given("channel '{channel}' registered for scrims in guild '{guild}'")
 @async_run_until_complete
 async def step_impl(context, channel, guild):
     context.table = [["1", channel, guild]]
     await call_command(';register', context)
     ResponseLoggerContext.get_oldest()
+
+
+@given("a scrim on channel {channel_id}")
+@async_run_until_complete
+async def step_impl(context, channel_id):
+    context.table = [["1", channel_id, "1"]]
+    await call_command(';register', context)
+    await call_command(';scrim dota', context)
+    ResponseLoggerContext.get_oldest()
+    context.latest_fetched = ResponseLoggerContext.get_oldest()
 
 
 @when("'{command}' is called with")
@@ -73,8 +84,23 @@ async def step_impl(context, error_message):
     assert_same_embed_text(embed, context.latest_fetched.embeds[0])
 
 
-@step("team joining emojis reacted by bot")
+@then("team joining emojis reacted by bot")
 def step_impl(context):
     message = context.latest_fetched
     assert "\U0001F3AE" in message.test_reactions
     assert "\U0001F441" in message.test_reactions
+
+
+@when("user {user_id} reacts with {reaction_string}")
+@async_run_until_complete
+async def step_impl(context, user_id, reaction_string):
+    guild = create_mock_guild(1)
+    user = create_mock_author(user_id, guild)
+    reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
+    await context.client.dispatch("reaction_add", reaction, user)
+
+
+@then("embed edited to have fields")
+def step_impl(context):
+    embed = parse_embed_from_table(context.table)
+    assert_same_embed_text(embed, context.latest_fetched.embeds[0])

@@ -26,8 +26,8 @@ class TestUserNicknameService(UnittestBase):
             mock_member.display_name = "Test_nick"
             mock_get.return_value = mock_member
             mock_id = self.id_generator.generate_viable_id()
-            mock_context = MagicMock()
-            actual_name = self.service.get_name(mock_context, mock_id)
+            mock_guild = MagicMock()
+            actual_name = self.service.get_name(mock_guild, mock_id)
             self.assertEqual(mock_member.display_name, actual_name)
 
     def test_get_name_is_cached(self):
@@ -36,9 +36,9 @@ class TestUserNicknameService(UnittestBase):
             mock_member.display_name = "Test_nick"
             mock_get.return_value = mock_member
             mock_id = self.id_generator.generate_viable_id()
-            mock_context = MagicMock()
-            self.service.get_name(mock_context, mock_id)
-            self.service.get_name(mock_context, mock_id)
+            mock_guild = MagicMock()
+            self.service.get_name(mock_guild, mock_id)
+            self.service.get_name(mock_guild, mock_id)
             mock_get.assert_called_once()
 
 
