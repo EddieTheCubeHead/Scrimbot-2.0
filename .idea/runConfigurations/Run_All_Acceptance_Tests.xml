@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Acceptance Tests" type="PyBehaveRunConfigurationType" factoryName="Behave">
+  <configuration default="false" name="Run All Acceptance Tests" type="PyBehaveRunConfigurationType" factoryName="Behave">
     <module name="scrimbot2.0" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
