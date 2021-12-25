@@ -1,16 +1,9 @@
 __version__ = "ver"
 __author__ = "Eetu Asikainen"
 
-import itertools
-import os
-import re
-import unittest
 from unittest.mock import MagicMock
 
-import discord
-
 from Bot.Converters.Helpers.ChannelGroupParser import ChannelGroupParser
-from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Bot.Converters.VoiceChannelGroupConverter import VoiceChannelGroupConverter, DO_CONVERSION_STRINGS

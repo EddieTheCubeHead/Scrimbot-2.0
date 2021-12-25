@@ -20,9 +20,9 @@ def parse_embed_from_table(table: Table) -> Embed:
 
     for field in table[field_start:]:
         if field[0] == "Footer":
-            embed.set_footer(text=field[1])
+            embed.set_footer(text=field[1].replace("\\", ""))
             break
-        embed.add_field(name=field[0], value=field[1])
+        embed.add_field(name=field[0].replace("\\", ""), value=field[1].replace("\\", ""))
 
     return embed
 

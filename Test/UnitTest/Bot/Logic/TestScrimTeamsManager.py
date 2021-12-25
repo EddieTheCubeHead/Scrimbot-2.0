@@ -60,14 +60,14 @@ class TestScrimTeamsManager(UnittestBase):
 
     def test_init_given_team_count_zero_then_internal_error_raised(self):
         mock_game = _create_mock_game(5, 5, 0)
-        expected_exception = BotBaseInternalClientException("Tried to initialize a teams manager for a game with less than 1 "
-                                                      "teams.")
+        expected_exception = BotBaseInternalClientException("Tried to initialize a teams manager for a game with less"
+                                                            " than 1 teams.")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game)
 
     def test_init_given_team_min_size_larger_than_max_size_when_max_size_not_zero_then_internal_error_raised(self):
         mock_game = _create_mock_game(5, 3, 1)
-        expected_exception = BotBaseInternalClientException("Tried to initialize a teams manager for a game with smaller team"
-                                                      " max size than team min size.")
+        expected_exception = BotBaseInternalClientException("Tried to initialize a teams manager for a game with "
+                                                            "smaller team max size than team min size.")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game)
 
     def test_init_given_team_min_size_larger_than_max_size_when_unlimited_max_size_then_init_successful(self):

@@ -15,7 +15,6 @@ class User(DataClass):
 
     user_id = Column(Integer, primary_key=True)
     global_rights_level = Column(Integer, default=0)
-    name = Column(String, nullable=False)
 
     guild_memberships = relationship("GuildMember", back_populates="user")
     elos = relationship("UserElo", back_populates="user")

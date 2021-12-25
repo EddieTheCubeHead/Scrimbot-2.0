@@ -65,7 +65,7 @@ class TestScrimEmbedBuilder(EmbedUnittest):
         actual = self.builder.build(self.context, self.scrim_manager)
         self._assert_game_fields(actual)
         self.assertEqual("Status", actual.title)
-        self.assertEqual(f"Looking for players, {self.mock_game.team_count * self.mock_game.min_team_size} more "
+        self.assertEqual(f"Looking for players, {self.mock_game.team_count * self.mock_game.min_team_size - 2} more "
                          f"required.", actual.description)
         self._assert_correct_fields(actual, ("Participants", "<#1>\n<#2>"),
                                             ("Spectators", "_empty_"))
@@ -78,7 +78,7 @@ class TestScrimEmbedBuilder(EmbedUnittest):
         actual = self.builder.build(self.context, self.scrim_manager)
         self._assert_game_fields(actual)
         self.assertEqual("Status", actual.title)
-        self.assertEqual(f"Looking for players, {self.mock_game.team_count * self.mock_game.min_team_size} more "
+        self.assertEqual(f"Looking for players, {self.mock_game.team_count * self.mock_game.min_team_size - 2} more "
                          f"required.", actual.description)
         self._assert_correct_fields(actual, ("Participants", "<#1>\n<#2>", True),
                                             ("Spectators", "_empty_", True),

@@ -32,7 +32,8 @@ class ScrimEmbedBuilder(ResponseBuilder[ScrimManager]):
     def build(self, ctx: Context, displayable: ScrimManager) -> Embed:
         game = displayable.teams_manager.game
         min_players = game.team_count * game.min_team_size
-        embed = Embed(title="Status", description=f"Looking for players, {min_players} more required.",
+        required_players = min_players - len(displayable.teams_manager.get_standard_teams()[0].members)
+        embed = Embed(title="Status", description=f"Looking for players, {required_players} more required.",
                       color=game.colour)
         self._build_fields(embed, displayable)
         embed.set_author(name=f"{game.name} scrim", icon_url=game.icon)

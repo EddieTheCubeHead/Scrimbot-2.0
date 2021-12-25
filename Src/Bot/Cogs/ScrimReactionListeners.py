@@ -4,7 +4,9 @@ __author__ = "Eetu Asikainen"
 from discord import Reaction, Member, DiscordException
 from discord.ext import commands
 
+from Bot.Converters.UserConverter import UserConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from Bot.DataClasses.User import User
 from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
 from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
@@ -26,9 +28,11 @@ class ScrimReactionListeners(commands.Cog):
     """
 
     @BotDependencyInjector.inject
-    def __init__(self, scrim_manager: ActiveScrimsManager, embed_builder: ScrimEmbedBuilder):
+    def __init__(self, scrim_manager: ActiveScrimsManager, embed_builder: ScrimEmbedBuilder,
+                 user_converter: UserConverter):
         self.scrim_manager = scrim_manager
         self.embed_builder = embed_builder
+        self.user_converter = user_converter
 
     @commands.Cog.listener("on_reaction_add")
     async def scrim_reaction_add_listener(self, react: Reaction, user: Member):
@@ -51,7 +55,8 @@ class ScrimReactionListeners(commands.Cog):
 
         try:
             if react.emoji == "\U0001F3AE" and scrim.state.name is ScrimState.LFP.name:
-                scrim.teams_manager.add_player(ScrimTeamsManager.PARTICIPANTS, user)
+                scrim.teams_manager.add_player(ScrimTeamsManager.PARTICIPANTS,
+                                               self.user_converter.get_user(user.id))
 
             elif react.emoji == "\U0001F441" and scrim.state == ScrimState.LFP:
                 await scrim.add_spectator(user)

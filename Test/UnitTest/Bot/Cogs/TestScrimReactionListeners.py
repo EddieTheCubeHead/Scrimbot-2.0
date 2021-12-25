@@ -24,7 +24,8 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         self.scrim = MagicMock()
         self.active_scrims_manager.try_get_scrim = self.get_scrim
         self.embed_builder = AsyncMock()
-        self.cog = ScrimReactionListeners(self.active_scrims_manager, self.embed_builder)
+        self.user_converter = MagicMock()
+        self.cog = ScrimReactionListeners(self.active_scrims_manager, self.embed_builder, self.user_converter)
         self.cog._inject(MagicMock())
 
     def get_scrim(self, channel_id):
@@ -35,9 +36,12 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         mock_message.id = self.id_generator.generate_viable_id()
         players_joining_reaction = Reaction(data={}, message=mock_message, emoji="\U0001F3AE")
         self.scrim.state = ScrimState.LFP
+        mock_member = MagicMock()
+        mock_member.bot = False
+        mock_member.id = self.id_generator.generate_viable_id()
         mock_user = MagicMock()
-        mock_user.bot = False
-        await self.cog.scrim_reaction_add_listener(players_joining_reaction, mock_user)
+        self.user_converter.get_user.return_value = mock_user
+        await self.cog.scrim_reaction_add_listener(players_joining_reaction, mock_member)
         self.scrim.teams_manager.add_player.assert_called_with(ScrimTeamsManager.PARTICIPANTS, mock_user)
         self.embed_builder.edit.assert_called_with(mock_message, displayable=self.scrim)
 

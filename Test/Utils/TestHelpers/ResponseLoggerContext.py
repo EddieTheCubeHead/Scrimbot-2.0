@@ -21,7 +21,9 @@ class LoggedMessage(Message):
         self.test_reactions.append(emoji)
 
     async def edit(self, **fields):
-        ResponseLoggerContext.add_sent(self.id, self)
+        self.content = fields.pop("content", self.content)
+        self.embeds = [fields.pop("embed", self.embeds.pop(0) or [])]
+        ResponseLoggerContext.add_sent(self.id, self, force_newest=True)
 
 
 class ResponseLoggerContext(ScrimContext):
@@ -46,7 +48,11 @@ class ResponseLoggerContext(ScrimContext):
         return message
 
     @classmethod
-    def add_sent(cls, message_id: int, message: Message):
+    def add_sent(cls, message_id: int, message: Message, *, force_newest=False):
+        if force_newest:
+            cls.sent_dict.pop(message_id)
+            if cls.dict_index:
+                cls.dict_index -= 1
         cls.sent_dict[message_id] = message
 
     @classmethod

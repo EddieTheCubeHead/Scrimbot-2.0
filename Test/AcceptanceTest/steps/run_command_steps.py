@@ -69,6 +69,7 @@ async def step_impl(context):
 @then("error received with message '{error_message}'")
 @async_run_until_complete
 async def step_impl(context, error_message):
+    error_message = error_message.replace("\\", "")
     embed = create_error_embed(error_message, context.latest_command)
     context.latest_fetched = ResponseLoggerContext.get_oldest()
     assert_same_embed_text(embed, context.latest_fetched.embeds[0])
@@ -97,7 +98,7 @@ async def step_impl(context, user_id, reaction_string):
     guild = create_mock_guild(1)
     user = create_mock_author(user_id, guild)
     reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
-    await context.client.dispatch("reaction_add", reaction, user)
+    context.client.dispatch("reaction_add", reaction, user)
 
 
 @then("embed edited to have fields")
