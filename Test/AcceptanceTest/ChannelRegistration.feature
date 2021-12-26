@@ -1,5 +1,5 @@
-# Created by EddieTheCubeHead at 05/09/2021
-Feature: Channel registration
+# Created by EddieTheCubeHead at 27/12/2021
+Feature: Channel registration rewrite
   # Bot should be able to register channels to be used as scrim setup/voice channels
   # Channel registration can be done without arguments
   #  - This creates a scrim capable text channel with no associated voice channels
@@ -19,111 +19,89 @@ Feature: Channel registration
   #  - This exception is displayed in an embed like the rest of exceptions of the bot
 
   Scenario: Registering a channel with no voice channels
-    When ';register' is called with
-      | user | channel | guild |
-      | 1    | 1       | 1     |
-    Then channel '1' registered
+    When ;register is called
+    Then channel registered
     And embed received with fields
-      | name                                       | value         |
-      | New scrim channel registered successfully! | Channel data: |
-      | Text channel                               | <#1>          |
+      | name                                       | value           |
+      | New scrim channel registered successfully! | Channel data:   |
+      | Text channel                               | <#{channel_id}> |
 
   Scenario: Registering a channel that is already registered
-    When ';register' is called with
-      | user | channel | guild |
-      | 1    | 18      | 5     |
-    And ';register' is called with
-      | user | channel | guild |
-      | 1    | 18      | 5     |
+    When ;register is called
+    And ;register is called
     Then embed received with fields
-      | name                                       | value         |
-      | New scrim channel registered successfully! | Channel data: |
-      | Text channel                               | <#18>         |
-    And error and help received with message 'Text channel <\#18> is already registered for scrim usage.'
+      | name                                       | value           |
+      | New scrim channel registered successfully! | Channel data:   |
+      | Text channel                               | <#{channel_id}> |
+    And error and help received with message
+      """
+      Text channel <#{channel_id}> is already registered for scrim usage.
+      """
 
   Scenario: Registering a channel with a lobby channel and two team voice channels
-    Given exists discord voice channels
-      | guild | channel |
-      | 1     | 3       |
-      | 1     | 4       |
-      | 1     | 5       |
-    When ';register l:3 4 5' is called with
-      | user | channel | guild |
-      | 1    | 2       | 1     |
+    Given exists 3 voice channels
+    When ;register l:{voice_1_id} {voice_2_id} {voice_3_id} is called
     Then embed received with fields
-      | name                                       | value         |
-      | New scrim channel registered successfully! | Channel data: |
-      | Text channel                               | <#2>          |
-      | Voice lobby                                | <#3>          |
-      | Team 1 voice                               | <#4>          |
-      | Team 2 voice                               | <#5>          |
+      | name                                       | value           |
+      | New scrim channel registered successfully! | Channel data:   |
+      | Text channel                               | <#{channel_id}> |
+      | Voice lobby                                | <#{voice_1_id}> |
+      | Team 1 voice                               | <#{voice_2_id}> |
+      | Team 2 voice                               | <#{voice_3_id}> |
 
   Scenario: Registering a channel with a reserved voice channel
-    Given exists discord voice channels
-      | guild | channel |
-      | 4     | 19      |
-      | 4     | 20      |
-      | 4     | 21      |
-      | 4     | 22      |
-      | 4     | 23      |
-    When ';register 21 22' is called with
-      | user | channel | guild |
-      | 1    | 19      | 4     |
-    And ';register 22 23' is called with
-      | user | channel | guild |
-      | 1    | 20      | 4     |
+    Given exists 3 voice channels
+    When ;register {voice_1_id} {voice_2_id} is called
+    And ;register {voice_2_id} {voice_3_id} is called from another channel
     Then embed received with fields
-      | name                                       | value         |
-      | New scrim channel registered successfully! | Channel data: |
-      | Text channel                               | <#19>         |
-      | Team 1 voice                               | <#21>         |
-      | Team 2 voice                               | <#22>         |
-    And error and help received with message 'Voice channel <\#22> is already associated with scrim channel <\#19>.'
+      | name                                       | value           |
+      | New scrim channel registered successfully! | Channel data:   |
+      | Text channel                               | <#{channel_id}> |
+      | Team 1 voice                               | <#{voice_1_id}> |
+      | Team 2 voice                               | <#{voice_2_id}> |
+    And error and help received with message
+      """
+      Voice channel <#{voice_2_id}> is already associated with scrim channel <#{channel_id}>.
+      """
 
   Scenario: Registering a channel in a group with automatic voice channel detection, lobby channel and two team channels
-    Given exists channel group '6' in guild '2'
-      | channel type | channel name | channel id |
-      | text         | scrim-1      | 7          |
-      | voice        | Lobby        | 8          |
-      | voice        | Team 1       | 9          |
-      | voice        | Team 2       | 10         |
-    When ';register auto' is called with
-      | user | channel | guild |
-      | 1    | 7       | 2     |
+    Given exists channel group
+      | channel type | channel name |
+      | text         | scrim-1      |
+      | voice        | Lobby        |
+      | voice        | Team 1       |
+      | voice        | Team 2       |
+    When ;register auto is called
     Then embed received with fields
-      | name                                       | value         |
-      | New scrim channel registered successfully! | Channel data: |
-      | Text channel                               | <#7>          |
-      | Voice lobby                                | <#8>          |
-      | Team 1 voice                               | <#9>          |
-      | Team 2 voice                               | <#10>         |
+      | name                                       | value           |
+      | New scrim channel registered successfully! | Channel data:   |
+      | Text channel                               | <#{channel_id}> |
+      | Voice lobby                                | <#{voice_1_id}> |
+      | Team 1 voice                               | <#{voice_2_id}> |
+      | Team 2 voice                               | <#{voice_3_id}> |
 
   Scenario: Registering a channel in a group with automatic voice channel detection and two channels
-    Given exists channel group '14' in guild '3'
-      | channel type | channel name | channel id |
-      | text         | scrim-1      | 11         |
-      | voice        | Radiant      | 12         |
-      | voice        | Dire         | 13         |
-    When ';register auto' is called with
-      | user | channel | guild |
-      | 1    | 11      | 3     |
+    Given exists channel group
+      | channel type | channel name |
+      | text         | scrim-1      |
+      | voice        | Radiant      |
+      | voice        | Dire         |
+    When ;register auto is called
     Then embed received with fields
-      | name                                       | value         |
-      | New scrim channel registered successfully! | Channel data: |
-      | Text channel                               | <#11>         |
-      | Team 1 voice                               | <#12>         |
-      | Team 2 voice                               | <#13>         |
+      | name                                       | value           |
+      | New scrim channel registered successfully! | Channel data:   |
+      | Text channel                               | <#{channel_id}> |
+      | Team 1 voice                               | <#{voice_1_id}> |
+      | Team 2 voice                               | <#{voice_2_id}> |
 
   Scenario: Registering a channel in a group with automatic voice channel detection and one channel
-    Given exists channel group '15' in guild '1'
-      | channel type | channel name | channel id |
-      | text         | scrim-1      | 16         |
-      | voice        | Scrimmage    | 17         |
-    When ';register auto' is called with
-      | user | channel | guild |
-      | 5    | 16      | 1     |
+    Given exists channel group
+      | channel type | channel name |
+      | text         | scrim-1      |
+      | voice        | Scrimmage    |
+    When ;register auto is called
     Then embed received with fields
-      | name                                       | value         |
-      | New scrim channel registered successfully! | Channel data: |
-      | Text channel                               | <#16>         |
-      | Voice lobby                                | <#17>         |
+      | name                                       | value           |
+      | New scrim channel registered successfully! | Channel data:   |
+      | Text channel                               | <#{channel_id}> |
+      | Voice lobby                                | <#{voice_1_id}> |

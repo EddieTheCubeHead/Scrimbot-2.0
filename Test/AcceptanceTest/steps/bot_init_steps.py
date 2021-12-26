@@ -45,7 +45,7 @@ def step_impl(context):
         assert(cog_message in context.print_capture.getvalue().splitlines())
 
 
-@then("bot connects")
+@then("connection to discord is established successfully")
 def step_impl(context):
     assert("Attempting a connection to Discord..." in context.print_capture.getvalue().splitlines())
     assert(f"Successfully logged in as ScrimBot2.0, with version {__version__}"

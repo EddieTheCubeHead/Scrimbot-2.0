@@ -1,6 +1,8 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+import os
+
 from discord import Embed
 from discord.ext.commands import Context
 from discord.utils import remove_markdown
@@ -16,7 +18,7 @@ from Bot.DataClasses.ScrimState import ScrimState
 
 def _build_team_participants(team: Team):
     if team.members:
-        return "\n".join([f"<#{member.user_id}>" for member in team.members])
+        return os.linesep.join([f"<#{member.user_id}>" for member in team.members])
     return "_empty_"
 
 

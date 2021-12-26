@@ -7,10 +7,10 @@ from typing import List
 
 class TestIdGenerator:
 
-    def __init__(self):
+    def __init__(self, valid_start: int = 0, invalid_start: int = 0):
         self.generated: set = set()
-        self._viable_iterator = 0
-        self._nonviable_iterator = 0
+        self._viable_iterator = valid_start
+        self._nonviable_iterator = invalid_start
         self._viable_generator = self._generate_viable()
         self._nonviable_generator = self._generate_nonviable()
         self._generator_lock: threading.Lock = threading.Lock()
@@ -45,3 +45,6 @@ class TestIdGenerator:
             raise Exception("ID generator generated an already existing id!")
         self.generated.add(base)
         return base
+
+
+GLOBAL_ID_GENERATOR = TestIdGenerator(100)

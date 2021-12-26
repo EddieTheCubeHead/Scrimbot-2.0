@@ -1,7 +1,7 @@
 __version__ = "ver"
 __author__ = "Eetu Asikainen"
 
-import unittest
+import os
 from unittest.mock import MagicMock
 
 from discord import Embed, Color
@@ -16,8 +16,8 @@ from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
-def _create_mock_player(id):
-    return User(user_id=id)
+def _create_mock_player(user_id):
+    return User(user_id=user_id)
 
 
 class TestScrimEmbedBuilder(EmbedUnittest):
@@ -67,7 +67,7 @@ class TestScrimEmbedBuilder(EmbedUnittest):
         self.assertEqual("Status", actual.title)
         self.assertEqual(f"Looking for players, {self.mock_game.team_count * self.mock_game.min_team_size - 2} more "
                          f"required.", actual.description)
-        self._assert_correct_fields(actual, ("Participants", "<#1>\n<#2>"),
+        self._assert_correct_fields(actual, ("Participants", f"<#1>{os.linesep}<#2>"),
                                             ("Spectators", "_empty_"))
         self.assertEqual("To join players react \U0001F3AE To join spectators react \U0001F441", actual.footer.text)
 
@@ -80,7 +80,7 @@ class TestScrimEmbedBuilder(EmbedUnittest):
         self.assertEqual("Status", actual.title)
         self.assertEqual(f"Looking for players, {self.mock_game.team_count * self.mock_game.min_team_size - 2} more "
                          f"required.", actual.description)
-        self._assert_correct_fields(actual, ("Participants", "<#1>\n<#2>", True),
+        self._assert_correct_fields(actual, ("Participants", f"<#1>{os.linesep}<#2>", True),
                                             ("Spectators", "_empty_", True),
                                             ("Queue", "<#3>", True))
         self.assertEqual("To join players react \U0001F3AE To join spectators react \U0001F441", actual.footer.text)
@@ -94,7 +94,7 @@ class TestScrimEmbedBuilder(EmbedUnittest):
         self.assertEqual(f"Looking for players, {self.mock_game.team_count * self.mock_game.min_team_size} more "
                          f"required.", actual.description)
         self._assert_correct_fields(actual, ("Participants", "_empty_", True),
-                                    ("Spectators", "<#1>\n<#2>", True))
+                                    ("Spectators", f"<#1>{os.linesep}<#2>", True))
         self.assertEqual("To join players react \U0001F3AE To join spectators react \U0001F441", actual.footer.text)
 
     def mock_standard_teams(self):

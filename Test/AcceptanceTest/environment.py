@@ -8,6 +8,7 @@ from Database.Core.MasterConnection import MasterConnection
 from Utils.TestHelpers.DiscordPatcher import DiscordPatcher
 from Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 from Utils.TestHelpers.ResponseMessageCatcher import ResponseMessageCatcher
+from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 def before_feature(context, feature):
@@ -17,6 +18,10 @@ def before_feature(context, feature):
         context.client.load_games()
         context.client.setup_cogs()
         context.patcher = DiscordPatcher()
+
+
+def before_scenario(context, scenario):
+    context.discord_ids = {}
 
 
 def _setup_bot(context):

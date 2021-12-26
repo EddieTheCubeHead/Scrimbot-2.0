@@ -1,11 +1,22 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from behave.model import Table
+from behave.runner import Context
 from discord import Embed
 
+from Utils.TestHelpers.id_parser import insert_ids
 
-def parse_embed_from_table(table: Table) -> Embed:
+
+def _process_field(field, context) -> list[str]:
+    fields = []
+    for part in field:
+        processed = insert_ids(context, part)
+        fields.append(processed)
+    return fields
+
+
+def parse_embed_from_table(context: Context) -> Embed:
+    table = context.table
     if not table:
         raise Exception("Test result embed data table should contain at least one data row!")
 
@@ -18,18 +29,19 @@ def parse_embed_from_table(table: Table) -> Embed:
     else:
         embed = Embed(title=table[0][0], description=table[0][1])
 
-    for field in table[field_start:]:
-        if field[0] == "Footer":
-            embed.set_footer(text=field[1].replace("\\", ""))
+    for row in table[field_start:]:
+        processed_field = _process_field(row, context)
+        if processed_field[0] == "Footer":
+            embed.set_footer(text=processed_field[1])
             break
-        embed.add_field(name=field[0].replace("\\", ""), value=field[1].replace("\\", ""))
+        embed.add_field(name=processed_field[0], value=processed_field[1])
 
     return embed
 
 
-def create_error_embed(error_message: str, command: str, help_portion: str = None) -> Embed:
+def create_error_embed(error_message: str, command: str, context: Context, help_portion: str = None) -> Embed:
     embed = Embed(title="ScrimBot Error", description=f"An error happened while processing command '{command}'")
-    embed.add_field(name="Error message:", value=error_message)
+    embed.add_field(name="Error message:", value=insert_ids(context, error_message))
     if help_portion:
         embed.add_field(name="To get help:", value=help_portion)
     embed.set_footer(text="If you think this behaviour is unintended, please report it in the bot repository in GitHub "

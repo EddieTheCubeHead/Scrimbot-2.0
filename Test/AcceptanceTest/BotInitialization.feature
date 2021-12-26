@@ -7,4 +7,4 @@ Feature: Bot initialization
   Scenario: Add cogs and connect
     When bot is started
     Then cogs are added
-    And bot connects
+    And connection to discord is established successfully
