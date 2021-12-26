@@ -19,26 +19,12 @@ from Utils.TestHelpers.ResponseMessageCatcher import ResponseMessageCatcher
 from Utils.TestHelpers.test_utils import get_cogs_messages
 
 
-@given("an uninitialized bot")
-def step_impl(context):
-    config = Config()
-    logger = BotClientLogger(config)
-    BotDependencyInjector.dependencies[MasterConnection] = MasterConnection(config, ":memory:")
-    ResponseLoggerContext.reset()
-    context.client = ScrimBotClient(config, logger, ResponseMessageCatcher())
-
-
-@given("an initialized bot")
-def step_impl(context):
+def _setup_bot(context):
     config = Config()
     logger = BotClientLogger(config)
     BotDependencyInjector.dependencies[MasterConnection] = MasterConnection(config, ":memory:")
     context.client = ScrimBotClient(config, logger, ResponseMessageCatcher())
     ResponseLoggerContext.reset()
-    context.client.setup_logging()
-    context.client.load_games()
-    context.client.setup_cogs()
-    context.patcher = DiscordPatcher()
 
 
 @when("bot is started")

@@ -2,8 +2,7 @@
 Feature: Scrim and scrim team leaving/joining with reactions
 
   Scenario: Joining a scrim with reactions
-    Given An initialized bot
-    And a scrim on channel 27
+    Given a scrim on channel 27
     When user 2 reacts with 🎮
     Then embed edited to have fields
       | name         | value                                               |

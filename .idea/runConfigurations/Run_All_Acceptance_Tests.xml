@@ -10,7 +10,7 @@
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
     <WHAT_TO_RUN WHAT_TO_RUN="$PROJECT_DIR$/Test/AcceptanceTest" />
-    <option name="ADDITIONAL_ARGS" value="--tags=-long_test --capture" />
+    <option name="ADDITIONAL_ARGS" value="--capture" />
     <method v="2" />
   </configuration>
 </component>

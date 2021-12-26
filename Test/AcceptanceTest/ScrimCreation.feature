@@ -4,8 +4,7 @@ Feature: Scrim creation
   #   - If the channel that scrim is trying to be created on is not registered for scrims a warning is given
 
   Scenario: Basic scrim creation
-    Given an initialized bot
-    And channel '23' registered for scrims in guild '1'
+    Given channel '23' registered for scrims in guild '1'
     When ';scrim dota' is called with
       | user | channel | guild |
       | 1    | 23      | 1     |
@@ -21,15 +20,13 @@ Feature: Scrim creation
     And team joining emojis reacted by bot
 
   Scenario: Trying to create a scrim on an unregistered channel
-    Given an initialized bot
     When ';scrim cs' is called with
       | user | channel | guild |
       | 1    | 24      | 4     |
     Then error and help received with message 'Cannot create a scrim on channel <\#24> because it is not registered for scrim usage.'
     
   Scenario: Trying to create a scrim on a channel that already houses a scrim
-    Given an initialized bot
-    And channel '25' registered for scrims in guild '1'
+    Given channel '25' registered for scrims in guild '1'
     When ';scrim dota' is called with
       | user | channel | guild |
       | 1    | 25      | 1     |

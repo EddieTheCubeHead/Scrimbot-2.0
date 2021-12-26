@@ -19,7 +19,6 @@ Feature: Channel registration
   #  - This exception is displayed in an embed like the rest of exceptions of the bot
 
   Scenario: Registering a channel with no voice channels
-    Given an initialized bot
     When ';register' is called with
       | user | channel | guild |
       | 1    | 1       | 1     |
@@ -30,7 +29,6 @@ Feature: Channel registration
       | Text channel                               | <#1>          |
 
   Scenario: Registering a channel that is already registered
-    Given an initialized bot
     When ';register' is called with
       | user | channel | guild |
       | 1    | 18      | 5     |
@@ -44,8 +42,7 @@ Feature: Channel registration
     And error and help received with message 'Text channel <\#18> is already registered for scrim usage.'
 
   Scenario: Registering a channel with a lobby channel and two team voice channels
-    Given an initialized bot
-    And exists discord voice channels
+    Given exists discord voice channels
       | guild | channel |
       | 1     | 3       |
       | 1     | 4       |
@@ -62,8 +59,7 @@ Feature: Channel registration
       | Team 2 voice                               | <#5>          |
 
   Scenario: Registering a channel with a reserved voice channel
-    Given an initialized bot
-    And exists discord voice channels
+    Given exists discord voice channels
       | guild | channel |
       | 4     | 19      |
       | 4     | 20      |
@@ -85,8 +81,7 @@ Feature: Channel registration
     And error and help received with message 'Voice channel <\#22> is already associated with scrim channel <\#19>.'
 
   Scenario: Registering a channel in a group with automatic voice channel detection, lobby channel and two team channels
-    Given an initialized bot
-    And exists channel group '6' in guild '2'
+    Given exists channel group '6' in guild '2'
       | channel type | channel name | channel id |
       | text         | scrim-1      | 7          |
       | voice        | Lobby        | 8          |
@@ -104,8 +99,7 @@ Feature: Channel registration
       | Team 2 voice                               | <#10>         |
 
   Scenario: Registering a channel in a group with automatic voice channel detection and two channels
-    Given an initialized bot
-    And exists channel group '14' in guild '3'
+    Given exists channel group '14' in guild '3'
       | channel type | channel name | channel id |
       | text         | scrim-1      | 11         |
       | voice        | Radiant      | 12         |
@@ -121,8 +115,7 @@ Feature: Channel registration
       | Team 2 voice                               | <#13>         |
 
   Scenario: Registering a channel in a group with automatic voice channel detection and one channel
-    Given an initialized bot
-    And exists channel group '15' in guild '1'
+    Given exists channel group '15' in guild '1'
       | channel type | channel name | channel id |
       | text         | scrim-1      | 16         |
       | voice        | Scrimmage    | 17         |
