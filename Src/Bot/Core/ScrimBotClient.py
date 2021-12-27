@@ -5,6 +5,7 @@ import asyncio
 import logging
 import os
 from pathlib import Path
+from sys import argv
 
 import discord
 from discord.ext import commands

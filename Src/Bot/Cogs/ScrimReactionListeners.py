@@ -96,16 +96,18 @@ class ScrimReactionListeners(commands.Cog):
         if user.bot:
             return
 
-        scrim = await ScrimChannel.get_from_reaction(react)
+        scrim = self.scrim_manager.try_get_scrim(react.message.channel.id)
         if not scrim:
             return
 
         try:
-            if react.emoji == "\U0001F3AE" and scrim.state == ScrimState.LFP:
-                await scrim.remove_player(user)
+            if react.emoji == "\U0001F3AE" and scrim.state.name is ScrimState.LFP.name:
+                scrim.teams_manager.remove_player(ScrimTeamsManager.PARTICIPANTS,
+                                                  self.user_converter.get_user(user.id))
 
-            elif react.emoji == "\U0001F441" and scrim.state == ScrimState.LFP:
-                await scrim.remove_spectator(user)
+            elif react.emoji == "\U0001F441" and scrim.state.name is ScrimState.LFP.name:
+                scrim.teams_manager.remove_player(ScrimTeamsManager.SPECTATORS,
+                                                  self.user_converter.get_user(user.id))
 
             elif (react.emoji == "1\u20E3" or react.emoji == "2\u20E3") and scrim.state == ScrimState.LOCKED:
                 await scrim.set_teamless(user)
@@ -115,6 +117,8 @@ class ScrimReactionListeners(commands.Cog):
 
         except DiscordException as exception:
             await self._client.handle_react_internal_error(react, user, exception)
+
+        await self.embed_builder.edit(react.message, displayable=scrim)
 
 
 def setup(client: ScrimBotClient):

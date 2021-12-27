@@ -3,13 +3,10 @@ __author__ = "Eetu Asikainen"
 
 import asyncio
 import io
-import logging
 import os
 import unittest
 from logging import DEBUG
 from unittest.mock import MagicMock, patch, AsyncMock, call
-
-from discord.ext.commands import CommandNotFound
 
 from Bot.Exceptions.BotBaseException import BotBaseException
 from Bot.Exceptions.BotBaseInternalSystemException import BotBaseInternalSystemException

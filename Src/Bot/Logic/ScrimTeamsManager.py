@@ -4,11 +4,9 @@ __author__ = "Eetu Asikainen"
 from typing import List, Dict, Union, Optional
 
 import discord
-from discord.ext.commands import Context
 
 from Bot.DataClasses.Game import Game
 from Bot.DataClasses.Team import Team
-from Bot.DataClasses.TeamMember import TeamMember
 from Bot.DataClasses.User import User
 from Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
@@ -19,8 +17,8 @@ def _assert_valid_game(game):
     if game.team_count < 1:
         raise BotBaseInternalClientException("Tried to initialize a teams manager for a game with less than 1 teams.")
     if game.max_team_size and game.min_team_size > game.max_team_size:
-        raise BotBaseInternalClientException("Tried to initialize a teams manager for a game with smaller team max size than"
-                                       " team min size.")
+        raise BotBaseInternalClientException("Tried to initialize a teams manager for a game with smaller team max "
+                                             "size than team min size.")
 
 
 def _is_full(team):
@@ -36,14 +34,14 @@ def has_all_players_in_guild_voice_chat(team: Team):
 
 
 async def _move_team_to_voice(team):
-    for player in team.players:
+    for player in team.members:
         if player.voice:
             await player.move_to(team.voice_channel, reason="Setting up a scrim.")
 
 
-def _assert_valid_removal(ctx, player, team):
-    if player not in team.members:
-        raise BotInvalidPlayerRemoval(ctx, player, team)
+def _assert_valid_removal(player, team):
+    if player.user_id not in [member.user_id for member in team.members]:
+        raise BotInvalidPlayerRemoval(player, team)
 
 
 class ScrimTeamsManager:
@@ -188,28 +186,31 @@ class ScrimTeamsManager:
     def _is_full_game_team(self, team):
         return not self.is_reserved_name(team.name) and _is_full(team)
 
-    def remove_player(self, ctx: Context, team: Union[int, str], player: discord.member):
-        self._remove_from_team(ctx, self._get_team(team), player)
+    def remove_player(self, team: Union[int, str], player: User):
+        self._remove_from_team(self._get_team(team), player)
 
-    def _remove_from_team(self, ctx: Context, team: Team, player: discord.member):
-        _assert_valid_removal(ctx, player, team)
-        if self._fill_participants_from_queue(team):
+    def _remove_from_team(self, team: Team, player: User):
+        _assert_valid_removal(player, team)
+        if self._should_fill_participants_from_queue(team):
             team.members.append(self._teams[self.QUEUE].members.pop(0))
-        team.members.remove(player)
+        for member in team.members:
+            if member.user_id == player.user_id:
+                team.members.remove(member)
+                break
 
-    def _fill_participants_from_queue(self, team):
+    def _should_fill_participants_from_queue(self, team: Team) -> bool:
         return self._is_full_participant_team(team) and len(self._teams[self.QUEUE].members) > 0
 
-    def set_team(self, ctx: Context, team: Union[int, str], player: discord.Member):
-        if not self._blind_remove(ctx, player):
-            raise BotBaseInternalClientException(f"Tried setting team for user '{player.display_name}' who is not part of "
-                                           f"the scrim.")
+    def set_team(self, team: Union[int, str], player: User):
+        if not self._blind_remove(player):
+            raise BotBaseInternalClientException(f"Tried setting team for user '{player.display_name}' who is not part"
+                                                 f" of the scrim.")
         self.add_player(team, player)
 
-    def _blind_remove(self, ctx: Context, player: discord.Member) -> bool:
+    def _blind_remove(self, player: User) -> bool:
         for team in self._teams.values():
             if player in team.members:
-                self._remove_from_team(ctx, team, player)
+                self._remove_from_team(team, player)
                 return True
         return False
 

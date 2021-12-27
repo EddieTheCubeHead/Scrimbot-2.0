@@ -130,6 +130,20 @@ async def _add_reaction(context, guild, reaction_string, user_increment):
     context.client.dispatch("reaction_add", reaction, user)
 
 
+@when("user {user} removes reaction {reaction_string}")
+@async_run_until_complete
+async def step_impl(context, user, reaction_string):
+    guild = create_mock_guild(try_get_id(context, "guild_id"))
+    user_id = try_get_id(context, f"user_{user}_id")
+    await _remove_reaction(context, guild, reaction_string, user_id)
+
+
+async def _remove_reaction(context, guild, reaction_string, user_id):
+    user = create_mock_author(user_id, guild)
+    reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
+    context.client.dispatch("reaction_remove", reaction, user)
+
+
 @then("embed edited to have fields")
 def step_impl(context):
     embed = parse_embed_from_table(context)

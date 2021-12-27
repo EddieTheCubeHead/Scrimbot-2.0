@@ -59,3 +59,31 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         self.scrim.teams_manager.add_player.assert_called_with(ScrimTeamsManager.SPECTATORS, mock_user)
         self.embed_builder.edit.assert_called_with(mock_message, displayable=self.scrim)
 
+    async def test_on_reaction_remove_given_players_reaction_then_player_removed_and_message_edited(self):
+        mock_message = AsyncMock()
+        mock_message.id = self.id_generator.generate_viable_id()
+        players_joining_reaction = Reaction(data={}, message=mock_message, emoji="\U0001F3AE")
+        self.scrim.state = ScrimState.LFP
+        mock_member = MagicMock()
+        mock_member.bot = False
+        mock_member.id = self.id_generator.generate_viable_id()
+        mock_user = MagicMock()
+        self.user_converter.get_user.return_value = mock_user
+        await self.cog.scrim_reaction_remove_listener(players_joining_reaction, mock_member)
+        self.scrim.teams_manager.remove_player.assert_called_with(ScrimTeamsManager.PARTICIPANTS, mock_user)
+        self.embed_builder.edit.assert_called_with(mock_message, displayable=self.scrim)
+
+    async def test_on_reaction_remove_given_spectators_reaction_then_spectator_removed_and_message_edited(self):
+        mock_message = AsyncMock()
+        mock_message.id = self.id_generator.generate_viable_id()
+        players_joining_reaction = Reaction(data={}, message=mock_message, emoji="\U0001F441")
+        self.scrim.state = ScrimState.LFP
+        mock_member = MagicMock()
+        mock_member.bot = False
+        mock_member.id = self.id_generator.generate_viable_id()
+        mock_user = MagicMock()
+        self.user_converter.get_user.return_value = mock_user
+        await self.cog.scrim_reaction_remove_listener(players_joining_reaction, mock_member)
+        self.scrim.teams_manager.remove_player.assert_called_with(ScrimTeamsManager.SPECTATORS, mock_user)
+        self.embed_builder.edit.assert_called_with(mock_message, displayable=self.scrim)
+

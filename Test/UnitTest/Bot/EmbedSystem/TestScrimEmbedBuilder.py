@@ -67,7 +67,7 @@ class TestScrimEmbedBuilder(EmbedUnittest):
         self.assertEqual("Status", actual.title)
         self.assertEqual(f"Looking for players, {self.mock_game.team_count * self.mock_game.min_team_size - 2} more "
                          f"required.", actual.description)
-        self._assert_correct_fields(actual, ("Participants", f"<#1>{os.linesep}<#2>"),
+        self._assert_correct_fields(actual, ("Participants", f"<@1>{os.linesep}<@2>"),
                                             ("Spectators", "_empty_"))
         self.assertEqual("To join players react \U0001F3AE To join spectators react \U0001F441", actual.footer.text)
 
@@ -80,9 +80,9 @@ class TestScrimEmbedBuilder(EmbedUnittest):
         self.assertEqual("Status", actual.title)
         self.assertEqual(f"Looking for players, {self.mock_game.team_count * self.mock_game.min_team_size - 2} more "
                          f"required.", actual.description)
-        self._assert_correct_fields(actual, ("Participants", f"<#1>{os.linesep}<#2>", True),
+        self._assert_correct_fields(actual, ("Participants", f"<@1>{os.linesep}<@2>", True),
                                             ("Spectators", "_empty_", True),
-                                            ("Queue", "<#3>", True))
+                                            ("Queue", "<@3>", True))
         self.assertEqual("To join players react \U0001F3AE To join spectators react \U0001F441", actual.footer.text)
 
     def test_build_given_scrim_with_spectators_then_scrim_embed_with_spectators_returned(self):
@@ -94,7 +94,7 @@ class TestScrimEmbedBuilder(EmbedUnittest):
         self.assertEqual(f"Looking for players, {self.mock_game.team_count * self.mock_game.min_team_size} more "
                          f"required.", actual.description)
         self._assert_correct_fields(actual, ("Participants", "_empty_", True),
-                                    ("Spectators", f"<#1>{os.linesep}<#2>", True))
+                                    ("Spectators", f"<@1>{os.linesep}<@2>", True))
         self.assertEqual("To join players react \U0001F3AE To join spectators react \U0001F441", actual.footer.text)
 
     def mock_standard_teams(self):

@@ -1,6 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from copy import deepcopy
 
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.associationproxy import association_proxy

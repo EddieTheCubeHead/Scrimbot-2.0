@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from abc import ABC, abstractmethod
 
-from discord.ext.commands import check, Command, Context
+from discord.ext.commands import check, Context
 
 
 class CheckBase(ABC):

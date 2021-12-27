@@ -1,7 +1,6 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from discord.ext.commands import Context
 from sqlalchemy.exc import NoResultFound
 
 from Bot.Checks.CheckBase import CheckBase
