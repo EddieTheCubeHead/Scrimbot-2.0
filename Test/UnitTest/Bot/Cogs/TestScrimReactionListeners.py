@@ -45,3 +45,17 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         self.scrim.teams_manager.add_player.assert_called_with(ScrimTeamsManager.PARTICIPANTS, mock_user)
         self.embed_builder.edit.assert_called_with(mock_message, displayable=self.scrim)
 
+    async def test_on_reaction_add_given_spectator_reaction_then_user_added_to_spectators_and_message_edited(self):
+        mock_message = AsyncMock()
+        mock_message.id = self.id_generator.generate_viable_id()
+        players_joining_reaction = Reaction(data={}, message=mock_message, emoji="\U0001F441")
+        self.scrim.state = ScrimState.LFP
+        mock_member = MagicMock()
+        mock_member.bot = False
+        mock_member.id = self.id_generator.generate_viable_id()
+        mock_user = MagicMock()
+        self.user_converter.get_user.return_value = mock_user
+        await self.cog.scrim_reaction_add_listener(players_joining_reaction, mock_member)
+        self.scrim.teams_manager.add_player.assert_called_with(ScrimTeamsManager.SPECTATORS, mock_user)
+        self.embed_builder.edit.assert_called_with(mock_message, displayable=self.scrim)
+

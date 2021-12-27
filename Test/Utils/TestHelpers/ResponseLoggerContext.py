@@ -51,8 +51,6 @@ class ResponseLoggerContext(ScrimContext):
     def add_sent(cls, message_id: int, message: Message, *, force_newest=False):
         if force_newest:
             cls.sent_dict.pop(message_id)
-            if cls.dict_index:
-                cls.dict_index -= 1
         cls.sent_dict[message_id] = message
 
     @classmethod

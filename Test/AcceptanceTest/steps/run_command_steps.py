@@ -24,16 +24,6 @@ async def step_impl(context):
     ResponseLoggerContext.get_oldest()
 
 
-@given("a scrim on channel {channel_id}")
-@async_run_until_complete
-async def step_impl(context, channel_id):
-    table = [["1", channel_id, "1"]]
-    await call_command(';register', context, table)
-    await call_command(';scrim dota', context, table)
-    ResponseLoggerContext.get_oldest()
-    context.latest_fetched = ResponseLoggerContext.get_oldest()
-
-
 @given("a {game} scrim")
 @async_run_until_complete
 async def step_impl(context, game):
@@ -65,17 +55,10 @@ async def step_impl(context, command: str):
 
 
 def _create_call_ids(context, *, alternative_text_channel=False) -> list[list[str]]:
-    if not alternative_text_channel:
-        context.discord_ids["channel_id"] =\
-            context.discord_ids.pop("channel_id", GLOBAL_ID_GENERATOR.generate_viable_id())
-    else:
-        context.discord_ids["text_2_id"] = \
-            context.discord_ids.pop("text_2_id", GLOBAL_ID_GENERATOR.generate_viable_id())
-    context.discord_ids["guild_id"] = context.discord_ids.pop("guild_id", GLOBAL_ID_GENERATOR.generate_viable_id())
-    context.discord_ids["user_id"] = context.discord_ids.pop("user_id", GLOBAL_ID_GENERATOR.generate_viable_id())
-    return [[context.discord_ids["user_id"],
-             context.discord_ids["channel_id" if not alternative_text_channel else "text_2_id"],
-             context.discord_ids["guild_id"]]]
+    channel_id = try_get_id(context, "channel_id" if not alternative_text_channel else "text_2_id")
+    guild_id = try_get_id(context, "guild_id")
+    user_id = try_get_id(context, "user_id")
+    return [[user_id, channel_id, guild_id]]
 
 
 async def call_command(command, context, table):

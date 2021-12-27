@@ -58,8 +58,9 @@ class ScrimReactionListeners(commands.Cog):
                 scrim.teams_manager.add_player(ScrimTeamsManager.PARTICIPANTS,
                                                self.user_converter.get_user(user.id))
 
-            elif react.emoji == "\U0001F441" and scrim.state == ScrimState.LFP:
-                await scrim.add_spectator(user)
+            elif react.emoji == "\U0001F441" and scrim.state.name is ScrimState.LFP.name:
+                scrim.teams_manager.add_player(ScrimTeamsManager.SPECTATORS,
+                                               self.user_converter.get_user(user.id))
 
             elif react.emoji == "1\u20E3" and scrim.state == ScrimState.LOCKED:
                 await scrim.set_team_1(user)
