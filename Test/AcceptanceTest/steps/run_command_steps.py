@@ -11,7 +11,7 @@ from Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
 from Utils.TestHelpers.embed_test_helper import parse_embed_from_table, create_error_embed, assert_same_embed_text
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
-from Utils.TestHelpers.id_parser import insert_ids
+from Utils.TestHelpers.id_parser import insert_ids, get_id_increment, try_get_id
 from Utils.TestHelpers.test_utils import create_mock_guild, create_mock_author, create_mock_channel,\
     create_async_mock_message
 
@@ -121,20 +121,30 @@ def step_impl(context):
     assert "\U0001F441" in message.test_reactions
 
 
-@when("{amount} user reacts with {reaction_string}")
+@when("a user reacts with {reaction_string}")
+@async_run_until_complete
+async def step_impl(context, reaction_string):
+    await _add_reactions(1, context, reaction_string)
+
+
 @when("{amount} users react with {reaction_string}")
 @async_run_until_complete
 async def step_impl(context, amount, reaction_string):
-    guild = create_mock_guild(1)
-    user_increment = 1
-    while f"user_{user_increment}_id" in context.discord_ids:
-        user_increment += 1
-    for _ in range(int(amount)):
-        user = create_mock_author(GLOBAL_ID_GENERATOR.generate_viable_id(), guild)
-        context.discord_ids[f"user_{user_increment}_id"] = user.id
-        user_increment += 1
-        reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
-        context.client.dispatch("reaction_add", reaction, user)
+    await _add_reactions(amount, context, reaction_string)
+
+
+async def _add_reactions(amount, context, reaction_string):
+    guild = create_mock_guild(try_get_id(context, "guild_id"))
+    user_increment = get_id_increment(context, "user")
+    for increment in range(user_increment, user_increment + int(amount)):
+        await _add_reaction(context, guild, reaction_string, increment)
+
+
+async def _add_reaction(context, guild, reaction_string, user_increment):
+    user = create_mock_author(GLOBAL_ID_GENERATOR.generate_viable_id(), guild)
+    context.discord_ids[f"user_{user_increment}_id"] = user.id
+    reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
+    context.client.dispatch("reaction_add", reaction, user)
 
 
 @then("embed edited to have fields")

@@ -47,4 +47,4 @@ class TestIdGenerator:
         return base
 
 
-GLOBAL_ID_GENERATOR = TestIdGenerator(100)
+GLOBAL_ID_GENERATOR = TestIdGenerator()

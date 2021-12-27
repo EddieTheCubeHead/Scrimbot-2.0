@@ -3,7 +3,7 @@ Feature: Scrim and scrim team leaving/joining with reactions
 
   Scenario: Joining a scrim with reactions
     Given a Dota 2 scrim
-    When 1 user reacts with 🎮
+    When a user reacts with 🎮
     Then embed edited to have fields
       | name         | value                                               |
       | Author       | Dota 2 scrim                                        |
