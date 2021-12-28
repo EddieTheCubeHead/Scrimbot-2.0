@@ -307,11 +307,8 @@ class TestScrimTeamsManager(UnittestBase):
     def test_remove_player_given_valid_team_when_called_with_player_not_in_team_then_error_raised(self):
         manager = _setup_manager()
         mock_player = self._create_mock_user()
-        mock_context = MagicMock()
-        with patch("Bot.EmbedSystem.Helpers.UserNicknameService.UserNicknameService.get_name") as nickname_patch:
-            nickname_patch.return_value = "Tester"
-            expected_exception = BotInvalidPlayerRemoval(mock_player, manager.get_game_teams()[0])
-            self._assert_raises_correct_exception(expected_exception, manager.remove_player, 0, mock_player)
+        expected_exception = BotInvalidPlayerRemoval(mock_player, manager.get_game_teams()[0])
+        self._assert_raises_correct_exception(expected_exception, manager.remove_player, 0, mock_player)
 
     def test_remove_player_given_queue_has_players_when_removed_from_participants_then_filled_from_queue(self):
         min_size, max_size, team_count = 3, 5, 6

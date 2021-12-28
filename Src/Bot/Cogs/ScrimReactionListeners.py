@@ -6,11 +6,10 @@ from discord.ext import commands
 
 from Bot.Converters.UserConverter import UserConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
-from Bot.DataClasses.User import User
 from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
+from Bot.EmbedSystem.ScrimStates.scrim_states import *
 from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
-from Src.Bot.DataClasses.ScrimState import ScrimState
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 
@@ -54,21 +53,21 @@ class ScrimReactionListeners(commands.Cog):
             return
 
         try:
-            if react.emoji == "\U0001F3AE" and scrim.state.name is ScrimState.LFP.name:
+            if react.emoji == "\U0001F3AE" and scrim.state == LFP:
                 scrim.teams_manager.add_player(ScrimTeamsManager.PARTICIPANTS,
                                                self.user_converter.get_user(user.id))
 
-            elif react.emoji == "\U0001F441" and scrim.state.name is ScrimState.LFP.name:
+            elif react.emoji == "\U0001F441" and scrim.state == LFP:
                 scrim.teams_manager.add_player(ScrimTeamsManager.SPECTATORS,
                                                self.user_converter.get_user(user.id))
 
-            elif react.emoji == "1\u20E3" and scrim.state == ScrimState.LOCKED:
+            elif react.emoji == "1\u20E3" and scrim.state == LOCKED:
                 await scrim.set_team_1(user)
 
-            elif react.emoji == "2\u20E3" and scrim.state == ScrimState.LOCKED:
+            elif react.emoji == "2\u20E3" and scrim.state == LOCKED:
                 await scrim.set_team_2(user)
 
-            elif react.emoji == "\U0001F451" and scrim.state == ScrimState.CAPS_PREP:
+            elif react.emoji == "\U0001F451" and scrim.state == CAPS_PREP:
                 await scrim.add_captain(user)
 
             else:
@@ -101,18 +100,18 @@ class ScrimReactionListeners(commands.Cog):
             return
 
         try:
-            if react.emoji == "\U0001F3AE" and scrim.state.name is ScrimState.LFP.name:
+            if react.emoji == "\U0001F3AE" and scrim.state == LFP:
                 scrim.teams_manager.remove_player(ScrimTeamsManager.PARTICIPANTS,
                                                   self.user_converter.get_user(user.id))
 
-            elif react.emoji == "\U0001F441" and scrim.state.name is ScrimState.LFP.name:
+            elif react.emoji == "\U0001F441" and scrim.state == LFP:
                 scrim.teams_manager.remove_player(ScrimTeamsManager.SPECTATORS,
                                                   self.user_converter.get_user(user.id))
 
-            elif (react.emoji == "1\u20E3" or react.emoji == "2\u20E3") and scrim.state == ScrimState.LOCKED:
+            elif (react.emoji == "1\u20E3" or react.emoji == "2\u20E3") and scrim.state == LOCKED:
                 await scrim.set_teamless(user)
 
-            elif react.emoji == "\U0001F451" and scrim.state == ScrimState.CAPS_PREP:
+            elif react.emoji == "\U0001F451" and scrim.state == CAPS_PREP:
                 await scrim.remove_captain(user)
 
         except DiscordException as exception:

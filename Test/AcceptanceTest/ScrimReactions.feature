@@ -67,7 +67,6 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Spectators   | _empty_                                             |
       | Footer       | To join players react 🎮 To join spectators react 👁 |
 
-  @wip
   Scenario: Spectator leaves by removing their reaction
     Given a Rocket League scrim
     When 2 users react with 👁
@@ -81,3 +80,17 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Participants | _empty_                                             |
       | Spectators   | <@{user_1_id}>                                      |
       | Footer       | To join players react 🎮 To join spectators react 👁 |
+
+  @wip
+  Scenario: Scrim with concrete player count filled gives locking info
+    Given a Rocket League scrim
+    When 6 users react with 🎮
+    Then embed edited to have fields
+      | name         | value                                                                                     |
+      | Author       | Rocket League scrim                                                                       |
+      | Icon         | https://i.imgur.com/BvQOQyN.png                                                           |
+      | Colour       | 0x0000ff                                                                                  |
+      | Status       | All players present. Send command 'lock' to start team selection.                         |
+      | Participants | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}> |
+      | Spectators   | _empty_                                                                                   |
+      | Footer       | To join players react 🎮 To join spectators react 👁 To lock the teams send command 'lock' |

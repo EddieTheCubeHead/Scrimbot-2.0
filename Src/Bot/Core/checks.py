@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from discord.ext import commands
 
 from Bot.DataClasses.ScrimChannel import ScrimChannel
-from Src.Bot.DataClasses.ScrimState import ScrimState
+from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
 from Src.Bot.Exceptions.BotCheckFailure import BotCheckFailure
 
 

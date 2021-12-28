@@ -7,7 +7,7 @@ from discord import Emoji, Reaction
 
 from Bot.Cogs.ScrimReactionListeners import ScrimReactionListeners
 from Bot.DataClasses.Game import Game
-from Bot.DataClasses.ScrimState import ScrimState
+from Bot.EmbedSystem.ScrimStates.scrim_states import LFP
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
@@ -35,7 +35,7 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         mock_message = AsyncMock()
         mock_message.id = self.id_generator.generate_viable_id()
         players_joining_reaction = Reaction(data={}, message=mock_message, emoji="\U0001F3AE")
-        self.scrim.state = ScrimState.LFP
+        self.scrim.state = LFP
         mock_member = MagicMock()
         mock_member.bot = False
         mock_member.id = self.id_generator.generate_viable_id()
@@ -49,7 +49,7 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         mock_message = AsyncMock()
         mock_message.id = self.id_generator.generate_viable_id()
         players_joining_reaction = Reaction(data={}, message=mock_message, emoji="\U0001F441")
-        self.scrim.state = ScrimState.LFP
+        self.scrim.state = LFP
         mock_member = MagicMock()
         mock_member.bot = False
         mock_member.id = self.id_generator.generate_viable_id()
@@ -63,7 +63,7 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         mock_message = AsyncMock()
         mock_message.id = self.id_generator.generate_viable_id()
         players_joining_reaction = Reaction(data={}, message=mock_message, emoji="\U0001F3AE")
-        self.scrim.state = ScrimState.LFP
+        self.scrim.state = LFP
         mock_member = MagicMock()
         mock_member.bot = False
         mock_member.id = self.id_generator.generate_viable_id()
@@ -77,7 +77,7 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         mock_message = AsyncMock()
         mock_message.id = self.id_generator.generate_viable_id()
         players_joining_reaction = Reaction(data={}, message=mock_message, emoji="\U0001F441")
-        self.scrim.state = ScrimState.LFP
+        self.scrim.state = LFP
         mock_member = MagicMock()
         mock_member.bot = False
         mock_member.id = self.id_generator.generate_viable_id()

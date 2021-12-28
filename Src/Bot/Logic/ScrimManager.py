@@ -9,8 +9,11 @@ from typing import Optional
 import discord
 from discord import Message
 
+from Bot.DataClasses.User import User
+from Bot.EmbedSystem.ScrimStates.LookingForPlayersState import LookingForPlayersState
+from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
+from Bot.EmbedSystem.ScrimStates.scrim_states import *
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
-from Bot.DataClasses.ScrimState import ScrimState
 from Bot.Exceptions.BotBaseUserException import BotBaseUserException
 from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
 
@@ -19,29 +22,38 @@ class ScrimManager:
 
     def __init__(self, teams_manager: ScrimTeamsManager):
         self.teams_manager = teams_manager
-        self.state = ScrimState.LFP
+        self.state: ScrimState = LFP
         self.message: Optional[Message] = None
         self.thread_lock = threading.Lock()
 
-    def add_participant(self, participant: discord.Member):
+    def build_description(self) -> str:
+        return self.state.build_description(self.teams_manager)
+
+    def build_fields(self) -> list[(str, str, bool)]:
+        return self.state.build_fields(self.teams_manager)
+
+    def build_footer(self) -> str:
+        return self.state.build_footer(self.teams_manager)
+
+    def add_participant(self, participant: User):
         self.teams_manager.add_player(ScrimTeamsManager.PARTICIPANTS, participant)
 
     def _secure_state_change(self, target_state: ScrimState, *valid_states: ScrimState):
         with self.thread_lock:
             if self.state not in valid_states:
-                raise BotBaseInternalClientException("Tried to perform an invalid state change from state "
-                                               f"{self.state.name} to {target_state.name}")
+                raise BotBaseInternalClientException(f"Tried to perform an invalid state change from state "
+                                                     f"{self.state.description} to {target_state.description}")
             self.state = target_state
 
     def lock(self):
         if not self.teams_manager.has_enough_participants:
             raise BotBaseUserException("Could not lock the scrim. Too few participants present.")
-        self._secure_state_change(ScrimState.LOCKED, ScrimState.LFP)
+        self._secure_state_change(LOCKED, LFP)
         self.teams_manager.clear_queue()
 
     def start(self):
         self._assert_valid_starting_teams()
-        self._secure_state_change(ScrimState.STARTED, ScrimState.LOCKED, ScrimState.CAPS)
+        self._secure_state_change(STARTED, LOCKED, CAPS)
 
     def _assert_valid_starting_teams(self):
         if not self.teams_manager.has_full_teams:
@@ -53,6 +65,6 @@ class ScrimManager:
 
     def start_with_voice(self):
         self._assert_valid_starting_teams()
-        self._secure_state_change(ScrimState.VOICE_WAIT, ScrimState.LOCKED, ScrimState.CAPS)
+        self._secure_state_change(VOICE_WAIT, LOCKED, CAPS)
         if self.teams_manager.try_move_to_voice():
             pass
