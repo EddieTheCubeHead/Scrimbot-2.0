@@ -10,7 +10,7 @@ from sqlalchemy import Column, Integer
 
 from Bot.DataClasses.DataClass import DataClass
 from Bot.Converters.ConverterBase import ConverterBase
-from Bot.Exceptions.BotBaseInternalSystemException import BotBaseInternalSystemException
+from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
 from Bot.Exceptions.BuildException import BuildException
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase

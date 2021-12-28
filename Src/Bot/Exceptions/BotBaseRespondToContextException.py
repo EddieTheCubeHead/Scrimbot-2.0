@@ -6,10 +6,10 @@ from discord.ext.commands import Context
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
-from Bot.Exceptions.BotBaseException import BotBaseException
+from Bot.Exceptions.BotBaseContextException import BotBaseContextException
 
 
-class BotBaseUserException(BotBaseException, commands.CommandError):
+class BotBaseRespondToContextException(BotBaseContextException, commands.CommandError):
 
     @BotDependencyInjector.inject
     def __init__(self, message: str, embed_builder: ExceptionEmbedBuilder, *, send_help=True):

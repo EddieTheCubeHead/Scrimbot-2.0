@@ -3,10 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
 
-from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 
 
-class BotCheckFailure(BotBaseUserException, commands.CheckFailure):
+class BotCheckFailure(BotBaseRespondToContextException, commands.CheckFailure):
     """An exception that should get raised when the bot fails a check."""
 
     def get_header(self) -> str:

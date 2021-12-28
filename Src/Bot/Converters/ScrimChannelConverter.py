@@ -10,7 +10,7 @@ from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.VoiceChannel import VoiceChannel
-from Bot.Exceptions.BotBaseUserException import BotBaseUserException
+from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 from Bot.Exceptions.BotReservedChannelException import BotReservedChannelException
 from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
 

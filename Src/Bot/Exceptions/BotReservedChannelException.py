@@ -5,7 +5,7 @@ from discord import TextChannel
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
-from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 
 
 def _construct_message(reserved_channel_id: int, parent_channel_id: int):
@@ -14,7 +14,7 @@ def _construct_message(reserved_channel_id: int, parent_channel_id: int):
     return f"Voice channel <#{reserved_channel_id}> is already associated with scrim channel <#{parent_channel_id}>."
 
 
-class BotReservedChannelException(BotBaseUserException):
+class BotReservedChannelException(BotBaseRespondToContextException):
 
     @BotDependencyInjector.inject
     def __init__(self, reserved_channel_id: int, embed_builder: ExceptionEmbedBuilder, parent_channel_id: int = None):

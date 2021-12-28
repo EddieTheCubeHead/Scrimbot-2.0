@@ -1,7 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 
 
 def parse_winner(argument: str) -> int:
@@ -13,5 +13,5 @@ def parse_winner(argument: str) -> int:
         return 2
     if argument in ("0", "Tie", "tie", "Draw", "draw", "None", "none"):
         return 0
-    raise BotBaseUserException(f"Couldn't parse team from string '{argument}'. "
+    raise BotBaseRespondToContextException(f"Couldn't parse team from string '{argument}'. "
                                "Please give winner as '1', '2' or 'tie'.")

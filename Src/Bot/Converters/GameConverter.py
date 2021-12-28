@@ -10,8 +10,8 @@ from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
 from Bot.DataClasses.Alias import Alias
 from Bot.DataClasses.Game import Game
-from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
-from Bot.Exceptions.BotBaseInternalSystemException import BotBaseInternalSystemException
+from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
+from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
@@ -38,8 +38,8 @@ class GameConverter(ConverterBase[Game]):
             self._init_aliases(game, data)
             try:
                 self.add_game(game, data)
-            except BotBaseInternalClientException as exception:
-                BotBaseInternalSystemException(exception.message, self._system_logger, log=INFO).resolve()
+            except BotLoggedContextException as exception:
+                BotLoggedNoContextException(exception.message, self._system_logger, log=INFO).resolve()
 
     def add_game(self, game: str, data: dict[str, Union[str, int, list[Alias]]]):
         self._assert_valid_game_name(game)
@@ -72,11 +72,11 @@ class GameConverter(ConverterBase[Game]):
 
     def _assert_valid_game_name(self, game_name):
         if game_name in self.games:
-            raise BotBaseInternalClientException(f"Cannot initialize two games with the same name ('{game_name}')")
+            raise BotLoggedContextException(f"Cannot initialize two games with the same name ('{game_name}')")
 
     def _assert_valid_aliases(self, aliases: List[Alias]):
         for alias in aliases:
             if alias.name in self._reserved_alias_names:
-                raise BotBaseInternalClientException(f"Cannot initialize two games with the same alias "
+                raise BotLoggedContextException(f"Cannot initialize two games with the same alias "
                                                      f"('{alias.name}')")
             self._reserved_alias_names.add(alias.name)

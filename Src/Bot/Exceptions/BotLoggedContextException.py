@@ -7,7 +7,7 @@ from discord.ext.commands import Context
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.Logging.BotClientLogger import BotClientLogger
-from Bot.Exceptions.BotBaseException import BotBaseException
+from Bot.Exceptions.BotBaseContextException import BotBaseContextException
 
 
 def log_with_level(log, logger, message):
@@ -23,7 +23,7 @@ def log_with_level(log, logger, message):
         logger.critical(message)
 
 
-class BotBaseInternalClientException(BotBaseException):
+class BotLoggedContextException(BotBaseContextException):
     """A base class for all the exceptions excepted in the code that should get handled silently internally."""
 
     @BotDependencyInjector.inject

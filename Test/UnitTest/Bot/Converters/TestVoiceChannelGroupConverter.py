@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import MagicMock
 
 from Bot.Converters.Helpers.ChannelGroupParser import ChannelGroupParser
-from Bot.Exceptions.BotBaseUserException import BotBaseUserException
+from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Bot.Converters.VoiceChannelGroupConverter import VoiceChannelGroupConverter, DO_CONVERSION_STRINGS
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
@@ -26,7 +26,7 @@ class TestVoiceChannelGroupConverter(AsyncUnittestBase):
         mock_context.channel = MagicMock()
         mock_context.channel.name = "scrim-channel"
         mock_context.channel.category = None
-        expected_exception = BotBaseUserException("Cannot automatically assign voice channels from category because "
+        expected_exception = BotBaseRespondToContextException("Cannot automatically assign voice channels from category because "
                                                   f"channel '{mock_context.channel.name}' doesn't belong in a category")
         await self._async_assert_raises_correct_exception(expected_exception, self.converter.convert, mock_context,
                                                           DO_CONVERSION_STRINGS[0])

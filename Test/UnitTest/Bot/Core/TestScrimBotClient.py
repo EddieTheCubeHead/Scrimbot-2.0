@@ -8,9 +8,11 @@ import unittest
 from logging import DEBUG
 from unittest.mock import MagicMock, patch, AsyncMock, call
 
-from Bot.Exceptions.BotBaseException import BotBaseException
-from Bot.Exceptions.BotBaseInternalSystemException import BotBaseInternalSystemException
+from Bot.Exceptions.BotBaseContextException import BotBaseContextException
+from Bot.Exceptions.BotBaseNoContextException import BotBaseNoContextException
+from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
 from Bot.Exceptions.BotUnrecognizedCommandException import BotUnrecognizedCommandException
+from Bot.Exceptions.BuildException import BuildException
 from Configs.Config import Config
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Utils.TestHelpers.test_utils import get_cogs_messages
@@ -122,24 +124,24 @@ class TestScrimBotClient(AsyncUnittestBase):
         self.assertEqual("<super: <class 'ScrimBotClient'>, <ScrimBotClient object>>", str(await_args[0][0]))
         self.assertEqual(mock_message, await_args[0][1])
 
-    async def test_handle_exception_given_bot_exception_then_exception_resolve_called(self):
-        mock_exception = AsyncMock(BotBaseException)
+    async def test_handle_exception_given_context_exception_then_exception_resolve_called_with_context(self):
+        mock_exception = AsyncMock(BotBaseContextException)
         mock_context = AsyncMock()
         await self.client.on_command_error(mock_context, mock_exception)
         mock_exception.resolve.assert_called_with(mock_context)
 
-    async def test_handle_exception_given_bot_system_exception_then_exception_resolve_called(self):
-        mock_exception = AsyncMock(BotBaseInternalSystemException)
+    async def test_handle_exception_given_no_context_exception_then_exception_resolve_called_with_no_context(self):
+        mock_exception = AsyncMock(BotBaseNoContextException)
         mock_context = AsyncMock()
         await self.client.on_command_error(mock_context, mock_exception)
         mock_exception.resolve.assert_called_with()
 
     async def test_handle_exception_given_non_bot_exception_then_exception_logged_and_raised(self):
-        mock_exception = AsyncMock()
-        mock_exception.__str__.return_value = "Test"
+        mock_exception = BuildException("Test exception")
         mock_context = AsyncMock()
-        await self.client.on_command_error(mock_context, mock_exception)
-        self.logger.critical.assert_called_with("Test")
+        await self._async_assert_raises_correct_exception(mock_exception, self.client.on_command_error, mock_context,
+                                                          mock_exception)
+        self.logger.critical.assert_called_with(str(mock_exception))
 
     async def test_invoke_given_ctx_with_command_then_super_invoke_called(self):
         mock_context = AsyncMock()

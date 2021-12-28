@@ -3,20 +3,20 @@ __author__ = "Eetu Asikainen"
 
 
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import discord
 
-from Bot.DataClasses.TeamMember import TeamMember
 from Bot.DataClasses.User import User
+from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
 from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
 from Utils.TestBases.UnittestBase import UnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.DataClasses.Game import Game
 from Bot.DataClasses.Team import Team
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
-from Bot.Exceptions.BotBaseUserException import BotBaseUserException
-from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
+from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
 
 
 def _setup_manager(min_size=5, max_size=5, team_count=2):
@@ -60,14 +60,14 @@ class TestScrimTeamsManager(UnittestBase):
 
     def test_init_given_team_count_zero_then_internal_error_raised(self):
         mock_game = _create_mock_game(5, 5, 0)
-        expected_exception = BotBaseInternalClientException("Tried to initialize a teams manager for a game with less"
-                                                            " than 1 teams.")
+        expected_exception = BotLoggedContextException("Tried to initialize a teams manager for a game with less"
+                                                       " than 1 teams.")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game)
 
     def test_init_given_team_min_size_larger_than_max_size_when_max_size_not_zero_then_internal_error_raised(self):
         mock_game = _create_mock_game(5, 3, 1)
-        expected_exception = BotBaseInternalClientException("Tried to initialize a teams manager for a game with "
-                                                            "smaller team max size than team min size.")
+        expected_exception = BotLoggedContextException("Tried to initialize a teams manager for a game with "
+                                                       "smaller team max size than team min size.")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game)
 
     def test_init_given_team_min_size_larger_than_max_size_when_unlimited_max_size_then_init_successful(self):
@@ -90,9 +90,9 @@ class TestScrimTeamsManager(UnittestBase):
     def test_init_given_premade_team_when_team_name_conflicts_with_standard_teams_then_error_raised(self):
         mock_game = _create_mock_game(5, 5, 2)
         invalid_team = Team(ScrimTeamsManager.PARTICIPANTS)
-        expected_exception = BotBaseUserException("Cannot create a scrim with a premade team name conflicting with a "
-                                                  "name reserved for standard teams"
-                                                  f" ({ScrimTeamsManager.PARTICIPANTS})")
+        expected_exception = \
+            BotBaseRespondToContextException(f"Cannot create a scrim with a premade team name conflicting with a "
+                                             f"name reserved for standard teams ({ScrimTeamsManager.PARTICIPANTS})")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game, teams=[invalid_team])
 
     def test_init_given_duplicate_premade_team_names_then_error_raised(self):
@@ -100,8 +100,9 @@ class TestScrimTeamsManager(UnittestBase):
         duplicate_name = "Duplicate team"
         team_1 = Team(duplicate_name, [], 5, 5)
         team_2 = Team(duplicate_name, [], 5, 5)
-        expected_exception = BotBaseUserException("Cannot create a scrim with premade teams having identical names"
-                                                  f" ({duplicate_name})")
+        expected_exception = \
+            BotBaseRespondToContextException(f"Cannot create a scrim with premade teams having identical names "
+                                             f"({duplicate_name})")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game, teams=[team_1, team_2])
 
     def test_init_given_duplicate_premade_team_names_when_name_conflicts_with_standard_teams_then_error_raised(self):
@@ -109,25 +110,27 @@ class TestScrimTeamsManager(UnittestBase):
         duplicate_name = ScrimTeamsManager.SPECTATORS
         team_1 = Team(duplicate_name)
         team_2 = Team(duplicate_name)
-        expected_exception = BotBaseUserException("Cannot create a scrim with a premade team name conflicting with a "
-                                                  "name reserved for standard teams"
-                                                  f" ({duplicate_name})")
+        expected_exception = \
+            BotBaseRespondToContextException(f"Cannot create a scrim with a premade team name conflicting with a name "
+                                             f"reserved for standard teams ({duplicate_name})")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game, teams=[team_1, team_2])
 
     def test_init_given_invalid_sized_premade_team_min_players_then_error_raised(self):
         mock_game = _create_mock_game(5, 5, 2)
         team_name = "Invalid team"
         invalid_team = Team(team_name, [], 3, 5)
-        expected_exception = BotBaseUserException("Cannot create a scrim with a premade team with a size incompatible"
-                                                  f" with the chosen game ({team_name})")
+        expected_exception = \
+            BotBaseRespondToContextException(f"Cannot create a scrim with a premade team with a size incompatible with "
+                                             f"the chosen game ({team_name})")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game, teams=[invalid_team])
 
     def test_init_given_invalid_sized_premade_team_max_players_then_error_raised(self):
         mock_game = _create_mock_game(5, 5, 2)
         team_name = "Invalid team"
         invalid_team = Team(team_name, [], 5, 7)
-        expected_exception = BotBaseUserException("Cannot create a scrim with a premade team with a size incompatible"
-                                                  f" with the chosen game ({team_name})")
+        expected_exception = \
+            BotBaseRespondToContextException(f"Cannot create a scrim with a premade team with a size incompatible with "
+                                             f"the chosen game ({team_name})")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game, teams=[invalid_team])
 
     def test_init_given_premade_team_with_too_many_players_then_error_raised(self):
@@ -135,8 +138,9 @@ class TestScrimTeamsManager(UnittestBase):
         team_name = "Invalid team"
         mock_players = [self._create_mock_user() for _ in range(6)]
         invalid_team = Team(team_name, mock_players, 5, 5)
-        expected_exception = BotBaseUserException("Cannot create a scrim with a premade team with a size incompatible"
-                                                  f" with the chosen game ({team_name})")
+        expected_exception = \
+            BotBaseRespondToContextException(f"Cannot create a scrim with a premade team with a size incompatible with "
+                                             f"the chosen game ({team_name})")
         self._assert_raises_correct_exception(expected_exception, ScrimTeamsManager, mock_game, teams=[invalid_team])
 
     def test_init_given_valid_team_voice_channels_then_corresponding_game_team_channels_set(self):
@@ -226,13 +230,23 @@ class TestScrimTeamsManager(UnittestBase):
         updated_participants = manager.get_standard_teams()[1]
         self.assert_in_team(mock_player, updated_participants)
 
+    def test_add_player_when_player_in_a_team_already_then_invalid_join_raised(self):
+        manager = _setup_manager()
+        mock_player = self._create_mock_user()
+        mock_player.id = self.id_generator.generate_viable_id()
+        expected_exception = BotInvalidJoinException(mock_player, manager.get_standard_teams()[0],
+                                                     f"already a member of the team "
+                                                     f"'{manager.get_standard_teams()[1].name}'")
+        manager.add_player(manager.SPECTATORS, mock_player)
+        self._assert_raises_correct_exception(expected_exception, manager.add_player, manager.PARTICIPANTS, mock_player)
+
     def test_add_player_given_team_not_full_when_added_to_game_teams_with_team_name_then_insert_successful(self):
         min_size, max_size, team_count = 6, 6, 5
         manager = _setup_manager(min_size, max_size, team_count)
-        mock_player = MagicMock()
-        mock_player.id = self.id_generator.generate_viable_id()
         for team in range(team_count):
             with self.subTest(f"Adding player to game team with team name (Team {team + 1})"):
+                mock_player = MagicMock()
+                mock_player.id = self.id_generator.generate_viable_id()
                 manager.add_player(f"Team {team + 1}", mock_player)
                 updated_participants = manager.get_game_teams()[team]
                 self.assert_in_team(mock_player, updated_participants)
@@ -240,9 +254,9 @@ class TestScrimTeamsManager(UnittestBase):
     def test_add_player_given_team_not_full_when_added_to_game_teams_with_team_number_then_insert_successful(self):
         min_size, max_size, team_count = 1, 3, 4
         manager = _setup_manager(min_size, max_size, team_count)
-        mock_player = self._create_mock_user()
         for team in range(team_count):
             with self.subTest(f"Adding player to game team with team number (Team {team + 1})"):
+                mock_player = self._create_mock_user()
                 manager.add_player(team, mock_player)
                 updated_participants = manager.get_game_teams()[team]
                 self.assert_in_team(mock_player, updated_participants)
@@ -254,7 +268,7 @@ class TestScrimTeamsManager(UnittestBase):
         mock_player = self._create_mock_user()
         for team in range(team_count):
             with self.subTest(f"Adding player to full game team (Team {team + 1})"):
-                expected_exception = BotBaseInternalClientException(f"Tried adding a player into a full team (Team "
+                expected_exception = BotLoggedContextException(f"Tried adding a player into a full team (Team "
                                                                     f"{team + 1})")
                 self._assert_raises_correct_exception(expected_exception, manager.add_player, team, mock_player)
 
@@ -350,8 +364,8 @@ class TestScrimTeamsManager(UnittestBase):
         player_name = "Invalid player"
         mock_player = self._create_mock_user()
         mock_player.display_name = player_name
-        expected_exception = BotBaseInternalClientException(f"Tried setting team for user '{player_name}' who is not "
-                                                            f"part of the scrim.")
+        expected_exception = BotLoggedContextException(f"Tried setting team for user '{player_name}' who is not "
+                                                       f"part of the scrim.")
         self._assert_raises_correct_exception(expected_exception, manager.set_team, manager.SPECTATORS, mock_player)
         standard_teams = manager.get_standard_teams()
         self.assertEqual(0, len(standard_teams[0].members))

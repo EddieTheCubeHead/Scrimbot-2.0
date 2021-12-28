@@ -81,7 +81,6 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Spectators   | <@{user_1_id}>                                      |
       | Footer       | To join players react 🎮 To join spectators react 👁 |
 
-  @wip
   Scenario: Scrim with concrete player count filled gives locking info
     Given a Rocket League scrim
     When 6 users react with 🎮
@@ -94,3 +93,18 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Participants | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}> |
       | Spectators   | _empty_                                                                                   |
       | Footer       | To join players react 🎮 To join spectators react 👁 To lock the teams send command 'lock' |
+
+  @wip
+  Scenario: Attempting to join spectators after participants
+    Given an Among Us scrim
+    When a user reacts with 🎮
+    And user 1 reacts with 👁
+    Then embed edited to have fields
+      | name         | value                                                                     |
+      | Author       | Among Us scrim                                                            |
+      | Icon         | https://www.scarsdalelibrary.org/sites/default/files/2021-02/among_us.jpg |
+      | Colour       | 0xff0000                                                                  |
+      | Status       | Looking for players, 5 more required.                                     |
+      | Participants | <@{user_1_id}>                                                            |
+      | Spectators   | _empty_                                                                   |
+      | Footer       | To join players react 🎮 To join spectators react 👁                       |

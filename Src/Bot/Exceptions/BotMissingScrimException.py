@@ -3,10 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
 
-from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 
 
-class BotMissingScrimException(BotBaseUserException, commands.CheckFailure):
+class BotMissingScrimException(BotBaseRespondToContextException, commands.CheckFailure):
     """An exception that should be raised when a scrim cannot be found during checks."""
 
     def __init__(self, context: commands.Context, *, send_help=True):

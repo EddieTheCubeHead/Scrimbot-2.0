@@ -3,10 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext.commands import CheckFailure
 
-from Bot.Exceptions.BotBaseUserException import BotBaseUserException
+from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 
 
-class BotChannelHasScrimException(BotBaseUserException, CheckFailure):
+class BotChannelHasScrimException(BotBaseRespondToContextException, CheckFailure):
 
     def __init__(self, channel_id: int):
         message = f"Cannot create a scrim on channel <#{channel_id}> because the channel already has an active scrim."

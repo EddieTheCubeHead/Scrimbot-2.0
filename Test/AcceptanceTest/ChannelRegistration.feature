@@ -20,8 +20,7 @@ Feature: Channel registration rewrite
 
   Scenario: Registering a channel with no voice channels
     When ;register is called
-    Then channel registered
-    And embed received with fields
+    Then embed received with fields
       | name                                       | value           |
       | New scrim channel registered successfully! | Channel data:   |
       | Text channel                               | <#{channel_id}> |

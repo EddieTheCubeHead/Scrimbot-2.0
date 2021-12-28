@@ -14,8 +14,8 @@ from Bot.EmbedSystem.ScrimStates.LookingForPlayersState import LookingForPlayers
 from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
 from Bot.EmbedSystem.ScrimStates.scrim_states import *
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
-from Bot.Exceptions.BotBaseUserException import BotBaseUserException
-from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
+from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
 
 
 class ScrimManager:
@@ -41,13 +41,13 @@ class ScrimManager:
     def _secure_state_change(self, target_state: ScrimState, *valid_states: ScrimState):
         with self.thread_lock:
             if self.state not in valid_states:
-                raise BotBaseInternalClientException(f"Tried to perform an invalid state change from state "
+                raise BotLoggedContextException(f"Tried to perform an invalid state change from state "
                                                      f"{self.state.description} to {target_state.description}")
             self.state = target_state
 
     def lock(self):
         if not self.teams_manager.has_enough_participants:
-            raise BotBaseUserException("Could not lock the scrim. Too few participants present.")
+            raise BotBaseRespondToContextException("Could not lock the scrim. Too few participants present.")
         self._secure_state_change(LOCKED, LFP)
         self.teams_manager.clear_queue()
 
@@ -57,11 +57,11 @@ class ScrimManager:
 
     def _assert_valid_starting_teams(self):
         if not self.teams_manager.has_full_teams:
-            raise BotBaseUserException("Could not start the scrim. Some teams lack the minimum number of players "
+            raise BotBaseRespondToContextException("Could not start the scrim. Some teams lack the minimum number of players "
                                        "required.", send_help=False)
         if self.teams_manager.has_participants:
-            raise BotBaseUserException("Could not start the scrim. All participants are not in a team.",
-                                       send_help=False)
+            raise BotBaseRespondToContextException("Could not start the scrim. All participants are not in a team.",
+                                                   send_help=False)
 
     def start_with_voice(self):
         self._assert_valid_starting_teams()

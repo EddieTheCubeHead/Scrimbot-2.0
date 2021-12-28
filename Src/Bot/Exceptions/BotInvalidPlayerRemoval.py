@@ -7,7 +7,7 @@ from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
 from Bot.DataClasses.Team import Team
 from Bot.DataClasses.User import User
-from Bot.Exceptions.BotBaseInternalSystemException import BotBaseInternalSystemException
+from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
 
 
 def _construct_message(player: User, team: Team) -> str:
@@ -15,7 +15,7 @@ def _construct_message(player: User, team: Team) -> str:
            f"member."
 
 
-class BotInvalidPlayerRemoval(BotBaseInternalSystemException):
+class BotInvalidPlayerRemoval(BotLoggedNoContextException):
 
     @BotDependencyInjector.inject
     def __init__(self, player: User, team: Team, logger: BotSystemLogger):

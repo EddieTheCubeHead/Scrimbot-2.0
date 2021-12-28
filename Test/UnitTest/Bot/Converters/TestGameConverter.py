@@ -10,7 +10,7 @@ from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.DataClasses.Game import Game
 from Bot.Converters.GameConverter import GameConverter
-from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
+from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 
 
@@ -46,8 +46,8 @@ class TestGameConverter(AsyncUnittestBase):
                             "min_team_size": 5,
                             "alias": [shared_alias]}}
         self.converter.init_games(games)
-        self.system_logger.info.assert_called_with(f"An exception occurred during bot operation: \"Cannot "
-                                                      f"initialize two games with the same alias ('Test')\"")
+        self.system_logger.info.assert_called_with(f"An exception occurred during bot operation: Cannot initialize "
+                                                   f"two games with the same alias ('Test')")
 
     def test_init_games_given_games_in_database_then_all_database_games_initialized(self):
         db_game = Game("Test", "0xffffff", "icon_url", 5)
@@ -59,8 +59,8 @@ class TestGameConverter(AsyncUnittestBase):
         db_game = Game("Test", "0xffffff", "icon_url", 5)
         self.connection.get_all.return_value = [db_game]
         self.converter.init_games({"Test": {}})
-        self.system_logger.info.assert_called_with(f"An exception occurred during bot operation: \"Cannot "
-                                                      f"initialize two games with the same name ('Test')\"")
+        self.system_logger.info.assert_called_with(f"An exception occurred during bot operation: Cannot initialize two "
+                                                   f"games with the same name ('Test')")
 
     def test_add_game_given_valid_game_then_successful(self):
         new_game_name = "New game"
@@ -75,7 +75,7 @@ class TestGameConverter(AsyncUnittestBase):
         game_1 = {"colour": "0xffffff", "icon": "icon_url", "min_team_size": 5}
         game_2 = {"colour": "0xffffff", "icon": "icon_url", "min_team_size": 5}
         expected_exception = \
-            BotBaseInternalClientException(f"Cannot initialize two games with the same name ('{shared_name}')")
+            BotLoggedContextException(f"Cannot initialize two games with the same name ('{shared_name}')")
         self.converter.add_game(shared_name, game_1)
         self._assert_raises_correct_exception(expected_exception, self.converter.add_game, shared_name, game_2)
 
@@ -90,7 +90,7 @@ class TestGameConverter(AsyncUnittestBase):
                             "min_team_size": 5,
                             "alias": [Alias(shared_alias, "Dota 2")]}}
         expected_exception = \
-            BotBaseInternalClientException(f"Cannot initialize two games with the same alias ('{shared_alias}')")
+            BotLoggedContextException(f"Cannot initialize two games with the same alias ('{shared_alias}')")
         self.converter.add_game("CS:GO", games.pop("CS:GO"))
         self._assert_raises_correct_exception(expected_exception, self.converter.add_game, "Dota 2",
                                               games.pop("Dota 2"))

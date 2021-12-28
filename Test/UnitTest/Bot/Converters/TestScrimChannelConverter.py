@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import MagicMock
 
 from Bot.DataClasses.VoiceChannel import VoiceChannel
-from Bot.Exceptions.BotBaseUserException import BotBaseUserException
+from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 from Bot.Exceptions.BotReservedChannelException import BotReservedChannelException
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator

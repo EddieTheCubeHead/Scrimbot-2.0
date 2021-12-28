@@ -8,6 +8,8 @@ from Bot.Converters.UserConverter import UserConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
 from Bot.EmbedSystem.ScrimStates.scrim_states import *
+from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
+from Bot.Exceptions.BotInvalidReactionJoinException import BotInvalidReactionJoinException
 from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.Core.ScrimBotClient import ScrimBotClient
@@ -34,7 +36,7 @@ class ScrimReactionListeners(commands.Cog):
         self.user_converter = user_converter
 
     @commands.Cog.listener("on_reaction_add")
-    async def scrim_reaction_add_listener(self, react: Reaction, user: Member):
+    async def scrim_reaction_add_listener(self, react: Reaction, member: Member):
         """A listener responsible for processing reactions added to scrim messages
 
         args
@@ -42,10 +44,10 @@ class ScrimReactionListeners(commands.Cog):
 
         :param react: The reaction associated with the event
         :type react: discord.Reaction
-        :param user: The user associated with the reaction event
-        :type user: discord.Member
+        :param member: The user associated with the reaction event
+        :type member: discord.Member
         """
-        if user.bot:
+        if member.bot:
             return
 
         scrim = self.scrim_manager.try_get_scrim(react.message.channel.id)
@@ -53,29 +55,27 @@ class ScrimReactionListeners(commands.Cog):
             return
 
         try:
+            user = self.user_converter.get_user(member.id)
             if react.emoji == "\U0001F3AE" and scrim.state == LFP:
-                scrim.teams_manager.add_player(ScrimTeamsManager.PARTICIPANTS,
-                                               self.user_converter.get_user(user.id))
+                scrim.teams_manager.add_player(ScrimTeamsManager.PARTICIPANTS, user)
 
             elif react.emoji == "\U0001F441" and scrim.state == LFP:
-                scrim.teams_manager.add_player(ScrimTeamsManager.SPECTATORS,
-                                               self.user_converter.get_user(user.id))
+                scrim.teams_manager.add_player(ScrimTeamsManager.SPECTATORS, user)
 
             elif react.emoji == "1\u20E3" and scrim.state == LOCKED:
-                await scrim.set_team_1(user)
+                await scrim.set_team_1(member)
 
             elif react.emoji == "2\u20E3" and scrim.state == LOCKED:
-                await scrim.set_team_2(user)
+                await scrim.set_team_2(member)
 
             elif react.emoji == "\U0001F451" and scrim.state == CAPS_PREP:
-                await scrim.add_captain(user)
+                await scrim.add_captain(member)
 
             else:
-                await react.remove(user)
+                await react.remove(member)
 
-        except DiscordException as exception:
-            await react.remove(user)
-            await self._client.handle_react_internal_error(react, user, exception)
+        except BotInvalidJoinException as exception:
+            await BotInvalidReactionJoinException(member, exception.team, react, exception.reason).resolve()
 
         await self.embed_builder.edit(react.message, displayable=scrim)
 

@@ -8,8 +8,8 @@ from Utils.TestBases.UnittestBase import UnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.Logic.ScrimManager import ScrimManager
-from Bot.Exceptions.BotBaseUserException import BotBaseUserException
-from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
+from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
 
 
 class TestScrimManager(UnittestBase):
@@ -36,7 +36,7 @@ class TestScrimManager(UnittestBase):
 
     def test_lock_given_too_few_participants_then_error_raised(self):
         self.mock_teams_manager.has_enough_participants = False
-        expected_exception = BotBaseUserException("Could not lock the scrim. Too few participants present.")
+        expected_exception = BotBaseRespondToContextException("Could not lock the scrim. Too few participants present.")
         self._assert_raises_correct_exception(expected_exception, self.scrim_manager.lock)
         self.mock_teams_manager.clear_queue.assert_not_called()
 
@@ -47,7 +47,7 @@ class TestScrimManager(UnittestBase):
             with self.subTest(f"Locking with invalid state: {state.description}"):
                 self.scrim_manager.state = state
                 expected_exception = \
-                    BotBaseInternalClientException(f"Tried to perform an invalid state change from state "
+                    BotLoggedContextException(f"Tried to perform an invalid state change from state "
                                                    f"{state.description} to {LOCKED.description}")
                 self._assert_raises_correct_exception(expected_exception, self.scrim_manager.lock)
                 self.mock_teams_manager.clear_queue.assert_not_called()
@@ -67,8 +67,8 @@ class TestScrimManager(UnittestBase):
         self.mock_teams_manager.has_participants = True
         self.mock_teams_manager.has_full_teams = True
         self.scrim_manager.state = LOCKED
-        expected_exception = BotBaseUserException("Could not start the scrim. All participants are not in a team.",
-                                                  send_help=False)
+        expected_exception = BotBaseRespondToContextException("Could not start the scrim. All participants are not in a team.",
+                                                              send_help=False)
         actual_exception = self._assert_raises_correct_exception(expected_exception, self.scrim_manager.start)
         self.assertEqual(expected_exception.get_help_portion(mock_ctx), actual_exception.get_help_portion(mock_ctx))
 
@@ -77,7 +77,7 @@ class TestScrimManager(UnittestBase):
         self.mock_teams_manager.has_participants = False
         self.mock_teams_manager.has_full_teams = False
         self.scrim_manager.state = LOCKED
-        expected_exception = BotBaseUserException("Could not start the scrim. Some teams lack the minimum number of "
+        expected_exception = BotBaseRespondToContextException("Could not start the scrim. Some teams lack the minimum number of "
                                                   "players required.", send_help=False)
         actual_exception = self._assert_raises_correct_exception(expected_exception, self.scrim_manager.start)
         self.assertEqual(expected_exception.get_help_portion(mock_ctx), actual_exception.get_help_portion(mock_ctx))
@@ -87,7 +87,7 @@ class TestScrimManager(UnittestBase):
         self.mock_teams_manager.has_participants = True
         self.mock_teams_manager.has_full_teams = False
         self.scrim_manager.state = LOCKED
-        expected_exception = BotBaseUserException("Could not start the scrim. Some teams lack the minimum number of "
+        expected_exception = BotBaseRespondToContextException("Could not start the scrim. Some teams lack the minimum number of "
                                                   "players required.", send_help=False)
         actual_exception = self._assert_raises_correct_exception(expected_exception, self.scrim_manager.start)
         self.assertEqual(expected_exception.get_help_portion(mock_ctx), actual_exception.get_help_portion(mock_ctx))
@@ -112,7 +112,7 @@ class TestScrimManager(UnittestBase):
             with self.subTest(f"Starting with voice chat when in invalid state: {state.description}"):
                 self.scrim_manager.state = state
                 expected_exception = \
-                    BotBaseInternalClientException(f"Tried to perform an invalid state change from state "
+                    BotLoggedContextException(f"Tried to perform an invalid state change from state "
                                                    f"{state.description} to {VOICE_WAIT.description}")
                 self._assert_raises_correct_exception(expected_exception, self.scrim_manager.start_with_voice)
 
@@ -122,8 +122,8 @@ class TestScrimManager(UnittestBase):
         self.mock_teams_manager.has_full_teams = True
         self.mock_teams_manager.all_players_in_voice_chat = True
         self.scrim_manager.state = LOCKED
-        expected_exception = BotBaseUserException("Could not start the scrim. All participants are not in a team.",
-                                                  send_help=False)
+        expected_exception = BotBaseRespondToContextException("Could not start the scrim. All participants are not in "
+                                                              "a team.", send_help=False)
         actual_exception = self._assert_raises_correct_exception(expected_exception,
                                                                  self.scrim_manager.start_with_voice)
         self.assertEqual(expected_exception.get_help_portion(mock_ctx), actual_exception.get_help_portion(mock_ctx))

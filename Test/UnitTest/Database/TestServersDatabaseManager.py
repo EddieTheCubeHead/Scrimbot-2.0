@@ -11,7 +11,7 @@ from Utils.TestBases.UnittestBase import UnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Database.ServersDatabaseManager import ServersDatabaseManager
 from Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
-from Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
+from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
 from Database.Exceptions.DatabaseMissingRowException import DatabaseMissingRowException
 from Database.Exceptions.DatabasePrimaryKeyViolatedException import DatabasePrimaryKeyViolatedException
 
@@ -110,13 +110,13 @@ class TestServersDatabaseManager(UnittestBase):
     def test_register_scrim_channel_given_teams_starting_from_two_then_exception_raised(self):
         valid_text_id = self.id_mocker.generate_viable_id()
         invalid_voice_data = self._construct_team_data_with_valid_ids(2, 3, 4)
-        self.assertRaises(BotBaseInternalClientException, self.manager.register_scrim_channel, valid_text_id,
+        self.assertRaises(BotLoggedContextException, self.manager.register_scrim_channel, valid_text_id,
                           *invalid_voice_data)
 
     def test_register_scrim_channel_given_non_sequential_teams_then_exception_raised(self):
         valid_text_id = self.id_mocker.generate_viable_id()
         invalid_voice_data = self._construct_team_data_with_valid_ids(1, 2, 3, 4, 6)
-        self.assertRaises(BotBaseInternalClientException, self.manager.register_scrim_channel, valid_text_id,
+        self.assertRaises(BotLoggedContextException, self.manager.register_scrim_channel, valid_text_id,
                           *invalid_voice_data)
 
     def test_register_scrim_channel_given_reserved_text_channels_then_exception_raised(self):

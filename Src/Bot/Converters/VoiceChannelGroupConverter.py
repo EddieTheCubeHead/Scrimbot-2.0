@@ -7,7 +7,7 @@ from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Converters.Helpers.ChannelGroupParser import ChannelGroupParser
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.VoiceChannel import VoiceChannel
-from Bot.Exceptions.BotBaseUserException import BotBaseUserException
+from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
 
@@ -28,7 +28,7 @@ class VoiceChannelGroupConverter(ConverterBase[VoiceChannel]):
 
     def _get_category_channels(self, ctx: Context) -> list[VoiceChannel]:
         if not ctx.channel.category:
-            raise BotBaseUserException(f"Cannot automatically assign voice channels from category because channel "
+            raise BotBaseRespondToContextException(f"Cannot automatically assign voice channels from category because channel "
                                        f"'{ctx.channel.name}' doesn't belong in a category")
         return self._build_channels(ctx)
 

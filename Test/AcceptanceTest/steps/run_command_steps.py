@@ -25,6 +25,7 @@ async def step_impl(context):
 
 
 @given("a {game} scrim")
+@given("an {game} scrim")
 @async_run_until_complete
 async def step_impl(context, game):
     table = _create_call_ids(context)
@@ -72,13 +73,6 @@ async def call_command(command, context, table):
             await context.client.on_message(mock_message)
 
 
-@then("channel registered")
-@async_run_until_complete
-async def step_impl(context):
-    channel = await ScrimChannel.convert(MagicMock(), int(context.discord_ids["channel_id"]))
-    assert channel
-
-
 @then("embed received with fields")
 @async_run_until_complete
 async def step_impl(context):
@@ -108,6 +102,16 @@ def step_impl(context):
 @async_run_until_complete
 async def step_impl(context, reaction_string):
     await _add_reactions(1, context, reaction_string)
+
+
+@when("user {user} reacts with {reaction_string}")
+@async_run_until_complete
+async def step_impl(context, user, reaction_string):
+    user_id = try_get_id(context, f"user_{user}_id")
+    guild = create_mock_guild(try_get_id(context, "guild_id"))
+    user = create_mock_author(user_id, guild)
+    reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
+    context.client.dispatch("reaction_add", reaction, user)
 
 
 @when("{amount} users react with {reaction_string}")

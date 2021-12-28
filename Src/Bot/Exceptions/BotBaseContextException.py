@@ -7,8 +7,8 @@ from discord.ext import commands
 from discord.ext.commands import Context
 
 
-class BotBaseException(commands.CommandError, ABC):
+class BotBaseContextException(commands.CommandError, ABC):
 
     @abstractmethod
-    async def resolve(self, ctx: Context):
+    async def resolve(self, ctx: Context):  # pragma: no cover
         pass

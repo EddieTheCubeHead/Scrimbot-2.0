@@ -16,13 +16,14 @@ from Bot.Converters.GuildConverter import GuildConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ContextProvider import ContextProvider
 from Bot.Core.Logging.BotClientLogger import BotClientLogger
-from Bot.Exceptions.BotBaseException import BotBaseException
-from Bot.Exceptions.BotBaseInternalSystemException import BotBaseInternalSystemException
+from Bot.Exceptions.BotBaseContextException import BotBaseContextException
+from Bot.Exceptions.BotBaseNoContextException import BotBaseNoContextException
+from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
 from Bot.Exceptions.BotUnrecognizedCommandException import BotUnrecognizedCommandException
 from Configs.Config import Config
 from Bot.Logic.BotHelpCommand import BotHelpCommand
-from Src.Bot.Exceptions.BotBaseInternalClientException import BotBaseInternalClientException
-from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
+from Src.Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 from Bot.Core.ScrimContext import ScrimContext
 
 
@@ -94,34 +95,35 @@ class ScrimBotClient(commands.Bot):
     async def on_command_error(self, context: commands.Context, exception: Exception):
         """An override for the default discord.py command error handler"""
 
-        if isinstance(exception, BotBaseException):
+        if isinstance(exception, BotBaseContextException):
             await exception.resolve(context)
 
-        elif isinstance(exception, BotBaseInternalSystemException):
-            exception.resolve()
+        elif isinstance(exception, BotBaseNoContextException):
+            await exception.resolve()
 
         else:
             self.logger.critical(str(exception))
+            raise exception
 
-    async def _handle_user_error(self, ctx: commands.Context, exception: BotBaseUserException):
+    async def _handle_user_error(self, ctx: commands.Context, exception: BotBaseRespondToContextException):
         """The default way to handle user related exceptions for commands
 
         :param ctx: The context of the raised error
         :type ctx: commands.Context
         :param exception: The raised exception
-        :type exception: BotBaseUserException
+        :type exception: BotBaseRespondToContextException
         """
 
         forward_msg = f"{exception.get_header()} {exception.get_description()}{exception.get_help_portion(ctx)}"
         await self.temp_msg(ctx, forward_msg, delete_delay=32.0)
 
-    async def _handle_internal_error(self, ctx: commands.Context, exception: BotBaseInternalClientException):
+    async def _handle_internal_error(self, ctx: commands.Context, exception: BotLoggedContextException):
         """The default way to handle internal exceptions for commands
 
         :param ctx: The context of the raised error
         :type ctx: commands.Context
         :param exception: The raised exception
-        :type exception: BotBaseInternalClientException
+        :type exception: BotLoggedContextException
         """
 
         if exception.log:
@@ -137,16 +139,16 @@ class ScrimBotClient(commands.Bot):
         :param user: The user who added the reaction
         :type user: discord.User
         :param exception: The raised exception
-        :type exception: BotBaseInternalClientException
+        :type exception: BotLoggedContextException
         """
 
-        if isinstance(exception, BotBaseUserException):
+        if isinstance(exception, BotBaseRespondToContextException):
             temporary_message = await react.message.channel.send(f"{exception.get_header()} "
                                                                  f"{exception.get_description()}")
             await temporary_message.delete(delay=8)
 
-        elif isinstance(exception, BotBaseInternalClientException) and exception.log or \
-                isinstance(exception, discord.DiscordException) and not isinstance(exception, BotBaseInternalClientException):
+        elif isinstance(exception, BotLoggedContextException) and exception.log or \
+                isinstance(exception, discord.DiscordException) and not isinstance(exception, BotLoggedContextException):
 
             self.logger.warning(f"reaction: '{react.emoji}' in message: '{react.message.content}' "
                                 f"added by: '{user}' caused the exception: {exception}")

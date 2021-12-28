@@ -5,10 +5,10 @@ from discord.ext.commands import CommandNotFound, Context
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
-from Bot.Exceptions.BotBaseUserException import BotBaseUserException
+from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 
 
-class BotUnrecognizedCommandException(BotBaseUserException):
+class BotUnrecognizedCommandException(BotBaseRespondToContextException):
 
     @BotDependencyInjector.inject
     def __init__(self, context: Context, embed_builder: ExceptionEmbedBuilder):
