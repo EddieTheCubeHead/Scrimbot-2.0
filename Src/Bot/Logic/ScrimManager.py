@@ -11,6 +11,7 @@ from discord import Message
 from Bot.DataClasses.User import User
 from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
 from Bot.EmbedSystem.ScrimStates.scrim_states import *
+from Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
@@ -39,8 +40,7 @@ class ScrimManager:
     def _secure_state_change(self, target_state: ScrimState, *valid_states: ScrimState):
         with self.thread_lock:
             if self.state not in valid_states:
-                raise BotLoggedContextException(f"Tried to perform an invalid state change from state "
-                                                f"{self.state.description} to {target_state.description}")
+                raise BotInvalidStateChangeException(self.state, target_state)
             self.state = target_state
 
     def lock(self):

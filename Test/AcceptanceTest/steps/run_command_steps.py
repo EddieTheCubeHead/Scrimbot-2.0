@@ -98,9 +98,16 @@ async def step_impl(context):
     assert_same_embed_text(embed, context.latest_fetched.embeds[0])
 
 
+@then("error received with message")
+def step_impl(context):
+    error_message = context.text.strip()
+    embed = create_error_embed(error_message, context.latest_command, context)
+    context.latest_fetched = ResponseLoggerContext.get_oldest()
+    assert_same_embed_text(embed, context.latest_fetched.embeds[0])
+
+
 @then("error and help received with message")
-@async_run_until_complete
-async def step_impl(context):
+def step_impl(context):
     error_message = context.text.strip()
     embed = create_error_embed(error_message, context.latest_command, context,
                                f"{context.latest_prefix}help {context.latest_command}")

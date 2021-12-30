@@ -9,7 +9,5 @@ from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondTo
 class BotMissingScrimException(BotBaseRespondToContextException, commands.CheckFailure):
     """An exception that should be raised when a scrim cannot be found during checks."""
 
-    def __init__(self, context: commands.Context, *, send_help=True):
-        self._context = context
-        self.send_help = send_help
-        self.message = f"Seems like the channel '{context.channel.name}' is not registered for scrim usage."
+    def __init__(self, channel_id: int):
+        super().__init__(f"Could not find a scrim from channel <#{channel_id}>.")

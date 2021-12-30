@@ -4,6 +4,7 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import MagicMock
 
 from Bot.EmbedSystem.ScrimStates.scrim_states import *
+from Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
 from Utils.TestBases.UnittestBase import UnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
@@ -46,9 +47,7 @@ class TestScrimManager(UnittestBase):
         for state in invalid_states:
             with self.subTest(f"Locking with invalid state: {state.description}"):
                 self.scrim_manager.state = state
-                expected_exception = \
-                    BotLoggedContextException(f"Tried to perform an invalid state change from state "
-                                                   f"{state.description} to {LOCKED.description}")
+                expected_exception = BotInvalidStateChangeException(state, LOCKED)
                 self._assert_raises_correct_exception(expected_exception, self.scrim_manager.lock)
                 self.mock_teams_manager.clear_queue.assert_not_called()
 
@@ -67,8 +66,8 @@ class TestScrimManager(UnittestBase):
         self.mock_teams_manager.has_participants = True
         self.mock_teams_manager.has_full_teams = True
         self.scrim_manager.state = LOCKED
-        expected_exception = BotBaseRespondToContextException("Could not start the scrim. All participants are not in a team.",
-                                                              send_help=False)
+        expected_exception = BotBaseRespondToContextException("Could not start the scrim. All participants are not in "
+                                                              "a team.", send_help=False)
         actual_exception = self._assert_raises_correct_exception(expected_exception, self.scrim_manager.start)
         self.assertEqual(expected_exception.get_help_portion(mock_ctx), actual_exception.get_help_portion(mock_ctx))
 
@@ -77,8 +76,8 @@ class TestScrimManager(UnittestBase):
         self.mock_teams_manager.has_participants = False
         self.mock_teams_manager.has_full_teams = False
         self.scrim_manager.state = LOCKED
-        expected_exception = BotBaseRespondToContextException("Could not start the scrim. Some teams lack the minimum number of "
-                                                  "players required.", send_help=False)
+        expected_exception = BotBaseRespondToContextException("Could not start the scrim. Some teams lack the minimum "
+                                                              "number of players required.", send_help=False)
         actual_exception = self._assert_raises_correct_exception(expected_exception, self.scrim_manager.start)
         self.assertEqual(expected_exception.get_help_portion(mock_ctx), actual_exception.get_help_portion(mock_ctx))
 
@@ -87,8 +86,8 @@ class TestScrimManager(UnittestBase):
         self.mock_teams_manager.has_participants = True
         self.mock_teams_manager.has_full_teams = False
         self.scrim_manager.state = LOCKED
-        expected_exception = BotBaseRespondToContextException("Could not start the scrim. Some teams lack the minimum number of "
-                                                  "players required.", send_help=False)
+        expected_exception = BotBaseRespondToContextException("Could not start the scrim. Some teams lack the minimum "
+                                                              "number of players required.", send_help=False)
         actual_exception = self._assert_raises_correct_exception(expected_exception, self.scrim_manager.start)
         self.assertEqual(expected_exception.get_help_portion(mock_ctx), actual_exception.get_help_portion(mock_ctx))
 
@@ -111,9 +110,7 @@ class TestScrimManager(UnittestBase):
         for state in invalid_states:
             with self.subTest(f"Starting with voice chat when in invalid state: {state.description}"):
                 self.scrim_manager.state = state
-                expected_exception = \
-                    BotLoggedContextException(f"Tried to perform an invalid state change from state "
-                                                   f"{state.description} to {VOICE_WAIT.description}")
+                expected_exception = BotInvalidStateChangeException(state, VOICE_WAIT)
                 self._assert_raises_correct_exception(expected_exception, self.scrim_manager.start_with_voice)
 
     def test_start_with_voice_given_participants_left_then_error_raised(self):

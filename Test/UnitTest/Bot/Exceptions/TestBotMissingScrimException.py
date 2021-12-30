@@ -5,22 +5,17 @@ from unittest.mock import MagicMock
 
 from Utils.TestBases.UnittestBase import UnittestBase
 from Bot.Exceptions.BotMissingScrimException import BotMissingScrimException
-
-
-def _create_mock_context(channel_name, prefix="/"):
-    mock_context = MagicMock()
-    mock_context.channel.name = channel_name
-    mock_context.prefix = prefix
-    return mock_context
+from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class TestDatabaseBaseException(UnittestBase):
 
-    def test_get_help_portion_given_valid_exception_then_correct_help_returned(self):
-        channel_name = "foo"
-        prefix = "/"
-        mock_context = _create_mock_context(channel_name, prefix)
-        mock_context.command.name = "register"
-        expected_help = f"{prefix}help register"
-        new_exception = BotMissingScrimException(mock_context)
-        self.assertEqual(expected_help, new_exception.get_help_portion(mock_context))
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.id_mocker = TestIdGenerator()
+
+    def test_init_given_exception_build_then_correct_error_message_assigned(self):
+        channel_id = self.id_mocker.generate_viable_id()
+        expected_message = f"Could not find a scrim from channel <#{channel_id}>."
+        new_exception = BotMissingScrimException(channel_id)
+        self.assertEqual(expected_message, new_exception.message)
