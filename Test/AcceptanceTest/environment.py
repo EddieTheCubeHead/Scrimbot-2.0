@@ -21,7 +21,7 @@ def before_feature(context, feature):
 
 
 def before_scenario(context, scenario):
-    context.discord_ids = {}
+    context.discord_ids = {"divider": "----------------------------------------------"}
 
 
 def _setup_bot(context):

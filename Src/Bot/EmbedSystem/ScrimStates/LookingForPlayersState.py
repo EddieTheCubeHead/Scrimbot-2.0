@@ -10,12 +10,6 @@ from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
 
-def _build_team_participants(team: Team):
-    if team.members:
-        return os.linesep.join([f"<@{member.user_id}>" for member in team.members])
-    return "_empty_"
-
-
 class LookingForPlayersState(ScrimState):
 
     @property
@@ -41,7 +35,7 @@ class LookingForPlayersState(ScrimState):
         for team in teams_manager.get_standard_teams():
             if team.name == ScrimTeamsManager.QUEUE and not team.members:
                 continue
-            fields.append((team.name, _build_team_participants(team), True))
+            fields.append((team.name, ScrimState.build_team_participants(team), True))
         return fields
 
     @staticmethod

@@ -7,6 +7,8 @@ from behave import *
 from behave.api.async_step import async_run_until_complete
 from discord import Reaction
 
+from Bot.Converters.GameConverter import GameConverter
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
 from Utils.TestHelpers.embed_test_helper import parse_embed_from_table, create_error_embed, assert_same_embed_text
 from Bot.DataClasses.ScrimChannel import ScrimChannel
@@ -28,6 +30,21 @@ async def step_impl(context):
 @given("an {game} scrim")
 @async_run_until_complete
 async def step_impl(context, game):
+    await _create_scrim(context, game)
+
+
+@given("a {game} scrim with {amount} players present")
+@given("an {game} scrim with {amount} players present")
+@async_run_until_complete
+async def step_impl(context, game, amount):
+    await _create_scrim(context, game)
+    if amount == "enough":
+        game_instance = await BotDependencyInjector.dependencies[GameConverter].convert(MagicMock(), game)
+        amount = game_instance.team_count * game_instance.min_team_size
+    await _add_reactions(amount, context, "🎮")
+
+
+async def _create_scrim(context, game):
     table = _create_call_ids(context)
     await call_command(';register', context, table)
     await call_command(f';scrim "{game}"', context, table)
@@ -111,6 +128,7 @@ async def step_impl(context, user, reaction_string):
     guild = create_mock_guild(try_get_id(context, "guild_id"))
     user = create_mock_author(user_id, guild)
     reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
+    await context.latest_fetched.add_reaction(reaction_string)
     context.client.dispatch("reaction_add", reaction, user)
 
 
@@ -131,6 +149,7 @@ async def _add_reaction(context, guild, reaction_string, user_increment):
     user = create_mock_author(GLOBAL_ID_GENERATOR.generate_viable_id(), guild)
     context.discord_ids[f"user_{user_increment}_id"] = user.id
     reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
+    await context.latest_fetched.add_reaction(reaction_string)
     context.client.dispatch("reaction_add", reaction, user)
 
 
@@ -145,6 +164,7 @@ async def step_impl(context, user, reaction_string):
 async def _remove_reaction(context, guild, reaction_string, user_id):
     user = create_mock_author(user_id, guild)
     reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
+    await context.latest_fetched.remove_reaction(reaction_string, user)
     context.client.dispatch("reaction_remove", reaction, user)
 
 
@@ -152,3 +172,11 @@ async def _remove_reaction(context, guild, reaction_string, user_id):
 def step_impl(context):
     embed = parse_embed_from_table(context)
     assert_same_embed_text(embed, context.latest_fetched.embeds[0])
+
+
+@then("scrim message has reactions")
+def step_impl(context):
+    message = context.latest_fetched
+    for reaction, amount in context.table:
+        actual_count = message.test_reactions.count(reaction)
+        assert int(amount) == actual_count, f"Expected {amount} '{reaction}' reactions, but found {actual_count}."

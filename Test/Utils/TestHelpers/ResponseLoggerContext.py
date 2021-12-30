@@ -20,6 +20,9 @@ class LoggedMessage(Message):
     async def add_reaction(self, emoji):
         self.test_reactions.append(emoji)
 
+    async def remove_reaction(self, emoji, member):
+        self.test_reactions.remove(emoji)
+
     async def edit(self, **fields):
         self.content = fields.pop("content", self.content)
         self.embeds = [fields.pop("embed", self.embeds.pop(0) or [])]

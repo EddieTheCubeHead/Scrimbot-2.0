@@ -6,11 +6,9 @@ __author__ = "Eetu Asikainen"
 import threading
 from typing import Optional
 
-import discord
 from discord import Message
 
 from Bot.DataClasses.User import User
-from Bot.EmbedSystem.ScrimStates.LookingForPlayersState import LookingForPlayersState
 from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
 from Bot.EmbedSystem.ScrimStates.scrim_states import *
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
@@ -42,7 +40,7 @@ class ScrimManager:
         with self.thread_lock:
             if self.state not in valid_states:
                 raise BotLoggedContextException(f"Tried to perform an invalid state change from state "
-                                                     f"{self.state.description} to {target_state.description}")
+                                                f"{self.state.description} to {target_state.description}")
             self.state = target_state
 
     def lock(self):
@@ -57,8 +55,8 @@ class ScrimManager:
 
     def _assert_valid_starting_teams(self):
         if not self.teams_manager.has_full_teams:
-            raise BotBaseRespondToContextException("Could not start the scrim. Some teams lack the minimum number of players "
-                                       "required.", send_help=False)
+            raise BotBaseRespondToContextException("Could not start the scrim. Some teams lack the minimum number of "
+                                                   "players required.", send_help=False)
         if self.teams_manager.has_participants:
             raise BotBaseRespondToContextException("Could not start the scrim. All participants are not in a team.",
                                                    send_help=False)

@@ -27,8 +27,8 @@ class StateUnittest(UnittestBase):
         self.participants = Team(ScrimTeamsManager.PARTICIPANTS)
         self.spectators = Team(ScrimTeamsManager.SPECTATORS)
         self.queue = Team(ScrimTeamsManager.QUEUE)
-        self.team_1 = Team("Team 1")
-        self.team_2 = Team("Team 2")
+        self.team_1 = Team("Team 1", min_size=5)
+        self.team_2 = Team("Team 2", min_size=5)
         self.name_mappings = {}
         self.teams_manager = MagicMock()
         self.teams_manager.get_standard_teams = self.mock_standard_teams

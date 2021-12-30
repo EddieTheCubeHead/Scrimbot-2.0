@@ -1,6 +1,8 @@
 from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
+_divider = "----------------------------------------------"
+
 
 class LockedState(ScrimState):
 
@@ -10,12 +12,31 @@ class LockedState(ScrimState):
 
     @staticmethod
     def build_description(teams_manager: ScrimTeamsManager) -> str:
-        pass
+        return "Players locked. Use reactions for manual team selection or the command 'teams " \
+               "_random/balanced/balancedrandom/pickup_' to define teams."
 
     @staticmethod
     def build_fields(teams_manager: ScrimTeamsManager) -> list[(str, str, bool)]:
-        pass
+        fields = []
+        LockedState._build_standard_team_fields(fields, teams_manager)
+        fields.append((_divider, _divider, False))
+        LockedState._build_game_team_fields(fields, teams_manager)
+        return fields
+
+    @staticmethod
+    def _build_standard_team_fields(fields, teams_manager):
+        for team in teams_manager.get_standard_teams():
+            if team.name == ScrimTeamsManager.QUEUE:
+                continue
+            fields.append((team.name if team.name != ScrimTeamsManager.PARTICIPANTS else "Unassigned",
+                           ScrimState.build_team_participants(team), True))
+
+    @staticmethod
+    def _build_game_team_fields(fields, teams_manager):
+        for team in teams_manager.get_game_teams():
+            name_text = team.name + f" _({team.min_size - len(team.members)} more needed)_"
+            fields.append((name_text, ScrimState.build_team_participants(team), True))
 
     @staticmethod
     def build_footer(teams_manager: ScrimTeamsManager) -> str:
-        pass
+        return "React 1️⃣ to join Team 1 or 2️⃣ to join Team 2"

@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, call
 
 from Bot.Cogs.ScrimCommands import ScrimCommands
 from Bot.DataClasses.Game import Game
+from Bot.EmbedSystem.ScrimStates.scrim_states import LFP, LOCKED
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
@@ -67,3 +68,15 @@ class TestScrimCommands(AsyncUnittestBase):
         self.response_builder.send.return_value = scrim_message
         await self.cog.scrim(ctx, game)
         self.assertEqual(scrim_message, result_scrim.message)
+
+    async def test_lock_given_called_with_enough_participants_then_scrim_locked_and_message_edited(self):
+        mock_scrim = MagicMock()
+        mock_scrim.state = LFP
+        mock_message = MagicMock()
+        mock_scrim.message = mock_message
+        ctx = AsyncMock()
+        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.scrim = mock_scrim
+        await self.cog.lock(ctx)
+        mock_scrim.lock.assert_called_with()
+        self.response_builder.edit.assert_called_with(mock_message, displayable=mock_scrim)

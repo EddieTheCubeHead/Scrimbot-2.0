@@ -3,6 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
 
+from Bot.Checks.ActiveScrimCheck import ActiveScrimCheck
 from Bot.Checks.FreeScrimCheck import FreeScrimCheck
 from Bot.Cogs.Helpers.BotSettingsService import BotSettingsService
 from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
@@ -56,7 +57,7 @@ class ScrimCommands(commands.Cog):
 
     @commands.command(aliases=["l", "lockteams"])
     @commands.guild_only()
-    @checks.active_scrim()
+    @ActiveScrimCheck.decorate()
     async def lock(self, ctx: ScrimContext):
         """A command that locks a scrim when it has the required amount of players
 
@@ -67,9 +68,9 @@ class ScrimCommands(commands.Cog):
         :type ctx: commands.Context
         """
 
-        scrim = await ctx.get_scrim()
-        await scrim.lock()
-        await ctx.message.delete()
+        scrim = ctx.scrim
+        scrim.lock()
+        await self._response_builder.edit(scrim.message, displayable=scrim)
 
     @commands.group(aliases=["t", "maketeams"])
     @commands.guild_only()
