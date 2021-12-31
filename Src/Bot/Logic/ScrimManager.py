@@ -45,7 +45,8 @@ class ScrimManager:
 
     def lock(self):
         if not self.teams_manager.has_enough_participants:
-            raise BotBaseRespondToContextException("Could not lock the scrim. Too few participants present.")
+            raise BotBaseRespondToContextException("Could not lock the scrim. Too few participants present.",
+                                                   delete_after=60)
         self._secure_state_change(LOCKED, LFP)
         self.teams_manager.clear_queue()
 

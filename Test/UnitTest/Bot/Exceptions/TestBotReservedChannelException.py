@@ -35,5 +35,5 @@ class TestBotReservedChannelException(AsyncUnittestBase):
         mock_embed_builder = AsyncMock()
         new_exception = BotReservedChannelException(1, mock_embed_builder)
         await new_exception.resolve(mock_context)
-        mock_embed_builder.send.assert_called_with(mock_context, displayable=new_exception)
+        mock_embed_builder.send.assert_called_with(mock_context, displayable=new_exception, delete_after=None)
 

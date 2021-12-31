@@ -4,6 +4,7 @@ __author__ = "Eetu Asikainen"
 import queue
 from collections import OrderedDict
 from datetime import datetime
+from typing import Optional
 from unittest.mock import MagicMock, AsyncMock
 
 from discord import Message
@@ -14,8 +15,17 @@ from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 class LoggedMessage(Message):
 
     def __init__(self, *args, **kwargs):
+        self._deletion_time: Optional[float] = None
         self.test_reactions = []
         super().__init__(*args, **kwargs)
+
+    @property
+    def deletion_time(self):
+        return self._deletion_time
+
+    @deletion_time.setter
+    def deletion_time(self, time: float):
+        self._deletion_time = time
 
     async def add_reaction(self, emoji):
         self.test_reactions.append(emoji)
@@ -47,6 +57,8 @@ class ResponseLoggerContext(ScrimContext):
                                       "attachments": [],
                                       "type": "default",
                                       "mention_everyone": False})
+        if delete_after is not None:
+            message.deletion_time = delete_after
         self.add_sent(message.id, message)
         return message
 

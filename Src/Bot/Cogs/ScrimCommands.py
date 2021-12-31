@@ -70,6 +70,7 @@ class ScrimCommands(commands.Cog):
 
         scrim = ctx.scrim
         scrim.lock()
+        ctx.message.delete()
         await self._response_builder.edit(scrim.message, displayable=scrim)
 
     @commands.group(aliases=["t", "maketeams"])

@@ -80,3 +80,4 @@ class TestScrimCommands(AsyncUnittestBase):
         await self.cog.lock(ctx)
         mock_scrim.lock.assert_called_with()
         self.response_builder.edit.assert_called_with(mock_message, displayable=mock_scrim)
+        ctx.message.delete.assert_called()

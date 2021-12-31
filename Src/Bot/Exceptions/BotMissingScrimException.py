@@ -10,4 +10,4 @@ class BotMissingScrimException(BotBaseRespondToContextException, commands.CheckF
     """An exception that should be raised when a scrim cannot be found during checks."""
 
     def __init__(self, channel_id: int):
-        super().__init__(f"Could not find a scrim from channel <#{channel_id}>.")
+        super().__init__(f"Could not find a scrim on channel <#{channel_id}>.")

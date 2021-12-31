@@ -37,15 +37,16 @@ class TestScrimManager(UnittestBase):
 
     def test_lock_given_too_few_participants_then_error_raised(self):
         self.mock_teams_manager.has_enough_participants = False
-        expected_exception = BotBaseRespondToContextException("Could not lock the scrim. Too few participants present.")
+        expected_exception = BotBaseRespondToContextException("Could not lock the scrim. Too few participants present.",
+                                                              delete_after=60)
         self._assert_raises_correct_exception(expected_exception, self.scrim_manager.lock)
         self.mock_teams_manager.clear_queue.assert_not_called()
 
-    def test_lock_given_scrim_not_in_lfp_state_then_silent_error_raised(self):
+    def test_lock_given_scrim_not_in_lfp_state_then_error_raised(self):
         self.mock_teams_manager.has_enough_participants = True
         invalid_states = (LOCKED, CAPS, CAPS_PREP, VOICE_WAIT, STARTED)
         for state in invalid_states:
-            with self.subTest(f"Locking with invalid state: {state.description}"):
+            with self.subTest(f"Locking with invalid state: {state.description}", delete_after=60):
                 self.scrim_manager.state = state
                 expected_exception = BotInvalidStateChangeException(state, LOCKED)
                 self._assert_raises_correct_exception(expected_exception, self.scrim_manager.lock)

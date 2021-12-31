@@ -6,7 +6,8 @@ Feature: Scrim creation
   Scenario: Basic scrim creation
     Given channel registered for scrims
     When ;scrim dota is called
-    Then embed received with fields
+    Then command message is deleted
+    And embed received with fields
       | name         | value                                               |
       | Author       | Dota 2 scrim                                        |
       | Icon         | https://i.imgur.com/OlWIlyY.jpg?1                   |
@@ -19,7 +20,8 @@ Feature: Scrim creation
 
   Scenario: Trying to create a scrim on an unregistered channel
     When ;scrim cs is called
-    Then error and help received with message
+    Then command message is deleted
+    And error and help received with message
       """
       Cannot create a scrim on channel <#{channel_id}> because it is not registered for scrim usage.
       """
@@ -28,7 +30,8 @@ Feature: Scrim creation
     Given channel registered for scrims
     When ;scrim dota is called
     And ;scrim cs is called
-    Then embed received with fields
+    Then command messages are deleted
+    And embed received with fields
       | name         | value                                               |
       | Author       | Dota 2 scrim                                        |
       | Icon         | https://i.imgur.com/OlWIlyY.jpg?1                   |

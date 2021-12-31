@@ -20,7 +20,8 @@ Feature: Channel registration rewrite
 
   Scenario: Registering a channel with no voice channels
     When ;register is called
-    Then embed received with fields
+    Then command message is deleted
+    And embed received with fields
       | name                                       | value           |
       | New scrim channel registered successfully! | Channel data:   |
       | Text channel                               | <#{channel_id}> |
@@ -28,7 +29,8 @@ Feature: Channel registration rewrite
   Scenario: Registering a channel that is already registered
     When ;register is called
     And ;register is called
-    Then embed received with fields
+    Then command messages are deleted
+    And embed received with fields
       | name                                       | value           |
       | New scrim channel registered successfully! | Channel data:   |
       | Text channel                               | <#{channel_id}> |
@@ -40,7 +42,8 @@ Feature: Channel registration rewrite
   Scenario: Registering a channel with a lobby channel and two team voice channels
     Given exists 3 voice channels
     When ;register l:{voice_1_id} {voice_2_id} {voice_3_id} is called
-    Then embed received with fields
+    Then command message is deleted
+    And embed received with fields
       | name                                       | value           |
       | New scrim channel registered successfully! | Channel data:   |
       | Text channel                               | <#{channel_id}> |
@@ -52,7 +55,8 @@ Feature: Channel registration rewrite
     Given exists 3 voice channels
     When ;register {voice_1_id} {voice_2_id} is called
     And ;register {voice_2_id} {voice_3_id} is called from another channel
-    Then embed received with fields
+    Then command messages are deleted
+    And embed received with fields
       | name                                       | value           |
       | New scrim channel registered successfully! | Channel data:   |
       | Text channel                               | <#{channel_id}> |
@@ -71,7 +75,8 @@ Feature: Channel registration rewrite
       | voice        | Team 1       |
       | voice        | Team 2       |
     When ;register auto is called
-    Then embed received with fields
+    Then command message is deleted
+    And embed received with fields
       | name                                       | value           |
       | New scrim channel registered successfully! | Channel data:   |
       | Text channel                               | <#{channel_id}> |
@@ -86,7 +91,8 @@ Feature: Channel registration rewrite
       | voice        | Radiant      |
       | voice        | Dire         |
     When ;register auto is called
-    Then embed received with fields
+    Then command message is deleted
+    And embed received with fields
       | name                                       | value           |
       | New scrim channel registered successfully! | Channel data:   |
       | Text channel                               | <#{channel_id}> |
@@ -99,7 +105,8 @@ Feature: Channel registration rewrite
       | text         | scrim-1      |
       | voice        | Scrimmage    |
     When ;register auto is called
-    Then embed received with fields
+    Then command message is deleted
+    And embed received with fields
       | name                                       | value           |
       | New scrim channel registered successfully! | Channel data:   |
       | Text channel                               | <#{channel_id}> |

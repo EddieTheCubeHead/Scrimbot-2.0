@@ -11,7 +11,8 @@ Feature: Scrim locking and team creation
   Scenario: Locking a scrim with enough participants
     Given a Dota 2 scrim with enough players present
     When ;lock is called
-    Then embed edited to have fields
+    Then command message is deleted
+    And embed edited to have fields
       | name                     | value                                               |
       | Author                   | Dota 2 scrim                                        |
       | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
@@ -27,24 +28,27 @@ Feature: Scrim locking and team creation
   Scenario: Attempting to lock a scrim with too few participants
     Given a Dota 2 scrim with 9 players present
     When ;lock is called
-    Then error and help received with message
+    Then command message is deleted
+    And error and help received with message
     """
     Could not lock the scrim. Too few participants present.
     """
+    And error message deleted after 60 seconds
 
   Scenario: Attempting to lock a scrim on channel with no scrim
     When ;lock is called
-    Then error and help received with message
+    Then command message is deleted
+    And error and help received with message
     """
-    Could not find a scrim from channel <#{channel_id}>.
+    Could not find a scrim on channel <#{channel_id}>.
     """
 
-  @wip
   Scenario: Attempting to lock a scrim that is already locked
     Given a Rocket League scrim with enough players present
     When ;lock is called
     And ;lock is called
-    Then embed edited to have fields
+    Then command message is deleted
+    And embed edited to have fields
       | name                     | value                                         |
       | Author                   | Rocket League scrim                           |
       | Icon                     | https://i.imgur.com/BvQOQyN.png               |
@@ -60,3 +64,4 @@ Feature: Scrim locking and team creation
     """
     Could not move a scrim that is waiting for team selection into the state 'waiting for team selection'.
     """
+    And error message deleted after 60 seconds
