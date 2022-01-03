@@ -63,7 +63,7 @@ class ScrimReactionListeners(commands.Cog):
                 scrim.teams_manager.add_player(ScrimTeamsManager.SPECTATORS, user)
 
             elif react.emoji == "1\u20E3" and scrim.state == LOCKED:
-                await scrim.set_team_1(member)
+                scrim.teams_manager.set_team(0, user)
 
             elif react.emoji == "2\u20E3" and scrim.state == LOCKED:
                 await scrim.set_team_2(member)

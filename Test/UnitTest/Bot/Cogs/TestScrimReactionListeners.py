@@ -9,7 +9,7 @@ from Bot.Cogs.ScrimReactionListeners import ScrimReactionListeners
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
 from Bot.DataClasses.Game import Game
-from Bot.EmbedSystem.ScrimStates.scrim_states import LFP
+from Bot.EmbedSystem.ScrimStates.scrim_states import LFP, LOCKED
 from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
 from Bot.Exceptions.BotInvalidReactionJoinException import BotInvalidReactionJoinException
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
@@ -30,6 +30,7 @@ class TestScrimReactionListeners(AsyncUnittestBase):
     def setUp(self) -> None:
         self.active_scrims_manager = MagicMock()
         self.scrim = MagicMock()
+        self.scrim_fetched = False
         self.active_scrims_manager.try_get_scrim = self.get_scrim
         self.embed_builder = AsyncMock()
         self.user_converter = MagicMock()
@@ -44,7 +45,14 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         self.user_converter.get_user.return_value = self.mock_user
 
     def get_scrim(self, channel_id):
+        self.scrim_fetched = True
         return self.scrim
+
+    async def test_on_reaction_add_given_reacted_by_bot_then_nothing_happens(self):
+        players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji="\U0001F3AE")
+        self.mock_member.bot = True
+        await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
+        self.assertFalse(self.scrim_fetched)
 
     async def test_on_reaction_add_given_players_reaction_then_user_added_to_players_and_message_edited(self):
         self.scrim.state = LFP
@@ -58,6 +66,13 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji="\U0001F441")
         await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
         self.scrim.teams_manager.add_player.assert_called_with(ScrimTeamsManager.SPECTATORS, self.mock_user)
+        self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)
+
+    async def test_on_reaction_add_given_team_one_reaction_then_user_added_to_spectators_and_message_edited(self):
+        self.scrim.state = LOCKED
+        players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji="1\u20E3")
+        await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
+        self.scrim.teams_manager.set_team.assert_called_with(0, self.mock_user)
         self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)
 
     async def test_on_reaction_add_given_invalid_join_caught_then_exception_logged_and_reaction_removed(self):
@@ -78,8 +93,8 @@ class TestScrimReactionListeners(AsyncUnittestBase):
             else:
                 BotDependencyInjector.dependencies.pop(BotSystemLogger)
         players_joining_reaction.remove.assert_called_with(self.mock_member)
-        system_logger.debug.assert_called_with(f"An exception occurred during bot operation: "
-                                               f"User '{self.mock_member.id}' could not join team "
+        system_logger.debug.assert_called_with(f"An exception occurred during bot operation: User "
+                                               f"'{self.mock_member.id}' could not join team "
                                                f"'{original_exception.team.name}' with reaction "
                                                f"{players_joining_reaction} because they are Reason.")
 

@@ -1,28 +1,33 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from asyncio import wait, sleep
+from typing import Optional
 from unittest.mock import MagicMock
 
 from behave import *
 from behave.api.async_step import async_run_until_complete
 from behave.runner import Context
-from discord import Reaction
+from discord import Reaction, Message
 
 from Bot.Converters.GameConverter import GameConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
 from Utils.TestHelpers.embed_test_helper import parse_embed_from_table, create_error_embed, assert_same_embed_text
 from Bot.DataClasses.ScrimChannel import ScrimChannel
+from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 from Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 from Utils.TestHelpers.id_parser import insert_ids, get_id_increment, try_get_id
 from Utils.TestHelpers.test_utils import create_mock_guild, create_mock_author, create_mock_channel,\
     create_async_mock_message
 
 
-def _hide_command_calls(context: Context, amount: int):
+def _hide_command_calls(context: Context, amount: int) -> Optional[Message]:
+    latest_fetched = None
     for _ in range(amount):
-        context.latest_fetched = ResponseLoggerContext.get_oldest()
+        latest_fetched = ResponseLoggerContext.get_oldest()
         context.command_messages.pop(-1)
+    return latest_fetched
 
 
 @given("channel registered for scrims")
@@ -30,7 +35,7 @@ def _hide_command_calls(context: Context, amount: int):
 async def step_impl(context: Context):
     table = _create_call_ids(context)
     await call_command(';register', context, table)
-    _hide_command_calls(context, 1)
+    context.latest_fetched = _hide_command_calls(context, 1)
 
 
 @given("a {game} scrim")
@@ -51,11 +56,25 @@ async def step_impl(context: Context, game, amount):
     await _add_reactions(amount, context, "🎮")
 
 
+@given("a {game} scrim in locked state")
+@given("an {game} scrim in locked state")
+@async_run_until_complete
+async def step_impl(context: Context, game):
+    await _create_scrim(context, game)
+    game_instance = await BotDependencyInjector.dependencies[GameConverter].convert(MagicMock(), game)
+    amount = game_instance.team_count * game_instance.min_team_size
+    await _add_reactions(amount, context, "🎮")
+    await sleep(1)
+    table = _create_call_ids(context)
+    await call_command(";lock", context, table)
+    context.command_messages.pop(-1)
+
+
 async def _create_scrim(context: Context, game):
     table = _create_call_ids(context)
     await call_command(';register', context, table)
     await call_command(f';scrim "{game}"', context, table)
-    _hide_command_calls(context, 2)
+    context.latest_fetched = _hide_command_calls(context, 2)
 
 
 @when("{command} is called")
@@ -109,15 +128,24 @@ async def step_impl(context: Context, user, reaction_string):
     user_id = try_get_id(context, f"user_{user}_id")
     guild = create_mock_guild(try_get_id(context, "guild_id"))
     user = create_mock_author(user_id, guild)
-    reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
-    await context.latest_fetched.add_reaction(reaction_string)
+    reaction = Reaction(data={}, message=context.latest_fetched, emoji=_try_insert_number_react(reaction_string))
+    await context.latest_fetched.add_reaction(_try_insert_number_react(reaction_string))
     context.client.dispatch("reaction_add", reaction, user)
+
+
+def _try_insert_number_react(reaction_string):
+    number_mappings = {
+        "1️⃣": "1\u20E3"
+    }
+    if reaction_string in number_mappings:
+        return number_mappings[reaction_string]
+    return reaction_string
 
 
 @when("{amount} users react with {reaction_string}")
 @async_run_until_complete
 async def step_impl(context: Context, amount, reaction_string):
-    await _add_reactions(amount, context, reaction_string)
+    await _add_reactions(amount, context, _try_insert_number_react(reaction_string))
 
 
 async def _add_reactions(amount, context: Context, reaction_string):
