@@ -135,7 +135,8 @@ async def step_impl(context: Context, user, reaction_string):
 
 def _try_insert_number_react(reaction_string):
     number_mappings = {
-        "1️⃣": "1\u20E3"
+        "1️⃣": "1\u20E3",
+        "2️⃣": "2\u20E3"
     }
     if reaction_string in number_mappings:
         return number_mappings[reaction_string]
@@ -226,9 +227,14 @@ def step_impl(context: Context):
 @then("scrim message has reactions")
 def step_impl(context: Context):
     message = context.latest_fetched
+    allowed_reactions = []
     for reaction, amount in context.table:
-        actual_count = message.test_reactions.count(reaction)
+        allowed_reactions.append(_try_insert_number_react(reaction))
+        actual_count = message.test_reactions.count(_try_insert_number_react(reaction))
         assert int(amount) == actual_count, f"Expected {amount} '{reaction}' reactions, but found {actual_count}."
+    for message_reaction in message.test_reactions:
+        assert message_reaction in allowed_reactions, f"Did not expect the message to have the reaction" \
+                                                      f"'{message_reaction}'"
 
 
 @then("error message deleted after {seconds} seconds")

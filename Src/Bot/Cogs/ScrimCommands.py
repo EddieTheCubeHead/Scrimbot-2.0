@@ -17,7 +17,13 @@ from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
 from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 from Bot.Converters.GameConverter import GameConverter
 from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
+from Bot.Logic.ScrimManager import ScrimManager
 from Configs.Config import Config
+
+
+async def _add_team_reactions(scrim: ScrimManager):
+    for team in range(1, len(scrim.teams_manager.get_game_teams()) + 1):
+        await scrim.message.add_reaction(emoji=f"{team}\u20E3")
 
 
 class ScrimCommands(commands.Cog):
@@ -70,8 +76,10 @@ class ScrimCommands(commands.Cog):
 
         scrim = ctx.scrim
         scrim.lock()
-        ctx.message.delete()
+        await ctx.message.delete()
         await self._response_builder.edit(scrim.message, displayable=scrim)
+        await scrim.message.clear_reactions()
+        await _add_team_reactions(scrim)
 
     @commands.group(aliases=["t", "maketeams"])
     @commands.guild_only()

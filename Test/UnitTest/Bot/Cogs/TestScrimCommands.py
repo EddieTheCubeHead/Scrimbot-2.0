@@ -72,7 +72,7 @@ class TestScrimCommands(AsyncUnittestBase):
     async def test_lock_given_called_with_enough_participants_then_scrim_locked_and_message_edited(self):
         mock_scrim = MagicMock()
         mock_scrim.state = LFP
-        mock_message = MagicMock()
+        mock_message = AsyncMock()
         mock_scrim.message = mock_message
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
@@ -81,3 +81,21 @@ class TestScrimCommands(AsyncUnittestBase):
         mock_scrim.lock.assert_called_with()
         self.response_builder.edit.assert_called_with(mock_message, displayable=mock_scrim)
         ctx.message.delete.assert_called()
+
+    async def test_lock_given_locked_then_scrim_joining_reactions_removed_and_team_joining_reactions_added(self):
+        mock_scrim = MagicMock()
+        mock_scrim.state = LFP
+        mock_message = AsyncMock()
+        mock_scrim.message = mock_message
+        ctx = AsyncMock()
+        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.scrim = mock_scrim
+        for team_count in range(2, 10):
+            with self.subTest(f"Scrim locking reaction updates ({team_count} teams)"):
+                mock_scrim.teams_manager.get_game_teams.return_value = ["Team"] * team_count
+                await self.cog.lock(ctx)
+                mock_message.clear_reactions.assert_called()
+                calls = mock_message.add_reaction.call_args_list
+                for team in range(team_count):
+                    self.assertEqual(calls[team], call(emoji=f"{team + 1}\u20E3"))
+                mock_message.add_reaction.call_args_list = []

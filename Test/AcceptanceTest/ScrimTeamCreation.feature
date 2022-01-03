@@ -24,6 +24,10 @@ Feature: Scrim locking and team creation
       | Team 1 _(5 more needed)_ | _empty_                                             |
       | Team 2 _(5 more needed)_ | _empty_                                             |
       | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2       |
+    And scrim message has reactions
+      | reaction | amount |
+      | 1️⃣       | 1      |
+      | 2️⃣       | 1      |
 
   Scenario: Attempting to lock a scrim with too few participants
     Given a Dota 2 scrim with 9 players present

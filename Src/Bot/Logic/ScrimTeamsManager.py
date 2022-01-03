@@ -219,7 +219,7 @@ class ScrimTeamsManager:
 
     def _blind_remove(self, player: User) -> bool:
         for team in self._teams.values():
-            if player in team.members:
+            if player.user_id in [member.user_id for member in team.members]:
                 self._remove_from_team(team, player)
                 return True
         return False

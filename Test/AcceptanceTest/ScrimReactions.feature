@@ -184,7 +184,6 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | 🎮       | 1      |
       | 👁       | 2      |
 
-    @wip
     Scenario: Joining a team in a locked scrim
       Given a Dota 2 scrim in locked state
       When user 1 reacts with 1️⃣
