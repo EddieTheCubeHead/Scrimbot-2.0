@@ -12,6 +12,7 @@ from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
 from Bot.EmbedSystem.ScrimStates.scrim_states import *
 from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
+from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
 from Bot.Exceptions.BotInvalidReactionJoinException import BotInvalidReactionJoinException
 from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
@@ -126,8 +127,8 @@ class ScrimReactionListeners(commands.Cog):
             elif react.emoji == "\U0001F451" and scrim.state == CAPS_PREP:
                 await scrim.remove_captain(user)
 
-        except DiscordException as exception:
-            await self._client.handle_react_internal_error(react, user, exception)
+        except BotInvalidPlayerRemoval as exception:
+            exception.resolve()
 
         await self.embed_builder.edit(react.message, displayable=scrim)
 

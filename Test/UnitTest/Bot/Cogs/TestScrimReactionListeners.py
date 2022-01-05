@@ -11,14 +11,12 @@ from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
 from Bot.DataClasses.Game import Game
 from Bot.EmbedSystem.ScrimStates.scrim_states import LFP, LOCKED
 from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
+from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
 from Bot.Exceptions.BotInvalidReactionJoinException import BotInvalidReactionJoinException
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
-
-
-class _RemovedDependencySentinel:
-    pass
+from Utils.TestHelpers.bot_dependency_patcher import mock_dependency
 
 
 class TestScrimReactionListeners(AsyncUnittestBase):
@@ -92,20 +90,13 @@ class TestScrimReactionListeners(AsyncUnittestBase):
     async def test_on_reaction_add_given_invalid_join_caught_then_exception_logged_and_reaction_removed(self):
         self.scrim.state = LFP
         mock_team = MagicMock()
-        original_exception = BotInvalidJoinException(self.mock_user, mock_team, "Reason")
-        self.scrim.teams_manager.add_player.side_effect = original_exception
         players_joining_reaction = AsyncMock()
         players_joining_reaction.emoji = "\U0001F441"
         system_logger = MagicMock()
-        original_dependency = BotDependencyInjector.dependencies.pop(BotSystemLogger, _RemovedDependencySentinel())
-        BotDependencyInjector.dependencies[BotSystemLogger] = system_logger
-        try:
+        with mock_dependency(BotSystemLogger, system_logger):
+            original_exception = BotInvalidJoinException(self.mock_user, mock_team, "Reason")
+            self.scrim.teams_manager.add_player.side_effect = original_exception
             await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
-        finally:
-            if not isinstance(original_dependency, _RemovedDependencySentinel):
-                BotDependencyInjector.dependencies[BotSystemLogger] = original_dependency
-            else:
-                BotDependencyInjector.dependencies.pop(BotSystemLogger)
         players_joining_reaction.remove.assert_called_with(self.mock_member)
         system_logger.debug.assert_called_with(f"An exception occurred during bot operation: User "
                                                f"'{self.mock_member.id}' could not join team "
@@ -135,4 +126,18 @@ class TestScrimReactionListeners(AsyncUnittestBase):
                 self.scrim.teams_manager.remove_player.assert_called_with(team - 1, self.mock_user)
                 self.scrim.teams_manager.add_player.assert_called_with(ScrimTeamsManager.PARTICIPANTS, self.mock_user)
                 self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)
+
+    async def test_on_reaction_remove_given_invalid_removal_caught_then_exception_logged(self):
+        self.scrim.state = LFP
+        mock_team = MagicMock()
+        players_joining_reaction = AsyncMock()
+        players_joining_reaction.emoji = "\U0001F441"
+        system_logger = MagicMock()
+        with mock_dependency(BotSystemLogger, system_logger):
+            original_exception = BotInvalidPlayerRemoval(self.mock_user, mock_team)
+            self.scrim.teams_manager.remove_player.side_effect = original_exception
+            await self.cog.scrim_reaction_remove_listener(players_joining_reaction, self.mock_member)
+        system_logger.debug.assert_called_with(f"An exception occurred during bot operation: Tried to remove player "
+                                               f"<@{self.mock_user.user_id}> from team '{mock_team.name}' even though "
+                                               f"they are not a team member.")
 
