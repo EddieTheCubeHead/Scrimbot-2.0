@@ -64,7 +64,7 @@ async def step_impl(context: Context, game):
     game_instance = await BotDependencyInjector.dependencies[GameConverter].convert(MagicMock(), game)
     amount = game_instance.team_count * game_instance.min_team_size
     await _add_reactions(amount, context, "🎮")
-    await sleep(1)
+    await sleep(0)  # Discord.py queue system for events is dumb. This ensures all reactions are added
     table = _create_call_ids(context)
     await call_command(";lock", context, table)
     context.command_messages.pop(-1)
