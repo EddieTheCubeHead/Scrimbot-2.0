@@ -129,7 +129,7 @@ async def step_impl(context: Context, user, reaction_string):
     guild = create_mock_guild(try_get_id(context, "guild_id"))
     user = create_mock_author(user_id, guild)
     reaction = Reaction(data={}, message=context.latest_fetched, emoji=_try_insert_number_react(reaction_string))
-    await context.latest_fetched.add_reaction(_try_insert_number_react(reaction_string))
+    await context.latest_fetched.add_reaction(_try_insert_number_react(reaction_string), user)
     context.client.dispatch("reaction_add", reaction, user)
 
 
@@ -160,7 +160,7 @@ async def _add_reaction(context: Context, guild, reaction_string, user_increment
     user = create_mock_author(GLOBAL_ID_GENERATOR.generate_viable_id(), guild)
     context.discord_ids[f"user_{user_increment}_id"] = user.id
     reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
-    await context.latest_fetched.add_reaction(reaction_string)
+    await context.latest_fetched.add_reaction(reaction_string, user)
     context.client.dispatch("reaction_add", reaction, user)
 
 
@@ -214,8 +214,8 @@ def step_impl(context: Context):
 @then("team joining emojis reacted by bot")
 def step_impl(context: Context):
     message = context.latest_fetched
-    assert "\U0001F3AE" in message.test_reactions
-    assert "\U0001F441" in message.test_reactions
+    assert "\U0001F3AE" in [reaction.emoji for reaction in message.reactions]
+    assert "\U0001F441" in [reaction.emoji for reaction in message.reactions]
 
 
 @then("embed edited to have fields")
@@ -230,9 +230,9 @@ def step_impl(context: Context):
     allowed_reactions = []
     for reaction, amount in context.table:
         allowed_reactions.append(_try_insert_number_react(reaction))
-        actual_count = message.test_reactions.count(_try_insert_number_react(reaction))
+        actual_count = message.raw_reactions.count(_try_insert_number_react(reaction))
         assert int(amount) == actual_count, f"Expected {amount} '{reaction}' reactions, but found {actual_count}."
-    for message_reaction in message.test_reactions:
+    for message_reaction in message.raw_reactions:
         assert message_reaction in allowed_reactions, f"Did not expect the message to have the reaction" \
                                                       f"'{message_reaction}'"
 

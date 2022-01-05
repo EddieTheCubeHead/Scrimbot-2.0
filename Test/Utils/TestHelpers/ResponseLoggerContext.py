@@ -1,23 +1,44 @@
+from __future__ import annotations
+
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+import asyncio
 import queue
 from collections import OrderedDict
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 from unittest.mock import MagicMock, AsyncMock
 
-from discord import Message
+from discord import Message, Reaction, Member
+from discord.ext.commands import CommandError
+
 from Bot.Core.ScrimContext import ScrimContext
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+
+
+class MockReaction:
+
+    def __init__(self, emoji: str, message: LoggedMessage, user: Optional[Member] = None):
+        self._message = message
+        self.emoji = emoji
+        self.user = user
+
+    def users(self):
+        return [self.user] if self.user else []
+
+    async def remove(self, member: Member):
+        if member and self.user and member.id != self.user.id:
+            raise CommandError("Silent erroneous reaction removal")
+        await self._message.remove_reaction(self, member)
 
 
 class LoggedMessage(Message):
 
     def __init__(self, *args, **kwargs):
         self._deletion_time: Optional[float] = None
-        self.test_reactions = []
         super().__init__(*args, **kwargs)
+        self.reactions = []
 
     @property
     def deletion_time(self):
@@ -27,14 +48,23 @@ class LoggedMessage(Message):
     def deletion_time(self, time: float):
         self._deletion_time = time
 
-    async def add_reaction(self, emoji):
-        self.test_reactions.append(emoji)
+    @property
+    def raw_reactions(self):
+        return [reaction.emoji for reaction in self.reactions]
+
+    async def add_reaction(self, emoji, user=None):
+        self.reactions.append(MockReaction(emoji, self, user))
 
     async def remove_reaction(self, emoji, member):
-        self.test_reactions.remove(emoji)
+        for reaction in self.reactions:
+            if (type(emoji) == str and reaction.emoji == emoji) or \
+                    (type(emoji) != str and reaction.emoji == emoji.emoji):
+                if (not member or type(emoji) == str) or (emoji.user and member.id == emoji.user.id):
+                    self.reactions.remove(reaction)
+                    return
 
     async def clear_reactions(self):
-        self.test_reactions.clear()
+        self.reactions.clear()
 
     async def edit(self, **fields):
         self.content = fields.pop("content", self.content)

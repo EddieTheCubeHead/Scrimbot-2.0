@@ -68,12 +68,26 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         self.scrim.teams_manager.add_player.assert_called_with(ScrimTeamsManager.SPECTATORS, self.mock_user)
         self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)
 
-    async def test_on_reaction_add_given_team_one_reaction_then_user_added_to_spectators_and_message_edited(self):
+    async def test_on_reaction_add_given_team_reaction_then_user_added_to_correct_team_and_message_edited(self):
         self.scrim.state = LOCKED
-        players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji="1\u20E3")
-        await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
-        self.scrim.teams_manager.set_team.assert_called_with(0, self.mock_user)
-        self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)
+        for team in range(1, 10):
+            with self.subTest(f"Adding team joining reaction '{team}\u20E3'"):
+                players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji=f"{team}\u20E3")
+                await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
+                self.scrim.teams_manager.set_team.assert_called_with(team - 1, self.mock_user)
+                self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)
+
+    async def test_on_reaction_add_given_player_in_another_team_then_original_reaction_removed(self):
+        self.scrim.state = LOCKED
+        for team in range(1, 10):
+            with self.subTest(f"Removing old reaction while adding team joining reaction '{team}\u20E3'"):
+                original_joining_reaction = AsyncMock()
+                original_joining_reaction.emoji = f"{(team + 1) % 9 + 1}\u20E3"
+                original_joining_reaction.users.return_value = [self.mock_member]
+                players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji=f"{team}\u20E3")
+                self.mock_message.reactions = [original_joining_reaction]
+                await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
+                original_joining_reaction.remove.assert_called_with(self.mock_member)
 
     async def test_on_reaction_add_given_invalid_join_caught_then_exception_logged_and_reaction_removed(self):
         self.scrim.state = LFP

@@ -1,8 +1,11 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from discord import Reaction, Member, DiscordException
+import re
+
+from discord import Reaction, Member, DiscordException, Message
 from discord.ext import commands
+from discord.ext.commands import CommandError
 
 from Bot.Converters.UserConverter import UserConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
@@ -14,6 +17,15 @@ from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.DataClasses.ScrimChannel import ScrimChannel
+
+
+async def _try_remove_old_reaction(message: Message, new_team: int, user: Member):
+    for reaction in message.reactions:
+        if re.match(rf"^(?!{new_team})[1-9]\u20E3$", str(reaction.emoji)):
+            try:
+                await reaction.remove(user)
+            except CommandError:
+                pass
 
 
 class ScrimReactionListeners(commands.Cog):
@@ -62,11 +74,10 @@ class ScrimReactionListeners(commands.Cog):
             elif react.emoji == "\U0001F441" and scrim.state == LFP:
                 scrim.teams_manager.add_player(ScrimTeamsManager.SPECTATORS, user)
 
-            elif react.emoji == "1\u20E3" and scrim.state == LOCKED:
-                scrim.teams_manager.set_team(0, user)
-
-            elif react.emoji == "2\u20E3" and scrim.state == LOCKED:
-                await scrim.set_team_2(member)
+            elif re.match(r"^[1-9]\u20E3$", str(react.emoji)) and scrim.state == LOCKED:
+                new_team = int(str(react.emoji[0]))
+                scrim.teams_manager.set_team(new_team - 1, user)
+                await _try_remove_old_reaction(react.message, new_team, member)
 
             elif react.emoji == "\U0001F451" and scrim.state == CAPS_PREP:
                 await scrim.add_captain(member)
