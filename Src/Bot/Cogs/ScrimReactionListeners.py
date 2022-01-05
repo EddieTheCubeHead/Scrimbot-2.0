@@ -91,7 +91,7 @@ class ScrimReactionListeners(commands.Cog):
         await self.embed_builder.edit(react.message, displayable=scrim)
 
     @commands.Cog.listener("on_reaction_remove")
-    async def scrim_reaction_remove_listener(self, react: Reaction, user: Member):
+    async def scrim_reaction_remove_listener(self, react: Reaction, member: Member):
         """A listener responsible for processing reactions removed from scrim messages
 
         args
@@ -103,7 +103,7 @@ class ScrimReactionListeners(commands.Cog):
         :type user: discord.Member
         """
 
-        if user.bot:
+        if member.bot:
             return
 
         scrim = self.scrim_manager.try_get_scrim(react.message.channel.id)
@@ -111,16 +111,17 @@ class ScrimReactionListeners(commands.Cog):
             return
 
         try:
+            user = self.user_converter.get_user(member.id)
             if react.emoji == "\U0001F3AE" and scrim.state == LFP:
-                scrim.teams_manager.remove_player(ScrimTeamsManager.PARTICIPANTS,
-                                                  self.user_converter.get_user(user.id))
+                scrim.teams_manager.remove_player(ScrimTeamsManager.PARTICIPANTS, user)
 
             elif react.emoji == "\U0001F441" and scrim.state == LFP:
-                scrim.teams_manager.remove_player(ScrimTeamsManager.SPECTATORS,
-                                                  self.user_converter.get_user(user.id))
+                scrim.teams_manager.remove_player(ScrimTeamsManager.SPECTATORS, user)
 
-            elif (react.emoji == "1\u20E3" or react.emoji == "2\u20E3") and scrim.state == LOCKED:
-                await scrim.set_teamless(user)
+            elif re.match(r"^[1-9]\u20E3$", str(react.emoji)) and scrim.state == LOCKED:
+                new_team = int(str(react.emoji[0]))
+                scrim.teams_manager.remove_player(new_team - 1, user)
+                scrim.teams_manager.add_player(ScrimTeamsManager.PARTICIPANTS, user)
 
             elif react.emoji == "\U0001F451" and scrim.state == CAPS_PREP:
                 await scrim.remove_captain(user)

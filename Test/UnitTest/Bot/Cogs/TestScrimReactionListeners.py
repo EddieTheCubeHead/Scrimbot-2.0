@@ -126,3 +126,13 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         self.scrim.teams_manager.remove_player.assert_called_with(ScrimTeamsManager.SPECTATORS, self.mock_user)
         self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)
 
+    async def test_on_reaction_remove_given_team_reaction_then_user_removed_from_team_and_message_edited(self):
+        self.scrim.state = LOCKED
+        for team in range(1, 10):
+            with self.subTest(f"Adding team joining reaction '{team}\u20E3'"):
+                players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji=f"{team}\u20E3")
+                await self.cog.scrim_reaction_remove_listener(players_joining_reaction, self.mock_member)
+                self.scrim.teams_manager.remove_player.assert_called_with(team - 1, self.mock_user)
+                self.scrim.teams_manager.add_player.assert_called_with(ScrimTeamsManager.PARTICIPANTS, self.mock_user)
+                self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)
+

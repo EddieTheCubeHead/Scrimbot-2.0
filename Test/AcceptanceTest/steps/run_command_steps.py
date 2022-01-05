@@ -169,7 +169,7 @@ async def _add_reaction(context: Context, guild, reaction_string, user_increment
 async def step_impl(context: Context, user, reaction_string):
     guild = create_mock_guild(try_get_id(context, "guild_id"))
     user_id = try_get_id(context, f"user_{user}_id")
-    await _remove_reaction(context, guild, reaction_string, user_id)
+    await _remove_reaction(context, guild, _try_insert_number_react(reaction_string), user_id)
 
 
 async def _remove_reaction(context: Context, guild, reaction_string, user_id):

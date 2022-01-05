@@ -248,3 +248,24 @@ Feature: Scrim and scrim team leaving/joining with reactions
         | reaction | amount |
         | 1️⃣       | 1      |
         | 2️⃣       | 2      |
+
+  Scenario: Leaving a team by removing a reaction
+      Given a Dota 2 scrim in locked state
+      When user 1 reacts with 1️⃣
+      And user 1 removes reaction 1️⃣
+      Then embed edited to have fields
+        | name                     | value                                               |
+        | Author                   | Dota 2 scrim                                        |
+        | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
+        | Colour                   | 0xce0000                                            |
+        | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
+        | Unassigned               | <@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}>{\n}<@{user_1_id}> |
+        | Spectators               | _empty_                                             |
+        | {divider}                | {divider}                                           |
+        | Team 1 _(5 more needed)_ | _empty_                                             |
+        | Team 2 _(5 more needed)_ | _empty_                                             |
+        | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2       |
+      And scrim message has reactions
+        | reaction | amount |
+        | 1️⃣       | 1      |
+        | 2️⃣       | 1      |
