@@ -69,3 +69,11 @@ class StateUnittest(UnittestBase):
         for user_id in user_ids:
             self.spectators.members.append(_create_mock_player(user_id))
 
+    def add_team_1(self, *user_ids):
+        for user_id in user_ids:
+            self.team_1.members.append(_create_mock_player(user_id))
+
+    def add_team_2(self, *user_ids):
+        for user_id in user_ids:
+            self.team_2.members.append(_create_mock_player(user_id))
+

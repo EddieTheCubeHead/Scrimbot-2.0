@@ -100,8 +100,8 @@ class ScrimReactionListeners(commands.Cog):
 
         :param react: The reaction associated with the event
         :type react: discord.Reaction
-        :param user: The user associated with the reaction event
-        :type user: discord.Member
+        :param member: The user associated with the reaction event
+        :type member: discord.Member
         """
 
         if member.bot:

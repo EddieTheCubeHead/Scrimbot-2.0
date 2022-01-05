@@ -125,12 +125,29 @@ async def step_impl(context: Context, reaction_string):
 @when("user {user} reacts with {reaction_string}")
 @async_run_until_complete
 async def step_impl(context: Context, user, reaction_string):
+    await add_user_reaction(context, _try_insert_number_react(reaction_string), user)
+
+
+async def add_user_reaction(context, reaction_string, user):
     user_id = try_get_id(context, f"user_{user}_id")
     guild = create_mock_guild(try_get_id(context, "guild_id"))
     user = create_mock_author(user_id, guild)
-    reaction = Reaction(data={}, message=context.latest_fetched, emoji=_try_insert_number_react(reaction_string))
-    await context.latest_fetched.add_reaction(_try_insert_number_react(reaction_string), user)
+    reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
+    await context.latest_fetched.add_reaction(reaction_string, user)
     context.client.dispatch("reaction_add", reaction, user)
+
+
+@when("users {users_string} react with {reaction_string}")
+@async_run_until_complete
+async def step_impl(context: Context, users_string, reaction_string):
+    for user in _parse_users(users_string):
+        await add_user_reaction(context, _try_insert_number_react(reaction_string), user)
+
+
+def _parse_users(users_string):
+    if "to" in users_string:
+        return list(range(int(users_string[0]), int(users_string[-1]) + 1))
+    return [int(c) for c in users_string if c.isdigit()]
 
 
 def _try_insert_number_react(reaction_string):

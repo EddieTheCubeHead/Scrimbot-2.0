@@ -184,88 +184,111 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | 🎮       | 1      |
       | 👁       | 2      |
 
-    Scenario: Joining a team in a locked scrim
-      Given a Dota 2 scrim in locked state
-      When user 1 reacts with 1️⃣
-      Then embed edited to have fields
-        | name                     | value                                               |
-        | Author                   | Dota 2 scrim                                        |
-        | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
-        | Colour                   | 0xce0000                                            |
-        | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
-        | Unassigned               | <@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
-        | Spectators               | _empty_                                             |
-        | {divider}                | {divider}                                           |
-        | Team 1 _(4 more needed)_ | <@{user_1_id}>                                      |
-        | Team 2 _(5 more needed)_ | _empty_                                             |
-        | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2       |
-      And scrim message has reactions
-        | reaction | amount |
-        | 1️⃣       | 2      |
-        | 2️⃣       | 1      |
+  Scenario: Joining a team in a locked scrim
+    Given a Dota 2 scrim in locked state
+    When user 1 reacts with 1️⃣
+    Then embed edited to have fields
+      | name                     | value                                               |
+      | Author                   | Dota 2 scrim                                        |
+      | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
+      | Colour                   | 0xce0000                                            |
+      | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
+      | Unassigned               | <@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
+      | Spectators               | _empty_                                             |
+      | {divider}                | {divider}                                           |
+      | Team 1 _(4 more needed)_ | <@{user_1_id}>                                      |
+      | Team 2 _(5 more needed)_ | _empty_                                             |
+      | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2       |
+    And scrim message has reactions
+      | reaction | amount |
+      | 1️⃣       | 2      |
+      | 2️⃣       | 1      |
 
   Scenario: Multiple people joining a team in a locked scrim
-      Given a Dota 2 scrim in locked state
-      When user 1 reacts with 1️⃣
-      And user 2 reacts with 2️⃣
-      And user 3 reacts with 2️⃣
-      And user 4 reacts with 2️⃣
-      And user 5 reacts with 1️⃣
-      Then embed edited to have fields
-        | name                     | value                                               |
-        | Author                   | Dota 2 scrim                                        |
-        | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
-        | Colour                   | 0xce0000                                            |
-        | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
-        | Unassigned               | <@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
-        | Spectators               | _empty_                                             |
-        | {divider}                | {divider}                                           |
-        | Team 1 _(3 more needed)_ | <@{user_1_id}>{\n}<@{user_5_id}>                    |
-        | Team 2 _(2 more needed)_ | <@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>  |
-        | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2       |
-      And scrim message has reactions
-        | reaction | amount |
-        | 1️⃣       | 3      |
-        | 2️⃣       | 4      |
+    Given a Dota 2 scrim in locked state
+    When user 1 reacts with 1️⃣
+    And user 2 reacts with 2️⃣
+    And user 3 reacts with 2️⃣
+    And user 4 reacts with 2️⃣
+    And user 5 reacts with 1️⃣
+    Then embed edited to have fields
+      | name                     | value                                               |
+      | Author                   | Dota 2 scrim                                        |
+      | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
+      | Colour                   | 0xce0000                                            |
+      | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
+      | Unassigned               | <@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
+      | Spectators               | _empty_                                             |
+      | {divider}                | {divider}                                           |
+      | Team 1 _(3 more needed)_ | <@{user_1_id}>{\n}<@{user_5_id}>                    |
+      | Team 2 _(2 more needed)_ | <@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>  |
+      | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2       |
+    And scrim message has reactions
+      | reaction | amount |
+      | 1️⃣       | 3      |
+      | 2️⃣       | 4      |
 
-    Scenario: Joining a team while a member of the other team
-      Given a Dota 2 scrim in locked state
-      When user 1 reacts with 1️⃣
-      And user 1 reacts with 2️⃣
-      Then embed edited to have fields
-        | name                     | value                                               |
-        | Author                   | Dota 2 scrim                                        |
-        | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
-        | Colour                   | 0xce0000                                            |
-        | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
-        | Unassigned               | <@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
-        | Spectators               | _empty_                                             |
-        | {divider}                | {divider}                                           |
-        | Team 1 _(5 more needed)_ | _empty_                                             |
-        | Team 2 _(4 more needed)_ | <@{user_1_id}>                                      |
-        | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2       |
-      And scrim message has reactions
-        | reaction | amount |
-        | 1️⃣       | 1      |
-        | 2️⃣       | 2      |
+  Scenario: Joining a team while a member of the other team
+    Given a Dota 2 scrim in locked state
+    When user 1 reacts with 1️⃣
+    And user 1 reacts with 2️⃣
+    Then embed edited to have fields
+      | name                     | value                                               |
+      | Author                   | Dota 2 scrim                                        |
+      | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
+      | Colour                   | 0xce0000                                            |
+      | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
+      | Unassigned               | <@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
+      | Spectators               | _empty_                                             |
+      | {divider}                | {divider}                                           |
+      | Team 1 _(5 more needed)_ | _empty_                                             |
+      | Team 2 _(4 more needed)_ | <@{user_1_id}>                                      |
+      | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2       |
+    And scrim message has reactions
+      | reaction | amount |
+      | 1️⃣       | 1      |
+      | 2️⃣       | 2      |
 
   Scenario: Leaving a team by removing a reaction
-      Given a Dota 2 scrim in locked state
-      When user 1 reacts with 1️⃣
-      And user 1 removes reaction 1️⃣
-      Then embed edited to have fields
-        | name                     | value                                               |
-        | Author                   | Dota 2 scrim                                        |
-        | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
-        | Colour                   | 0xce0000                                            |
-        | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
-        | Unassigned               | <@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}>{\n}<@{user_1_id}> |
-        | Spectators               | _empty_                                             |
-        | {divider}                | {divider}                                           |
-        | Team 1 _(5 more needed)_ | _empty_                                             |
-        | Team 2 _(5 more needed)_ | _empty_                                             |
-        | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2       |
-      And scrim message has reactions
-        | reaction | amount |
-        | 1️⃣       | 1      |
-        | 2️⃣       | 1      |
+    Given a Dota 2 scrim in locked state
+    When user 1 reacts with 1️⃣
+    And user 1 removes reaction 1️⃣
+    Then embed edited to have fields
+      | name                     | value                                               |
+      | Author                   | Dota 2 scrim                                        |
+      | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
+      | Colour                   | 0xce0000                                            |
+      | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
+      | Unassigned               | <@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}>{\n}<@{user_1_id}> |
+      | Spectators               | _empty_                                             |
+      | {divider}                | {divider}                                           |
+      | Team 1 _(5 more needed)_ | _empty_                                             |
+      | Team 2 _(5 more needed)_ | _empty_                                             |
+      | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2       |
+    And scrim message has reactions
+      | reaction | amount |
+      | 1️⃣       | 1      |
+      | 2️⃣       | 1      |
+
+  @wip
+  Scenario: Attempting to join a full team
+    Given a Rocket League scrim in locked state
+    When users 1 to 3 react with 1️⃣
+    And user 4 reacts with 1️⃣
+    Then embed edited to have fields
+      | name                     | value                                              |
+      | Author                   | Rocket League scrim                                |
+      | Icon                     | https://i.imgur.com/BvQOQyN.png                    |
+      | Colour                   | 0x0000ff                                           |
+      | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
+      | Unassigned               | <@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}> |
+      | Spectators               | _empty_                                            |
+      | {divider}                | {divider}                                          |
+      | Team 1 _(full)_          | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}> |
+      | Team 2 _(3 more needed)_ | _empty_                                            |
+      | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2      |
+    And scrim message has reactions
+      | reaction | amount |
+      | 1️⃣       | 4      |
+      | 2️⃣       | 1      |
+

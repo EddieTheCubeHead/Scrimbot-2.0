@@ -268,8 +268,8 @@ class TestScrimTeamsManager(UnittestBase):
         mock_player = self._create_mock_user()
         for team in range(team_count):
             with self.subTest(f"Adding player to full game team (Team {team + 1})"):
-                expected_exception = BotLoggedContextException(f"Tried adding a player into a full team (Team "
-                                                                    f"{team + 1})")
+                expected_exception = BotInvalidJoinException(mock_player, manager.get_game_teams()[team],
+                                                             "Could not add a player into a full team.")
                 self._assert_raises_correct_exception(expected_exception, manager.add_player, team, mock_player)
 
     def test_has_enough_participants_given_no_participants_then_false_returned(self):

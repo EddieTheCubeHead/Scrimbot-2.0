@@ -1,7 +1,17 @@
+from Bot.DataClasses.Team import Team
 from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
 _divider = "----------------------------------------------"
+
+
+def _get_fill_status(team: Team):
+    if team.min_size > len(team.members):
+        return f" _({team.min_size - len(team.members)} more needed)_"
+    if team.max_size > len(team.members):
+        return f" _(room for {team.max_size - len(team.members)} more)_"
+    if team.max_size == len(team.members):
+        return " _(full)_"
 
 
 class LockedState(ScrimState):
@@ -34,7 +44,7 @@ class LockedState(ScrimState):
     @staticmethod
     def _build_game_team_fields(fields, teams_manager):
         for team in teams_manager.get_game_teams():
-            name_text = team.name + f" _({team.min_size - len(team.members)} more needed)_"
+            name_text = team.name + _get_fill_status(team)
             fields.append((name_text, ScrimState.build_team_participants(team), True))
 
     @staticmethod

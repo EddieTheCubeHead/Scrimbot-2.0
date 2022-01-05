@@ -20,8 +20,8 @@ def _assert_valid_game(game):
     if game.team_count < 1:
         raise BotLoggedContextException("Tried to initialize a teams manager for a game with less than 1 teams.")
     if game.max_team_size and game.min_team_size > game.max_team_size:
-        raise BotLoggedContextException("Tried to initialize a teams manager for a game with smaller team max "
-                                             "size than team min size.")
+        raise BotLoggedContextException("Tried to initialize a teams manager for a game with smaller team max size "
+                                        "than team min size.")
 
 
 def _is_full(team):
@@ -180,12 +180,12 @@ class ScrimTeamsManager:
         if self._is_full_participant_team(team):
             self._add_to_team(self._teams[self.QUEUE], player)
             return
-        self._assert_valid_add(team, player)
+        if self._is_full_game_team(team):
+            raise BotInvalidJoinException(player, team, "Could not add a player into a full team.")
+        self._assert_teamless(team, player)
         team.members.append(player)
 
-    def _assert_valid_add(self, team: Team, player: User):
-        if self._is_full_game_team(team):
-            raise BotLoggedContextException(f"Tried adding a player into a full team ({team.name})")
+    def _assert_teamless(self, team: Team, player: User):
         player_team = self._try_get_team(player)
         if player_team:
             raise BotInvalidJoinException(player, team, f"already a member of the team '{player_team.name}'")
@@ -212,6 +212,8 @@ class ScrimTeamsManager:
         return self._is_full_participant_team(team) and len(self._teams[self.QUEUE].members) > 0
 
     def set_team(self, team: Union[int, str], player: User):
+        if self._is_full_game_team(self._get_team(team)):
+            raise BotInvalidJoinException(player, self._get_team(team), "Could not add a player into a full team.")
         if not self._blind_remove(player):
             raise BotLoggedContextException(f"Tried setting team for user '{player.display_name}' who is not part of "
                                             f"the scrim.")
