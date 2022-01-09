@@ -270,7 +270,6 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | 1️⃣       | 1      |
       | 2️⃣       | 1      |
 
-  @wip
   Scenario: Attempting to join a full team
     Given a Rocket League scrim in locked state
     When users 1 to 3 react with 1️⃣
@@ -291,4 +290,21 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | reaction | amount |
       | 1️⃣       | 4      |
       | 2️⃣       | 1      |
+
+  Scenario: All participants have joined a team
+    Given a Rocket League scrim in locked state
+    When users 1 to 3 react with 1️⃣
+    And users 4 to 6 react with 2️⃣
+    Then embed edited to have fields
+      | name            | value                                                                                  |
+      | Author          | Rocket League scrim                                                                    |
+      | Icon            | https://i.imgur.com/BvQOQyN.png                                                        |
+      | Colour          | 0x0000ff                                                                               |
+      | Status          | Teams full, use the command 'start' to start the scrim or 'teams clear' to clear teams |
+      | Unassigned      | _empty_                                                                                |
+      | Spectators      | _empty_                                                                                |
+      | {divider}       | {divider}                                                                              |
+      | Team 1 _(full)_ | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>                                     |
+      | Team 2 _(full)_ | <@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}>                                     |
+      | Footer          | Send command 'start' to start the scrim or send command 'teams clear' to clear teams   |
 

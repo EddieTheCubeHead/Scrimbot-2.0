@@ -16,11 +16,17 @@ class TestLockedState(StateUnittest):
         expected_description = "Players locked. Use reactions for manual team selection or the command 'teams " \
                                "_random/balanced/balancedrandom/pickup_' to define teams."
         state = LockedState()
-        for player_count in range(1, 11):
-            with self.subTest(f"Test locked joining description ({player_count} unassigned)"):
-                self.participants.members.clear()
-                self.add_participants(*range(player_count))
-                self.assertEqual(expected_description, state.build_description(self.teams_manager))
+        self.teams_manager.has_participants = True
+        self.teams_manager.has_full_teams = False
+        self.assertEqual(expected_description, state.build_description(self.teams_manager))
+
+    def test_build_description_given_no_unassigned_left_and_all_teams_have_min_players_then_start_info_shown(self):
+        expected_description = "Teams full, use the command 'start' to start the scrim or 'teams clear' to clear teams"
+        state = LockedState()
+        self.teams_manager.has_participants = False
+        self.teams_manager.has_full_teams = True
+        actual_description = state.build_description(self.teams_manager)
+        self.assertEqual(expected_description, actual_description)
 
     def test_build_fields_given_all_unassigned_no_spectators_then_teams_empty_and_unassigned_shown_correctly(self):
         state = LockedState()
@@ -66,8 +72,13 @@ class TestLockedState(StateUnittest):
     def test_build_footer_given_unassigned_left_then_joining_info_returned(self):
         expected_footer = "React 1️⃣ to join Team 1 or 2️⃣ to join Team 2"
         state = LockedState()
-        for player_count in range(1, 11):
-            with self.subTest(f"Test locked joining footer ({player_count} unassigned)"):
-                self.participants.members.clear()
-                self.add_participants(*range(player_count))
-                self.assertEqual(expected_footer, state.build_footer(self.teams_manager))
+        self.teams_manager.has_participants = True
+        self.teams_manager.has_full_teams = False
+        self.assertEqual(expected_footer, state.build_footer(self.teams_manager))
+
+    def test_build_footer_teams_full_then_starting_info_returned(self):
+        expected_footer = "Send command 'start' to start the scrim or send command 'teams clear' to clear teams"
+        state = LockedState()
+        self.teams_manager.has_participants = False
+        self.teams_manager.has_full_teams = True
+        self.assertEqual(expected_footer, state.build_footer(self.teams_manager))
