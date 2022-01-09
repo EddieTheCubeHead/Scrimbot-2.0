@@ -307,4 +307,25 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Team 1 _(full)_ | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>                                     |
       | Team 2 _(full)_ | <@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}>                                     |
       | Footer          | Send command 'start' to start the scrim or send command 'teams clear' to clear teams   |
+    And scrim message has reactions
+      | reaction | amount |
+      | 1️⃣       | 4      |
+      | 2️⃣       | 4      |
+
+  Scenario: All participants have joined a team, but all teams don't have minimum number of players
+    Given a Teams of 2 to 4 scrim in locked state
+    When users 1 to 3 react with 1️⃣
+    And user 4 reacts with 2️⃣
+    Then embed edited to have fields
+      | name                                       | value                                                              |
+      | Author                                     | VarTeamSizeTest scrim                                              |
+      | Icon                                       | https://cdn.pixabay.com/photo/2012/04/24/12/43/t-39853_960_720.png |
+      | Colour                                     | 0x0000ff                                                           |
+      | Status                                     | No unassigned players left but all teams are not full! Please rebalance the teams with reactions or use the command 'teams _random/balanced/balancedrandom/pickup_'. |
+      | Unassigned                                 | _empty_                                                            |
+      | Spectators                                 | _empty_                                                            |
+      | {divider}                                  | {divider}                                                          |
+      | Team 1 _(enough players: room for 1 more)_ | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>                 |
+      | Team 2 _(1 more needed)_                   | <@{user_4_id}>                                                     |
+      | Footer                                     | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2                      |
 

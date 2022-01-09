@@ -28,6 +28,15 @@ class TestLockedState(StateUnittest):
         actual_description = state.build_description(self.teams_manager)
         self.assertEqual(expected_description, actual_description)
 
+    def test_build_description_given_no_unassigned_left_but_not_all_teams_have_min_players_then_start_info_shown(self):
+        expected_description = "No unassigned players left but all teams are not full! Please rebalance the teams " \
+                               "with reactions or use the command 'teams _random/balanced/balancedrandom/pickup_'."
+        state = LockedState()
+        self.teams_manager.has_participants = False
+        self.teams_manager.has_full_teams = False
+        actual_description = state.build_description(self.teams_manager)
+        self.assertEqual(expected_description, actual_description)
+
     def test_build_fields_given_all_unassigned_no_spectators_then_teams_empty_and_unassigned_shown_correctly(self):
         state = LockedState()
         self.add_participants(*range(1, 11))

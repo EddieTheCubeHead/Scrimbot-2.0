@@ -66,5 +66,12 @@
     "icon": "https://www.scarsdalelibrary.org/sites/default/files/2021-02/among_us.jpg",
     "colour": "0xff0000",
     "alias": [ "amogus", "amongus", "sus" ]
+  },
+  "VarSizeTeamTest": {
+    "min_team_size": 2,
+    "max_team_size": 4,
+    "icon": "https://cdn.pixabay.com/photo/2012/04/24/12/43/t-39853_960_720.png",
+    "colour": "0xffffff",
+    "alias": [ "Teams of 2 to 4" ]
   }
 }
