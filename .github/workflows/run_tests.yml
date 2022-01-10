@@ -50,7 +50,7 @@ jobs:
     - name: Debug Test Report
       if: always()
       run: |
-        echo ${{toJson(${{steps.create_report.outputs}})}}
+        echo ${{toJson(steps.create_report.outputs)}}
    
     - name: Discord Embed
       uses: sarisia/actions-status-discord@v1
