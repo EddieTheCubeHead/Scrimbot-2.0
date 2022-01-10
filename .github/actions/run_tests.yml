@@ -1,5 +1,3 @@
-59 lines (50 sloc)  1.75 KB
-   
 name: Run tests
 
 on:
@@ -59,3 +57,14 @@ jobs:
           }]}
       uses: Ilshidur/action-discord@master
       if: always()
+
+    - name: Discord Embed v2
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.WEBHOOK_URL }}
+        title: "test run"
+        description: "✅Passed: ${{steps.create_report.outputs.passed.description}}\n⛔Failed: ${{steps.create_report.outputs.failed.description}}\n⌛Skipped: ${{steps.create_report.outputs.skipped.description}}\n⏱Running time: {{steps.create_report.outputs.time.description}}"
+        color: 0x474747
+        username: GitHub Actions
+        avatar_url: "https://cdn3.iconfinder.com/data/icons/inficons/512/github.png"
