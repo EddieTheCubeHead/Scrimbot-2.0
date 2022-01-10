@@ -57,8 +57,8 @@ class ScrimBotClient(commands.Bot):
     def setup_cogs(self):
         """A private helper method for loading and starting all the cogs of the bot."""
 
-        parent_path = rf"{Path(os.path.dirname(__file__)).parent}"
-        for cog in os.listdir(rf"{parent_path}\Cogs"):
+        parent_path = Path(os.path.dirname(__file__)).parent
+        for cog in os.listdir(os.path.join(parent_path, "Cogs")):
             if cog[-3:] == ".py" and not cog.startswith("_"):
                 self.load_extension(f".{cog[:-3]}", package="Bot.Cogs")
 
