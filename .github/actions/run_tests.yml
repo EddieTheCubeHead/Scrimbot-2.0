@@ -46,6 +46,7 @@ jobs:
 
     - name: Discord Notification
       uses: tsickert/discord-webhook@v4.0.0
+      if: always()
       with:
         webhook-url: ${{ secrets.WEBHOOK_URL }}
         content: ${{join(steps.create_output.outputs.*, '\n')}}
