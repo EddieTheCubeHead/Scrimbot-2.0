@@ -31,7 +31,7 @@ jobs:
       run: |
         python -m unittest
       env:
-        PYTHONPATH: /home/runner/work/Scrimbot-2.0/Scrimbot-2.0/Src/
+        PYTHONPATH: /home/runner/work/Scrimbot-2.0/Scrimbot-2.0/Src/:/home/runner/work/Scrimbot-2.0/Scrimbot-2.0/Test/
     - name: Acceptance tests with behave
       run: |
         behave --junit
