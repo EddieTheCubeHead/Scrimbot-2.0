@@ -50,14 +50,10 @@ jobs:
     - name: Discord Embed
       env:
         DISCORD_WEBHOOK: ${{ secrets.WEBHOOK_URL }}
-        DISCORD_EMBEDS: ${{format(
-                          '{"embeds":[{"title":"Test run result{0} {1}", "description"{0}"✅Passed{0} {2}\n⛔Failed{0} {3}\n⌛Skipped{0} {4}\n⏱Running time{0} {5}"}]}',
-                          ':',
-                          '${{steps.create_report.outputs.conclusion.description}}',
-                          '${{steps.create_report.outputs.passed.description}}',
-                          '${{steps.create_report.outputs.failed.description}}',
-                          '${{steps.create_report.outputs.skipped.description}}',
-                          '${{steps.create_report.outputs.time.description}}'
-                        ) }}
+        DISCORD_EMBEDS: |
+          {"embeds": [{
+            "title": "Test run result: ${{steps.create_report.outputs.conclusion.description}}",
+            "description": "✅Passed: ${{steps.create_report.outputs.passed.description}}\n⛔Failed: ${{steps.create_report.outputs.failed.description}}\n⌛Skipped: ${{steps.create_report.outputs.skipped.description}}\n⏱Running time: {{steps.create_report.outputs.time.description}}"
+          }]}
       uses: Ilshidur/action-discord@master
       if: always()
