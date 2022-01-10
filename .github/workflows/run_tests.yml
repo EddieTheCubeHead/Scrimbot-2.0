@@ -44,10 +44,11 @@ jobs:
         name: Behave test results
         path: reports/*.xml
         reporter: java-junit
+      id: create_report
       
     - name: Discord Notification
       uses: tsickert/discord-webhook@v4.0.0
       if: always()
       with:
         webhook-url: ${{ secrets.WEBHOOK_URL }}
-        content: ${{join(steps.create_output.outputs.*, '\n')}}
+        content: ${{join(steps.create_report.outputs.*, '\n')}}
