@@ -17,24 +17,35 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: "3.10"
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install pytest behave
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
     - name: Create files
       env: # Set the secret as an input
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       run: |
         mkdir DataFiles
         echo "{\"token\": \"$BOT_TOKEN\"}" > Src/Configs/secrets.json
+
     - name: Acceptance tests with behave
       run: |
         behave Test/AcceptanceTest --junit
       env:
         PYTHONPATH: /home/runner/work/Scrimbot-2.0/Scrimbot-2.0/Src/
+
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: always()
       with:
         files: reports/*.xml
+      id: create_output
+
+    - name: Discord Notification
+      uses: tsickert/discord-webhook@v4.0.0
+      with:
+        webhook-url: ${{ secrets.WEBHOOK_URL }}
+        content: ${{join(steps.create_output.outputs.*, '\n')}}
