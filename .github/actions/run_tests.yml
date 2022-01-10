@@ -20,14 +20,16 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pylint pytest behave
+        pip install pytest behave
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Unit tests with pytest
       run: |
-        pytest --junitxml reports/unit_test_report.xml
+        pytest Test/UnitTest/ --junitxml reports/unit_test_report.xml
+      env:
+        NO_CONNECTION_TESTS: True
     - name: Acceptance tests with behave
       run: |
-        behave --junit
+        behave --tags=-require_connect --junit
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: always()
