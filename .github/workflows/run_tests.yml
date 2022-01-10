@@ -31,11 +31,10 @@ jobs:
       run: |
         pytest --junitxml reports/unit_test_report.xml
       env:
-        NO_CONNECTION_TESTS: True
         PYTHONPATH: /home/runner/work/Scrimbot-2.0/Scrimbot-2.0/Src/
     - name: Acceptance tests with behave
       run: |
-        behave --tags=-require_connect --junit
+        behave --junit
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: always()
