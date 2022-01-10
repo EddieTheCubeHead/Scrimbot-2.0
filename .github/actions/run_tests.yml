@@ -27,9 +27,10 @@ jobs:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       run: |
         echo "{\"token\": \"$BOT_TOKEN\"}" > Src/Configs/secrets.json
-    - name: Unit tests with pytest
+    - name: Unit tests with unittest
       run: |
-        python -m unittest
+        cd Test/UnitTest
+        python -m pytest
       env:
         PYTHONPATH: /home/runner/work/Scrimbot-2.0/Scrimbot-2.0/Src/
     - name: Acceptance tests with behave
