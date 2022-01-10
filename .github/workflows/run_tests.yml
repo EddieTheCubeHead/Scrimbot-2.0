@@ -48,6 +48,7 @@ jobs:
       id: create_report
       
     - name: Debug Test Report
+      if: always()
       run: |
         echo ${{toJson(${{steps.create_report.outputs}})}}
    
