@@ -4,6 +4,7 @@ Feature: Bot initialization
   # Bot should be initialized with correct verbose feedback
 
   @long_test
+  @require_connect
   Scenario: Add cogs and connect
     When bot is started
     Then cogs are added
