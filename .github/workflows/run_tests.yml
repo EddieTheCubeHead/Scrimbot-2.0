@@ -46,11 +46,6 @@ jobs:
         reporter: java-junit
         fail-on-error: 'false'
       id: create_report
-      
-    - name: Debug Test Report
-      if: always()
-      run: |
-        echo ${{toJson(steps.create_report.outputs)}}
    
     - name: Discord Embed
       uses: sarisia/actions-status-discord@v1
@@ -58,7 +53,7 @@ jobs:
       with:
         webhook: ${{ secrets.WEBHOOK_URL }}
         title: "test run"
-        description: "✅Passed: ${{steps.create_report.outputs.passed.description}}\n⛔Failed: ${{steps.create_report.outputs.failed.description}}\n⌛Skipped: ${{steps.create_report.outputs.skipped.description}}\n⏱Running time: ${{steps.create_report.outputs.time.description}}"
+        description: "✅ Passed: $steps.create_report.outputs.passed.description \n⛔ Failed: $steps.create_report.outputs.failed.description \n⌛ Skipped: $steps.create_report.outputs.skipped.description \n⏱ Running time: $steps.create_report.outputs.time.description"
         color: 0x474747
         username: GitHub Actions
         avatar_url: "https://cdn3.iconfinder.com/data/icons/inficons/512/github.png"
