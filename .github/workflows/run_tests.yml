@@ -27,7 +27,7 @@ jobs:
         echo "{'token': 'invalid'}" > Src/Configs/secrets.json
     - name: Unit tests with pytest
       run: |
-        pytest Test/UnitTest/ --junitxml reports/unit_test_report.xml
+        pytest --junitxml reports/unit_test_report.xml
       env:
         NO_CONNECTION_TESTS: True
         PYTHONPATH: /home/runner/work/Scrimbot-2.0/Scrimbot-2.0/Src/
