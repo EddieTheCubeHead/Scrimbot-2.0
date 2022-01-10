@@ -60,6 +60,7 @@ class TestScrimBotClient(AsyncUnittestBase):
             self.assertIn(cog_message, output.splitlines())
 
     @unittest.skipUnless(os.getenv("LONG_TESTS") == "True", "Skipped long test")
+    @unittest.skipIf(os.getenv("NO_CONNECTION_TESTS") == "True", "Skipped test requiring connection to discord")
     @patch('sys.stdout', new_callable=io.StringIO)
     async def test_start_bot_when_called_then_bot_started_and_connected(self, print_catcher):
         asyncio.create_task(self.client.start_bot())

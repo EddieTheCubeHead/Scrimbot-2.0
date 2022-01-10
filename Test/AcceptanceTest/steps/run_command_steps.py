@@ -60,6 +60,10 @@ async def step_impl(context: Context, game, amount):
 @given("an {game} scrim in locked state")
 @async_run_until_complete
 async def step_impl(context: Context, game):
+    await _create_locked_scrim(context, game)
+
+
+async def _create_locked_scrim(context, game):
     await _create_scrim(context, game)
     game_instance = await BotDependencyInjector.dependencies[GameConverter].convert(MagicMock(), game)
     amount = game_instance.team_count * game_instance.min_team_size
@@ -68,6 +72,19 @@ async def step_impl(context: Context, game):
     table = _create_call_ids(context)
     await call_command(";lock", context, table)
     context.command_messages.pop(-1)
+
+
+@given("a {game} scrim with full teams")
+@given("an {game} scrim with full teams")
+async def step_impl(context: Context, game):
+    await _create_locked_scrim(context, game)
+    game_instance = await BotDependencyInjector.dependencies[GameConverter].convert(MagicMock(), game)
+    max_players = game_instance.team_count * game_instance.max_team_size
+    team_count = game_instance.team_count
+    for team in range(team_count):
+        for user in range(1 + max_players * team_count, 1 + max_players + max_players * team_count):
+            await add_user_reaction(context, _try_insert_number_react(f"{team + 1}\u20E3"), user)
+    await sleep(0)
 
 
 async def _create_scrim(context: Context, game):
@@ -252,6 +269,13 @@ def step_impl(context: Context):
     for message_reaction in message.raw_reactions:
         assert message_reaction in allowed_reactions, f"Did not expect the message to have the reaction" \
                                                       f"'{message_reaction}'"
+
+
+@then("scrim message has no reactions")
+def step_impl(context: Context):
+    message = context.latest_fetched
+    assert len(message.raw_reactions) == 0, f"Expected the message to have no reactions, but found the following" \
+                                            f"reaction(s): {message.raw_reactions}"
 
 
 @then("error message deleted after {seconds} seconds")

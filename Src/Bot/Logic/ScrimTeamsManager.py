@@ -239,9 +239,6 @@ class ScrimTeamsManager:
         for team in self.get_game_teams():
             await _move_team_to_voice(team)
 
-    def get_or_create_user(self, player):
-        pass
-
     def _try_get_team(self, player) -> Optional[Team]:
         for team in self._teams.values():
             if player.user_id in [member.user_id for member in team.members]:

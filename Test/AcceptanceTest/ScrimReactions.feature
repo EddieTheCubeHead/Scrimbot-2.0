@@ -328,4 +328,8 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Team 1 _(enough players: room for 1 more)_ | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>                 |
       | Team 2 _(1 more needed)_                   | <@{user_4_id}>                                                     |
       | Footer                                     | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2                      |
+    And scrim message has reactions
+      | reaction | amount |
+      | 1️⃣       | 4      |
+      | 2️⃣       | 2      |
 

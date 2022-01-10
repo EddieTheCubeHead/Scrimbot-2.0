@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, call
 
 from Bot.Cogs.ScrimCommands import ScrimCommands
 from Bot.DataClasses.Game import Game
-from Bot.EmbedSystem.ScrimStates.scrim_states import LFP, LOCKED
+from Bot.EmbedSystem.ScrimStates.scrim_states import *
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
@@ -99,3 +99,17 @@ class TestScrimCommands(AsyncUnittestBase):
                 for team in range(team_count):
                     self.assertEqual(calls[team], call(emoji=f"{team + 1}\u20E3"))
                 mock_message.add_reaction.call_args_list = []
+
+    async def test_start_given_no_move_voice_arg_then_player_moving_attempted(self):
+        mock_scrim = MagicMock()
+        mock_scrim.state = LOCKED
+        mock_scrim.teams_manager.try_move_to_voice.return_value = True
+        ctx = AsyncMock()
+        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.scrim = mock_scrim
+        ctx.scrim.message = AsyncMock()
+        await self.cog.start(ctx)
+        mock_scrim.teams_manager.try_move_to_voice.assert_called()
+        ctx.message.delete.assert_called()
+        self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
+        mock_scrim.start.assert_called()

@@ -107,7 +107,7 @@ class ScrimCommands(commands.Cog):
 
     @commands.command(aliases=["begin"])
     @commands.guild_only()
-    @checks.active_scrim()
+    @ActiveScrimCheck.decorate()
     async def start(self, ctx: ScrimContext, move_voice: bool = True):
         """A command for starting a scrim with two full teams
 
@@ -121,8 +121,10 @@ class ScrimCommands(commands.Cog):
         """
 
         await ctx.message.delete()
-        scrim = await ctx.get_scrim()
-        await scrim.start(ctx, move_voice)
+        if move_voice:
+            ctx.scrim.teams_manager.try_move_to_voice()
+        ctx.scrim.start()
+        await self._response_builder.edit(ctx.scrim.message, displayable=ctx.scrim)
 
     @commands.command(aliases=["win", "w", "victor", "v"])
     @commands.guild_only()

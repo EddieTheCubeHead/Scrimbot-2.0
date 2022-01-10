@@ -2,6 +2,7 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from behave import *
+from behave.runner import Context
 
 from Utils.TestHelpers.MockDiscordConverter import MockDiscordConverter
 from Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
@@ -32,6 +33,26 @@ def step_impl(context):
             channel_increment += 1
         elif row[0] == "text":
             _mock_text_channel_calls(context, mock_group, mocked_channel)
+
+
+def _mock_voice_presence(player):
+    pass
+
+
+@given("{player_spec} in voice chat")
+def step_impl(context: Context, player_spec):
+    players = _parse_player_spec(player_spec)
+    for player in players:
+        _mock_voice_presence(player)
+    
+    
+def _parse_player_spec(player_spec):
+    if "all" in player_spec:
+        return []
+    player_spec = player_spec.remove("players ")
+    if "to" in player_spec:
+        return list(range(int(player_spec[0]), int(player_spec[-1]) + 1))
+    return [int(c) for c in player_spec if c.isdigit()]
 
 
 def _create_mock_voice_converter(context):
