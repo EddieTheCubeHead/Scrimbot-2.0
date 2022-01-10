@@ -6,7 +6,7 @@ import itertools
 from behave.runner import Context
 from discord import Embed
 
-from Utils.TestHelpers.id_parser import insert_ids
+from Test.Utils.TestHelpers.id_parser import insert_ids
 
 
 def parse_embed_from_table(context: Context) -> Embed:

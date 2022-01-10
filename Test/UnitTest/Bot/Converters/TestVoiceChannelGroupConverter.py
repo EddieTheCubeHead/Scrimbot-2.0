@@ -5,9 +5,9 @@ from unittest.mock import MagicMock
 
 from Bot.Converters.Helpers.ChannelGroupParser import ChannelGroupParser
 from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
-from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Bot.Converters.VoiceChannelGroupConverter import VoiceChannelGroupConverter, DO_CONVERSION_STRINGS
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class TestVoiceChannelGroupConverter(AsyncUnittestBase):

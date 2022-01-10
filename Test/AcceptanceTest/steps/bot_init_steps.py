@@ -9,14 +9,14 @@ from behave import *
 from behave.api.async_step import async_run_until_complete
 
 from Bot.Core.Logging.BotClientLogger import BotClientLogger
-from Utils.TestHelpers.DiscordPatcher import DiscordPatcher
+from Test.Utils.TestHelpers.DiscordPatcher import DiscordPatcher
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
-from Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
-from Utils.TestHelpers.ResponseMessageCatcher import ResponseMessageCatcher
-from Utils.TestHelpers.test_utils import get_cogs_messages
+from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
+from Test.Utils.TestHelpers.ResponseMessageCatcher import ResponseMessageCatcher
+from Test.Utils.TestHelpers.test_utils import get_cogs_messages
 
 
 def _setup_bot(context):

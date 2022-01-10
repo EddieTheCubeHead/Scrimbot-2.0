@@ -13,8 +13,8 @@ from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
 from Bot.Exceptions.BuildException import BuildException
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
-from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 
 

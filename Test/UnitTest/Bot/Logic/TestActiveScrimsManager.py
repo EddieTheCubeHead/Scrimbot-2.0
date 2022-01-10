@@ -6,8 +6,8 @@ from unittest.mock import MagicMock
 from Bot.DataClasses.Game import Game
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
-from Utils.TestBases.UnittestBase import UnittestBase
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 def _create_mock_game(team_count, min_player_count, max_player_count=None):

@@ -5,8 +5,8 @@ from unittest.mock import MagicMock, AsyncMock
 
 from Bot.Checks.ActiveScrimCheck import ActiveScrimCheck
 from Bot.Exceptions.BotMissingScrimException import BotMissingScrimException
-from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class TestFreeScrimCheck(AsyncUnittestBase):

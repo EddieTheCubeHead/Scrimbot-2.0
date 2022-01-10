@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import MagicMock
 
 from Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
-from Utils.TestBases.EmbedUnittest import EmbedUnittest
+from Test.Utils.TestBases.EmbedUnittest import EmbedUnittest
 
 
 class TestExceptionEmbedBuilder(EmbedUnittest):

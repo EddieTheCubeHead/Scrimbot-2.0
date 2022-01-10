@@ -5,8 +5,8 @@ from unittest.mock import MagicMock
 
 from Bot.Core.ScrimContext import ScrimContext
 from Bot.Logic.ScrimManager import ScrimManager
-from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class TestScrimContext(AsyncUnittestBase):

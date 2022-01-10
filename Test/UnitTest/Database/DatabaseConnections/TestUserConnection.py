@@ -5,8 +5,8 @@ from Bot.DataClasses.User import User
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
 from Database.DatabaseConnections.UserConnection import UserConnection
-from Utils.TestBases.ConnectionUnittest import ConnectionUnittest
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.ConnectionUnittest import ConnectionUnittest
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class TestScrimChannelConnection(ConnectionUnittest[User]):

@@ -14,7 +14,7 @@ from discord import Message, Reaction, Member
 from discord.ext.commands import CommandError
 
 from Bot.Core.ScrimContext import ScrimContext
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class MockReaction:

@@ -2,7 +2,7 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from Bot.Exceptions.BuildException import BuildException
-from Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestBases.UnittestBase import UnittestBase
 
 
 class TestBuildException(UnittestBase):

@@ -1,7 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestBases.UnittestBase import UnittestBase
 from Database.Exceptions.DatabaseDuplicateUniqueRowException import DatabaseDuplicateUniqueRowException
 
 

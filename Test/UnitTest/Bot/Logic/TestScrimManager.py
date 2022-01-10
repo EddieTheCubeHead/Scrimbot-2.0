@@ -5,8 +5,8 @@ from unittest.mock import MagicMock
 
 from Bot.EmbedSystem.ScrimStates.scrim_states import *
 from Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
-from Utils.TestBases.UnittestBase import UnittestBase
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.Logic.ScrimManager import ScrimManager
 from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException

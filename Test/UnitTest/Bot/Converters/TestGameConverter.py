@@ -6,8 +6,8 @@ from typing import Any
 from unittest.mock import MagicMock
 
 from Bot.DataClasses.Alias import Alias
-from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.DataClasses.Game import Game
 from Bot.Converters.GameConverter import GameConverter
 from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException

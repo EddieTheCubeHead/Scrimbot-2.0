@@ -14,10 +14,10 @@ from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextExcepti
 from Bot.Exceptions.BotUnrecognizedCommandException import BotUnrecognizedCommandException
 from Bot.Exceptions.BuildException import BuildException
 from Configs.Config import Config
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
-from Utils.TestHelpers.test_utils import get_cogs_messages
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestHelpers.test_utils import get_cogs_messages
 from Bot.Core.ScrimBotClient import ScrimBotClient
-from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
 
 class TestScrimBotClient(AsyncUnittestBase):

@@ -3,9 +3,9 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestBases.UnittestBase import UnittestBase
 from Bot.Exceptions.BotMissingScrimException import BotMissingScrimException
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class TestDatabaseBaseException(UnittestBase):

@@ -4,8 +4,8 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import MagicMock
 
 from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
-from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class TestBotInvalidJoinException(AsyncUnittestBase):

@@ -3,10 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestBases.UnittestBase import UnittestBase
 
 from Bot.Converters.Helpers.ChannelGroupParser import ChannelGroupParser
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class TestChannelGroupParser(UnittestBase):

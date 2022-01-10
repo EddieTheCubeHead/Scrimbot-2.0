@@ -7,9 +7,9 @@ from discord import Embed, Color
 
 from Bot.DataClasses.Game import Game
 from Bot.DataClasses.User import User
-from Utils.TestBases.EmbedUnittest import EmbedUnittest
+from Test.Utils.TestBases.EmbedUnittest import EmbedUnittest
 from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 def _create_mock_player(user_id):

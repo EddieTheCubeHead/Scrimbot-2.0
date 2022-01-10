@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 import UnitTest
 from Bot.Core.Logging.LoggerBase import LoggerBase
-from Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestBases.UnittestBase import UnittestBase
 
 
 class TestLoggerBase(UnittestBase):

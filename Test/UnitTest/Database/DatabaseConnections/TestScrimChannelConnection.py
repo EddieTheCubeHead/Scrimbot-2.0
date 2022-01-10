@@ -7,8 +7,8 @@ from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
-from Utils.TestBases.ConnectionUnittest import ConnectionUnittest
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.ConnectionUnittest import ConnectionUnittest
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
 
 

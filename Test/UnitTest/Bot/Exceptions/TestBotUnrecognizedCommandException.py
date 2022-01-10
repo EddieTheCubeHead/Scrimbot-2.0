@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import MagicMock
 
 from Bot.Exceptions.BotUnrecognizedCommandException import BotUnrecognizedCommandException
-from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
 
 class TestBotUnrecognizedCommandException(AsyncUnittestBase):

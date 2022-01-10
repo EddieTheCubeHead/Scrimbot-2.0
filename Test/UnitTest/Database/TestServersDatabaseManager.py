@@ -7,8 +7,8 @@ import shutil
 import sqlite3
 from typing import Tuple, Optional, List
 
-from Utils.TestBases.UnittestBase import UnittestBase
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Database.ServersDatabaseManager import ServersDatabaseManager
 from Database.DatabaseConnectionWrapper import DatabaseConnectionWrapper
 from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException

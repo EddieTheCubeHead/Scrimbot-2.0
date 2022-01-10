@@ -6,9 +6,9 @@ from unittest.mock import MagicMock, patch, AsyncMock
 from discord import Message
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
-from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
-from Utils.TestHelpers.test_utils import create_mock_context
+from Test.Utils.TestHelpers.test_utils import create_mock_context
 
 
 class TestResponseBuilder(AsyncUnittestBase):

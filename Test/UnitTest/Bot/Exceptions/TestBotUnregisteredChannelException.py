@@ -2,8 +2,8 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from Bot.Exceptions.BotUnregisteredChannelException import BotUnregisteredChannelException
-from Utils.TestBases.UnittestBase import UnittestBase
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class TestBotUnregisteredChannelException(UnittestBase):

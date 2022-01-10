@@ -4,10 +4,10 @@ __author__ = "Eetu Asikainen"
 from behave import *
 from behave.runner import Context
 
-from Utils.TestHelpers.MockDiscordConverter import MockDiscordConverter
-from Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
-from Utils.TestHelpers.id_parser import get_id_increment, try_get_id
-from Utils.TestHelpers.test_utils import create_mock_channel, create_mock_guild, create_mock_channel_group
+from Test.Utils.TestHelpers.MockDiscordConverter import MockDiscordConverter
+from Test.Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
+from Test.Utils.TestHelpers.id_parser import get_id_increment, try_get_id
+from Test.Utils.TestHelpers.test_utils import create_mock_channel, create_mock_guild, create_mock_channel_group
 
 
 @given("exists {amount} voice channels")

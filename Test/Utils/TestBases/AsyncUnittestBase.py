@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from typing import Callable
 from unittest import IsolatedAsyncioTestCase
 
-from Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestBases.UnittestBase import UnittestBase
 
 
 class AsyncUnittestBase(UnittestBase, IsolatedAsyncioTestCase):

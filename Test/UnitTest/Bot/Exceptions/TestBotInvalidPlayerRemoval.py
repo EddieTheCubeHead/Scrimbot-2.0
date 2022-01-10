@@ -5,8 +5,8 @@ from logging import DEBUG
 from unittest.mock import AsyncMock, MagicMock
 
 from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
-from Utils.TestBases.UnittestBase import UnittestBase
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class TestBotInvalidPlayerRemoval(UnittestBase):

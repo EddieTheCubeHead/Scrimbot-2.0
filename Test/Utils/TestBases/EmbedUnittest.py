@@ -5,7 +5,7 @@ from typing import Optional
 
 from discord import Embed
 
-from Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestBases.UnittestBase import UnittestBase
 
 
 class EmbedUnittest(UnittestBase):

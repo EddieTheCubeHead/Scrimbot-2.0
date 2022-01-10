@@ -9,8 +9,8 @@ from Bot.DataClasses.Alias import Alias
 from Bot.DataClasses.Game import Game
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
-from Utils.TestBases.ConnectionUnittest import ConnectionUnittest
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.ConnectionUnittest import ConnectionUnittest
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Database.DatabaseConnections.GameConnection import GameConnection
 
 

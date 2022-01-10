@@ -9,8 +9,8 @@ from Bot.Checks.FreeScrimCheck import FreeScrimCheck
 from Bot.Exceptions.BotChannelHasScrimException import BotChannelHasScrimException
 from Bot.Exceptions.BotReservedChannelException import BotReservedChannelException
 from Bot.Exceptions.BotUnregisteredChannelException import BotUnregisteredChannelException
-from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class TestFreeScrimCheck(AsyncUnittestBase):

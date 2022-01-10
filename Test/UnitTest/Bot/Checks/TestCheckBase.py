@@ -7,8 +7,8 @@ from discord import Intents
 from discord.ext.commands import Context, Bot
 
 from Bot.Checks.CheckBase import CheckBase
-from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
-from Utils.TestHelpers.test_utils import create_mock_guild, create_mock_channel, create_mock_author, \
+from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Test.Utils.TestHelpers.test_utils import create_mock_guild, create_mock_channel, create_mock_author, \
     create_async_mock_message
 
 

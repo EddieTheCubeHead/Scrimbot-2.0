@@ -5,7 +5,7 @@ import os
 from unittest.mock import MagicMock
 
 import UnitTest
-from Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestBases.UnittestBase import UnittestBase
 from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
 
 

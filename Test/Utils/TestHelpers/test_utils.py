@@ -12,7 +12,7 @@ import discord
 
 from Bot.Core.ScrimContext import ScrimContext
 from Bot import Cogs
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 _ID_GENERATOR = TestIdGenerator()

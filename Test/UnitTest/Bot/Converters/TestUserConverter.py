@@ -4,8 +4,8 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import MagicMock
 
 from Bot.Converters.UserConverter import UserConverter
-from Utils.TestBases.UnittestBase import UnittestBase
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class TestUserConverter(UnittestBase):

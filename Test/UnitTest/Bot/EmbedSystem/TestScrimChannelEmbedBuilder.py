@@ -5,8 +5,8 @@ from unittest.mock import MagicMock
 
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.VoiceChannel import VoiceChannel
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
-from Utils.TestBases.EmbedUnittest import EmbedUnittest
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.EmbedUnittest import EmbedUnittest
 from Bot.EmbedSystem.ScrimChannelEmbedBuilder import ScrimChannelEmbedBuilder
 
 

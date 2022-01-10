@@ -6,8 +6,8 @@ from unittest.mock import AsyncMock, MagicMock, call
 from Bot.Cogs.ScrimCommands import ScrimCommands
 from Bot.DataClasses.Game import Game
 from Bot.EmbedSystem.ScrimStates.scrim_states import *
-from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class TestScrimCommands(AsyncUnittestBase):

@@ -5,8 +5,8 @@ from unittest.mock import MagicMock, AsyncMock
 
 from Bot.Cogs.ScrimChannelCommands import ScrimChannelCommands
 from Bot.DataClasses.VoiceChannel import VoiceChannel
-from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
-from Utils.TestHelpers.test_utils import create_mock_context
+from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Test.Utils.TestHelpers.test_utils import create_mock_context
 
 
 class TestScrimChannelCommands(AsyncUnittestBase):

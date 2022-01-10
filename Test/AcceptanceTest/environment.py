@@ -5,10 +5,10 @@ from Bot.Core.Logging.BotClientLogger import BotClientLogger
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
-from Utils.TestHelpers.DiscordPatcher import DiscordPatcher
-from Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
-from Utils.TestHelpers.ResponseMessageCatcher import ResponseMessageCatcher
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestHelpers.DiscordPatcher import DiscordPatcher
+from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
+from Test.Utils.TestHelpers.ResponseMessageCatcher import ResponseMessageCatcher
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 def before_feature(context, feature):

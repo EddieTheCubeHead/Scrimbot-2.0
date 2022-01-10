@@ -6,8 +6,8 @@ from unittest.mock import MagicMock
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 from Bot.Exceptions.BotReservedChannelException import BotReservedChannelException
-from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
 

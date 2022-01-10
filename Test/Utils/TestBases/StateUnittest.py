@@ -9,8 +9,8 @@ from Bot.DataClasses.Game import Game
 from Bot.DataClasses.Team import Team
 from Bot.DataClasses.User import User
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
-from Utils.TestBases.UnittestBase import UnittestBase
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 def _create_mock_player(user_id):

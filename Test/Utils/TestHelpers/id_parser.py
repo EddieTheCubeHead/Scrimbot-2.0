@@ -6,7 +6,7 @@ import re
 
 from behave.runner import Context
 
-from Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
+from Test.Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
 
 
 def insert_ids(context, message):

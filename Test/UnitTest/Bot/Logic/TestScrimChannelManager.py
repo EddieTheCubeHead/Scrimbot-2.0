@@ -2,9 +2,9 @@ __version__ = "ver"
 __author__ = "Eetu Asikainen"
 
 from Bot.DataClasses.VoiceChannel import VoiceChannel
-from Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestBases.UnittestBase import UnittestBase
 from Bot.Logic.ScrimChannelManager import ScrimChannelManager
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class TestScrimChannelManager(UnittestBase):

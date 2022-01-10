@@ -3,10 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from collections import OrderedDict
 
-from Utils.TestBases.UnittestBase import UnittestBase
+from Test.Utils.TestBases.UnittestBase import UnittestBase
 
 from Bot.Core.BotCache import BotCache
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class TestBotCache(UnittestBase):

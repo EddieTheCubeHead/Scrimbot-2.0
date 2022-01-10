@@ -4,8 +4,8 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import AsyncMock
 
 from Bot.Exceptions.BotReservedChannelException import BotReservedChannelException
-from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
-from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 class TestBotReservedChannelException(AsyncUnittestBase):

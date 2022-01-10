@@ -5,7 +5,7 @@ import os
 
 from Bot.EmbedSystem.ScrimStates.LockedState import LockedState
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
-from Utils.TestBases.StateUnittest import StateUnittest
+from Test.Utils.TestBases.StateUnittest import StateUnittest
 
 
 class TestLockedState(StateUnittest):

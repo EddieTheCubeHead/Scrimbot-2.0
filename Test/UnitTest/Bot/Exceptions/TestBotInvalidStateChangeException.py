@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import MagicMock, AsyncMock
 
 from Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
-from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
 
 class TestBotInvalidStateChangeException(AsyncUnittestBase):
