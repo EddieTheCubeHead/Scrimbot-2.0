@@ -27,15 +27,11 @@ jobs:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       run: |
         echo "{\"token\": \"$BOT_TOKEN\"}" > Src/Configs/secrets.json
-    - name: Unit tests with unittest
-      run: |
-        cd Test/UnitTest
-        python -m pytest
-      env:
-        PYTHONPATH: /home/runner/work/Scrimbot-2.0/Scrimbot-2.0/Src/
     - name: Acceptance tests with behave
       run: |
-        behave --junit
+        behave Test/AcceptanceTest --junit
+      env:
+        PYTHONPATH: /home/runner/work/Scrimbot-2.0/Scrimbot-2.0/Src/
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: always()
