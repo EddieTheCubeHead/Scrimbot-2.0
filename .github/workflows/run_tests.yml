@@ -23,8 +23,10 @@ jobs:
         pip install pytest behave
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Create secret file
+      env: # Set the secret as an input
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       run: |
-        echo "{'token': 'invalid'}" > Src/Configs/secrets.json
+        echo "{\"token\": \"$BOT_TOKEN\"}" > Src/Configs/secrets.json
     - name: Unit tests with pytest
       run: |
         pytest --junitxml reports/unit_test_report.xml
