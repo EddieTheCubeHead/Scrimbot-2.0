@@ -37,12 +37,13 @@ jobs:
       env:
         PYTHONPATH: /home/runner/work/Scrimbot-2.0/Scrimbot-2.0/Src/
 
-    - name: Publish Unit Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v1
-      if: always()
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: always()    # run this step even if previous step failed
       with:
-        files: reports/*.xml
-      id: create_output
+        name: Behave test results
+        path: reports/*.xml
+        reporter: java-junit
 
     - name: Discord Notification
       uses: tsickert/discord-webhook@v4.0.0
