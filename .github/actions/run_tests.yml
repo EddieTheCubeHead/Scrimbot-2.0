@@ -1,0 +1,31 @@
+name: Run tests
+
+on: push
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint pytest behave
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Unit tests with pytest
+      run: |
+        pytest --junitxml reports/unit_test_report.xml
+    - name: Acceptance tests with behave
+      run: |
+        behave --junit
+    - name: Publish Unit Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v1
+      if: always()
+      with:
+        files: reports/*.xml
