@@ -53,6 +53,6 @@ jobs:
         webhook: ${{ secrets.WEBHOOK_URL }}
         title: "test run"
         description: "✅ Passed: ${{steps.create_report.outputs.passed}}\n⛔ Failed: ${{steps.create_report.outputs.failed}}\n⌛ Skipped: ${{steps.create_report.outputs.skipped}}\n⏱ Running time: ${{steps.create_report.outputs.time}}"
-        color: ${{ (startsWith(steps.create_report.outputs.conclusion, 'success') && 0x07cf00 ) || 0xcf0000 }}
+        color: ${{ (startsWith(job.status, 'success') && 0x07cf00 ) || 0xcf0000 }}
         username: GitHub Actions
         avatar_url: "https://cdn3.iconfinder.com/data/icons/inficons/512/github.png"
