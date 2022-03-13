@@ -10,13 +10,11 @@ from behave.api.async_step import async_run_until_complete
 from behave.runner import Context
 from discord import Reaction, Message
 
-from AcceptanceTest.steps.mock_discord_objects_steps import create_voice_channels
+from Test.AcceptanceTest.steps.mock_discord_objects_steps import create_voice_channels
 from Bot.Converters.GameConverter import GameConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Test.Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
 from Test.Utils.TestHelpers.embed_test_helper import parse_embed_from_table, create_error_embed, assert_same_embed_text
-from Bot.DataClasses.ScrimChannel import ScrimChannel
-from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 from Test.Utils.TestHelpers.id_parser import insert_ids, get_id_increment, try_get_id
 from Test.Utils.TestHelpers.test_utils import create_mock_guild, create_mock_author, create_mock_channel,\
