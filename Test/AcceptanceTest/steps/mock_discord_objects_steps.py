@@ -1,17 +1,24 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+import re
+
 from behave import *
 from behave.runner import Context
 
 from Test.Utils.TestHelpers.MockDiscordConverter import MockDiscordConverter
 from Test.Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
 from Test.Utils.TestHelpers.id_parser import get_id_increment, try_get_id
-from Test.Utils.TestHelpers.test_utils import create_mock_channel, create_mock_guild, create_mock_channel_group
+from Test.Utils.TestHelpers.test_utils import create_mock_channel, create_mock_guild, create_mock_channel_group, \
+    set_member_voice_present
 
 
 @given("exists {amount} voice channels")
 def step_impl(context, amount):
+    create_voice_channels(context, amount)
+
+
+def create_voice_channels(context: Context, amount: int):
     mock_voice_converter = _create_mock_voice_converter(context)
     mock_guild = _ensure_mocked_guild(context)
     channel_increment = get_id_increment(context, "channel")
@@ -35,18 +42,20 @@ def step_impl(context):
             _mock_text_channel_calls(context, mock_group, mocked_channel)
 
 
-def _mock_voice_presence(player):
-    pass
+def _get_all_players(context):
+    return [int(context.discord_ids[name]) for name in context.discord_ids if re.match(r"user_(\d+_|)id", name)]
 
 
-@given("{player_spec} in voice chat")
+@when("{player_spec} are in voice chat")
+@when("{player_spec} is in voice chat")
 def step_impl(context: Context, player_spec):
-    players = _parse_player_spec(player_spec)
+    players = _parse_player_spec(player_spec) or _get_all_players(context)
+    guild = _ensure_mocked_guild(context)
     for player in players:
-        _mock_voice_presence(player)
+        set_member_voice_present(player, guild)
     
     
-def _parse_player_spec(player_spec):
+def _parse_player_spec(player_spec) -> list[int]:
     if "all" in player_spec:
         return []
     player_spec = player_spec.remove("players ")

@@ -9,8 +9,8 @@ from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
 
 def _create_voice_channels(scrim_channel):
-    team_channels = list(filter(lambda channel: channel.team > 0, scrim_channel.voice_channels))
-    lobby_channel = next((channel for channel in scrim_channel.voice_channels if channel.team == 0), None)
+    team_channels = list(filter(lambda channel: channel.team_number > 0, scrim_channel.voice_channels))
+    lobby_channel = next((channel for channel in scrim_channel.voice_channels if channel.team_number == 0), None)
     return team_channels, lobby_channel
 
 
@@ -21,7 +21,8 @@ class ActiveScrimsManager:
         self.scrims: dict[int, ScrimManager] = {}
 
     def create_scrim(self, scrim_channel: ScrimChannel, game: Game) -> ScrimManager:
-        teams_manager = ScrimTeamsManager(game, *_create_voice_channels(scrim_channel))
+        team_channels, lobby_channel = _create_voice_channels(scrim_channel)
+        teams_manager = ScrimTeamsManager(game, team_channels=team_channels, lobby=lobby_channel)
         created_scrim = ScrimManager(teams_manager)
         self.scrims[scrim_channel.channel_id] = created_scrim
         return created_scrim

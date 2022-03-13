@@ -47,4 +47,4 @@ class TestVoiceChannelConverter(AsyncUnittestBase):
     def _assert_correct_channel_data(self, expected: VoiceChannel, actual: VoiceChannel):
         self.assertEqual(expected.channel_id, actual.channel_id)
         self.assertEqual(expected.parent_channel_id, actual.parent_channel_id)
-        self.assertEqual(expected.team, actual.team)
+        self.assertEqual(expected.team_number, actual.team_number)

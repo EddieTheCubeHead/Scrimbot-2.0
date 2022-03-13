@@ -8,12 +8,14 @@ import discord
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
 from Bot.DataClasses.Game import Game
+from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.Team import Team
 from Bot.DataClasses.User import User
 from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
 from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
 from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
+from Bot.Logic.ScrimParticipantManager import ScrimParticipantManager
 
 
 def _assert_valid_game(game):
@@ -28,18 +30,8 @@ def _is_full(team):
     return len(team.members) >= team.max_size
 
 
-def is_in_guild_voice_chat(guild: discord.Guild, player: discord.Member):
-    return player.voice is not None and player.voice.channel.guild.id == guild.id
-
-
-def has_all_players_in_guild_voice_chat(team: Team):
-    return all(is_in_guild_voice_chat(team.voice_channel.guild, player) for player in team.members)
-
-
-async def _move_team_to_voice(team):
-    for player in team.members:
-        if player.voice:
-            await player.move_to(team.voice_channel, reason="Setting up a scrim.")
+def is_in_guild_voice_chat(scrim_channel: ScrimChannel, player: discord.Member):
+    return player.voice is not None and scrim_channel and player.voice.channel.guild.id == scrim_channel.guild_id
 
 
 def _assert_valid_removal(player, team):
@@ -54,10 +46,14 @@ class ScrimTeamsManager:
     SPECTATORS = "Spectators"
     QUEUE = "Queue"
 
-    def __init__(self, game: Game, team_channels: List[discord.VoiceChannel] = None,
-                 lobby: discord.VoiceChannel = None, *, teams: List[Team] = None):
+    # TODO extract data into separate DTO
+    @BotDependencyInjector.inject
+    def __init__(self, game: Game, participant_manager: ScrimParticipantManager, *,
+                 team_channels: List[discord.VoiceChannel] = None, lobby: discord.VoiceChannel = None,
+                 teams: List[Team] = None):
         _assert_valid_game(game)
         self.game: Game = game
+        self._participant_manager: ScrimParticipantManager = participant_manager
         self._teams: Dict[str, Team] = {}
         self._build_teams(teams or [])
         self._build_standard_teams()
@@ -86,7 +82,13 @@ class ScrimTeamsManager:
 
     @property
     def all_players_in_voice_chat(self):
-        return all(has_all_players_in_guild_voice_chat(team) for team in self.get_game_teams())
+        return all(self.has_all_players_in_guild_voice_chat(team) for team in self.get_game_teams())
+
+    def has_all_players_in_guild_voice_chat(self, team: Team):
+        if not team.voice_channel:
+            return False
+        participant_members = [self._participant_manager.try_get_participant(player.user_id) for player in team.members]
+        return all(is_in_guild_voice_chat(team.voice_channel.parent_channel, member) for member in participant_members)
 
     def get_standard_teams(self):
         return list(self._teams.values())[self.game.team_count:]
@@ -101,7 +103,7 @@ class ScrimTeamsManager:
             if len(premade_teams) > i:
                 self._add_premade_team(premade_teams[i])
             else:
-                self._add_new_team(i+1)
+                self._add_new_team(i + 1)
         return teams
 
     def _build_standard_teams(self):
@@ -158,7 +160,8 @@ class ScrimTeamsManager:
 
     def _add_game_team_voice_channel(self, channel, index):
         if self._is_game_team_index(index):
-            self._get_team(index).voice_channel = channel
+            team = self._get_team(index)
+            team.voice_channel = channel
 
     def _is_game_team_index(self, index):
         return index < self.game.team_count
@@ -215,8 +218,7 @@ class ScrimTeamsManager:
         if self._is_full_game_team(self._get_team(team)):
             raise BotInvalidJoinException(player, self._get_team(team), "Could not add a player into a full team.")
         if not self._blind_remove(player):
-            raise BotLoggedContextException(f"Tried setting team for user '{player.display_name}' who is not part of "
-                                            f"the scrim.")
+            raise BotInvalidPlayerRemoval(player, self._get_team(team))
         self.add_player(team, player)
 
     def _blind_remove(self, player: User) -> bool:
@@ -237,7 +239,13 @@ class ScrimTeamsManager:
 
     async def _move_players_to_voice(self):
         for team in self.get_game_teams():
-            await _move_team_to_voice(team)
+            await self._move_team_to_voice(team)
+
+    async def _move_team_to_voice(self, team):
+        for player in team.members:
+            member = self._participant_manager.try_get_participant(player.user_id)
+            if member.voice:
+                await member.move_to(team.voice_channel, reason="Setting up a scrim.")
 
     def _try_get_team(self, player) -> Optional[Team]:
         for team in self._teams.values():

@@ -10,6 +10,7 @@ from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
 from Bot.DataClasses.Game import Game
 from Bot.EmbedSystem.ScrimStates.scrim_states import LFP, LOCKED
+from Bot.Exceptions.BotAlreadyParticipantException import BotAlreadyParticipantException
 from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
 from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
 from Bot.Exceptions.BotInvalidReactionJoinException import BotInvalidReactionJoinException
@@ -32,7 +33,9 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         self.active_scrims_manager.try_get_scrim = self.get_scrim
         self.embed_builder = AsyncMock()
         self.user_converter = MagicMock()
-        self.cog = ScrimReactionListeners(self.active_scrims_manager, self.embed_builder, self.user_converter)
+        self.participant_manager = MagicMock()
+        self.cog = ScrimReactionListeners(self.active_scrims_manager, self.embed_builder, self.user_converter,
+                                          self.participant_manager)
         self.cog._inject(MagicMock())
         self.mock_message = AsyncMock()
         self.mock_message.id = self.id_generator.generate_viable_id()
@@ -87,6 +90,21 @@ class TestScrimReactionListeners(AsyncUnittestBase):
                 await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
                 original_joining_reaction.remove.assert_called_with(self.mock_member)
 
+    async def test_on_reaction_add_given_multi_scrim_join_caught_then_exception_logged_and_reaction_removed(self):
+        self.scrim.state = LFP
+        players_joining_reaction = AsyncMock()
+        players_joining_reaction.emoji = "\U0001F441"
+        system_logger = MagicMock()
+        with mock_dependency(BotSystemLogger, system_logger):
+            original_exception = BotAlreadyParticipantException(self.mock_user, system_logger)
+            self.participant_manager.ensure_not_participant.side_effect = original_exception
+            await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
+        players_joining_reaction.remove.assert_called_with(self.mock_member)
+        system_logger.debug.assert_called_with(f"An exception occurred during bot operation: "
+                                               f"User '{self.mock_member.id}' could not join the scrim with reaction "
+                                               f"{players_joining_reaction} because they are already a participant in "
+                                               f"another scrim.")
+
     async def test_on_reaction_add_given_invalid_join_caught_then_exception_logged_and_reaction_removed(self):
         self.scrim.state = LFP
         mock_team = MagicMock()
@@ -102,6 +120,26 @@ class TestScrimReactionListeners(AsyncUnittestBase):
                                                f"'{self.mock_member.id}' could not join team "
                                                f"'{original_exception.team.name}' with reaction "
                                                f"{players_joining_reaction} because they are Reason.")
+
+    async def test_on_reaction_add_when_joining_participants_or_spectators_then_participant_manager_updated(self):
+        emojis = ("\U0001F441", "\U0001F3AE")
+        self.scrim.state = LFP
+        for emoji in emojis:
+            with self.subTest(f"Joining a scrim with reaction {emoji}"):
+                players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji=emoji)
+                await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
+                self.participant_manager.ensure_not_participant.assert_called_with(self.mock_member)
+                self.participant_manager.try_add_participant.assert_called_with(self.mock_member)
+
+    async def test_on_reaction_add_when_joining_game_teams_then_participant_manager_not_updated(self):
+        emojis = ("\U0001F451", "1\u20E3", "2\u20E3", "3\u20E3", "4\u20E3")
+        self.scrim.state = LFP
+        for emoji in emojis:
+            with self.subTest(f"Joining a scrim with reaction {emoji}"):
+                players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji=emoji)
+                await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
+                self.participant_manager.ensure_not_participant.assert_not_called()
+                self.participant_manager.try_add_participant.assert_not_called()
 
     async def test_on_reaction_remove_given_players_reaction_then_player_removed_and_message_edited(self):
         self.scrim.state = LFP

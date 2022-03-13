@@ -14,13 +14,13 @@ from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextExcepti
 class BotInvalidReactionJoinException(BotLoggedNoContextException):
 
     @BotDependencyInjector.inject
-    def __init__(self, user: Member, team: Team, reaction: Reaction, reason: str, logger: BotSystemLogger):
+    def __init__(self, user: Member, reaction: Reaction, message: str, logger: BotSystemLogger):
         self.reaction = reaction
         self.user = user
-        message = f"User '{user.id}' could not join team '{team.name}' with reaction " \
-                  f"{reaction} because they are {reason}."
         super().__init__(message, logger, log=DEBUG)
 
     async def resolve(self):
         super().resolve()
         await self.reaction.remove(self.user)
+
+# f"User '{user.id}' could not join team '{team.name}' with reaction {reaction} because they are {reason}."

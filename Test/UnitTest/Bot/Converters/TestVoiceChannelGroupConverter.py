@@ -56,4 +56,4 @@ class TestVoiceChannelGroupConverter(AsyncUnittestBase):
     def _assert_correct_channels(self, actual_channels, first_team, last_team):
         self.assertEqual(last_team - first_team + 1, len(actual_channels))
         for channel, expected_team in zip(actual_channels, range(first_team, last_team)):
-            self.assertEqual(expected_team, channel.team)
+            self.assertEqual(expected_team, channel.team_number)

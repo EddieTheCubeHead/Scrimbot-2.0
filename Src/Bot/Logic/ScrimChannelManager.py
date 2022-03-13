@@ -14,8 +14,8 @@ class ScrimChannelManager:
     def enumerate_teams(voice_channels: list[VoiceChannel]):
         team = 1
         for voice_channel in voice_channels:
-            if voice_channel.team is None:
-                voice_channel.team = team
+            if voice_channel.team_number is None:
+                voice_channel.team_number = team
                 team += 1
-        voice_channels.sort(key=lambda x: x.team)
+        voice_channels.sort(key=lambda x: x.team_number)
         return voice_channels

@@ -101,9 +101,9 @@ class TestScrimCommands(AsyncUnittestBase):
                 mock_message.add_reaction.call_args_list = []
 
     async def test_start_given_no_move_voice_arg_then_player_moving_attempted(self):
-        mock_scrim = MagicMock()
+        mock_scrim = AsyncMock()
+        mock_scrim.start = MagicMock()
         mock_scrim.state = LOCKED
-        mock_scrim.teams_manager.try_move_to_voice.return_value = True
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim

@@ -5,7 +5,7 @@ import os
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Tuple, Type, Optional
+from typing import Tuple, Type, Optional, Union
 from unittest.mock import MagicMock, AsyncMock
 
 import discord
@@ -16,6 +16,13 @@ from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 _ID_GENERATOR = TestIdGenerator()
+
+
+class _VoicePresenceSentinel:
+    pass
+
+
+mocked_users: dict[tuple[int, int], Union[discord.Member, _VoicePresenceSentinel]] = {}
 
 
 def assert_tuple_with_correct_types(actual: Tuple, *tuple_fields: Type) -> Optional[str]:
@@ -32,12 +39,28 @@ def get_cogs_messages():
             yield rf"Using cog Bot.Cogs.{cog[:-3]}, with version {__version__}"
 
 
+def set_member_voice_present(member_id: int, guild: discord.Guild):
+    if (member_id, guild.id) in mocked_users:
+        mocked_users[(member_id, guild.id)].voice.channel.guild = guild
+    else:
+        mocked_users[(member_id, guild.id)] = _VoicePresenceSentinel()
+
+
 def create_mock_author(member_id: int, guild: discord.Guild) -> discord.Member:
-    mock_member = MagicMock()
+    in_voice = False
+    if (member_id, guild.id) in mocked_users:
+        if type(mocked_users[(member_id, guild.id)]) == _VoicePresenceSentinel:
+            in_voice = True
+        else:
+            return mocked_users[(member_id, guild.id)]
+    mock_member = AsyncMock()
     mock_member.id = member_id
     mock_member.guild = guild
     mock_member.display_name = f"User{member_id}"
     mock_member.bot = False
+    if in_voice:
+        mock_member.voice.channel.guild = guild
+    mocked_users[(member_id, guild.id)] = mock_member
     return mock_member
 
 

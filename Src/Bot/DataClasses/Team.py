@@ -11,6 +11,7 @@ from sqlalchemy.orm import relationship
 from Bot.DataClasses.DataClass import DataClass
 from Bot.DataClasses.TeamMember import TeamMember
 from Bot.DataClasses.User import User
+from Bot.DataClasses.VoiceChannel import VoiceChannel
 
 
 class Team(DataClass):
@@ -19,11 +20,14 @@ class Team(DataClass):
     name = Column(String, nullable=False)  # TODO: when teams are more refined, create check for these two
     code = Column(String, nullable=False)  # columns should be unique per guild with global guild (id=0) considered
     guild_id = Column(Integer, ForeignKey("Guilds.guild_id"), nullable=False)
-    channel_id = Column(Integer, nullable=True)  # TODO: implement check for not allowing channels on global teams
+
+    # TODO: implement check for not allowing channels on global teams
+    channel_id = Column(Integer, ForeignKey("VoiceChannels.channel_id"), nullable=True)
 
     guild = relationship("Guild", back_populates="teams")
     members = association_proxy("team_members", "user", creator=lambda user: TeamMember(user=user))
     scrims = relationship("Scrim", secondary="ParticipantTeams", back_populates="teams")
+    voice_channel = relationship("VoiceChannel", back_populates="teams", lazy="joined")
 
     def __init__(self, name: str, players: List[User] = None, min_size=0, max_size=0):
         """The constructor of ScrimTeam
@@ -41,7 +45,6 @@ class Team(DataClass):
         self.members: List[User] = players if players is not None else []
         self.min_size: int = min_size
         self.max_size: int = max_size or min_size
-        self.voice_channel: Optional[discord.VoiceChannel] = None
         self.is_pickup: bool = False
         self.winner: bool = False
         self.inline: bool = True

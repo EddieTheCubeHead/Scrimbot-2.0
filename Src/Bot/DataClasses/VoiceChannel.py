@@ -18,14 +18,15 @@ class VoiceChannel(DataClass):
 
     channel_id = Column(Integer, primary_key=True)
     parent_channel_id = Column(Integer, ForeignKey("ScrimChannels.channel_id"), nullable=False)
-    team = Column(Integer, nullable=False)
+    team_number = Column(Integer, nullable=False)
 
-    parent_channel = relationship("ScrimChannel", back_populates="voice_channels")
+    parent_channel = relationship("ScrimChannel", back_populates="voice_channels", lazy="joined")
+    teams = relationship("Team", back_populates="voice_channel")
 
-    def __init__(self, channel_id: int, parent_channel_id: int, team: int = None):
+    def __init__(self, channel_id: int, parent_channel_id: int, team_number: int = None):
         self.channel_id: int = channel_id
         self.parent_channel_id: int = parent_channel_id
-        self.team: Optional[int] = team
+        self.team_number: Optional[int] = team_number
 
     @classmethod
     @BotDependencyInjector.inject

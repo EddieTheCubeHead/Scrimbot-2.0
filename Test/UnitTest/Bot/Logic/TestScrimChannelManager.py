@@ -24,16 +24,16 @@ class TestScrimChannelManager(UnittestBase):
         voice_channels = self._generate_voice_channels(guild_id, 5)
         voice_channels = self.manager.enumerate_teams(voice_channels)
         for voice_channel, team in zip(voice_channels, range(1, 6)):
-            self.assertEqual(voice_channel.team, team)
+            self.assertEqual(voice_channel.team_number, team)
 
     def test_enumerate_teams_given_a_list_with_lobby_then_teams_get_sequential_numbers_starting_from_zero(self):
         guild_id = self.id_mocker.generate_viable_id()
         voice_channels = self._generate_voice_channels(guild_id, 8)
         lobby_channel = voice_channels[4]
-        lobby_channel.team = 0
+        lobby_channel.team_number = 0
         voice_channels = self.manager.enumerate_teams(voice_channels)
         for voice_channel, team in zip(voice_channels, range(0, 8)):
-            self.assertEqual(voice_channel.team, team)
+            self.assertEqual(voice_channel.team_number, team)
 
     def _generate_voice_channels(self, guild_id: int, channel_amount: int):
         voice_channels = []

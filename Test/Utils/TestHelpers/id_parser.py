@@ -34,6 +34,6 @@ def get_id_increment(context: Context, id_type: str) -> int:
 
 
 def try_get_id(context, id_string):
-    mock_guild_id = context.discord_ids.pop(id_string, GLOBAL_ID_GENERATOR.generate_viable_id())
-    context.discord_ids[id_string] = mock_guild_id
-    return mock_guild_id
+    mock_id = context.discord_ids.pop(id_string, GLOBAL_ID_GENERATOR.generate_viable_id())
+    context.discord_ids[id_string] = mock_id
+    return mock_id

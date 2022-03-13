@@ -21,13 +21,14 @@ class TestBotInvalidReactionJoinException(AsyncUnittestBase):
         self.user.id = self.id_generator.generate_viable_id()
         self.team = MagicMock()
         self.team.name = str(self.id_generator.generate_viable_id())
-        self.reason = f"already a member of the team '{self.id_generator.generate_viable_id()}'"
+        self.reason = f"User '{self.user.id}' could not join team '{self.team.name}' with reaction {self.reaction} " \
+                      f"because they are already a member of the team '{self.team.name}'."
         self.logger = MagicMock()
-        self.exception = BotInvalidReactionJoinException(self.user, self.team, self.reaction, self.reason, self.logger)
+        self.exception = BotInvalidReactionJoinException(self.user, self.reaction, self.reason, self.logger)
 
     def test_init_given_reaction_user_team_and_reason_then_constructs_message_correctly(self):
-        self.assertEqual(f"User '{self.user.id}' could not join team '{self.team.name}' with reaction "
-                         f"{self.reaction} because they are {self.reason}.", self.exception.message)
+        self.assertEqual(f"User '{self.user.id}' could not join team '{self.team.name}' with reaction {self.reaction} "
+                         f"because they are already a member of the team '{self.team.name}'.", self.exception.message)
 
     async def test_resolve_when_called_then_removes_reaction(self):
         await self.exception.resolve()
@@ -37,4 +38,4 @@ class TestBotInvalidReactionJoinException(AsyncUnittestBase):
         await self.exception.resolve()
         self.logger.debug.assert_called_with(f"An exception occurred during bot operation: User '{self.user.id}' "
                                              f"could not join team '{self.team.name}' with reaction {self.reaction} "
-                                             f"because they are {self.reason}.")
+                                             f"because they are already a member of the team '{self.team.name}'.")

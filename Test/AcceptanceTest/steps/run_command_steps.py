@@ -10,6 +10,7 @@ from behave.api.async_step import async_run_until_complete
 from behave.runner import Context
 from discord import Reaction, Message
 
+from AcceptanceTest.steps.mock_discord_objects_steps import create_voice_channels
 from Bot.Converters.GameConverter import GameConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Test.Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
@@ -63,8 +64,8 @@ async def step_impl(context: Context, game):
     await _create_locked_scrim(context, game)
 
 
-async def _create_locked_scrim(context, game):
-    await _create_scrim(context, game)
+async def _create_locked_scrim(context, game, amount=0):
+    await _create_scrim(context, game, amount)
     game_instance = await BotDependencyInjector.dependencies[GameConverter].convert(MagicMock(), game)
     amount = game_instance.team_count * game_instance.min_team_size
     await _add_reactions(amount, context, "🎮")
@@ -74,22 +75,31 @@ async def _create_locked_scrim(context, game):
     context.command_messages.pop(-1)
 
 
-@given("a {game} scrim with full teams")
-@given("an {game} scrim with full teams")
-async def step_impl(context: Context, game):
-    await _create_locked_scrim(context, game)
+@given("a {game} scrim with full teams and {amount} registered voice channels")
+@given("an {game} scrim with full teams and {amount} registered voice channels")
+@async_run_until_complete
+async def step_impl(context: Context, game, amount):
+    await _create_locked_scrim(context, game, amount)
+    await sleep(0)
     game_instance = await BotDependencyInjector.dependencies[GameConverter].convert(MagicMock(), game)
-    max_players = game_instance.team_count * game_instance.max_team_size
+    max_team_players = game_instance.max_team_size
     team_count = game_instance.team_count
     for team in range(team_count):
-        for user in range(1 + max_players * team_count, 1 + max_players + max_players * team_count):
+        for user in range(1 + max_team_players * team, 1 + max_team_players + max_team_players * team):
             await add_user_reaction(context, _try_insert_number_react(f"{team + 1}\u20E3"), user)
     await sleep(0)
 
 
-async def _create_scrim(context: Context, game):
+async def _create_scrim(context: Context, game, amount=0):
+    register_command = ";register"
+    if amount:
+        create_voice_channels(context, amount)
+        register_command += " {voice_"
+        register_command += "_id} {voice_".join(str(num) for num in range(1, int(amount) + 1))
+        register_command += "_id}"
+        register_command = insert_ids(context, register_command)
     table = _create_call_ids(context)
-    await call_command(';register', context, table)
+    await call_command(register_command, context, table)
     await call_command(f';scrim "{game}"', context, table)
     context.latest_fetched = _hide_command_calls(context, 2)
 

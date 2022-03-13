@@ -122,8 +122,9 @@ class ScrimCommands(commands.Cog):
 
         await ctx.message.delete()
         if move_voice:
-            ctx.scrim.teams_manager.try_move_to_voice()
+            await ctx.scrim.teams_manager.try_move_to_voice()
         ctx.scrim.start()
+        ctx.scrim.message.reactions.clear()
         await self._response_builder.edit(ctx.scrim.message, displayable=ctx.scrim)
 
     @commands.command(aliases=["win", "w", "victor", "v"])
@@ -141,7 +142,7 @@ class ScrimCommands(commands.Cog):
         :type winner: str
         """
 
-        scrim = await ctx.get_scrim()
+        scrim = await ctx.scrim
         await scrim.finish(winner)
         await ctx.message.delete()
 
@@ -173,7 +174,7 @@ class ScrimCommands(commands.Cog):
         :type ctx: commands.Context
         """
 
-        scrim = await ctx.get_scrim()
+        scrim = ctx.scrim
         await scrim.terminate(f"Scrim terminated manually by {ctx.author.display_name}")
         await ctx.message.delete()
 
