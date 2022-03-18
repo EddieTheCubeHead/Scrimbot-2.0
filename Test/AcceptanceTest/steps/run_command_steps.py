@@ -132,7 +132,7 @@ def _create_call_ids(context: Context, *, alternative_text_channel=False) -> lis
 async def call_command(command, context: Context, table):
     for row in table:
         mock_guild = create_mock_guild(int(row[2]))
-        mock_author = create_mock_author(int(row[0]), mock_guild)
+        mock_author = create_mock_author(int(row[0]), mock_guild, context)
         mock_channel = create_mock_channel(int(row[1]), mock_guild)
         mock_message = create_async_mock_message(mock_guild, mock_channel, mock_author, command)
         context.patcher.try_add_group(mock_channel)
@@ -156,7 +156,7 @@ async def step_impl(context: Context, user, reaction_string):
 async def add_user_reaction(context, reaction_string, user):
     user_id = try_get_id(context, f"user_{user}_id")
     guild = create_mock_guild(try_get_id(context, "guild_id"))
-    user = create_mock_author(user_id, guild)
+    user = create_mock_author(user_id, guild, context)
     reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
     await context.latest_fetched.add_reaction(reaction_string, user)
     context.client.dispatch("reaction_add", reaction, user)
@@ -199,7 +199,7 @@ async def _add_reactions(amount, context: Context, reaction_string):
 
 
 async def _add_reaction(context: Context, guild, reaction_string, user_increment):
-    user = create_mock_author(GLOBAL_ID_GENERATOR.generate_viable_id(), guild)
+    user = create_mock_author(GLOBAL_ID_GENERATOR.generate_viable_id(), guild, context)
     context.discord_ids[f"user_{user_increment}_id"] = user.id
     reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
     await context.latest_fetched.add_reaction(reaction_string, user)
@@ -215,7 +215,7 @@ async def step_impl(context: Context, user, reaction_string):
 
 
 async def _remove_reaction(context: Context, guild, reaction_string, user_id):
-    user = create_mock_author(user_id, guild)
+    user = create_mock_author(user_id, guild, context)
     reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
     await context.latest_fetched.remove_reaction(reaction_string, user)
     context.client.dispatch("reaction_remove", reaction, user)

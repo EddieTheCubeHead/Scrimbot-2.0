@@ -35,10 +35,14 @@ class TestScrimBotClient(AsyncUnittestBase):
         self.context_provider = AsyncMock()
         self.guild_converter = MagicMock()
         self.game_converter = MagicMock()
+        self.channel_provider = MagicMock()
         self.logger = MagicMock()
         self.logger.handler = MagicMock()
         self.client = ScrimBotClient(self.config, self.logger, self.context_provider, self.guild_converter,
-                                     self.game_converter, self.loop)
+                                     self.game_converter, self.channel_provider, self.loop)
+
+    def init_when_created_then_channel_provider_client_set(self):
+        self.assertEqual(self.client, self.channel_provider.client)
 
     def test_setup_logging_when_called_then_discord_logger_setup(self):
         with patch("logging.getLogger", MagicMock()) as mock_logging:

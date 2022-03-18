@@ -1,14 +1,15 @@
 __author__ = "Eetu Asikainen"
 
+
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.Logging.BotClientLogger import BotClientLogger
 from Bot.Core.ScrimBotClient import ScrimBotClient
+from Bot.Logic.DiscordVoiceChannelProvider import DiscordVoiceChannelProvider
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
 from Test.Utils.TestHelpers.DiscordPatcher import DiscordPatcher
 from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 from Test.Utils.TestHelpers.ResponseMessageCatcher import ResponseMessageCatcher
-from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
 def before_feature(context, feature):
@@ -23,11 +24,13 @@ def before_feature(context, feature):
 def before_scenario(context, scenario):
     context.discord_ids = {"divider": "----------------------------------------------"}
     context.command_messages = []
+    context.mocked_users = {}
 
 
 def _setup_bot(context):
     config = Config()
     logger = BotClientLogger(config)
     BotDependencyInjector.dependencies[MasterConnection] = MasterConnection(config, ":memory:")
+    BotDependencyInjector.dependencies[DiscordVoiceChannelProvider] = DiscordVoiceChannelProvider()
     context.client = ScrimBotClient(config, logger, ResponseMessageCatcher())
     ResponseLoggerContext.reset()

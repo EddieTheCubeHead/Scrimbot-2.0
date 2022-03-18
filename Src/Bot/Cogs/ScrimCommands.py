@@ -122,9 +122,10 @@ class ScrimCommands(commands.Cog):
 
         await ctx.message.delete()
         if move_voice:
-            await ctx.scrim.teams_manager.try_move_to_voice()
-        ctx.scrim.start()
-        ctx.scrim.message.reactions.clear()
+            await ctx.scrim.start_with_voice()
+        else:
+            ctx.scrim.start()
+        await ctx.scrim.message.clear_reactions()
         await self._response_builder.edit(ctx.scrim.message, displayable=ctx.scrim)
 
     @commands.command(aliases=["win", "w", "victor", "v"])

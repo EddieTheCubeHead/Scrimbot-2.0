@@ -1,26 +1,25 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, AsyncMock
 
 from Bot.EmbedSystem.ScrimStates.scrim_states import *
 from Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
-from Test.Utils.TestBases.UnittestBase import UnittestBase
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.Logic.ScrimManager import ScrimManager
 from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
-from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
+from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
 
-class TestScrimManager(UnittestBase):
+class TestScrimManager(AsyncUnittestBase):
 
     @classmethod
     def setUpClass(cls) -> None:
         cls.id_mocker = TestIdGenerator()
 
     def setUp(self) -> None:
-        self.mock_teams_manager = MagicMock()
+        self.mock_teams_manager = AsyncMock()
         self.scrim_manager = ScrimManager(self.mock_teams_manager)
 
     def test_add_participant_given_valid_participant_then_add_called_in_teams_manager(self):
@@ -92,7 +91,7 @@ class TestScrimManager(UnittestBase):
         actual_exception = self._assert_raises_correct_exception(expected_exception, self.scrim_manager.start)
         self.assertEqual(expected_exception.get_help_portion(mock_ctx), actual_exception.get_help_portion(mock_ctx))
 
-    def test_start_with_voice_given_valid_conditions_then_move_voice_called_from_teams_manager(self):
+    async def test_start_with_voice_given_valid_conditions_then_move_voice_called_from_teams_manager(self):
         self.mock_teams_manager.has_participants = False
         self.mock_teams_manager.has_full_teams = True
         self.mock_teams_manager.all_players_in_voice_chat = True
@@ -100,10 +99,10 @@ class TestScrimManager(UnittestBase):
         for state in valid_states:
             with self.subTest(f"Starting with voice chat when in valid state: {state.description}"):
                 self.scrim_manager.state = state
-                self.scrim_manager.start_with_voice()
+                await self.scrim_manager.start_with_voice()
                 self.mock_teams_manager.try_move_to_voice.assert_called()
 
-    def test_start_with_voice_given_invalid_state_then_error_raised(self):
+    async def test_start_with_voice_given_invalid_state_then_error_raised(self):
         self.mock_teams_manager.has_participants = False
         self.mock_teams_manager.has_full_teams = True
         self.mock_teams_manager.all_players_in_voice_chat = True
@@ -112,9 +111,10 @@ class TestScrimManager(UnittestBase):
             with self.subTest(f"Starting with voice chat when in invalid state: {state.description}"):
                 self.scrim_manager.state = state
                 expected_exception = BotInvalidStateChangeException(state, VOICE_WAIT)
-                self._assert_raises_correct_exception(expected_exception, self.scrim_manager.start_with_voice)
+                await self._async_assert_raises_correct_exception(expected_exception,
+                                                                  self.scrim_manager.start_with_voice)
 
-    def test_start_with_voice_given_participants_left_then_error_raised(self):
+    async def test_start_with_voice_given_participants_left_then_error_raised(self):
         mock_ctx = MagicMock()
         self.mock_teams_manager.has_participants = True
         self.mock_teams_manager.has_full_teams = True
@@ -122,8 +122,8 @@ class TestScrimManager(UnittestBase):
         self.scrim_manager.state = LOCKED
         expected_exception = BotBaseRespondToContextException("Could not start the scrim. All participants are not in "
                                                               "a team.", send_help=False)
-        actual_exception = self._assert_raises_correct_exception(expected_exception,
-                                                                 self.scrim_manager.start_with_voice)
+        actual_exception = await self._async_assert_raises_correct_exception(expected_exception,
+                                                                             self.scrim_manager.start_with_voice)
         self.assertEqual(expected_exception.get_help_portion(mock_ctx), actual_exception.get_help_portion(mock_ctx))
 
     def test_build_description_calls_state_build_with_teams_manager(self):

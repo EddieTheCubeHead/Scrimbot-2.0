@@ -62,8 +62,8 @@ class ScrimManager:
             raise BotBaseRespondToContextException("Could not start the scrim. All participants are not in a team.",
                                                    send_help=False)
 
-    def start_with_voice(self):
+    async def start_with_voice(self):
         self._assert_valid_starting_teams()
         self._secure_state_change(VOICE_WAIT, LOCKED, CAPS)
-        if self.teams_manager.try_move_to_voice():
-            pass
+        if await self.teams_manager.try_move_to_voice():
+            self._secure_state_change(STARTED, VOICE_WAIT)

@@ -20,6 +20,7 @@ from Bot.Exceptions.BotBaseContextException import BotBaseContextException
 from Bot.Exceptions.BotBaseNoContextException import BotBaseNoContextException
 from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
 from Bot.Exceptions.BotUnrecognizedCommandException import BotUnrecognizedCommandException
+from Bot.Logic.DiscordVoiceChannelProvider import DiscordVoiceChannelProvider
 from Configs.Config import Config
 from Bot.Logic.BotHelpCommand import BotHelpCommand
 from Src.Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
@@ -32,7 +33,8 @@ class ScrimBotClient(commands.Bot):
 
     @BotDependencyInjector.inject
     def __init__(self, config: Config, logger: BotClientLogger, context_provider: ContextProvider,
-                 guild_converter: GuildConverter, game_converter: GameConverter, event_loop=None):
+                 guild_converter: GuildConverter, game_converter: GameConverter,
+                 channel_provider: DiscordVoiceChannelProvider, event_loop=None):
         """The constructor of ScrimClient. Running this only creates an instance, setup_cogs and start_bot are still
         required to be ran for the bot to start."""
 
@@ -47,6 +49,7 @@ class ScrimBotClient(commands.Bot):
         self.config = config
         self.logger = logger
         self.description = "A discord bot for organizing scrims."
+        channel_provider.client = self
 
     def setup_logging(self):
         loggers = (logging.getLogger("discord"), logging.getLogger("sqlalchemy.engine"))

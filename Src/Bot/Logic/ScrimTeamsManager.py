@@ -11,10 +11,12 @@ from Bot.DataClasses.Game import Game
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.Team import Team
 from Bot.DataClasses.User import User
+from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
 from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
 from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
+from Bot.Logic.DiscordVoiceChannelProvider import DiscordVoiceChannelProvider
 from Bot.Logic.ScrimParticipantManager import ScrimParticipantManager
 
 
@@ -48,12 +50,14 @@ class ScrimTeamsManager:
 
     # TODO extract data into separate DTO
     @BotDependencyInjector.inject
-    def __init__(self, game: Game, participant_manager: ScrimParticipantManager, *,
-                 team_channels: List[discord.VoiceChannel] = None, lobby: discord.VoiceChannel = None,
+    def __init__(self, game: Game, participant_manager: ScrimParticipantManager,
+                 channels_provider: DiscordVoiceChannelProvider, *,
+                 team_channels: List[VoiceChannel] = None, lobby: VoiceChannel = None,
                  teams: List[Team] = None):
         _assert_valid_game(game)
-        self.game: Game = game
-        self._participant_manager: ScrimParticipantManager = participant_manager
+        self.game = game
+        self._participant_manager = participant_manager
+        self._channel_provider = channels_provider
         self._teams: Dict[str, Team] = {}
         self._build_teams(teams or [])
         self._build_standard_teams()
@@ -245,7 +249,8 @@ class ScrimTeamsManager:
         for player in team.members:
             member = self._participant_manager.try_get_participant(player.user_id)
             if member.voice:
-                await member.move_to(team.voice_channel, reason="Setting up a scrim.")
+                await member.move_to(await self._channel_provider.get_channel(team.voice_channel.channel_id),
+                                     reason="Setting up a scrim.")
 
     def _try_get_team(self, player) -> Optional[Team]:
         for team in self._teams.values():

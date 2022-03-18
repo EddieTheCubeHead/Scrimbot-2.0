@@ -56,6 +56,7 @@ class TestScrimTeamsManager(AsyncUnittestBase):
     def setUp(self) -> None:
         self.participant_manager = MagicMock()
         self.participant_manager.try_get_participant.side_effect = self._get_mocked_voice_state
+        self.channel_provider = AsyncMock()
 
     def _get_mocked_voice_state(self, player_id: int):
         if player_id in self.mocked_voice_states:
@@ -472,15 +473,19 @@ class TestScrimTeamsManager(AsyncUnittestBase):
         min_size, max_size, team_count = 5, 5, 3
         mock_guild = self._create_mock_guild()
         manager = self._setup_mock_game_with_voice(max_size, min_size, team_count, mock_guild)
+        manager._channel_provider = self.channel_provider
         manager._participant_manager = self.participant_manager
         mock_voice_state = generate_mock_voice_state(mock_guild.id)
+        mock_voice_channel = MagicMock()
+        self.channel_provider.get_channel.return_value = mock_voice_channel
         for team in range(team_count):
             for _ in range(min_size):
                 manager.add_player(team, self._create_mock_player_with_voice_state(mock_voice_state))
         self.assertTrue(await manager.try_move_to_voice())
         for team in manager.get_game_teams():
             for player in team.members:
-                self.mocked_voice_states[player.user_id].move_to.assert_called()
+                self.mocked_voice_states[player.user_id].move_to.assert_called_with(mock_voice_channel,
+                                                                                    reason="Setting up a scrim.")
 
     @unittest.skip("Waiting for scrim task cog")
     def test_try_move_to_voice_when_one_player_not_in_voice_chat_returns_false(self):

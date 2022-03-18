@@ -18,3 +18,5 @@ Feature: Starting a scrim after team creation
       | Team 2 | <@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
       | Footer | gl hf!                                                                                  |
     And scrim message has no reactions
+    And players 1 to 5 moved to team 1 voice channel
+    And players 6 to 10 moved to team 2 voice channel

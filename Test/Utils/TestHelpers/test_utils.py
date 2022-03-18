@@ -22,9 +22,6 @@ class _VoicePresenceSentinel:
     pass
 
 
-mocked_users: dict[tuple[int, int], Union[discord.Member, _VoicePresenceSentinel]] = {}
-
-
 def assert_tuple_with_correct_types(actual: Tuple, *tuple_fields: Type) -> Optional[str]:
     if len(actual) != len(tuple_fields):
         return f"Expected a tuple with length of {len(tuple_fields)}, actual length was {len(actual)}!"
@@ -39,33 +36,35 @@ def get_cogs_messages():
             yield rf"Using cog Bot.Cogs.{cog[:-3]}, with version {__version__}"
 
 
-def set_member_voice_present(member_id: int, guild: discord.Guild):
-    if (member_id, guild.id) in mocked_users:
-        mocked_users[(member_id, guild.id)].voice.channel.guild = guild
+def set_member_voice_present(context, member_id: int, guild: discord.Guild):
+    if (member_id, guild.id) in context.mocked_users:
+        context.mocked_users[(member_id, guild.id)].voice.channel.guild = guild
     else:
-        mocked_users[(member_id, guild.id)] = _VoicePresenceSentinel()
+        context.mocked_users[(member_id, guild.id)] = _VoicePresenceSentinel()
 
 
-def create_mock_author(member_id: int, guild: discord.Guild) -> discord.Member:
+def create_mock_author(member_id: int, guild: discord.Guild, context=None) -> discord.Member:
     in_voice = False
-    if (member_id, guild.id) in mocked_users:
-        if type(mocked_users[(member_id, guild.id)]) == _VoicePresenceSentinel:
+    if context and (member_id, guild.id) in context.mocked_users:
+        if type(context.mocked_users[(member_id, guild.id)]) == _VoicePresenceSentinel:
             in_voice = True
         else:
-            return mocked_users[(member_id, guild.id)]
+            return context.mocked_users[(member_id, guild.id)]
     mock_member = AsyncMock()
+    mock_member.move_to = AsyncMock()
     mock_member.id = member_id
     mock_member.guild = guild
     mock_member.display_name = f"User{member_id}"
     mock_member.bot = False
     if in_voice:
         mock_member.voice.channel.guild = guild
-    mocked_users[(member_id, guild.id)] = mock_member
+    if context:
+        context.mocked_users[(member_id, guild.id)] = mock_member
     return mock_member
 
 
 def create_mock_channel(channel_id: int, guild: discord.Guild) -> discord.TextChannel:
-    mock_channel = MagicMock()
+    mock_channel = AsyncMock()
     mock_channel.id = channel_id
     mock_channel.name = str(channel_id)
     mock_channel.guild = guild
