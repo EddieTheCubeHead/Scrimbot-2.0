@@ -469,6 +469,17 @@ class TestScrimTeamsManager(AsyncUnittestBase):
         manager.add_player(0, invalid_player)
         self.assertFalse(manager.all_players_in_voice_chat)
 
+    def supports_voice_when_enough_channels_present_then_true(self):
+        mock_game = _create_mock_game(5, 5, 3)
+        teams_channels = [MagicMock()] * 3
+        manager = ScrimTeamsManager(mock_game, team_channels=teams_channels)
+        self.assertTrue(manager.supports_voice)
+
+    def supports_voice_when_not_enough_channels_present_then_false(self):
+        mock_game = _create_mock_game(5, 5, 3)
+        manager = ScrimTeamsManager(mock_game)
+        self.assertFalse(manager.supports_voice)
+
     async def test_try_move_to_voice_when_all_players_present_then_all_players_moved_to_their_teams_voice_channel(self):
         min_size, max_size, team_count = 5, 5, 3
         mock_guild = self._create_mock_guild()

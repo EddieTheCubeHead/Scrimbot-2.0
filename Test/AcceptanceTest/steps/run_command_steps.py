@@ -75,6 +75,8 @@ async def _create_locked_scrim(context, game, amount=0):
 
 @given("a {game} scrim with full teams and {amount} registered voice channels")
 @given("an {game} scrim with full teams and {amount} registered voice channels")
+@given("a {game} scrim with full teams and {amount} registered voice channel")
+@given("an {game} scrim with full teams and {amount} registered voice channel")
 @async_run_until_complete
 async def step_impl(context: Context, game, amount):
     await _create_locked_scrim(context, game, amount)

@@ -80,6 +80,15 @@ def step_impl(context: Context, player_spec, team_num):
         assert channel.name == channel_id, f"Expected channel name to be {channel_id} but it was {channel.name}."
 
 
+@then("no players moved")
+def step_impl(context: Context):
+    guild = _ensure_mocked_guild(context)
+    for player in _get_all_players(context):
+        player_id = try_get_id(context, f"user_{player}_id")
+        if (player_id, guild.id) in context.mocked_users:
+            context.mocked_users[(player_id, guild.id)].move_to.assert_not_called()
+
+
 def _create_mock_voice_converter(context):
     mock_voice_converter = MockDiscordConverter()
     context.patcher.add_patch("discord.ext.commands.converter.VoiceChannelConverter", mock_voice_converter)

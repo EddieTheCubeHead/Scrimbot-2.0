@@ -88,6 +88,10 @@ class ScrimTeamsManager:
     def all_players_in_voice_chat(self):
         return all(self.has_all_players_in_guild_voice_chat(team) for team in self.get_game_teams())
 
+    @property
+    def supports_voice(self):
+        return all(team.voice_channel for team in self.get_game_teams())
+
     def has_all_players_in_guild_voice_chat(self, team: Team):
         if not team.voice_channel:
             return False

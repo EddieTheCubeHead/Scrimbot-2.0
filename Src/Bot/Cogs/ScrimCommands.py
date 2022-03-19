@@ -121,7 +121,7 @@ class ScrimCommands(commands.Cog):
         """
 
         await ctx.message.delete()
-        if move_voice:
+        if move_voice and ctx.scrim.teams_manager.supports_voice:
             await ctx.scrim.start_with_voice()
         else:
             ctx.scrim.start()

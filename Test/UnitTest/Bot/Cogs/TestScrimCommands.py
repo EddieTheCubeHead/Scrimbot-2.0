@@ -127,3 +127,18 @@ class TestScrimCommands(AsyncUnittestBase):
         ctx.message.delete.assert_called()
         self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
         mock_scrim.message.clear_reactions.assert_called()
+
+    async def test_start_given_not_enought_voice_channels_then_started_without_moving(self):
+        mock_scrim = AsyncMock()
+        mock_scrim.start = MagicMock()
+        mock_scrim.state = LOCKED
+        ctx = AsyncMock()
+        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.scrim = mock_scrim
+        ctx.scrim.message = AsyncMock()
+        mock_scrim.teams_manager.supports_voice = False
+        await self.cog.start(ctx)
+        mock_scrim.start.assert_called()
+        ctx.message.delete.assert_called()
+        self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
+        mock_scrim.message.clear_reactions.assert_called()
