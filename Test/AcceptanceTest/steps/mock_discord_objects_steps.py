@@ -16,7 +16,6 @@ from Test.Utils.TestHelpers.id_parser import get_id_increment, try_get_id
 from Test.Utils.TestHelpers.test_utils import create_mock_channel, create_mock_guild, create_mock_channel_group, \
     set_member_voice_present, set_member_voice_not_present, create_mock_author
 from Test.Utils.TestHelpers.VoiceChannelFetchPatcher import VoiceChannelFetchPatcher
-from Utils.TestHelpers.UserFetchPatcher import UserFetchPatcher
 
 
 @given("exists {amount} voice channels")

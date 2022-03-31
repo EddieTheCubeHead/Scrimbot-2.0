@@ -9,7 +9,6 @@ from behave import *
 from behave.api.async_step import async_run_until_complete
 
 from Bot.Core.Logging.BotClientLogger import BotClientLogger
-from Test.Utils.TestHelpers.DiscordPatcher import DiscordPatcher
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Configs.Config import Config
