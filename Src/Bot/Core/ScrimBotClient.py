@@ -21,6 +21,7 @@ from Bot.Exceptions.BotBaseNoContextException import BotBaseNoContextException
 from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
 from Bot.Exceptions.BotUnrecognizedCommandException import BotUnrecognizedCommandException
 from Bot.Logic.DiscordVoiceChannelProvider import DiscordVoiceChannelProvider
+from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
 from Configs.Config import Config
 from Bot.Logic.BotHelpCommand import BotHelpCommand
 from Src.Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
@@ -34,7 +35,8 @@ class ScrimBotClient(commands.Bot):
     @BotDependencyInjector.inject
     def __init__(self, config: Config, logger: BotClientLogger, context_provider: ContextProvider,
                  guild_converter: GuildConverter, game_converter: GameConverter,
-                 channel_provider: DiscordVoiceChannelProvider, event_loop=None):
+                 channel_provider: DiscordVoiceChannelProvider, participant_provider: ScrimParticipantProvider,
+                 event_loop=None):
         """The constructor of ScrimClient. Running this only creates an instance, setup_cogs and start_bot are still
         required to be ran for the bot to start."""
 
@@ -50,6 +52,7 @@ class ScrimBotClient(commands.Bot):
         self.logger = logger
         self.description = "A discord bot for organizing scrims."
         channel_provider.client = self
+        participant_provider.client = self
 
     def setup_logging(self):
         loggers = (logging.getLogger("discord"), logging.getLogger("sqlalchemy.engine"))
@@ -107,54 +110,6 @@ class ScrimBotClient(commands.Bot):
         else:
             self.logger.critical(str(exception))
             raise exception
-
-    async def _handle_user_error(self, ctx: commands.Context, exception: BotBaseRespondToContextException):
-        """The default way to handle user related exceptions for commands
-
-        :param ctx: The context of the raised error
-        :type ctx: commands.Context
-        :param exception: The raised exception
-        :type exception: BotBaseRespondToContextException
-        """
-
-        forward_msg = f"{exception.get_header()} {exception.get_description()}{exception.get_help_portion(ctx)}"
-        await self.temp_msg(ctx, forward_msg, delete_delay=32.0)
-
-    async def _handle_internal_error(self, ctx: commands.Context, exception: BotLoggedContextException):
-        """The default way to handle internal exceptions for commands
-
-        :param ctx: The context of the raised error
-        :type ctx: commands.Context
-        :param exception: The raised exception
-        :type exception: BotLoggedContextException
-        """
-
-        if exception.log:
-            self.logger.warning(f"command: '{ctx.command.name}' invoked as: '{ctx.message.content}' "
-                                f"caused the exception: {exception.get_message()}")
-
-    async def handle_react_internal_error(self, react: discord.Reaction, user: discord.Member,
-                                          exception: discord.DiscordException):
-        """A custom error handler for reaction-event based internal exceptions
-
-        :param react: The reaction associated with the exceptions
-        :type react: discord.Reaction
-        :param user: The user who added the reaction
-        :type user: discord.User
-        :param exception: The raised exception
-        :type exception: BotLoggedContextException
-        """
-
-        if isinstance(exception, BotBaseRespondToContextException):
-            temporary_message = await react.message.channel.send(f"{exception.get_header()} "
-                                                                 f"{exception.get_description()}")
-            await temporary_message.delete(delay=8)
-
-        elif isinstance(exception, BotLoggedContextException) and exception.log or \
-                isinstance(exception, discord.DiscordException) and not isinstance(exception, BotLoggedContextException):
-
-            self.logger.warning(f"reaction: '{react.emoji}' in message: '{react.message.content}' "
-                                f"added by: '{user}' caused the exception: {exception}")
 
     async def on_ready(self):
         """Bot initialization logic. Currently just functions to inform the user the bot is connected."""

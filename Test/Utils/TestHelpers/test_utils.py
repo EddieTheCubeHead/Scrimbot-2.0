@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Tuple, Type, Optional, Union
 from unittest.mock import MagicMock, AsyncMock
@@ -19,7 +19,9 @@ _ID_GENERATOR = TestIdGenerator()
 
 
 class _VoicePresenceSentinel:
-    pass
+
+    def __init__(self, present: bool = True):
+        self.present = present
 
 
 def assert_tuple_with_correct_types(actual: Tuple, *tuple_fields: Type) -> Optional[str]:
@@ -30,6 +32,12 @@ def assert_tuple_with_correct_types(actual: Tuple, *tuple_fields: Type) -> Optio
             return f"Expected an instance of {expected}, got an instance of {type(actual)}."
 
 
+def assert_almost_now(timestamp: datetime, delta: timedelta = timedelta(milliseconds=200)):
+    now = datetime.now()
+    assert now - timestamp < delta,\
+        f"Expected timestamp {timestamp} to be within delta {timedelta} of current time {now}"
+
+
 def get_cogs_messages():
     for cog in os.listdir(os.path.dirname(Cogs.__file__)):
         if re.match(r"^[^_][a-zA-Z]*\.py$", cog):
@@ -38,16 +46,28 @@ def get_cogs_messages():
 
 def set_member_voice_present(context, member_id: int, guild: discord.Guild):
     if (member_id, guild.id) in context.mocked_users:
-        context.mocked_users[(member_id, guild.id)].voice.channel.guild = guild
+        if type(context.mocked_users[(member_id, guild.id)]) == _VoicePresenceSentinel:
+            context.mocked_users[(member_id, guild.id)] = _VoicePresenceSentinel()
+            return
+        mock_voice = MagicMock()
+        mock_voice.channel.guild = guild
+        context.mocked_users[(member_id, guild.id)].voice = mock_voice
     else:
         context.mocked_users[(member_id, guild.id)] = _VoicePresenceSentinel()
+
+
+def set_member_voice_not_present(context, member_id: int, guild: discord.Guild):
+    if (member_id, guild.id) in context.mocked_users:
+        context.mocked_users[(member_id, guild.id)].voice = None
+    else:
+        context.mocked_users[(member_id, guild.id)] = _VoicePresenceSentinel(False)
 
 
 def create_mock_author(member_id: int, guild: discord.Guild, context=None) -> discord.Member:
     in_voice = False
     if context and (member_id, guild.id) in context.mocked_users:
         if type(context.mocked_users[(member_id, guild.id)]) == _VoicePresenceSentinel:
-            in_voice = True
+            in_voice = context.mocked_users[(member_id, guild.id)].present
         else:
             return context.mocked_users[(member_id, guild.id)]
     mock_member = AsyncMock()

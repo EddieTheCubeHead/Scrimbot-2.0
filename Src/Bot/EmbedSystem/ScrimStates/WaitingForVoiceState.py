@@ -1,8 +1,8 @@
-from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
+from Bot.EmbedSystem.ScrimStates.StartedState import StartedState
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
 
-class WaitingForVoiceState(ScrimState):
+class WaitingForVoiceState(StartedState):
 
     @property
     def description(self) -> str:
@@ -10,12 +10,8 @@ class WaitingForVoiceState(ScrimState):
 
     @staticmethod
     def build_description(teams_manager: ScrimTeamsManager) -> str:
-        pass
-
-    @staticmethod
-    def build_fields(teams_manager: ScrimTeamsManager) -> list[(str, str, bool)]:
-        pass
+        return f"Starting {teams_manager.game.name} scrim. Waiting for all players to join voice chat..."
 
     @staticmethod
     def build_footer(teams_manager: ScrimTeamsManager) -> str:
-        pass
+        return "Scrim will start automatically when all players are in voice chat"

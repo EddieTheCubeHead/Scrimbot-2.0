@@ -8,10 +8,12 @@ from typing import Optional
 
 from discord import Message
 
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.User import User
 from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
 from Bot.EmbedSystem.ScrimStates.scrim_states import *
 from Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
+from Bot.Exceptions.BuildException import BuildException
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
@@ -24,6 +26,11 @@ class ScrimManager:
         self.state: ScrimState = LFP
         self.message: Optional[Message] = None
         self.thread_lock = threading.Lock()
+
+    def __hash__(self):
+        if not self.message:
+            raise BuildException("Tried to hash a scrim manager with no message")
+        return self.message.id
 
     def build_description(self) -> str:
         return self.state.build_description(self.teams_manager)
@@ -62,8 +69,13 @@ class ScrimManager:
             raise BotBaseRespondToContextException("Could not start the scrim. All participants are not in a team.",
                                                    send_help=False)
 
-    async def start_with_voice(self):
+    async def start_with_voice(self) -> bool:
         self._assert_valid_starting_teams()
-        self._secure_state_change(VOICE_WAIT, LOCKED, CAPS)
+        self._secure_state_change(VOICE_WAIT, LOCKED, CAPS, VOICE_WAIT)
         if await self.teams_manager.try_move_to_voice():
             self._secure_state_change(STARTED, VOICE_WAIT)
+            return True
+        return False
+
+    def cancel_voice_wait(self):
+        self._secure_state_change(LOCKED, VOICE_WAIT)

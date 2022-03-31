@@ -17,7 +17,7 @@ from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
 from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
 from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
 from Bot.Logic.DiscordVoiceChannelProvider import DiscordVoiceChannelProvider
-from Bot.Logic.ScrimParticipantManager import ScrimParticipantManager
+from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
 
 
 def _assert_valid_game(game):
@@ -50,7 +50,7 @@ class ScrimTeamsManager:
 
     # TODO extract data into separate DTO
     @BotDependencyInjector.inject
-    def __init__(self, game: Game, participant_manager: ScrimParticipantManager,
+    def __init__(self, game: Game, participant_manager: ScrimParticipantProvider,
                  channels_provider: DiscordVoiceChannelProvider, *,
                  team_channels: List[VoiceChannel] = None, lobby: VoiceChannel = None,
                  teams: List[Team] = None):
@@ -91,6 +91,11 @@ class ScrimTeamsManager:
     @property
     def supports_voice(self):
         return all(team.voice_channel for team in self.get_game_teams())
+
+    @property
+    def all_participants(self) -> list[User]:
+        team_member_lists = [team.members for team in self._teams.values()]
+        return [item for sublist in team_member_lists for item in sublist]
 
     def has_all_players_in_guild_voice_chat(self, team: Team):
         if not team.voice_channel:

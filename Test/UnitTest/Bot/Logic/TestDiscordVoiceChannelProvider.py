@@ -21,21 +21,6 @@ class TestDiscordVoiceChannelProvider(AsyncUnittestBase):
     def test_build_given_file_imported_then_singleton_dependency_created(self):
         self._assert_singleton_dependency(DiscordVoiceChannelProvider)
 
-    def test_set_client_when_given_client_then_registered_correctly(self):
-        mock_client = MagicMock()
-        self.provider.client = mock_client
-        self.assertEqual(mock_client, self.provider.client)
-
-    def test_set_client_given_client_already_set_when_given_client_then_error_raised(self):
-        self.provider.client = MagicMock()
-        mock_exception = BuildException("Tried to set client for Discord voice channel provider while client was "
-                                        "already set.")
-
-        def assignment(provider, client):
-            provider.client = client
-
-        self._assert_raises_correct_exception(mock_exception, assignment, self.provider, MagicMock())
-
     def test_get_channel_given_client_set_then_channel_fetched_from_client(self):
         mock_client = MagicMock()
         self.provider.client = mock_client

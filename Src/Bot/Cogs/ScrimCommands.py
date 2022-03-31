@@ -6,6 +6,7 @@ from discord.ext import commands
 from Bot.Checks.ActiveScrimCheck import ActiveScrimCheck
 from Bot.Checks.FreeScrimCheck import FreeScrimCheck
 from Bot.Cogs.Helpers.BotSettingsService import BotSettingsService
+from Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
 from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
 from Bot.Core import checks
 from Bot.Core import converters
@@ -31,11 +32,13 @@ class ScrimCommands(commands.Cog):
 
     @BotDependencyInjector.inject
     def __init__(self, scrim_channel_converter: ScrimChannelConverter, response_builder: ScrimEmbedBuilder,
-                 settings_service: BotSettingsService, scrims_manager: ActiveScrimsManager):
+                 settings_service: BotSettingsService, scrims_manager: ActiveScrimsManager,
+                 waiting_scrim_service: WaitingScrimService):
         self._scrim_channel_converter = scrim_channel_converter
         self._response_builder = response_builder
         self._settings_service = settings_service
         self._scrims_manager = scrims_manager
+        self._waiting_scrim_service = waiting_scrim_service
 
     @commands.command(aliases=['s'])
     @commands.guild_only()
@@ -121,11 +124,15 @@ class ScrimCommands(commands.Cog):
         """
 
         await ctx.message.delete()
+        started = True
         if move_voice and ctx.scrim.teams_manager.supports_voice:
-            await ctx.scrim.start_with_voice()
+            started = await ctx.scrim.start_with_voice()
         else:
             ctx.scrim.start()
-        await ctx.scrim.message.clear_reactions()
+        if started:
+            await ctx.scrim.message.clear_reactions()
+        else:
+            self._waiting_scrim_service.register(ctx.scrim)
         await self._response_builder.edit(ctx.scrim.message, displayable=ctx.scrim)
 
     @commands.command(aliases=["win", "w", "victor", "v"])

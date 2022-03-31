@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, AsyncMock
 
 from Bot.EmbedSystem.ScrimStates.scrim_states import *
 from Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
+from Bot.Exceptions.BuildException import BuildException
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.Logic.ScrimManager import ScrimManager
@@ -21,6 +22,16 @@ class TestScrimManager(AsyncUnittestBase):
     def setUp(self) -> None:
         self.mock_teams_manager = AsyncMock()
         self.scrim_manager = ScrimManager(self.mock_teams_manager)
+
+    def test_hash_when_called_uses_message_id(self):
+        mock_message = MagicMock()
+        mock_message.id = self.id_mocker.generate_viable_id()
+        self.scrim_manager.message = mock_message
+        self.assertEqual(mock_message.id, hash(self.scrim_manager))
+
+    def test_hash_when_called_with_no_message_then_build_exception_raised(self):
+        expected_exception = BuildException("Tried to hash a scrim manager with no message")
+        self._assert_raises_correct_exception(expected_exception, hash, self.scrim_manager)
 
     def test_add_participant_given_valid_participant_then_add_called_in_teams_manager(self):
         participant = MagicMock()
@@ -95,7 +106,20 @@ class TestScrimManager(AsyncUnittestBase):
         self.mock_teams_manager.has_participants = False
         self.mock_teams_manager.has_full_teams = True
         self.mock_teams_manager.all_players_in_voice_chat = True
+        self.mock_teams_manager.start_with_voice.return_value = True
         valid_states = (LOCKED, CAPS)
+        for state in valid_states:
+            with self.subTest(f"Starting with voice chat when in valid state: {state.description}"):
+                self.scrim_manager.state = state
+                await self.scrim_manager.start_with_voice()
+                self.mock_teams_manager.try_move_to_voice.assert_called()
+
+    async def test_start_with_voice_given_not_successful_then_added_to_waiting_scrim_manager(self):
+        self.mock_teams_manager.has_participants = False
+        self.mock_teams_manager.has_full_teams = True
+        self.mock_teams_manager.all_players_in_voice_chat = True
+        self.mock_teams_manager.start_with_voice.return_value = False
+        valid_states = (LOCKED, CAPS, VOICE_WAIT)
         for state in valid_states:
             with self.subTest(f"Starting with voice chat when in valid state: {state.description}"):
                 self.scrim_manager.state = state
@@ -106,7 +130,7 @@ class TestScrimManager(AsyncUnittestBase):
         self.mock_teams_manager.has_participants = False
         self.mock_teams_manager.has_full_teams = True
         self.mock_teams_manager.all_players_in_voice_chat = True
-        invalid_states = (LFP, STARTED, VOICE_WAIT, CAPS_PREP)
+        invalid_states = (LFP, STARTED, CAPS_PREP)
         for state in invalid_states:
             with self.subTest(f"Starting with voice chat when in invalid state: {state.description}"):
                 self.scrim_manager.state = state
@@ -125,6 +149,11 @@ class TestScrimManager(AsyncUnittestBase):
         actual_exception = await self._async_assert_raises_correct_exception(expected_exception,
                                                                              self.scrim_manager.start_with_voice)
         self.assertEqual(expected_exception.get_help_portion(mock_ctx), actual_exception.get_help_portion(mock_ctx))
+
+    def test_cancel_voice_wait_when_called_then_state_changed_to_locked(self):
+        self.scrim_manager.state = VOICE_WAIT
+        self.scrim_manager.cancel_voice_wait()
+        self.assertEqual(LOCKED, self.scrim_manager.state)
 
     def test_build_description_calls_state_build_with_teams_manager(self):
         mock_state = MagicMock()

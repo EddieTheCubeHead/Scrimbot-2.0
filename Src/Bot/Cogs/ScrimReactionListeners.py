@@ -16,7 +16,7 @@ from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
 from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
 from Bot.Exceptions.BotInvalidReactionJoinException import BotInvalidReactionJoinException
 from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
-from Bot.Logic.ScrimParticipantManager import ScrimParticipantManager
+from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.DataClasses.ScrimChannel import ScrimChannel
@@ -45,7 +45,7 @@ class ScrimReactionListeners(commands.Cog):
 
     @BotDependencyInjector.inject
     def __init__(self, scrim_manager: ActiveScrimsManager, embed_builder: ScrimEmbedBuilder,
-                 user_converter: UserConverter, participant_manager: ScrimParticipantManager):
+                 user_converter: UserConverter, participant_manager: ScrimParticipantProvider):
         self.scrim_manager = scrim_manager
         self.embed_builder = embed_builder
         self.user_converter = user_converter

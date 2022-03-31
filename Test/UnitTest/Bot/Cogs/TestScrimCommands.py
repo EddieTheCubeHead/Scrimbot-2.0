@@ -21,8 +21,9 @@ class TestScrimCommands(AsyncUnittestBase):
         self.response_builder = AsyncMock()
         self.settings_service = MagicMock()
         self.active_scrims_manager = MagicMock()
+        self.waiting_scrim_service = MagicMock()
         self.cog = ScrimCommands(self.scrim_channel_converter, self.response_builder, self.settings_service,
-                                 self.active_scrims_manager)
+                                 self.active_scrims_manager, self.waiting_scrim_service)
         self.cog._inject(MagicMock())
 
     async def test_scrim_given_called_with_game_then_scrim_with_game_created_and_embed_sent(self):
@@ -114,6 +115,30 @@ class TestScrimCommands(AsyncUnittestBase):
         self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
         mock_scrim.message.clear_reactions.assert_called()
 
+    async def test_start_when_player_moving_attended_successfully_then_scrim_not_registered_for_wait(self):
+        mock_scrim = AsyncMock()
+        mock_scrim.start = MagicMock()
+        mock_scrim.state = LOCKED
+        ctx = AsyncMock()
+        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.scrim = mock_scrim
+        mock_scrim.message = AsyncMock()
+        mock_scrim.start_with_voice.return_value = True
+        await self.cog.start(ctx)
+        self.waiting_scrim_service.register.assert_not_called()
+
+    async def test_start_when_player_moving_attended_unsuccessfully_then_scrim_registered_for_wait(self):
+        mock_scrim = AsyncMock()
+        mock_scrim.start = MagicMock()
+        mock_scrim.state = LOCKED
+        ctx = AsyncMock()
+        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.scrim = mock_scrim
+        mock_scrim.message = AsyncMock()
+        mock_scrim.start_with_voice.return_value = False
+        await self.cog.start(ctx)
+        self.waiting_scrim_service.register.assert_called_with(mock_scrim)
+
     async def test_start_given_negative_move_voice_arg_then_started_without_moving(self):
         mock_scrim = AsyncMock()
         mock_scrim.start = MagicMock()
@@ -128,7 +153,7 @@ class TestScrimCommands(AsyncUnittestBase):
         self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
         mock_scrim.message.clear_reactions.assert_called()
 
-    async def test_start_given_not_enought_voice_channels_then_started_without_moving(self):
+    async def test_start_given_not_enough_voice_channels_then_started_without_moving(self):
         mock_scrim = AsyncMock()
         mock_scrim.start = MagicMock()
         mock_scrim.state = LOCKED
