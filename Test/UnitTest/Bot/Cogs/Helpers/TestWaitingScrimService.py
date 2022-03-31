@@ -88,3 +88,12 @@ class TestWaitingScrimService(UnittestBase):
         pruned = self.waiting_scrim_service.prune()
         self.assertEqual(0, len(self.waiting_scrim_service.waiting_scrims))
         self.assertEqual(5, len(pruned))
+
+    def test_unregister_when_called_then_scrim_removed_from_listeners(self):
+        mock_scrim = MagicMock()
+        self.waiting_scrim_service.waiting_scrims[mock_scrim] = datetime.datetime.now()
+        self.waiting_scrim_service.unregister(mock_scrim)
+        self.assertNotIn(mock_scrim, self.waiting_scrim_service.waiting_scrims)
+
+    def test_unregister_when_called_with_not_registered_scrim_then_no_exception_thrown(self):
+        self.waiting_scrim_service.unregister(MagicMock())

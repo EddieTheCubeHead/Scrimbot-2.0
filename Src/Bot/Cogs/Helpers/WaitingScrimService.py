@@ -20,6 +20,9 @@ class WaitingScrimService:
         if scrim not in self.waiting_scrims:
             self.waiting_scrims[scrim] = datetime.datetime.now()
 
+    def unregister(self, scrim: ScrimManager):
+        self.waiting_scrims.pop(scrim, None)
+
     def get_scrim(self, member: Member) -> Optional[ScrimManager]:
         for scrim in self.waiting_scrims.keys():
             if member.id in [participant.user_id for participant in scrim.teams_manager.all_participants]:

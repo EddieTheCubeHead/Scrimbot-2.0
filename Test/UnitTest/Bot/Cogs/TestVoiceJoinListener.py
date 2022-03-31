@@ -39,7 +39,8 @@ class TestVoiceJoinListener(AsyncUnittestBase):
         mock_after.channel.guild.id = mock_scrim.message.channel.guild.id
         await self.listener.scrim_player_voice_state_change_listener(mock_participant, mock_before, mock_after)
         mock_scrim.start_with_voice.assert_called()
-        self.mock_response_builder.edit.assert_called()
+        self.mock_waiting_scrim_service.unregister.assert_called_with(mock_scrim)
+        self.mock_response_builder.edit.assert_called_with(mock_scrim.message, displayable=mock_scrim)
         mock_scrim.message.clear_reactions.assert_called()
 
     async def test_scrim_player_voice_state_change_listener_when_member_joins_other_guild_then_not_notified(self):

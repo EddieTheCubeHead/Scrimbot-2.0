@@ -52,6 +52,7 @@ Feature: Starting a scrim after team creation
     And scrim message has no reactions
     And no players moved
 
+  @wip
   Scenario: Starting a scrim with full teams and automatic voice channel moving when one player is not in voice
     Given a Dota 2 scrim with full teams and 2 registered voice channels
     When players 1 to 9 are in voice chat
@@ -131,6 +132,7 @@ Feature: Starting a scrim after team creation
     And players 1 to 5 moved to team 1 voice channel
     And players 6 to 10 moved to team 2 voice channel
 
+  @wip
   Scenario: Attempting to start a scrim but players don't join voice channel in five minutes
     Given a Dota 2 scrim with full teams and 2 registered voice channels
     When players 1 to 9 are in voice chat

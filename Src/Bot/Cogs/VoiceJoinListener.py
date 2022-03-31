@@ -46,8 +46,12 @@ class VoiceJoinListener(commands.Cog):
                 return
             if after.channel.guild.id == scrim.message.channel.guild.id:
                 if await scrim.start_with_voice():
-                    await self._response_builder.edit(scrim.message, displayable=scrim)
-                    await scrim.message.clear_reactions()
+                    await self._handle_start(scrim)
+
+    async def _handle_start(self, scrim):
+        self.waiting_scrims_service.unregister(scrim)
+        await self._response_builder.edit(scrim.message, displayable=scrim)
+        await scrim.message.clear_reactions()
 
     @tasks.loop(seconds=5)
     async def prune_observers(self):
