@@ -34,24 +34,26 @@ class TestScrimParticipantProvider(AsyncUnittestBase):
 
     def test_try_add_participant_given_id_in_dict_then_error_raised(self):
         mock_member = MagicMock()
-        mock_id = self.id_generator.generate_viable_id()
+        mock_id, mock_guild_id = self.id_generator.generate_viable_id_group(2)
         mock_member.id = mock_id
-        self.manager.participants.add(mock_id)
+        self.manager.participants[mock_id] = mock_guild_id
         expected_exception = BotAlreadyParticipantException(mock_member)
         self._assert_raises_correct_exception(expected_exception, self.manager.try_add_participant, mock_member)
 
     def test_try_get_participant_given_id_in_dict_then_member_returned(self):
         mock_member = MagicMock()
-        mock_id = self.id_generator.generate_viable_id()
-        self.manager.participants.add(mock_id)
-        self.mock_client.get_user.return_value = mock_member
+        mock_id, mock_guild_id = self.id_generator.generate_viable_id_group(2)
+        self.manager.participants[mock_id] = mock_guild_id
+        mock_guild = MagicMock()
+        self.mock_client.get_guild.return_value = mock_guild
+        mock_guild.get_member.return_value = mock_member
         self.assertEqual(mock_member, self.manager.try_get_participant(mock_id))
 
     def test_assert_not_participant_given_id_in_dict_then_error_raised(self):
         mock_member = MagicMock()
-        mock_id = self.id_generator.generate_viable_id()
+        mock_id, mock_guild_id = self.id_generator.generate_viable_id_group(2)
         mock_member.id = mock_id
-        self.manager.participants.add(mock_id)
+        self.manager.participants[mock_id] = mock_guild_id
         expected_exception = BotAlreadyParticipantException(mock_member)
         self._assert_raises_correct_exception(expected_exception, self.manager.ensure_not_participant, mock_member)
 

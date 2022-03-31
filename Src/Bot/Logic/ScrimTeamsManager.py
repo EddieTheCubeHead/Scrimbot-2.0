@@ -258,7 +258,7 @@ class ScrimTeamsManager:
         for player in team.members:
             member = self._participant_manager.try_get_participant(player.user_id)
             if member.voice:
-                await member.move_to(await self._channel_provider.get_channel(team.voice_channel.channel_id),
+                await member.move_to(self._channel_provider.get_channel(team.voice_channel.channel_id),
                                      reason="Setting up a scrim.")
 
     def _try_get_team(self, player) -> Optional[Team]:

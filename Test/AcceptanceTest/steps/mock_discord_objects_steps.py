@@ -100,7 +100,7 @@ def _parse_player_spec(context, player_spec) -> list[int]:
         start, stop = player_spec.split(" to ")
         player_nums = list(range(int(start), int(stop) + 1))
     else:
-        player_spec.replace(" and", ", ")
+        player_spec = player_spec.replace(" and", ", ")
         player_nums = [int(num) for num in player_spec.split(", ") if num.isdigit()]
     return [try_get_id(context, f"user_{player_num}_id") for player_num in player_nums]
 

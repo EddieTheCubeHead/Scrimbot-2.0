@@ -1,5 +1,6 @@
 __author__ = "Eetu Asikainen"
 
+from unittest.mock import MagicMock
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.Logging.BotClientLogger import BotClientLogger
@@ -42,5 +43,9 @@ def _setup_bot(context):
 
 def _create_user_fetch_patcher(context):
     user_fetch_patcher = UserFetchPatcher(context)
-    context.patcher.add_patch("discord.client.Client.get_user", user_fetch_patcher)
+    mock_guild = MagicMock()
+    mock_guild.get_member = user_fetch_patcher
+    mock_get = MagicMock()
+    mock_get.return_value = mock_guild
+    context.patcher.add_patch("discord.client.Client.get_guild", mock_get)
     return user_fetch_patcher
