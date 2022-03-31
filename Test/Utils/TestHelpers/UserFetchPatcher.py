@@ -1,8 +1,8 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Utils.TestHelpers.id_parser import try_get_id
-from Utils.TestHelpers.test_utils import create_mock_guild, create_mock_author
+from Test.Utils.TestHelpers.id_parser import try_get_id
+from Test.Utils.TestHelpers.test_utils import create_mock_guild, create_mock_author
 
 
 class UserFetchPatcher:
