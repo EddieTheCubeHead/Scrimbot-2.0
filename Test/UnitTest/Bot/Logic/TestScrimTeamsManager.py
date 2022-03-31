@@ -56,7 +56,7 @@ class TestScrimTeamsManager(AsyncUnittestBase):
     def setUp(self) -> None:
         self.participant_manager = MagicMock()
         self.participant_manager.try_get_participant.side_effect = self._get_mocked_voice_state
-        self.channel_provider = AsyncMock()
+        self.channel_provider = MagicMock()
 
     def _get_mocked_voice_state(self, player_id: int):
         if player_id in self.mocked_voice_states:
@@ -492,7 +492,6 @@ class TestScrimTeamsManager(AsyncUnittestBase):
         self.assertEqual(len(manager.all_participants), len(added_players))
         for user in added_players:
             self.assertIn(user, manager.all_participants)
-
 
     async def test_try_move_to_voice_when_all_players_present_then_all_players_moved_to_their_teams_voice_channel(self):
         min_size, max_size, team_count = 5, 5, 3

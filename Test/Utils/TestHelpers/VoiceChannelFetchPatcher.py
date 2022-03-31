@@ -9,7 +9,7 @@ class VoiceChannelFetchPatcher:
     def __init__(self, *voice_channels: discord.VoiceChannel):
         self._voice_channels = {channel.id: channel for channel in voice_channels}
 
-    async def __call__(self, channel_id: int):
+    def __call__(self, channel_id: int):
         if channel_id not in self._voice_channels:
             return None
         return self._voice_channels[channel_id]

@@ -20,7 +20,8 @@ class TestScrimManager(AsyncUnittestBase):
         cls.id_mocker = TestIdGenerator()
 
     def setUp(self) -> None:
-        self.mock_teams_manager = AsyncMock()
+        self.mock_teams_manager = MagicMock()
+        self.mock_teams_manager.try_move_to_voice = AsyncMock()
         self.scrim_manager = ScrimManager(self.mock_teams_manager)
 
     def test_hash_when_called_uses_message_id(self):

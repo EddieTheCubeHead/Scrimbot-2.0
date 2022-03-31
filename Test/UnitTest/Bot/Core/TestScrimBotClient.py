@@ -5,6 +5,7 @@ import asyncio
 import io
 import os
 import unittest
+from asyncio import sleep
 from logging import DEBUG
 from unittest.mock import MagicMock, patch, AsyncMock, call
 
