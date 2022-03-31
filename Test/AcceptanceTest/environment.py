@@ -11,7 +11,7 @@ from Database.Core.MasterConnection import MasterConnection
 from Test.Utils.TestHelpers.DiscordPatcher import DiscordPatcher
 from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 from Test.Utils.TestHelpers.ResponseMessageCatcher import ResponseMessageCatcher
-from Utils.TestHelpers.UserFetchPatcher import UserFetchPatcher
+from Test.Utils.TestHelpers.UserFetchPatcher import UserFetchPatcher
 
 
 def before_feature(context, feature):
