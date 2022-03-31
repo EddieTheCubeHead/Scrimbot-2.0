@@ -27,8 +27,11 @@ class WaitingScrimService:
 
     def prune(self):
         prune_cutoff = datetime.datetime.now() - datetime.timedelta(minutes=5)
+        pruned_scrims = []
         while len(self.waiting_scrims) > 0 and prune_cutoff > next(iter(self.waiting_scrims.values())):
             pruned_scrim = next(iter(self.waiting_scrims.keys()))
             pruned_scrim.cancel_voice_wait()
             self.waiting_scrims.pop(pruned_scrim)
+            pruned_scrims.append(pruned_scrim)
+        return pruned_scrims
 

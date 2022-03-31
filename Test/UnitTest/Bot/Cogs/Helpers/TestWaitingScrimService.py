@@ -64,11 +64,12 @@ class TestWaitingScrimService(UnittestBase):
         self.waiting_scrim_service.prune()
         self.assertIn(mock_scrim, self.waiting_scrim_service.waiting_scrims)
 
-    def test_prune_observers_given_observer_over_five_minutes_old_then_observer_removed(self):
+    def test_prune_observers_given_observer_over_five_minutes_old_then_observer_removed_and_returned(self):
         mock_scrim = MagicMock()
         self.waiting_scrim_service.waiting_scrims[mock_scrim] = _get_over_five_minutes_ago()
-        self.waiting_scrim_service.prune()
+        pruned = self.waiting_scrim_service.prune()
         self.assertNotIn(mock_scrim, self.waiting_scrim_service.waiting_scrims)
+        self.assertIn(mock_scrim, pruned)
         mock_scrim.cancel_voice_wait.assert_called()
 
     def test_prune_observers_given_old_and_young_observers_then_only_old_observers_removed(self):
@@ -76,12 +77,14 @@ class TestWaitingScrimService(UnittestBase):
         self.waiting_scrim_service.waiting_scrims[mock_old_scrim] = _get_over_five_minutes_ago()
         mock_young_scrim = MagicMock()
         self.waiting_scrim_service.waiting_scrims[mock_young_scrim] = datetime.datetime.now()
-        self.waiting_scrim_service.prune()
+        pruned = self.waiting_scrim_service.prune()
         self.assertNotIn(mock_old_scrim, self.waiting_scrim_service.waiting_scrims)
         self.assertIn(mock_young_scrim, self.waiting_scrim_service.waiting_scrims)
+        self.assertIn(mock_old_scrim, pruned)
 
     def test_prune_observers_given_multiple_old_observers_then_only_old_observers_removed(self):
         for _ in range(5):
             self.waiting_scrim_service.waiting_scrims[MagicMock()] = _get_over_five_minutes_ago()
-        self.waiting_scrim_service.prune()
+        pruned = self.waiting_scrim_service.prune()
         self.assertEqual(0, len(self.waiting_scrim_service.waiting_scrims))
+        self.assertEqual(5, len(pruned))

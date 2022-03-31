@@ -73,6 +73,13 @@ class TestVoiceJoinListener(AsyncUnittestBase):
         await self.listener.scrim_player_voice_state_change_listener(mock_participant, mock_before, mock_after)
         mock_scrim.start_with_voice.assert_not_called()
 
-    async def test_prune_observers_when_called_then_waiting_scrim_service_prune_called(self):
+    async def test_prune_observers_when_called_then_waiting_scrim_service_prune_called_and_returned_scrims_edited(self):
+        mock_pruned = MagicMock()
+        mock_pruned.message = "test"
+        pruned = [mock_pruned]
+        self.mock_waiting_scrim_service.prune.return_value = pruned
         await self.listener.prune_observers()
         self.mock_waiting_scrim_service.prune.assert_called()
+        for mock_scrim in pruned:
+            self.mock_response_builder.edit.assert_called_with("test", displayable=mock_scrim)
+

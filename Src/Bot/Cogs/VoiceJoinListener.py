@@ -51,7 +51,8 @@ class VoiceJoinListener(commands.Cog):
 
     @tasks.loop(seconds=5)
     async def prune_observers(self):
-        self.waiting_scrims_service.prune()
+        for pruned_scrim in self.waiting_scrims_service.prune():
+            await self._response_builder.edit(pruned_scrim.message, displayable=pruned_scrim)
 
 
 def setup(client: ScrimBotClient):
