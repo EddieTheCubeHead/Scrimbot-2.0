@@ -9,6 +9,7 @@ from typing import Optional
 from discord import Message
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from Bot.DataClasses.Team import Team
 from Bot.DataClasses.User import User
 from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
 from Bot.EmbedSystem.ScrimStates.scrim_states import *
@@ -79,3 +80,8 @@ class ScrimManager:
 
     def cancel_voice_wait(self):
         self._secure_state_change(LOCKED, VOICE_WAIT)
+
+    async def end(self, result: Optional[str]):
+        self._secure_state_change(ENDED, STARTED)
+        self.teams_manager.winner = result
+        await self.teams_manager.move_to_lobby()

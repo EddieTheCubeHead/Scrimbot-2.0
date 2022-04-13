@@ -23,13 +23,15 @@ def step_impl(context, amount):
     create_voice_channels(context, amount)
 
 
-def create_voice_channels(context: Context, amount: int):
+def create_voice_channels(context: Context, amount: int, lobby: bool = False):
     mock_voice_converter = _create_mock_voice_converter(context)
     voice_fetch_patcher = _create_voice_fetch_patcher(context)
     mock_guild = _ensure_mocked_guild(context)
     channel_increment = get_id_increment(context, "channel")
     for increment in range(channel_increment, channel_increment + int(amount)):
         _create_channel(increment, context, mock_guild, mock_voice_converter, voice_fetch_patcher)
+    if lobby:
+        _create_channel(0, context, mock_guild, mock_voice_converter, voice_fetch_patcher)
 
 
 @given("exists channel group")
@@ -109,6 +111,17 @@ def _parse_player_spec(context, player_spec) -> list[int]:
 def step_impl(context: Context, player_spec, team_num):
     players = _parse_player_spec(context, player_spec) or _get_all_players(context)
     guild = _ensure_mocked_guild(context)
+    assert_players_moved_to_team_voice(context, guild, players, team_num)
+
+
+@then("{player_spec} moved to lobby voice channel")
+def step_impl(context: Context, player_spec):
+    players = _parse_player_spec(context, player_spec) or _get_all_players(context)
+    guild = _ensure_mocked_guild(context)
+    assert_players_moved_to_team_voice(context, guild, players, 0)
+
+
+def assert_players_moved_to_team_voice(context, guild, players, team_num):
     for player_id in players:
         channel: discord.VoiceChannel = context.mocked_users[(player_id, guild.id)].move_to.call_args[0][0]
         channel_id = str(try_get_id(context, f"voice_{team_num}_id"))

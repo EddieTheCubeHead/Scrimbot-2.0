@@ -1,8 +1,10 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from unittest import skip
 from unittest.mock import MagicMock, AsyncMock
 
+from Bot.DataClasses.Team import Team
 from Bot.EmbedSystem.ScrimStates.scrim_states import *
 from Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
 from Bot.Exceptions.BuildException import BuildException
@@ -155,6 +157,15 @@ class TestScrimManager(AsyncUnittestBase):
         self.scrim_manager.state = VOICE_WAIT
         self.scrim_manager.cancel_voice_wait()
         self.assertEqual(LOCKED, self.scrim_manager.state)
+
+    async def test_end_given_two_teams_when_called_with_winner_then_scrim_ended_with_winner_data(self):
+        self.scrim_manager.state = STARTED
+        self.mock_teams_manager.move_to_lobby = AsyncMock()
+        result = "Team 1"
+        await self.scrim_manager.end(result)
+        self.assertEqual(ENDED, self.scrim_manager.state)
+        self.assertEqual("Team 1", self.mock_teams_manager.winner)
+        self.mock_teams_manager.move_to_lobby.assert_called()
 
     def test_build_description_calls_state_build_with_teams_manager(self):
         mock_state = MagicMock()

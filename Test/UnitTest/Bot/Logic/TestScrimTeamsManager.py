@@ -511,36 +511,75 @@ class TestScrimTeamsManager(AsyncUnittestBase):
                 self.mocked_voice_states[player.user_id].move_to.assert_called_with(mock_voice_channel,
                                                                                     reason="Setting up a scrim.")
 
-    @unittest.skip("Waiting for scrim task cog")
-    def test_try_move_to_voice_when_one_player_not_in_voice_chat_returns_false(self):
-        min_size, max_size, team_count = 5, 6, 3
+    async def test_try_move_to_voice_when_one_player_not_in_voice_chat_returns_false(self):
+        min_size, max_size, team_count = 5, 5, 3
         mock_guild = self._create_mock_guild()
         manager = self._setup_mock_game_with_voice(max_size, min_size, team_count, mock_guild)
+        manager._channel_provider = self.channel_provider
+        manager._participant_manager = self.participant_manager
         mock_voice_state = generate_mock_voice_state(mock_guild.id)
+        skipped = False
         for team in range(team_count):
             for _ in range(min_size):
+                if not skipped:
+                    skipped = True
+                    manager.add_player(team, self._create_mock_player_with_voice_state(None))
+                    continue
                 manager.add_player(team, self._create_mock_player_with_voice_state(mock_voice_state))
-        manager.add_player(0, MagicMock())
-        self.assertFalse(manager.try_move_to_voice())
-        for team in manager.get_game_teams():
-            for player in team.players:
-                player.move_to.assert_not_called()
+        self.assertFalse(await manager.try_move_to_voice())
 
-    @unittest.skip("Waiting for scrim task cog")
-    def test_try_move_to_voice_when_one_player_in_wrong_voice_chat_returns_false(self):
-        min_size, max_size, team_count = 5, 7, 3
+    async def test_try_move_to_voice_when_one_player_in_wrong_voice_chat_returns_false(self):
+        min_size, max_size, team_count = 5, 5, 3
         mock_guild = self._create_mock_guild()
         manager = self._setup_mock_game_with_voice(max_size, min_size, team_count, mock_guild)
+        manager._channel_provider = self.channel_provider
+        manager._participant_manager = self.participant_manager
         mock_voice_state = generate_mock_voice_state(mock_guild.id)
+        mock_invalid_voice_state = generate_mock_voice_state(self.id_generator.generate_nonviable_id())
+        skipped = False
+        for team in range(team_count):
+            for _ in range(min_size):
+                if not skipped:
+                    skipped = True
+                    manager.add_player(team, self._create_mock_player_with_voice_state(mock_invalid_voice_state))
+                    continue
+                manager.add_player(team, self._create_mock_player_with_voice_state(mock_voice_state))
+        self.assertFalse(await manager.try_move_to_voice())
+
+    async def test_move_to_lobby_given_lobby_exists_and_all_players_in_voice_then_all_players_moved_to_lobby(self):
+        min_size, max_size, team_count = 5, 5, 3
+        mock_guild = self._create_mock_guild()
+        manager = self._setup_mock_game_with_voice_and_lobby(max_size, min_size, team_count, mock_guild)
+        manager._channel_provider = self.channel_provider
+        manager._participant_manager = self.participant_manager
+        mock_voice_state = generate_mock_voice_state(mock_guild.id)
+        mock_voice_channel = MagicMock()
+        self.channel_provider.get_channel.return_value = mock_voice_channel
         for team in range(team_count):
             for _ in range(min_size):
                 manager.add_player(team, self._create_mock_player_with_voice_state(mock_voice_state))
-        manager.add_player(0, self._create_mock_player_with_voice_state(
-            generate_mock_voice_state(self.id_generator.generate_viable_id())))
-        self.assertFalse(manager.try_move_to_voice())
+        await manager.move_to_lobby()
         for team in manager.get_game_teams():
-            for player in team.players:
-                player.move_to.assert_not_called()
+            for player in team.members:
+                self.mocked_voice_states[player.user_id].move_to.assert_called_with(mock_voice_channel,
+                                                                                    reason="Ending a scrim.")
+
+    async def test_move_to_lobby_given_no_lobby_channel_then_nobody_moved(self):
+        min_size, max_size, team_count = 5, 5, 3
+        mock_guild = self._create_mock_guild()
+        manager = self._setup_mock_game_with_voice(max_size, min_size, team_count, mock_guild)
+        manager._channel_provider = self.channel_provider
+        manager._participant_manager = self.participant_manager
+        mock_voice_state = generate_mock_voice_state(mock_guild.id)
+        mock_voice_channel = MagicMock()
+        self.channel_provider.get_channel.return_value = mock_voice_channel
+        for team in range(team_count):
+            for _ in range(min_size):
+                manager.add_player(team, self._create_mock_player_with_voice_state(mock_voice_state))
+        await manager.move_to_lobby()
+        for team in manager.get_game_teams():
+            for player in team.members:
+                self.mocked_voice_states[player.user_id].move_to.assert_not_called()
 
     def _create_mock_guild(self):
         guild_id = self.id_generator.generate_viable_id()
@@ -557,6 +596,14 @@ class TestScrimTeamsManager(AsyncUnittestBase):
         channel_ids = self.id_generator.generate_viable_id_group(team_count)
         teams_channels = [generate_mock_voice_channel(channel_id, guild=mock_guild) for channel_id in channel_ids]
         manager = ScrimTeamsManager(mock_game, team_channels=teams_channels)
+        return manager
+
+    def _setup_mock_game_with_voice_and_lobby(self, max_size, min_size, team_count, mock_guild):
+        mock_game = _create_mock_game(min_size, max_size, team_count)
+        channel_ids = self.id_generator.generate_viable_id_group(team_count)
+        teams_channels = [generate_mock_voice_channel(channel_id, guild=mock_guild) for channel_id in channel_ids]
+        lobby_channel = generate_mock_voice_channel(self.id_generator.generate_viable_id())
+        manager = ScrimTeamsManager(mock_game, team_channels=teams_channels, lobby=lobby_channel)
         return manager
 
     def _assert_valid_standard_teams(self, standard_teams, max_size, min_size, team_count):

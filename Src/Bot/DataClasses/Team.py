@@ -16,9 +16,9 @@ from Bot.DataClasses.VoiceChannel import VoiceChannel
 
 class Team(DataClass):
 
-    team_id = Column(Integer, primary_key=True)
+    team_id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)  # TODO: when teams are more refined, create check for these two
-    code = Column(String, nullable=False)  # columns should be unique per guild with global guild (id=0) considered
+    code = Column(String, nullable=True)   # columns should be unique per guild with global guild (id=0) considered
     guild_id = Column(Integer, ForeignKey("Guilds.guild_id"), nullable=False)
 
     # TODO: implement check for not allowing channels on global teams
@@ -26,7 +26,7 @@ class Team(DataClass):
 
     guild = relationship("Guild", back_populates="teams")
     members = association_proxy("team_members", "user", creator=lambda user: TeamMember(user=user))
-    scrims = relationship("Scrim", secondary="ParticipantTeams", back_populates="teams")
+    scrims = relationship("ParticipantTeam", back_populates="team")
     voice_channel = relationship("VoiceChannel", back_populates="teams", lazy="joined")
 
     def __init__(self, name: str, players: List[User] = None, min_size=0, max_size=0):
@@ -45,6 +45,7 @@ class Team(DataClass):
         self.members: List[User] = players if players is not None else []
         self.min_size: int = min_size
         self.max_size: int = max_size or min_size
+        self.guild_id = 0
         self.is_pickup: bool = False
         self.winner: bool = False
         self.inline: bool = True

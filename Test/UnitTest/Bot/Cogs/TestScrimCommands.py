@@ -167,3 +167,16 @@ class TestScrimCommands(AsyncUnittestBase):
         ctx.message.delete.assert_called()
         self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
         mock_scrim.message.clear_reactions.assert_called()
+
+    async def test_winner_given_team_name_then_team_made_winner(self):
+        mock_scrim = AsyncMock()
+        mock_scrim.state = STARTED
+        ctx = AsyncMock()
+        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.scrim = mock_scrim
+        ctx.scrim.message = AsyncMock()
+        team_name = "Team 1"
+        await self.cog.winner(ctx, team_name)
+        ctx.message.delete.assert_called()
+        mock_scrim.end.assert_called_with(team_name)
+        self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)

@@ -31,9 +31,10 @@ class MasterConnection:
         try:
             session.expire_on_commit = False
             yield session
-            session.commit()
         except SQLAlchemyError:  # pragma: no cover
             session.rollback()
             raise  # TODO inspect error handling here: this is not good, also remove the no cover
+        else:
+            session.commit()
         finally:
             session.close()

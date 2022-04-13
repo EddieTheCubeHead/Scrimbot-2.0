@@ -8,6 +8,7 @@ from Bot.Checks.FreeScrimCheck import FreeScrimCheck
 from Bot.Cogs.Helpers.BotSettingsService import BotSettingsService
 from Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
 from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
+from Bot.Converters.ScrimResultConverter import ScrimResultConverter
 from Bot.Core import checks
 from Bot.Core import converters
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
@@ -137,8 +138,8 @@ class ScrimCommands(commands.Cog):
 
     @commands.command(aliases=["win", "w", "victor", "v"])
     @commands.guild_only()
-    @checks.active_scrim()
-    async def winner(self, ctx: ScrimContext, winner: converters.parse_winner):
+    @ActiveScrimCheck.decorate()
+    async def winner(self, ctx: ScrimContext, winner: ScrimResultConverter):
         """A command for finishing a scrim and declaring a winner
 
         args
@@ -146,13 +147,14 @@ class ScrimCommands(commands.Cog):
 
         :param ctx: The invocation context of the command
         :type ctx: commands.Context
-        :param winner: The team that won the scrim, should be '1', '2' or 'tie' (some aliases exist though)
+        :param winner: The team that won the scrim, should be a number or team name
         :type winner: str
         """
 
-        scrim = await ctx.scrim
-        await scrim.finish(winner)
+        scrim = ctx.scrim
+        await scrim.end(winner)
         await ctx.message.delete()
+        await self._response_builder.edit(ctx.scrim.message, displayable=ctx.scrim)
 
     @commands.command(aliases=["draw"])
     @commands.guild_only()
@@ -167,7 +169,7 @@ class ScrimCommands(commands.Cog):
         :type ctx: commands.Context
         """
 
-        await self.winner(ctx, "tie")
+        await self.winner(ctx, None)
 
     @commands.command()
     @commands.guild_only()

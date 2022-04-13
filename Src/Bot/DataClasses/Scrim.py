@@ -11,10 +11,16 @@ from Bot.DataClasses.ParticipantTeam import ParticipantTeam
 
 class Scrim(DataClass):
 
+    def __init__(self, scrim_manager):
+        self.channel_id = scrim_manager.message.channel.id
+        self.game_name = scrim_manager.teams_manager.game.name
+        self.game = scrim_manager.teams_manager.game
+        self.teams = []
+
     scrim_id = Column(Integer, primary_key=True, autoincrement=True)
     channel_id = Column(Integer, ForeignKey("ScrimChannels.channel_id"), nullable=False)
     game_name = Column(String, ForeignKey("Games.name"), nullable=False)
 
     game = relationship("Game", back_populates="scrims")
     scrim_channel = relationship("ScrimChannel", back_populates="scrims")
-    teams = relationship("Team", secondary="ParticipantTeams", back_populates="scrims")
+    teams = relationship("ParticipantTeam", back_populates="scrim")

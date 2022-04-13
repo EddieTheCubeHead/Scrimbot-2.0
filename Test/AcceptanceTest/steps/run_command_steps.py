@@ -93,10 +93,11 @@ async def step_impl(context: Context, game, amount):
 async def _create_scrim(context: Context, game, amount=0):
     register_command = ";register"
     if amount:
-        create_voice_channels(context, amount)
+        create_voice_channels(context, amount, lobby=True)
         register_command += " {voice_"
         register_command += "_id} {voice_".join(str(num) for num in range(1, int(amount) + 1))
         register_command += "_id}"
+        register_command += " l:{voice_0_id}"
         register_command = insert_ids(context, register_command)
     table = _create_call_ids(context)
     await call_command(register_command, context, table)

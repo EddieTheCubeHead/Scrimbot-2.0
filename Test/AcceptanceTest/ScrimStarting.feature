@@ -1,7 +1,15 @@
 # Created by EddieTheCubeHead at 09/01/2022
 Feature: Starting a scrim after team creation
   # When there are no unassigned players left and all teams have at least the minimum amount of players, then the
-  # scrim can be started with the 'start' command.
+  # scrim can be started with the 'start' command. Given no arguments the command attempts moving players into voice
+  # channels registered for the scrim channel, if such exist. If this is not possible, the scrim moves into a state
+  # where it waits for players to move into voice channels and starts automatically when all players are in voice
+  # channels in the scrim guild.
+  #
+  # 'start' can be given a boolean argument to specify whether to move players into voice channels. If given false
+  # player moving stage of the process is skipped.
+  #
+  # If scrim waits for more than five minutes for players to join voice chat then state is reverted to team creation
 
   Scenario: Starting a scrim with full teams with automatic voice channel moving
     Given a Dota 2 scrim with full teams and 2 registered voice channels
@@ -52,7 +60,6 @@ Feature: Starting a scrim after team creation
     And scrim message has no reactions
     And no players moved
 
-  @wip
   Scenario: Starting a scrim with full teams and automatic voice channel moving when one player is not in voice
     Given a Dota 2 scrim with full teams and 2 registered voice channels
     When players 1 to 9 are in voice chat
@@ -132,7 +139,6 @@ Feature: Starting a scrim after team creation
     And players 1 to 5 moved to team 1 voice channel
     And players 6 to 10 moved to team 2 voice channel
 
-  @wip
   Scenario: Attempting to start a scrim but players don't join voice channel in five minutes
     Given a Dota 2 scrim with full teams and 2 registered voice channels
     When players 1 to 9 are in voice chat

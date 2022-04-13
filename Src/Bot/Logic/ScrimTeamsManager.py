@@ -64,6 +64,7 @@ class ScrimTeamsManager:
         self._captains = self._build_captains()
         self._add_channels_to_teams(team_channels)
         self._add_lobby_channel(lobby)
+        self.winner: Optional[str] = None
 
     @classmethod
     def is_reserved_name(cls, team_name: str):
@@ -265,3 +266,15 @@ class ScrimTeamsManager:
         for team in self._teams.values():
             if player.user_id in [member.user_id for member in team.members]:
                 return team
+
+    async def move_to_lobby(self):
+        if self._get_team(self.PARTICIPANTS).voice_channel is None:
+            return
+        lobby_voice_id = self._get_team(self.PARTICIPANTS).voice_channel.channel_id
+        lobby_voice = self._channel_provider.get_channel(lobby_voice_id)
+        for team in self.get_game_teams():
+            for player in team.members:
+                member = self._participant_manager.try_get_participant(player.user_id)
+                if member.voice:
+                    await member.move_to(lobby_voice, reason="Ending a scrim.")
+
