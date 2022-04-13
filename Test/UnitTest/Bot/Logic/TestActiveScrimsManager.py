@@ -46,6 +46,14 @@ class TestActiveScrimsManager(UnittestBase):
         self.assertEqual(mock_game, scrim.teams_manager.game)
         self._assert_scrim_created_correctly(mock_scrim_channel, mock_game)
 
+    def test_drop_given_existing_scrim_then_scrim_removed_from_dict(self):
+        mock_scrim = MagicMock()
+        test_channel_id = self.id_generator.generate_viable_id()
+        self.manager.scrims[test_channel_id] = mock_scrim
+        mock_scrim.message.channel.id = test_channel_id
+        self.manager.drop(mock_scrim)
+        self.assertNotIn(test_channel_id, self.manager.scrims)
+
     def _create_mock_channel(self) -> ScrimChannel:
         mock_channel = MagicMock()
         mock_channel.channel_id, mock_channel.guild_id = self.id_generator.generate_viable_id_group(2)

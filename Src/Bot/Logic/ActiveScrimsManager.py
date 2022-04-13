@@ -29,3 +29,6 @@ class ActiveScrimsManager:
 
     def try_get_scrim(self, channel_id: int):
         return self.scrims.get(channel_id, None)
+
+    def drop(self, scrim: ScrimManager):
+        self.scrims.pop(scrim.message.channel.id)
