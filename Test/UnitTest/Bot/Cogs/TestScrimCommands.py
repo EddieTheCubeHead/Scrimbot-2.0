@@ -180,3 +180,27 @@ class TestScrimCommands(AsyncUnittestBase):
         ctx.message.delete.assert_called()
         mock_scrim.end.assert_called_with(team_name)
         self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
+
+    async def test_winner_given_none_then_no_winner_set(self):
+        mock_scrim = AsyncMock()
+        mock_scrim.state = STARTED
+        ctx = AsyncMock()
+        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.scrim = mock_scrim
+        ctx.scrim.message = AsyncMock()
+        await self.cog.winner(ctx, None)
+        ctx.message.delete.assert_called()
+        mock_scrim.end.assert_called_with(None)
+        self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
+
+    async def test_tie_when_called_then_behaviour_identical_to_winner_with_none_argument(self):
+        mock_scrim = AsyncMock()
+        mock_scrim.state = STARTED
+        ctx = AsyncMock()
+        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.scrim = mock_scrim
+        ctx.scrim.message = AsyncMock()
+        await self.cog.tie(ctx)
+        ctx.message.delete.assert_called()
+        mock_scrim.end.assert_called_with(None)
+        self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)

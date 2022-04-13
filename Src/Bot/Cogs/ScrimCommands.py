@@ -158,7 +158,7 @@ class ScrimCommands(commands.Cog):
 
     @commands.command(aliases=["draw"])
     @commands.guild_only()
-    @checks.active_scrim()
+    @ActiveScrimCheck.decorate()
     async def tie(self, ctx: ScrimContext):
         """A command for finishing a scrim as a tie. Just calls the 'winner' command with 'tie' as argument
 
