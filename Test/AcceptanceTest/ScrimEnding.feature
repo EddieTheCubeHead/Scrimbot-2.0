@@ -1,6 +1,7 @@
 # Created by EddieTheCubeHead at 01/04/2022
 Feature: Ending a scrim
-  # A scrim can be ended with the 'winner' command or with the 'end' command.
+  # A scrim can be ended with the 'winner' command or with the 'end' command. 'winner' has an alias 'tie' that
+  # declares the scrim a tie
   #
   # 'winner' takes an argument specifying the winner if the scrim when applicable (2 participating teams) or tie while
   # 'end' does not. Thus 'end' does not update any matchmaking ratings.

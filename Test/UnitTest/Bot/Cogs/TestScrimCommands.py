@@ -204,3 +204,16 @@ class TestScrimCommands(AsyncUnittestBase):
         ctx.message.delete.assert_called()
         mock_scrim.end.assert_called_with(None)
         self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
+
+    async def test_terminate_when_called_then_scrim_manager_terminate_called_and_message_deleted(self):
+        mock_scrim = MagicMock()
+        mock_scrim.state = STARTED
+        ctx = AsyncMock()
+        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.scrim = mock_scrim
+        ctx.scrim.message = AsyncMock()
+        await self.cog.terminate(ctx)
+        ctx.message.delete.assert_called()
+        mock_scrim.terminate.assert_called_with(ctx.author)
+        self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
+        self.active_scrims_manager.drop.assert_called_with(mock_scrim)

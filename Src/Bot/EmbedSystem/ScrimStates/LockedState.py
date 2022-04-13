@@ -1,3 +1,6 @@
+__version__ = "0.1"
+__author__ = "Eetu Asikainen"
+
 from Bot.DataClasses.Team import Team
 from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager

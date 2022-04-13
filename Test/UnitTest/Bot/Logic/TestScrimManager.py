@@ -167,6 +167,26 @@ class TestScrimManager(AsyncUnittestBase):
         self.assertEqual("Team 1", self.mock_teams_manager.winner)
         self.mock_teams_manager.move_to_lobby.assert_called()
 
+    def test_terminate_when_called_with_author_then_state_set_to_terminated_and_terminator_set_to_teams_manager(self):
+        states = (LFP, LOCKED, CAPS_PREP, CAPS, VOICE_WAIT, STARTED)
+        mock_author = MagicMock()
+        mock_author.id = self.id_mocker.generate_viable_id()
+        for state in states:
+            with self.subTest(f"Terminating scrim in state {state}"):
+                self.scrim_manager.state = state
+                self.scrim_manager.terminate(mock_author)
+                self.assertEqual(TERMINATED, self.scrim_manager.state)
+                self.assertEqual(mock_author.id, self.mock_teams_manager.terminator)
+
+    def test_terminate_when_called_with_ended_scrim_then_invalid_state_change_raised(self):
+        mock_author = MagicMock()
+        mock_author.id = self.id_mocker.generate_viable_id()
+        self.mock_teams_manager.terminator = None
+        self.scrim_manager.state = ENDED
+        expected_exception = BotInvalidStateChangeException(ENDED, TERMINATED)
+        self._assert_raises_correct_exception(expected_exception, self.scrim_manager.terminate, mock_author)
+        self.assertIsNone(self.mock_teams_manager.terminator)
+
     def test_build_description_calls_state_build_with_teams_manager(self):
         mock_state = MagicMock()
         mock_state.build_description.return_value = "Correct"

@@ -65,6 +65,7 @@ class ScrimTeamsManager:
         self._add_channels_to_teams(team_channels)
         self._add_lobby_channel(lobby)
         self.winner: Optional[str] = None
+        self.terminator: Optional[int] = None
 
     @classmethod
     def is_reserved_name(cls, team_name: str):

@@ -173,7 +173,7 @@ class ScrimCommands(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
-    @checks.active_scrim()
+    @ActiveScrimCheck.decorate()
     async def terminate(self, ctx: ScrimContext):
         """A command that forcefully terminates a scrim on the channel
 
@@ -185,8 +185,10 @@ class ScrimCommands(commands.Cog):
         """
 
         scrim = ctx.scrim
-        await scrim.terminate(f"Scrim terminated manually by {ctx.author.display_name}")
+        scrim.terminate(ctx.author)
         await ctx.message.delete()
+        await self._response_builder.edit(ctx.scrim.message, displayable=ctx.scrim)
+        self._scrims_manager.drop(scrim)
 
 
 def setup(client: ScrimBotClient):

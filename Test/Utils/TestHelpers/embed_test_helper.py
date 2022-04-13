@@ -16,7 +16,7 @@ def parse_embed_from_table(context: Context) -> Embed:
 
     field_start = 1
     if table[0][0] == "Author" and table[1][0] == "Icon" and table[2][0] == "Colour":
-        embed = _insert_author_info(table)
+        embed = _insert_author_info(context, table)
         field_start = 4
     else:
         embed = Embed(title=table[0][0], description=table[0][1])
@@ -26,8 +26,8 @@ def parse_embed_from_table(context: Context) -> Embed:
     return embed
 
 
-def _insert_author_info(table):
-    embed = Embed(title=table[3][0], description=table[3][1])
+def _insert_author_info(context, table):
+    embed = Embed(title=table[3][0], description=insert_ids(context, table[3][1]))
     embed.set_author(name=table[0][1], icon_url=table[1][1])
     embed.colour = int(table[2][1], 16)
     return embed

@@ -6,7 +6,7 @@ __author__ = "Eetu Asikainen"
 import threading
 from typing import Optional
 
-from discord import Message
+from discord import Message, Member
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.Team import Team
@@ -85,3 +85,7 @@ class ScrimManager:
         self._secure_state_change(ENDED, STARTED)
         self.teams_manager.winner = result
         await self.teams_manager.move_to_lobby()
+
+    def terminate(self, author: Optional[Member]):
+        self._secure_state_change(TERMINATED, LFP, LOCKED, CAPS_PREP, CAPS, VOICE_WAIT, STARTED)
+        self.teams_manager.terminator = author.id
