@@ -382,6 +382,16 @@ class TestScrimTeamsManager(AsyncUnittestBase):
         standard_teams = manager.get_standard_teams()
         self.assertEqual(0, len(standard_teams[0].members))
 
+    def test_set_team_given_team_full_then_error_raised(self):
+        manager = self._setup_manager()
+        mock_player = self._create_mock_user()
+        manager.add_player(manager.PARTICIPANTS, mock_player)
+        for _ in range(5):
+            manager.add_player(0, MagicMock())
+        expected_exception = BotInvalidJoinException(mock_player, manager.get_game_teams()[0],
+                                                     "Could not add a player into a full team.")
+        self._assert_raises_correct_exception(expected_exception, manager.set_team, 0, mock_player)
+
     def test_clear_queue_given_players_in_queue_then_all_players_removed(self):
         manager = self._setup_manager()
         manager.add_player(manager.QUEUE, self._create_mock_user())
@@ -467,6 +477,17 @@ class TestScrimTeamsManager(AsyncUnittestBase):
         invalid_player = self._create_mock_player_with_voice_state(
             generate_mock_voice_state(self.id_generator.generate_viable_id()))
         manager.add_player(0, invalid_player)
+        self.assertFalse(manager.all_players_in_voice_chat)
+
+    def test_all_players_in_voice_chat_when_no_team_voice_channel_then_returns_false(self):
+        min_size, max_size, team_count = 5, 7, 3
+        mock_guild = self._create_mock_guild()
+        manager = self._setup_mock_game_with_voice(max_size, min_size, team_count, mock_guild)
+        manager.get_game_teams()[0].voice_channel = None
+        for team in range(team_count):
+            for _ in range(min_size):
+                manager.add_player(team, MagicMock())
+        manager._participant_manager = self.participant_manager
         self.assertFalse(manager.all_players_in_voice_chat)
 
     def test_supports_voice_when_enough_channels_present_then_true(self):

@@ -24,9 +24,6 @@ class BotDependencyInjector:
 
     dependencies: dict[type, Any] = {}
 
-    def __init__(self, db_master_connection):
-        self._db_master_connection = db_master_connection
-
     @classmethod
     def singleton(cls, dependency_class: type):
         cls._add_dependency(dependency_class, None)

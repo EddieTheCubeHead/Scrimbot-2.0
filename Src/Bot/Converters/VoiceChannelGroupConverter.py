@@ -28,8 +28,8 @@ class VoiceChannelGroupConverter(ConverterBase[VoiceChannel]):
 
     def _get_category_channels(self, ctx: Context) -> list[VoiceChannel]:
         if not ctx.channel.category:
-            raise BotBaseRespondToContextException(f"Cannot automatically assign voice channels from category because channel "
-                                       f"'{ctx.channel.name}' doesn't belong in a category")
+            raise BotBaseRespondToContextException(f"Cannot automatically assign voice channels from category because "
+                                                   f"channel '{ctx.channel.name}' doesn't belong in a category")
         return self._build_channels(ctx)
 
     def _build_channels(self, ctx: Context) -> list[VoiceChannel]:

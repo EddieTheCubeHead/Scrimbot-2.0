@@ -109,24 +109,24 @@ class TestScrimManager(AsyncUnittestBase):
         self.mock_teams_manager.has_participants = False
         self.mock_teams_manager.has_full_teams = True
         self.mock_teams_manager.all_players_in_voice_chat = True
-        self.mock_teams_manager.start_with_voice.return_value = True
+        self.mock_teams_manager.try_move_to_voice.return_value = True
         valid_states = (LOCKED, CAPS)
         for state in valid_states:
             with self.subTest(f"Starting with voice chat when in valid state: {state.description}"):
                 self.scrim_manager.state = state
-                await self.scrim_manager.start_with_voice()
+                self.assertTrue(await self.scrim_manager.start_with_voice())
                 self.mock_teams_manager.try_move_to_voice.assert_called()
 
-    async def test_start_with_voice_given_not_successful_then_added_to_waiting_scrim_manager(self):
+    async def test_start_with_voice_given_move_fails_then_false_returned(self):
         self.mock_teams_manager.has_participants = False
         self.mock_teams_manager.has_full_teams = True
         self.mock_teams_manager.all_players_in_voice_chat = True
-        self.mock_teams_manager.start_with_voice.return_value = False
-        valid_states = (LOCKED, CAPS, VOICE_WAIT)
+        self.mock_teams_manager.try_move_to_voice.return_value = False
+        valid_states = (LOCKED, CAPS)
         for state in valid_states:
             with self.subTest(f"Starting with voice chat when in valid state: {state.description}"):
                 self.scrim_manager.state = state
-                await self.scrim_manager.start_with_voice()
+                self.assertFalse(await self.scrim_manager.start_with_voice())
                 self.mock_teams_manager.try_move_to_voice.assert_called()
 
     async def test_start_with_voice_given_invalid_state_then_error_raised(self):

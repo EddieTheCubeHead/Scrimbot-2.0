@@ -61,6 +61,4 @@ class ScrimResultConverter(ConverterBase):
             results = _name_conversion(ctx, argument)
         result_scrim = _create_result_scrim(ctx, results)
         self.connection.add_scrim(result_scrim)
-        if len(results[0]) == 1:
-            return results[0][0].name
-        return None
+        return results[0][0].name

@@ -1,6 +1,8 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from typing import List
+
 from Test.Utils.TestBases.UnittestBase import UnittestBase
 from Configs.Config import Config
 
@@ -29,3 +31,7 @@ class TestConfig(UnittestBase):
 
     def test_database_name_given_configs_file_exists_then_file_read_and_token_set(self):
         self.assertIsInstance(self.config.database_name, str)
+
+    def test_default_prefix_given_configs_file_exists_then_file_read_and_prefix_set(self):
+        self.assertIsInstance(self.config.default_prefix, list)
+        self.assertIsInstance(self.config.default_prefix[0], str)

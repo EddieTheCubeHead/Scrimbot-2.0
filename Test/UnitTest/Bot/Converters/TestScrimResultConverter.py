@@ -35,6 +35,16 @@ class TestScrimResultConverter(AsyncUnittestBase):
         self.assertEqual(1, added_scrim.teams[0].placement)
         self.assertEqual(2, added_scrim.teams[1].placement)
 
+    async def test_convert_given_text_argument_from_scrim_teams_then_corresponding_result_returned_and_saved(self):
+        self._setup_teams("Team 1", "Team 2")
+        result = await self.converter.convert(self.mock_context, "Team 2")
+        self.assertEqual("Team 2", result)
+        added_scrim = self.mock_connection.add_scrim.call_args[0][0]
+        self.assertEqual("Team 2", added_scrim.teams[0].team.name)
+        self.assertEqual("Team 1", added_scrim.teams[1].team.name)
+        self.assertEqual(1, added_scrim.teams[0].placement)
+        self.assertEqual(2, added_scrim.teams[1].placement)
+
     def _setup_teams(self, *names: str):
         mocked_teams = []
         for name in names:

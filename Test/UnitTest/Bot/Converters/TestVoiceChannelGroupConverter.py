@@ -26,8 +26,9 @@ class TestVoiceChannelGroupConverter(AsyncUnittestBase):
         mock_context.channel = MagicMock()
         mock_context.channel.name = "scrim-channel"
         mock_context.channel.category = None
-        expected_exception = BotBaseRespondToContextException("Cannot automatically assign voice channels from category because "
-                                                  f"channel '{mock_context.channel.name}' doesn't belong in a category")
+        expected_exception = BotBaseRespondToContextException(f"Cannot automatically assign voice channels from "
+                                                              f"category because channel '{mock_context.channel.name}' "
+                                                              f"doesn't belong in a category")
         await self._async_assert_raises_correct_exception(expected_exception, self.converter.convert, mock_context,
                                                           DO_CONVERSION_STRINGS[0])
 
@@ -38,6 +39,14 @@ class TestVoiceChannelGroupConverter(AsyncUnittestBase):
         mock_context.channel.category = self._create_mock_channel_group("1", "2", "0")
         actual_channels = await self.converter.convert(mock_context, DO_CONVERSION_STRINGS[0])
         self._assert_correct_channels(actual_channels, 0, 2)
+
+    async def test_convert_given_only_one_channel_in_group_then_lobby_channel_built(self):
+        mock_context = MagicMock()
+        mock_context.channel = MagicMock()
+        mock_context.channel.name = "scrim-channel"
+        mock_context.channel.category = self._create_mock_channel_group("0")
+        actual_channels = await self.converter.convert(mock_context, DO_CONVERSION_STRINGS[0])
+        self._assert_correct_channels(actual_channels, 0, 0)
 
     def _create_mock_channel_group(self, *channel_names: str):
         voice_channels = []
@@ -55,5 +64,5 @@ class TestVoiceChannelGroupConverter(AsyncUnittestBase):
 
     def _assert_correct_channels(self, actual_channels, first_team, last_team):
         self.assertEqual(last_team - first_team + 1, len(actual_channels))
-        for channel, expected_team in zip(actual_channels, range(first_team, last_team)):
+        for channel, expected_team in zip(actual_channels, range(first_team, last_team + 1)):
             self.assertEqual(expected_team, channel.team_number)

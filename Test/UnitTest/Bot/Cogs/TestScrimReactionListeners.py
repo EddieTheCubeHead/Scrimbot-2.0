@@ -4,6 +4,7 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import AsyncMock, MagicMock, call
 
 from discord import Emoji, Reaction
+from discord.ext.commands import CommandError
 
 from Bot.Cogs.ScrimReactionListeners import ScrimReactionListeners
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
@@ -55,6 +56,13 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
         self.assertFalse(self.scrim_fetched)
 
+    async def test_on_reaction_add_given_no_scrim_then_nothing_happens(self):
+        players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji="\U0001F3AE")
+        self.mock_member.bot = False
+        self.scrim = None
+        await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
+        self.assertTrue(self.scrim_fetched)
+
     async def test_on_reaction_add_given_players_reaction_then_user_added_to_players_and_message_edited(self):
         self.scrim.state = LFP
         players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji="\U0001F3AE")
@@ -77,6 +85,17 @@ class TestScrimReactionListeners(AsyncUnittestBase):
                 await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
                 self.scrim.teams_manager.set_team.assert_called_with(team - 1, self.mock_user)
                 self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)
+
+    async def test_on_reaction_add_given_old_reaction_removal_fails_then_exception_handled(self):
+        self.scrim.state = LOCKED
+        invalid_removal_reaction = MagicMock()
+        invalid_removal_reaction.emoji = "1\u20E3"
+        invalid_removal_reaction.remove.side_effect = CommandError()
+        self.mock_message.reactions = [invalid_removal_reaction]
+        players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji=f"2\u20E3")
+        await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
+        self.scrim.teams_manager.set_team.assert_called_with(2 - 1, self.mock_user)
+        self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)
 
     async def test_on_reaction_add_given_player_in_another_team_then_original_reaction_removed(self):
         self.scrim.state = LOCKED
@@ -140,6 +159,19 @@ class TestScrimReactionListeners(AsyncUnittestBase):
                 await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
                 self.participant_manager.ensure_not_participant.assert_not_called()
                 self.participant_manager.try_add_participant.assert_not_called()
+
+    async def test_on_reaction_remove_given_reacted_by_bot_then_nothing_happens(self):
+        players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji="\U0001F3AE")
+        self.mock_member.bot = True
+        await self.cog.scrim_reaction_remove_listener(players_joining_reaction, self.mock_member)
+        self.assertFalse(self.scrim_fetched)
+
+    async def test_on_reaction_remove_given_no_scrim_then_nothing_happens(self):
+        players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji="\U0001F3AE")
+        self.mock_member.bot = False
+        self.scrim = None
+        await self.cog.scrim_reaction_remove_listener(players_joining_reaction, self.mock_member)
+        self.assertTrue(self.scrim_fetched)
 
     async def test_on_reaction_remove_given_players_reaction_then_player_removed_and_message_edited(self):
         self.scrim.state = LFP

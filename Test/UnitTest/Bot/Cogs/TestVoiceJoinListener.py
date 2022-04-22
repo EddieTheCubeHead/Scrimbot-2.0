@@ -24,6 +24,11 @@ class TestVoiceJoinListener(AsyncUnittestBase):
         self.listener = VoiceJoinListener(self.mock_participant_manager, self.mock_waiting_scrim_service,
                                           self.mock_response_builder)
 
+    async def test_scrim_player_voice_state_change_listener_when_non_member_joins_then_nothing_done(self):
+        self.mock_participant_manager.try_get_participant.return_value = None
+        await self.listener.scrim_player_voice_state_change_listener(MagicMock(), MagicMock(), MagicMock())
+        self.mock_waiting_scrim_service.get_scrim.assert_not_called()
+
     async def test_scrim_player_voice_state_change_listener_when_scrim_member_joins_voice_then_scrim_notified(self):
         mock_participant = MagicMock()
         mock_participant.id = self.id_generator.generate_viable_id()
@@ -42,6 +47,21 @@ class TestVoiceJoinListener(AsyncUnittestBase):
         self.mock_waiting_scrim_service.unregister.assert_called_with(mock_scrim)
         self.mock_response_builder.edit.assert_called_with(mock_scrim.message, displayable=mock_scrim)
         mock_scrim.message.clear_reactions.assert_called()
+
+    async def test_scrim_player_voice_state_change_listener_when_leaves_voice_then_nothing_happens(self):
+        mock_participant = MagicMock()
+        mock_participant.id = self.id_generator.generate_viable_id()
+        self.mock_participant_manager.try_get_participant.return_value = mock_participant
+        mock_scrim = AsyncMock()
+        mock_scrim.state = VOICE_WAIT
+        self.mock_waiting_scrim_service.get_scrim.return_value = mock_scrim
+        mock_scrim.teams_manager.all_participants = {User(mock_participant.id)}
+        mock_before = MagicMock()
+        mock_after = MagicMock()
+        mock_before.channel = None
+        mock_after.channel = None
+        await self.listener.scrim_player_voice_state_change_listener(mock_participant, mock_before, mock_after)
+        self.mock_waiting_scrim_service.get_scrim.assert_not_called()
 
     async def test_scrim_player_voice_state_change_listener_when_member_joins_other_guild_then_not_notified(self):
         mock_participant = MagicMock()

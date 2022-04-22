@@ -87,9 +87,6 @@ class ScrimReactionListeners(commands.Cog):
                 scrim.teams_manager.set_team(new_team - 1, user)
                 await _try_remove_old_reaction(react.message, new_team, member)
 
-            elif react.emoji == "\U0001F451" and scrim.state == CAPS_PREP:
-                await scrim.add_captain(member)
-
             else:
                 await react.remove(member)
 
@@ -137,9 +134,6 @@ class ScrimReactionListeners(commands.Cog):
                 new_team = int(str(react.emoji[0]))
                 scrim.teams_manager.remove_player(new_team - 1, user)
                 scrim.teams_manager.add_player(ScrimTeamsManager.PARTICIPANTS, user)
-
-            elif react.emoji == "\U0001F451" and scrim.state == CAPS_PREP:
-                await scrim.remove_captain(user)
 
         except BotInvalidPlayerRemoval as exception:
             exception.resolve()

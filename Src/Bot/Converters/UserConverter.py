@@ -9,7 +9,7 @@ from discord.ext.commands import Context
 
 from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from Bot.DataClasses.User import User
 from Database.DatabaseConnections.UserConnection import UserConnection
 

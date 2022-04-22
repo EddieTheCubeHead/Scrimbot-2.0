@@ -28,5 +28,5 @@ class TeamCreationStrategy(ABC, Convertable):
 
     @classmethod
     @BotDependencyInjector.inject
-    def set_converter(cls, converter: TeamCreationStrategyConverter):
+    def set_converter(cls, converter: TeamCreationStrategyConverter):  # pragma: no cover
         super().set_converter(converter)
