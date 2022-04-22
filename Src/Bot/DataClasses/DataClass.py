@@ -9,7 +9,7 @@ import inflect
 from discord.ext.commands import Context
 from sqlalchemy.orm import declared_attr, declarative_base
 
-if TYPE_CHECKING:  # pragma no-cover
+if TYPE_CHECKING:  # pragma: no cover
     from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 
@@ -21,18 +21,6 @@ class _DataClass:
         return inflect.engine().plural(self.__name__)  # pylint: disable=no-member
 
     converter = None
-
-    @classmethod
-    @BotDependencyInjector.inject
-    def set_converter(cls, converter: ConverterBase):
-        cls.converter = converter
-        return converter
-
-    @classmethod
-    async def convert(cls, ctx: Context, argument: str) -> _DataClass:
-        if not cls.converter:
-            cls.set_converter()
-        return await cls.converter.convert(ctx, argument)
 
 
 DataClass = declarative_base(cls=_DataClass)

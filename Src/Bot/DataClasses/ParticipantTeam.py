@@ -9,7 +9,7 @@ from Bot.DataClasses.DataClass import DataClass
 from Bot.DataClasses.Team import Team
 
 
-class ParticipantTeam(DataClass):
+class ParticipantTeam(DataClass):  # pragma: no cover
 
     team_id = Column(Integer, ForeignKey("Teams.team_id"), primary_key=True)
     scrim_id = Column(Integer, ForeignKey("Scrims.scrim_id"), primary_key=True)

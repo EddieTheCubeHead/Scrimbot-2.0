@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship
 from Bot.DataClasses.DataClass import DataClass
 
 
-class TeamMember(DataClass):
+class TeamMember(DataClass):  # pragma: no cover
 
     user_id = Column(Integer, ForeignKey("Users.user_id"), primary_key=True)
     team_id = Column(Integer, ForeignKey("Teams.team_id"), primary_key=True)

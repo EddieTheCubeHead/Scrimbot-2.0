@@ -16,7 +16,7 @@ from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Test.Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
 from Test.Utils.TestHelpers.embed_test_helper import parse_embed_from_table, create_error_embed, assert_same_embed_text
 from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
-from Test.Utils.TestHelpers.id_parser import insert_ids, get_id_increment, try_get_id
+from Test.Utils.TestHelpers.id_parser import process_inserts, get_id_increment, try_get_id
 from Test.Utils.TestHelpers.test_utils import create_mock_guild, create_mock_author, create_mock_channel,\
     create_async_mock_message
 
@@ -79,6 +79,17 @@ async def _create_locked_scrim(context, game, amount=0):
 @given("an {game} scrim with full teams and {amount} registered voice channel")
 @async_run_until_complete
 async def step_impl(context: Context, game, amount):
+    await create_filled_game(amount, context, game)
+
+
+@given("a {game} scrim with full teams")
+@given("an {game} scrim with full teams")
+@async_run_until_complete
+async def step_impl(context: Context, game):
+    await create_filled_game(0, context, game)
+
+
+async def create_filled_game(amount, context, game):
     await _create_locked_scrim(context, game, amount)
     await sleep(0)
     game_instance = await BotDependencyInjector.dependencies[GameConverter].convert(MagicMock(), game)
@@ -98,7 +109,7 @@ async def _create_scrim(context: Context, game, amount=0):
         register_command += "_id} {voice_".join(str(num) for num in range(1, int(amount) + 1))
         register_command += "_id}"
         register_command += " l:{voice_0_id}"
-        register_command = insert_ids(context, register_command)
+        register_command = process_inserts(context, register_command)
     table = _create_call_ids(context)
     await call_command(register_command, context, table)
     await call_command(f';scrim "{game}"', context, table)
@@ -108,7 +119,7 @@ async def _create_scrim(context: Context, game, amount=0):
 @when("{command} is called")
 @async_run_until_complete
 async def step_impl(context: Context, command: str):
-    command = insert_ids(context, command)
+    command = process_inserts(context, command)
     context.latest_command = command.split(" ")[0][1:]
     context.latest_prefix = command[0]
     table = _create_call_ids(context)
@@ -118,7 +129,7 @@ async def step_impl(context: Context, command: str):
 @when("{command} is called from another channel")
 @async_run_until_complete
 async def step_impl(context: Context, command: str):
-    command = insert_ids(context, command)
+    command = process_inserts(context, command)
     context.latest_command = command.split(" ")[0][1:]
     context.latest_prefix = command[0]
     table = _create_call_ids(context, alternative_text_channel=True)
@@ -236,7 +247,7 @@ def step_impl(context: Context):
 async def step_impl(context: Context):
     embed = parse_embed_from_table(context)
     context.latest_fetched = ResponseLoggerContext.get_oldest()
-    assert_same_embed_text(embed, context.latest_fetched.embeds[0])
+    assert_same_embed_text(context, embed, context.latest_fetched.embeds[0])
 
 
 @then("error received with message")
@@ -244,7 +255,7 @@ def step_impl(context: Context):
     error_message = context.text.strip()
     embed = create_error_embed(error_message, context.latest_command, context)
     context.latest_fetched = ResponseLoggerContext.get_oldest()
-    assert_same_embed_text(embed, context.latest_fetched.embeds[0])
+    assert_same_embed_text(context, embed, context.latest_fetched.embeds[0])
 
 
 @then("error and help received with message")
@@ -253,7 +264,7 @@ def step_impl(context: Context):
     embed = create_error_embed(error_message, context.latest_command, context,
                                f"{context.latest_prefix}help {context.latest_command}")
     context.latest_fetched = ResponseLoggerContext.get_oldest()
-    assert_same_embed_text(embed, context.latest_fetched.embeds[0])
+    assert_same_embed_text(context, embed, context.latest_fetched.embeds[0])
 
 
 @then("team joining emojis reacted by bot")
@@ -266,7 +277,7 @@ def step_impl(context: Context):
 @then("embed edited to have fields")
 def step_impl(context: Context):
     embed = parse_embed_from_table(context)
-    assert_same_embed_text(embed, context.latest_fetched.embeds[0])
+    assert_same_embed_text(context, embed, context.latest_fetched.embeds[0])
 
 
 @then("scrim message has reactions")

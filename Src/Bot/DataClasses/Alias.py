@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship
 from Bot.DataClasses.DataClass import DataClass
 
 
-class Alias(DataClass):
+class Alias(DataClass):  # pragma: no cover
     name = Column(String, primary_key=True)
     game_name = Column(String, ForeignKey("Games.name"), nullable=False)
 

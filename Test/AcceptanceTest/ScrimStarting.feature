@@ -16,14 +16,14 @@ Feature: Starting a scrim after team creation
     When all players are in voice chat
     And ;start is called
     Then embed edited to have fields
-      | name   | value                                                                                   |
-      | Author | Dota 2 scrim                                                                            |
-      | Icon   | https://i.imgur.com/OlWIlyY.jpg?1                                                       |
-      | Colour | 0xce0000                                                                                |
+      | name   | value                             |
+      | Author | Dota 2 scrim                      |
+      | Icon   | https://i.imgur.com/OlWIlyY.jpg?1 |
+      | Colour | 0xce0000                          |
       | Status | Dota 2 scrim underway. Declare the winner with the command 'winner [team]' or 'tie' or end the scrim without declaring a winner with 'end'. |
-      | Team 1 | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>  |
-      | Team 2 | <@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
-      | Footer | gl hf!                                                                                  |
+      | Team 1 | {{users 1 to 5}}                  |
+      | Team 2 | {{users 6 to 10}}                 |
+      | Footer | gl hf!                            |
     And scrim message has no reactions
     And players 1 to 5 moved to team 1 voice channel
     And players 6 to 10 moved to team 2 voice channel
@@ -33,14 +33,14 @@ Feature: Starting a scrim after team creation
     When all players are in voice chat
     And ;start is called
     Then embed edited to have fields
-      | name   | value                                                                                   |
-      | Author | Dota 2 scrim                                                                            |
-      | Icon   | https://i.imgur.com/OlWIlyY.jpg?1                                                       |
-      | Colour | 0xce0000                                                                                |
+      | name   | value                             |
+      | Author | Dota 2 scrim                      |
+      | Icon   | https://i.imgur.com/OlWIlyY.jpg?1 |
+      | Colour | 0xce0000                          |
       | Status | Dota 2 scrim underway. Declare the winner with the command 'winner [team]' or 'tie' or end the scrim without declaring a winner with 'end'. |
-      | Team 1 | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>  |
-      | Team 2 | <@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
-      | Footer | gl hf!                                                                                  |
+      | Team 1 | {{users 1 to 5}}                  |
+      | Team 2 | {{users 6 to 10}}                 |
+      | Footer | gl hf!                            |
     And scrim message has no reactions
     And no players moved
 
@@ -48,15 +48,16 @@ Feature: Starting a scrim after team creation
     Given a Dota 2 scrim with full teams and 2 registered voice channel
     When all players are in voice chat
     And ;start false is called
-    Then embed edited to have fields
-      | name   | value                                                                                   |
-      | Author | Dota 2 scrim                                                                            |
-      | Icon   | https://i.imgur.com/OlWIlyY.jpg?1                                                       |
-      | Colour | 0xce0000                                                                                |
+    Then command message is deleted
+    And embed edited to have fields
+      | name   | value                             |
+      | Author | Dota 2 scrim                      |
+      | Icon   | https://i.imgur.com/OlWIlyY.jpg?1 |
+      | Colour | 0xce0000                          |
       | Status | Dota 2 scrim underway. Declare the winner with the command 'winner [team]' or 'tie' or end the scrim without declaring a winner with 'end'. |
-      | Team 1 | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>  |
-      | Team 2 | <@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
-      | Footer | gl hf!                                                                                  |
+      | Team 1 | {{users 1 to 5}}                  |
+      | Team 2 | {{users 6 to 10}}                 |
+      | Footer | gl hf!                            |
     And scrim message has no reactions
     And no players moved
 
@@ -65,29 +66,30 @@ Feature: Starting a scrim after team creation
     When players 1 to 9 are in voice chat
     And player 10 is not in voice chat
     And ;start is called
-    Then embed edited to have fields
-      | name   | value                                                                                   |
-      | Author | Dota 2 scrim                                                                            |
-      | Icon   | https://i.imgur.com/OlWIlyY.jpg?1                                                       |
-      | Colour | 0xce0000                                                                                |
-      | Status | Starting Dota 2 scrim. Waiting for all players to join voice chat...                    |
-      | Team 1 | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>  |
-      | Team 2 | <@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
-      | Footer | Scrim will start automatically when all players are in voice chat                       |
+    Then command message is deleted
+    And embed edited to have fields
+      | name   | value                                                                |
+      | Author | Dota 2 scrim                                                         |
+      | Icon   | https://i.imgur.com/OlWIlyY.jpg?1                                    |
+      | Colour | 0xce0000                                                             |
+      | Status | Starting Dota 2 scrim. Waiting for all players to join voice chat... |
+      | Team 1 | {{users 1 to 5}}                                                     |
+      | Team 2 | {{users 6 to 10}}                                                    |
+      | Footer | Scrim will start automatically when all players are in voice chat    |
     And scrim message has reactions
       | reaction | amount |
       | 1️⃣       | 6      |
       | 2️⃣       | 6      |
     When player 10 connects to voice
     Then embed edited to have fields
-      | name   | value                                                                                   |
-      | Author | Dota 2 scrim                                                                            |
-      | Icon   | https://i.imgur.com/OlWIlyY.jpg?1                                                       |
-      | Colour | 0xce0000                                                                                |
+      | name   | value                             |
+      | Author | Dota 2 scrim                      |
+      | Icon   | https://i.imgur.com/OlWIlyY.jpg?1 |
+      | Colour | 0xce0000                          |
       | Status | Dota 2 scrim underway. Declare the winner with the command 'winner [team]' or 'tie' or end the scrim without declaring a winner with 'end'. |
-      | Team 1 | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>  |
-      | Team 2 | <@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
-      | Footer | gl hf!                                                                                  |
+      | Team 1 | {{users 1 to 5}}                  |
+      | Team 2 | {{users 6 to 10}}                 |
+      | Footer | gl hf!                            |
     And scrim message has no reactions
     And players 1 to 5 moved to team 1 voice channel
     And players 6 to 10 moved to team 2 voice channel
@@ -98,43 +100,44 @@ Feature: Starting a scrim after team creation
     And players 6 to 9 are in voice chat
     And players 5 and 10 are not in voice chat
     And ;start is called
-    Then embed edited to have fields
-      | name   | value                                                                                   |
-      | Author | Dota 2 scrim                                                                            |
-      | Icon   | https://i.imgur.com/OlWIlyY.jpg?1                                                       |
-      | Colour | 0xce0000                                                                                |
-      | Status | Starting Dota 2 scrim. Waiting for all players to join voice chat...                    |
-      | Team 1 | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>  |
-      | Team 2 | <@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
-      | Footer | Scrim will start automatically when all players are in voice chat                       |
+    Then command message is deleted
+    And embed edited to have fields
+      | name   | value                                                                |
+      | Author | Dota 2 scrim                                                         |
+      | Icon   | https://i.imgur.com/OlWIlyY.jpg?1                                    |
+      | Colour | 0xce0000                                                             |
+      | Status | Starting Dota 2 scrim. Waiting for all players to join voice chat... |
+      | Team 1 | {{users 1 to 5}}                                                     |
+      | Team 2 | {{users 6 to 10}}                                                    |
+      | Footer | Scrim will start automatically when all players are in voice chat    |
     And scrim message has reactions
       | reaction | amount |
       | 1️⃣       | 6      |
       | 2️⃣       | 6      |
     When player 10 connects to voice
     Then embed edited to have fields
-      | name   | value                                                                                   |
-      | Author | Dota 2 scrim                                                                            |
-      | Icon   | https://i.imgur.com/OlWIlyY.jpg?1                                                       |
-      | Colour | 0xce0000                                                                                |
-      | Status | Starting Dota 2 scrim. Waiting for all players to join voice chat...                    |
-      | Team 1 | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>  |
-      | Team 2 | <@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
-      | Footer | Scrim will start automatically when all players are in voice chat                       |
+      | name   | value                                                                |
+      | Author | Dota 2 scrim                                                         |
+      | Icon   | https://i.imgur.com/OlWIlyY.jpg?1                                    |
+      | Colour | 0xce0000                                                             |
+      | Status | Starting Dota 2 scrim. Waiting for all players to join voice chat... |
+      | Team 1 | {{users 1 to 5}}                                                     |
+      | Team 2 | {{users 6 to 10}}                                                    |
+      | Footer | Scrim will start automatically when all players are in voice chat    |
     And scrim message has reactions
       | reaction | amount |
       | 1️⃣       | 6      |
       | 2️⃣       | 6      |
     When player 5 connects to voice
     Then embed edited to have fields
-      | name   | value                                                                                   |
-      | Author | Dota 2 scrim                                                                            |
-      | Icon   | https://i.imgur.com/OlWIlyY.jpg?1                                                       |
-      | Colour | 0xce0000                                                                                |
+      | name   | value                             |
+      | Author | Dota 2 scrim                      |
+      | Icon   | https://i.imgur.com/OlWIlyY.jpg?1 |
+      | Colour | 0xce0000                          |
       | Status | Dota 2 scrim underway. Declare the winner with the command 'winner [team]' or 'tie' or end the scrim without declaring a winner with 'end'. |
-      | Team 1 | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>  |
-      | Team 2 | <@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
-      | Footer | gl hf!                                                                                  |
+      | Team 1 | {{users 1 to 5}}                  |
+      | Team 2 | {{users 6 to 10}}                 |
+      | Footer | gl hf!                            |
     And scrim message has no reactions
     And players 1 to 5 moved to team 1 voice channel
     And players 6 to 10 moved to team 2 voice channel
@@ -144,20 +147,21 @@ Feature: Starting a scrim after team creation
     When players 1 to 9 are in voice chat
     And player 10 is not in voice chat
     And ;start is called
-    And 5 minutes elapses
+    Then command message is deleted
+    When 5 minutes elapses
     And the task to prune waiting scrims is ran
     Then embed edited to have fields
-      | name                     | value                                         |
-      | Author                   | Dota 2 scrim                                  |
-      | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1             |
-      | Colour                   | 0xce0000                                      |
+      | name                     | value                                                                                  |
+      | Author                   | Dota 2 scrim                                                                           |
+      | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                                                      |
+      | Colour                   | 0xce0000                                                                               |
       | Status                   | Teams full, use the command 'start' to start the scrim or 'teams clear' to clear teams |
-      | Unassigned               | _empty_                                       |
-      | Spectators               | _empty_                                       |
-      | {divider}                | {divider}                                     |
-      | Team 1 _(full)_          | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>  |
-      | Team 2 _(full)_          | <@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
-      | Footer                   | Send command 'start' to start the scrim or send command 'teams clear' to clear teams |
+      | Unassigned               | _empty_                                                                                |
+      | Spectators               | _empty_                                                                                |
+      | {divider}                | {divider}                                                                              |
+      | Team 1 _(full)_          | {{users 1 to 5}}                                                                       |
+      | Team 2 _(full)_          | {{users 6 to 10}}                                                                      |
+      | Footer                   | Send command 'start' to start the scrim or send command 'teams clear' to clear teams   |
     And scrim message has reactions
       | reaction | amount |
       | 1️⃣       | 6      |

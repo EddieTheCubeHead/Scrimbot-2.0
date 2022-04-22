@@ -9,7 +9,7 @@ from Bot.DataClasses.DataClass import DataClass
 from Bot.DataClasses.Guild import Guild
 
 
-class GuildMember(DataClass):
+class GuildMember(DataClass):  # pragma: no cover
 
     user_id = Column(Integer, ForeignKey("Users.user_id"), primary_key=True)
     guild_id = Column(Integer, ForeignKey("Guilds.guild_id"), primary_key=True)

@@ -6,13 +6,14 @@ __author__ = "Eetu Asikainen"
 from sqlalchemy import Column, Integer, Boolean
 from sqlalchemy.orm import relationship
 
+from Bot.Converters.Convertable import Convertable
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.DataClass import DataClass
 from Configs.Config import Config
 from Bot.DataClasses.Prefix import Prefix
 
 
-class Guild(DataClass):
+class Guild(DataClass, Convertable):  # pragma: no cover
 
     guild_id = Column(Integer, primary_key=True)
     scrim_timeout = Column(Integer, default=Config().default_timeout)
@@ -29,5 +30,5 @@ class Guild(DataClass):
 
     @classmethod
     @BotDependencyInjector.inject
-    def set_converter(cls, converter: GuildConverter):  # pragma: no-cover
+    def set_converter(cls, converter: GuildConverter):
         super().set_converter(converter)

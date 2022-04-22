@@ -6,8 +6,8 @@ from abc import abstractmethod
 from discord import Embed
 
 
-class Displayable:
+class Displayable:  # pragma: no cover
 
     @abstractmethod
-    def build(self, embed_builder) -> Embed:  # pragma: no-cover
+    def build(self, embed_builder) -> Embed:
         pass

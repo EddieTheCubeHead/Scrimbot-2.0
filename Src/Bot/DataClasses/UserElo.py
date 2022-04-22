@@ -12,7 +12,7 @@ from Bot.DataClasses.User import User
 _DEFAULT_ELO = 1700
 
 
-class UserElo(DataClass):
+class UserElo(DataClass):  # pragma: no cover
 
     user_id = Column(Integer, ForeignKey("Users.user_id"), primary_key=True)
     guild_id = Column(Integer, ForeignKey("Guilds.guild_id"), primary_key=True, default=0)

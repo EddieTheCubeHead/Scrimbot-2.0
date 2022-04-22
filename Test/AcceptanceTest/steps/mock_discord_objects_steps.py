@@ -12,7 +12,7 @@ from behave.runner import Context
 
 from Test.Utils.TestHelpers.MockDiscordConverter import MockDiscordConverter
 from Test.Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
-from Test.Utils.TestHelpers.id_parser import get_id_increment, try_get_id
+from Test.Utils.TestHelpers.id_parser import get_id_increment, try_get_id, parse_player_spec
 from Test.Utils.TestHelpers.test_utils import create_mock_channel, create_mock_guild, create_mock_channel_group, \
     set_member_voice_present, set_member_voice_not_present, create_mock_author
 from Test.Utils.TestHelpers.VoiceChannelFetchPatcher import VoiceChannelFetchPatcher
@@ -67,7 +67,7 @@ def step_impl(context: Context, player_spec):
 
 
 def _mock_voice_presence(context, player_spec, present=True) -> list[int]:
-    players = _parse_player_spec(context, player_spec) or _get_all_players(context)
+    players = parse_player_spec(context, player_spec) or _get_all_players(context)
     guild = _ensure_mocked_guild(context)
     for player in players:
         if present:
@@ -92,31 +92,17 @@ def _mock_voice_join(context, player_id: int):
     member = create_mock_author(player_id, guild, context)
     context.client.dispatch("voice_state_update", member, MagicMock(), member.voice)
 
-    
-def _parse_player_spec(context, player_spec) -> list[int]:
-    if "all" in player_spec:
-        return []
-    player_spec = player_spec.replace("players ", "")
-    player_spec = player_spec.replace("player ", "")
-    if "to" in player_spec:
-        start, stop = player_spec.split(" to ")
-        player_nums = list(range(int(start), int(stop) + 1))
-    else:
-        player_spec = player_spec.replace(" and", ", ")
-        player_nums = [int(num) for num in player_spec.split(", ") if num.isdigit()]
-    return [try_get_id(context, f"user_{player_num}_id") for player_num in player_nums]
-
 
 @then("{player_spec} moved to team {team_num} voice channel")
 def step_impl(context: Context, player_spec, team_num):
-    players = _parse_player_spec(context, player_spec) or _get_all_players(context)
+    players = parse_player_spec(context, player_spec) or _get_all_players(context)
     guild = _ensure_mocked_guild(context)
     assert_players_moved_to_team_voice(context, guild, players, team_num)
 
 
 @then("{player_spec} moved to lobby voice channel")
 def step_impl(context: Context, player_spec):
-    players = _parse_player_spec(context, player_spec) or _get_all_players(context)
+    players = parse_player_spec(context, player_spec) or _get_all_players(context)
     guild = _ensure_mocked_guild(context)
     assert_players_moved_to_team_voice(context, guild, players, 0)
 

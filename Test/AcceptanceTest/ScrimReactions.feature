@@ -18,7 +18,7 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Icon         | https://i.imgur.com/OlWIlyY.jpg?1                   |
       | Colour       | 0xce0000                                            |
       | Status       | Looking for players, 9 more required.               |
-      | Participants | <@{user_1_id}>                                      |
+      | Participants | {{user 1}}                                          |
       | Spectators   | _empty_                                             |
       | Footer       | To join players react 🎮 To join spectators react 👁 |
     And scrim message has reactions
@@ -35,7 +35,7 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Icon         | https://i.imgur.com/OlWIlyY.jpg?1                   |
       | Colour       | 0xce0000                                            |
       | Status       | Looking for players, 7 more required.               |
-      | Participants | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>  |
+      | Participants | {{users 1, 2 and 3}}                                |
       | Spectators   | _empty_                                             |
       | Footer       | To join players react 🎮 To join spectators react 👁 |
     And scrim message has reactions
@@ -53,7 +53,7 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Colour       | 0xce0000                                            |
       | Status       | Looking for players, 10 more required.              |
       | Participants | _empty_                                             |
-      | Spectators   | <@{user_1_id}>                                      |
+      | Spectators   | {{user 1}}                                          |
       | Footer       | To join players react 🎮 To join spectators react 👁 |
     And scrim message has reactions
       | reaction | amount |
@@ -70,7 +70,7 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Colour       | 0xce0000                                            |
       | Status       | Looking for players, 10 more required.              |
       | Participants | _empty_                                             |
-      | Spectators   | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>  |
+      | Spectators   | {{users 1, 2 and 3}}                                |
       | Footer       | To join players react 🎮 To join spectators react 👁 |
     And scrim message has reactions
       | reaction | amount |
@@ -87,7 +87,7 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Icon         | https://i.imgur.com/BvQOQyN.png                     |
       | Colour       | 0x0000ff                                            |
       | Status       | Looking for players, 5 more required.               |
-      | Participants | <@{user_1_id}>                                      |
+      | Participants | {{user 1}}                                          |
       | Spectators   | _empty_                                             |
       | Footer       | To join players react 🎮 To join spectators react 👁 |
     And scrim message has reactions
@@ -106,7 +106,7 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Colour       | 0x0000ff                                            |
       | Status       | Looking for players, 6 more required.               |
       | Participants | _empty_                                             |
-      | Spectators   | <@{user_1_id}>                                      |
+      | Spectators   | {{user 1}}                                          |
       | Footer       | To join players react 🎮 To join spectators react 👁 |
     And scrim message has reactions
       | reaction | amount |
@@ -122,7 +122,7 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Icon         | https://i.imgur.com/BvQOQyN.png                                                           |
       | Colour       | 0x0000ff                                                                                  |
       | Status       | All players present. Send command 'lock' to start team selection.                         |
-      | Participants | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}> |
+      | Participants | {{users 1 to 6}}                                                                          |
       | Spectators   | _empty_                                                                                   |
       | Footer       | To join players react 🎮 To join spectators react 👁 To lock the teams send command 'lock' |
     And scrim message has reactions
@@ -139,9 +139,9 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Icon         | https://i.imgur.com/BvQOQyN.png                                                           |
       | Colour       | 0x0000ff                                                                                  |
       | Status       | All players present. Send command 'lock' to start team selection.                         |
-      | Participants | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}> |
+      | Participants | {{users 1 to 6}}                                                                          |
       | Spectators   | _empty_                                                                                   |
-      | Queue        | <@{user_7_id}>{\n}<@{user_8_id}>                                                          |
+      | Queue        | {{users 7 and 8}}                                                                         |
       | Footer       | To join players react 🎮 To join spectators react 👁 To lock the teams send command 'lock' |
     And scrim message has reactions
       | reaction | amount |
@@ -158,7 +158,7 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Icon         | https://www.scarsdalelibrary.org/sites/default/files/2021-02/among_us.jpg |
       | Colour       | 0xff0000                                                                  |
       | Status       | Looking for players, 5 more required.                                     |
-      | Participants | <@{user_1_id}>                                                            |
+      | Participants | {{user 1}}                                                                |
       | Spectators   | _empty_                                                                   |
       | Footer       | To join players react 🎮 To join spectators react 👁                       |
     And scrim message has reactions
@@ -177,7 +177,7 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Colour       | 0xff0000                                                                  |
       | Status       | Looking for players, 6 more required.                                     |
       | Participants | _empty_                                                                   |
-      | Spectators   | <@{user_1_id}>                                                            |
+      | Spectators   | {{user 1}}                                                                |
       | Footer       | To join players react 🎮 To join spectators react 👁                       |
     And scrim message has reactions
       | reaction | amount |
@@ -193,10 +193,10 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
       | Colour                   | 0xce0000                                            |
       | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
-      | Unassigned               | <@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
+      | Unassigned               | {{users 2 to 10}}                                   |
       | Spectators               | _empty_                                             |
       | {divider}                | {divider}                                           |
-      | Team 1 _(4 more needed)_ | <@{user_1_id}>                                      |
+      | Team 1 _(4 more needed)_ | {{user 1}}                                          |
       | Team 2 _(5 more needed)_ | _empty_                                             |
       | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2       |
     And scrim message has reactions
@@ -212,17 +212,17 @@ Feature: Scrim and scrim team leaving/joining with reactions
     And user 4 reacts with 2️⃣
     And user 5 reacts with 1️⃣
     Then embed edited to have fields
-      | name                     | value                                               |
-      | Author                   | Dota 2 scrim                                        |
-      | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
-      | Colour                   | 0xce0000                                            |
+      | name                     | value                                         |
+      | Author                   | Dota 2 scrim                                  |
+      | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1             |
+      | Colour                   | 0xce0000                                      |
       | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
-      | Unassigned               | <@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
-      | Spectators               | _empty_                                             |
-      | {divider}                | {divider}                                           |
-      | Team 1 _(3 more needed)_ | <@{user_1_id}>{\n}<@{user_5_id}>                    |
-      | Team 2 _(2 more needed)_ | <@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>  |
-      | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2       |
+      | Unassigned               | {{users 6 to 10}}                             |
+      | Spectators               | _empty_                                       |
+      | {divider}                | {divider}                                     |
+      | Team 1 _(3 more needed)_ | {{users 1 and 5}}                             |
+      | Team 2 _(2 more needed)_ | {{users 2, 3 and 4}}                          |
+      | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2 |
     And scrim message has reactions
       | reaction | amount |
       | 1️⃣       | 3      |
@@ -238,11 +238,11 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
       | Colour                   | 0xce0000                                            |
       | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
-      | Unassigned               | <@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
+      | Unassigned               | {{users 2 to 10}}                                   |
       | Spectators               | _empty_                                             |
       | {divider}                | {divider}                                           |
       | Team 1 _(5 more needed)_ | _empty_                                             |
-      | Team 2 _(4 more needed)_ | <@{user_1_id}>                                      |
+      | Team 2 _(4 more needed)_ | {{user 1}}                                          |
       | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2       |
     And scrim message has reactions
       | reaction | amount |
@@ -259,7 +259,7 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
       | Colour                   | 0xce0000                                            |
       | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
-      | Unassigned               | <@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}>{\n}<@{user_1_id}> |
+      | Unassigned               | {{users 2, 3, 4, 5, 6, 7, 8, 9, 10 and 1}}          |
       | Spectators               | _empty_                                             |
       | {divider}                | {divider}                                           |
       | Team 1 _(5 more needed)_ | _empty_                                             |
@@ -280,10 +280,10 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Icon                     | https://i.imgur.com/BvQOQyN.png                    |
       | Colour                   | 0x0000ff                                           |
       | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
-      | Unassigned               | <@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}> |
+      | Unassigned               | {{users 4, 5 and 6}}                               |
       | Spectators               | _empty_                                            |
       | {divider}                | {divider}                                          |
-      | Team 1 _(full)_          | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}> |
+      | Team 1 _(full)_          | {{users 1, 2 and 3}}                               |
       | Team 2 _(3 more needed)_ | _empty_                                            |
       | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2      |
     And scrim message has reactions
@@ -304,8 +304,8 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Unassigned      | _empty_                                                                                |
       | Spectators      | _empty_                                                                                |
       | {divider}       | {divider}                                                                              |
-      | Team 1 _(full)_ | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>                                     |
-      | Team 2 _(full)_ | <@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}>                                     |
+      | Team 1 _(full)_ | {{users 1, 2 and 3}}                                                                   |
+      | Team 2 _(full)_ | {{users 4, 5 and 6}}                                                                   |
       | Footer          | Send command 'start' to start the scrim or send command 'teams clear' to clear teams   |
     And scrim message has reactions
       | reaction | amount |
@@ -325,8 +325,8 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | Unassigned                                 | _empty_                                                            |
       | Spectators                                 | _empty_                                                            |
       | {divider}                                  | {divider}                                                          |
-      | Team 1 _(enough players: room for 1 more)_ | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>                 |
-      | Team 2 _(1 more needed)_                   | <@{user_4_id}>                                                     |
+      | Team 1 _(enough players: room for 1 more)_ | {{users 1, 2 and 3}}                                               |
+      | Team 2 _(1 more needed)_                   | {{user 4}}                                                         |
       | Footer                                     | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2                      |
     And scrim message has reactions
       | reaction | amount |

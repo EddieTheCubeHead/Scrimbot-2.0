@@ -33,7 +33,7 @@ class BotHelpCommand(commands.DefaultHelpCommand):
         args
         ----
 
-        :param dm_help: Whether the bot should sent help messages as dms instead of to the invokation context
+        :param dm_help: Whether the bot should sent help messages as dms instead of to the invocation context
         :type dm_help: Optional[bool]
         """
 

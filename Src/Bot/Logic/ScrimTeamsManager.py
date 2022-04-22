@@ -246,6 +246,13 @@ class ScrimTeamsManager:
     def clear_queue(self):
         self._get_team(self.QUEUE).members.clear()
 
+    def clear_teams(self):
+        for team in self.get_game_teams():
+            while team.members:
+                player = team.members[0]
+                self.remove_player(team.name, player)
+                self.add_player(self.PARTICIPANTS, player)
+
     async def try_move_to_voice(self) -> bool:
         if not self.all_players_in_voice_chat:
             return False

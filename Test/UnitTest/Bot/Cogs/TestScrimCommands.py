@@ -217,3 +217,18 @@ class TestScrimCommands(AsyncUnittestBase):
         mock_scrim.terminate.assert_called_with(ctx.author)
         self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
         self.active_scrims_manager.drop.assert_called_with(mock_scrim)
+        mock_scrim.message.clear_reactions.assert_called()
+
+    async def test_teams_when_called_then_strategy_create_teams_called_embed_edited_and_message_deleted(self):
+        mock_scrim = MagicMock()
+        mock_scrim.state = LOCKED
+        ctx = AsyncMock()
+        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.scrim = mock_scrim
+        ctx.scrim.message = AsyncMock()
+        mock_strategy = AsyncMock()
+        await self.cog.teams(ctx, mock_strategy)
+        ctx.message.delete.assert_called()
+        mock_strategy.create_teams.assert_called_with(mock_scrim)
+        self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
+        ctx.scrim.message.clear_reactions.assert_not_called()

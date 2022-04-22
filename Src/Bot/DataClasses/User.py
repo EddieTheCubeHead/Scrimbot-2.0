@@ -12,7 +12,7 @@ from Bot.DataClasses.GuildMember import GuildMember
 from Bot.DataClasses.TeamMember import TeamMember
 
 
-class User(DataClass):
+class User(DataClass):  # pragma: no cover
 
     user_id = Column(Integer, primary_key=True)
     global_rights_level = Column(Integer, default=0)

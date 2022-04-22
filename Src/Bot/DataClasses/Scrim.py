@@ -9,7 +9,7 @@ from Bot.DataClasses.DataClass import DataClass
 from Bot.DataClasses.ParticipantTeam import ParticipantTeam
 
 
-class Scrim(DataClass):
+class Scrim(DataClass):  # pragma: no cover
 
     def __init__(self, scrim_manager):
         self.channel_id = scrim_manager.message.channel.id

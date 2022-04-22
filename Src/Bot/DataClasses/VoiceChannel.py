@@ -8,13 +8,15 @@ from typing import Optional, TYPE_CHECKING
 from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
-if TYPE_CHECKING:
+from Bot.Converters.Convertable import Convertable
+
+if TYPE_CHECKING:  # pragma: no cover
     from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.DataClass import DataClass
 
 
-class VoiceChannel(DataClass):
+class VoiceChannel(DataClass, Convertable):  # pragma: no cover
 
     channel_id = Column(Integer, primary_key=True)
     parent_channel_id = Column(Integer, ForeignKey("ScrimChannels.channel_id"), nullable=False)
@@ -30,5 +32,5 @@ class VoiceChannel(DataClass):
 
     @classmethod
     @BotDependencyInjector.inject
-    def set_converter(cls, converter: VoiceChannelConverter):  # pragma: no cover
+    def set_converter(cls, converter: VoiceChannelConverter):
         super().set_converter(converter)

@@ -9,17 +9,17 @@ from discord import Embed
 from sqlalchemy import Column, Integer, ForeignKey, String
 from sqlalchemy.orm import relationship
 
+from Bot.Converters.Convertable import Convertable
 from Bot.DataClasses.Displayable import Displayable
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
-    from Bot.EmbedSystem.ScrimChannelEmbedBuilder import ScrimChannelEmbedBuilder
 from Bot.DataClasses.DataClass import DataClass
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 
 
-class ScrimChannel(DataClass):
+class ScrimChannel(DataClass, Convertable):  # pragma: no cover
 
     channel_id = Column(Integer, primary_key=True)
     guild_id = Column(Integer, ForeignKey("Guilds.guild_id"), nullable=False)

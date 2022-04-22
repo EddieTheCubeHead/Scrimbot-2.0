@@ -1,7 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-
+import random
 import unittest
 from unittest.mock import MagicMock, AsyncMock
 
@@ -580,6 +580,41 @@ class TestScrimTeamsManager(AsyncUnittestBase):
         for team in manager.get_game_teams():
             for player in team.members:
                 self.mocked_voice_states[player.user_id].move_to.assert_not_called()
+
+    def test_clear_teams_given_all_players_in_game_teams_then_all_players_moved_to_participants(self):
+        min_size, max_size, team_count = 3, 5, 6
+        manager = self._setup_manager(min_size, max_size, team_count)
+        players = []
+        for team in range(team_count):
+            for player in range(max_size):
+                mock_user = self._create_mock_user()
+                players.append(mock_user)
+                manager.add_player(team, mock_user)
+        manager.clear_teams()
+        for player in players:
+            self.assertIn(player, manager.get_standard_teams()[0].members)
+
+    def test_clear_teams_given_some_players_in_teams_then_all_players_moved_to_participants_and_no_errors_raised(self):
+        min_size, max_size, team_count = 3, 5, 6
+        manager = self._setup_manager(min_size, max_size, team_count)
+        iterations = 10
+        for iteration in range(1, iterations + 1):
+            with self.subTest(f"Testing team clearing with random amount of players in team (iteration {iteration} "
+                              f"out of {iterations})"):
+                for team in manager._teams.values():
+                    team.members.clear()
+                players = []
+                for team in range(team_count):
+                    for player in range(max_size):
+                        mock_user = self._create_mock_user()
+                        players.append(mock_user)
+                        if random.random() > 0.5:
+                            manager.add_player(team, mock_user)
+                        else:
+                            manager.add_player(manager.PARTICIPANTS, mock_user)
+                manager.clear_teams()
+                for player in players:
+                    self.assertIn(player, manager.get_standard_teams()[0].members)
 
     def _create_mock_guild(self):
         guild_id = self.id_generator.generate_viable_id()

@@ -9,8 +9,6 @@ from Bot.Cogs.Helpers.BotSettingsService import BotSettingsService
 from Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
 from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
 from Bot.Converters.ScrimResultConverter import ScrimResultConverter
-from Bot.Core import checks
-from Bot.Core import converters
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.Core.ScrimContext import ScrimContext
@@ -20,6 +18,9 @@ from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 from Bot.Converters.GameConverter import GameConverter
 from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
 from Bot.Logic.ScrimManager import ScrimManager
+from Bot.Matchmaking.TeamCreationStrategy import TeamCreationStrategy
+from Bot.Matchmaking.RandomTeamsStrategy import RandomTeamsStrategy
+from Bot.Matchmaking.ClearTeamsStrategy import ClearTeamsStrategy
 from Configs.Config import Config
 
 
@@ -85,10 +86,10 @@ class ScrimCommands(commands.Cog):
         await scrim.message.clear_reactions()
         await _add_team_reactions(scrim)
 
-    @commands.group(aliases=["t", "maketeams"])
+    @commands.command(aliases=["t", "maketeams"])
     @commands.guild_only()
-    @checks.active_scrim()
-    async def teams(self, ctx: ScrimContext):
+    @ActiveScrimCheck.decorate()
+    async def teams(self, ctx: ScrimContext, criteria: TeamCreationStrategy):
         """A command group for creating teams
 
         args
@@ -96,18 +97,14 @@ class ScrimCommands(commands.Cog):
 
         :param ctx: The invocation context of the command
         :type ctx: commands.Context
+        :param criteria: The criteria used for creating the teams
+        :type criteria: TeamCreationStrategy
         """
 
-        if not ctx.invoked_subcommand:
-            raise commands.CommandError(f"Invalid subcommand for command '{ctx.prefix}teams'.")
-
-    @teams.command(aliases=["rand", "r", "shuffle", "s"])
-    async def random(self, ctx: commands.Context):
-        """A command in the teams group for creating random teams
-
-        :param ctx: The invocation context of the command
-        :type ctx: commands.Context
-        """
+        scrim = ctx.scrim
+        await criteria.create_teams(scrim)
+        await ctx.message.delete()
+        await self._response_builder.edit(scrim.message, displayable=scrim)
 
     @commands.command(aliases=["begin"])
     @commands.guild_only()
@@ -188,6 +185,7 @@ class ScrimCommands(commands.Cog):
         scrim.terminate(ctx.author)
         await ctx.message.delete()
         await self._response_builder.edit(ctx.scrim.message, displayable=ctx.scrim)
+        await scrim.message.clear_reactions()
         self._scrims_manager.drop(scrim)
 
 

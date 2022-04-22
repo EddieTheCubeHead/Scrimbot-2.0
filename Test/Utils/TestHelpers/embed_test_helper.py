@@ -6,7 +6,24 @@ import itertools
 from behave.runner import Context
 from discord import Embed
 
-from Test.Utils.TestHelpers.id_parser import insert_ids
+from Test.Utils.TestHelpers.id_parser import process_inserts, UserListMatch
+
+
+class _MockEmbed(Embed):
+
+    def add_field(self, *, name, value, inline=True):
+        field = {
+            'inline': inline,
+            'name': str(name),
+            'value': value,
+        }
+
+        try:
+            self._fields.append(field)
+        except AttributeError:
+            self._fields = [field]
+
+        return self
 
 
 def parse_embed_from_table(context: Context) -> Embed:
@@ -19,7 +36,7 @@ def parse_embed_from_table(context: Context) -> Embed:
         embed = _insert_author_info(context, table)
         field_start = 4
     else:
-        embed = Embed(title=table[0][0], description=table[0][1])
+        embed = _MockEmbed(title=table[0][0], description=table[0][1])
 
     _create_fields(context, embed, field_start, table)
 
@@ -27,7 +44,7 @@ def parse_embed_from_table(context: Context) -> Embed:
 
 
 def _insert_author_info(context, table):
-    embed = Embed(title=table[3][0], description=insert_ids(context, table[3][1]))
+    embed = _MockEmbed(title=table[3][0], description=process_inserts(context, table[3][1]))
     embed.set_author(name=table[0][1], icon_url=table[1][1])
     embed.colour = int(table[2][1], 16)
     return embed
@@ -45,14 +62,14 @@ def _create_fields(context, embed, field_start, table):
 def _process_field(field, context) -> list[str]:
     fields = []
     for part in field:
-        processed = insert_ids(context, part)
+        processed = process_inserts(context, part)
         fields.append(processed)
     return fields
 
 
 def create_error_embed(error_message: str, command: str, context: Context, help_portion: str = None) -> Embed:
     embed = Embed(title="ScrimBot Error", description=f"An error happened while processing command '{command}'")
-    embed.add_field(name="Error message:", value=insert_ids(context, error_message))
+    embed.add_field(name="Error message:", value=process_inserts(context, error_message))
     if help_portion:
         embed.add_field(name="To get help:", value=help_portion)
     embed.set_footer(text="If you think this behaviour is unintended, please report it in the bot repository in GitHub "
@@ -60,7 +77,7 @@ def create_error_embed(error_message: str, command: str, context: Context, help_
     return embed
 
 
-def assert_same_embed_text(expected: Embed, actual: Embed):
+def assert_same_embed_text(context, expected: Embed, actual: Embed):
     assert expected.title == actual.title, f"{expected.title} != {actual.title}\n" \
                                            f"{pretty_print(expected, actual)}"
     assert expected.description == actual.description, f"{expected.description} != {actual.description}\n" \
@@ -71,8 +88,11 @@ def assert_same_embed_text(expected: Embed, actual: Embed):
     for expected_field, actual_field in zip(expected.fields, actual.fields):
         assert expected_field.name == actual_field.name, f"{expected_field.name} != {actual_field.name}\n" \
                                                          f"{pretty_print(expected, actual)}"
-        assert expected_field.value == actual_field.value, f"{expected_field.value} != {actual_field.value}\n" \
-                                                           f"{pretty_print(expected, actual)}"
+        if type(expected_field.value) is UserListMatch:
+            expected_field.value.assert_matches(actual_field.value, context)
+        else:
+            assert expected_field.value == actual_field.value, f"{expected_field.value} != {actual_field.value}\n" \
+                                                               f"{pretty_print(expected, actual)}"
 
     if expected.footer.text:
         assert expected.footer.text == actual.footer.text, f"{expected.footer.text} != {actual.footer.text}\n" \

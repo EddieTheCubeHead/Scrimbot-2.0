@@ -18,7 +18,7 @@ Feature: Scrim locking and team creation
       | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
       | Colour                   | 0xce0000                                            |
       | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
-      | Unassigned               | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
+      | Unassigned               | {{users 1 to 10}}                                   |
       | Spectators               | _empty_                                             |
       | {divider}                | {divider}                                           |
       | Team 1 _(5 more needed)_ | _empty_                                             |
@@ -58,7 +58,7 @@ Feature: Scrim locking and team creation
       | Icon                     | https://i.imgur.com/BvQOQyN.png               |
       | Colour                   | 0x0000ff                                      |
       | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
-      | Unassigned               | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}> |
+      | Unassigned               | {{users 1 to 6}}                              |
       | Spectators               | _empty_                                       |
       | {divider}                | {divider}                                     |
       | Team 1 _(3 more needed)_ | _empty_                                       |
@@ -80,7 +80,44 @@ Feature: Scrim locking and team creation
       | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
       | Colour                   | 0xce0000                                            |
       | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
-      | Unassigned               | <@{user_1_id}>{\n}<@{user_2_id}>{\n}<@{user_3_id}>{\n}<@{user_4_id}>{\n}<@{user_5_id}>{\n}<@{user_6_id}>{\n}<@{user_7_id}>{\n}<@{user_8_id}>{\n}<@{user_9_id}>{\n}<@{user_10_id}> |
+      | Unassigned               | {{users 1 to 10}}                                   |
+      | Spectators               | _empty_                                             |
+      | {divider}                | {divider}                                           |
+      | Team 1 _(5 more needed)_ | _empty_                                             |
+      | Team 2 _(5 more needed)_ | _empty_                                             |
+      | Footer                   | React 1️⃣ to join Team 1 or 2️⃣ to join Team 2       |
+    And scrim message has reactions
+      | reaction | amount |
+      | 1️⃣       | 1      |
+      | 2️⃣       | 1      |
+
+  Scenario: Using the teams command to create random teams
+    Given a Dota 2 scrim in locked state
+    When ;teams random is called
+    Then embed edited to have fields
+      | name            | value                                                                                  |
+      | Author          | Dota 2 scrim                                                                           |
+      | Icon            | https://i.imgur.com/OlWIlyY.jpg?1                                                      |
+      | Colour          | 0xce0000                                                                               |
+      | Status          | Teams full, use the command 'start' to start the scrim or 'teams clear' to clear teams |
+      | Unassigned      | _empty_                                                                                |
+      | Spectators      | _empty_                                                                                |
+      | {divider}       | {divider}                                                                              |
+      | Team 1 _(full)_ | {{5 users in users 1 to 10}}                                                           |
+      | Team 2 _(full)_ | {{5 users in users 1 to 10}}                                                           |
+      | Footer          | Send command 'start' to start the scrim or send command 'teams clear' to clear teams   |
+    And scrim message has no reactions
+
+  Scenario: Using the teams command to clear teams
+    Given a Dota 2 scrim with full teams
+    When ;teams clear is called
+    Then embed edited to have fields
+      | name                     | value                                               |
+      | Author                   | Dota 2 scrim                                        |
+      | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
+      | Colour                   | 0xce0000                                            |
+      | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
+      | Unassigned               | {{users 1 to 10}}                                   |
       | Spectators               | _empty_                                             |
       | {divider}                | {divider}                                           |
       | Team 1 _(5 more needed)_ | _empty_                                             |

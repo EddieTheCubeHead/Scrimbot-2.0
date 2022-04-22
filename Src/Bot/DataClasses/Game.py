@@ -9,7 +9,9 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import relationship
 
-if TYPE_CHECKING:
+from Bot.Converters.Convertable import Convertable
+
+if TYPE_CHECKING:  # pragma: no cover
     from Bot.Converters.GameConverter import GameConverter
 from Bot.DataClasses.DataClass import DataClass
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
@@ -18,7 +20,7 @@ from Bot.DataClasses.UserElo import UserElo
 from Bot.DataClasses.Scrim import Scrim
 
 
-class Game(DataClass):
+class Game(DataClass, Convertable):  # pragma: no cover
 
     name = Column(String, primary_key=True)
     _colour = Column(String, default="0xffffff")

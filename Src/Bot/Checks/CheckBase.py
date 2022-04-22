@@ -16,5 +16,5 @@ class CheckBase(ABC):
 
     @classmethod
     @abstractmethod
-    async def check(cls, ctx: Context):
+    async def check(cls, ctx: Context):  # pragma: no cover
         pass

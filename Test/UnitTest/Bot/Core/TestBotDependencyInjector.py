@@ -8,6 +8,7 @@ from unittest.mock import MagicMock
 from discord.ext.commands import Context
 from sqlalchemy import Column, Integer
 
+from Bot.Converters.Convertable import Convertable
 from Bot.DataClasses.DataClass import DataClass
 from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
@@ -33,7 +34,7 @@ class TestBotDependencyConstructor(AsyncUnittestBase):
 
     async def test_singleton_given_dataclass_converter_and_connection_singletons_then_dependencies_injected(self):
 
-        class MockSingletonDataClass(DataClass):
+        class MockSingletonDataClass(DataClass, Convertable):
             id = Column(Integer, primary_key=True)
 
             def __init__(self, message: str):
@@ -67,7 +68,7 @@ class TestBotDependencyConstructor(AsyncUnittestBase):
 
     async def test_instance_given_dataclass_converter_and_connection_singletons_then_dependencies_injected(self):
 
-        class MockInstanceDataClass(DataClass):
+        class MockInstanceDataClass(DataClass, Convertable):
             id = Column(Integer, primary_key=True)
 
             def __init__(self, message: str):

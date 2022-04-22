@@ -14,7 +14,7 @@ from Bot.DataClasses.User import User
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 
 
-class Team(DataClass):
+class Team(DataClass):  # pragma: no-cover
 
     team_id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)  # TODO: when teams are more refined, create check for these two
