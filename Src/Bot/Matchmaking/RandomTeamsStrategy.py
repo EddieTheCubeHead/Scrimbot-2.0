@@ -2,7 +2,7 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 import random
-from collections import Iterator
+from collections.abc import Iterator
 
 from Bot.Converters.TeamCreationStrategyConverter import TeamCreationStrategyConverter
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
