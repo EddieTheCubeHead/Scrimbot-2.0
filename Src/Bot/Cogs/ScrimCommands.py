@@ -3,43 +3,55 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
 
-from Src.Bot.ScrimClient import ScrimClient
-import Src.Bot.checks as checks
-import Src.Bot.converters as converters
-from Src.Bot.DataClasses.Game import Game
+from Bot.Checks.ActiveScrimCheck import ActiveScrimCheck
+from Bot.Checks.FreeScrimCheck import FreeScrimCheck
+from Bot.Cogs.Helpers.BotSettingsService import BotSettingsService
+from Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
+from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
+from Bot.Converters.ScrimResultConverter import ScrimResultConverter
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from Bot.Core.ScrimBotClient import ScrimBotClient
+from Bot.Core.ScrimContext import ScrimContext
+from Bot.DataClasses.Game import Game
+from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
+from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
+from Bot.Converters.GameConverter import GameConverter
+from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
+from Bot.Logic.ScrimManager import ScrimManager
+from Bot.Matchmaking.TeamCreationStrategy import TeamCreationStrategy
+from Bot.Matchmaking.RandomTeamsStrategy import RandomTeamsStrategy
+from Bot.Matchmaking.ClearTeamsStrategy import ClearTeamsStrategy
+from Configs.Config import Config
+
+
+async def _add_team_reactions(scrim: ScrimManager):
+    for team in range(1, len(scrim.teams_manager.get_game_teams()) + 1):
+        await scrim.message.add_reaction(emoji=f"{team}\u20E3")
 
 
 class ScrimCommands(commands.Cog):
-    """A cog housing the commands directly related to creating and manipulating scrims
+    """A cog housing the commands directly related to creating and manipulating scrims"""
 
-    Commands
-    --------
-    scrim(ctx, game, deletion_time = 0)
-        Creates a scrim of the specified game, that will be deleted after the given amount of time
-    """
-
-    def __init__(self, client: ScrimClient):
-        """The constructor of the ScrimCommands cog.
-
-        args
-        ----
-
-        :param client: The client instance associated with this cog.
-        :type client: ScrimClient
-        """
-
-        self._client = client
+    @BotDependencyInjector.inject
+    def __init__(self, scrim_channel_converter: ScrimChannelConverter, response_builder: ScrimEmbedBuilder,
+                 settings_service: BotSettingsService, scrims_manager: ActiveScrimsManager,
+                 waiting_scrim_service: WaitingScrimService):
+        self._scrim_channel_converter = scrim_channel_converter
+        self._response_builder = response_builder
+        self._settings_service = settings_service
+        self._scrims_manager = scrims_manager
+        self._waiting_scrim_service = waiting_scrim_service
 
     @commands.command(aliases=['s'])
     @commands.guild_only()
-    @checks.free_scrim()
-    async def scrim(self, ctx: commands.Context, game: Game, deletion_time: int = 0):
+    @FreeScrimCheck.decorate()
+    async def scrim(self, ctx: ScrimContext, game: Game, deletion_time: int = 0):
         """A command that creates a scrim of the specified game on the channel
 
         args
         ----
 
-        :param ctx: The invokation context of the command
+        :param ctx: The invocation context of the command
         :type ctx: commands.Context
         :param game: The game that should be used for creating the scrim
         :type game: Game
@@ -47,119 +59,145 @@ class ScrimCommands(commands.Cog):
         :type deletion_time: Optional[int]
         """
 
-        deletion_time = deletion_time or await self._client.get_deletion_time(ctx)
-        await ctx.scrim.create(ctx, game, deletion_time)
-        await ctx.message.delete()
+        scrim_channel = self._scrim_channel_converter.get_from_id(ctx.channel.id)
+        scrim = self._scrims_manager.create_scrim(scrim_channel, game)
+        message = await self._response_builder.send(ctx, displayable=scrim)
+        await message.add_reaction(emoji="\U0001F3AE")  # video game controller
+        await message.add_reaction(emoji="\U0001F441")  # eye
+        scrim.message = message
 
     @commands.command(aliases=["l", "lockteams"])
     @commands.guild_only()
-    @checks.active_scrim()
-    async def lock(self, ctx: commands.Context):
+    @ActiveScrimCheck.decorate()
+    async def lock(self, ctx: ScrimContext):
         """A command that locks a scrim when it has the required amount of players
 
         args
         ----
 
-        :param ctx: The invokation context of the command
+        :param ctx: The invocation context of the command
         :type ctx: commands.Context
         """
 
-        await ctx.scrim.lock()
+        scrim = ctx.scrim
+        scrim.lock()
         await ctx.message.delete()
+        await self._response_builder.edit(scrim.message, displayable=scrim)
+        await scrim.message.clear_reactions()
+        await _add_team_reactions(scrim)
 
     @commands.command(aliases=["t", "maketeams"])
     @commands.guild_only()
-    @checks.active_scrim()
-    async def teams(self, ctx: commands.Context):
+    @ActiveScrimCheck.decorate()
+    async def teams(self, ctx: ScrimContext, criteria: TeamCreationStrategy):
         """A command group for creating teams
 
         args
         ----
 
-        :param ctx: The invokation context of the command
-        :type ctx: commands.Context
+        :param ctx: The invocation context of the command
+        :type ctx: ScrimContext
+        :param criteria: The criteria used for creating the teams
+        :type criteria: TeamCreationStrategy
         """
 
-        if not ctx.invoked_subcommand:
-            raise commands.CommandError(f"Invalid subcommand for command '{ctx.prefix}teams'.")
+        scrim = ctx.scrim
+        await criteria.create_teams(scrim)
+        await ctx.message.delete()
+        await self._response_builder.edit(scrim.message, displayable=scrim)
 
     @commands.command(aliases=["begin"])
     @commands.guild_only()
-    @checks.active_scrim()
-    async def start(self, ctx: commands.Context, move_voice: bool = True):
+    @ActiveScrimCheck.decorate()
+    async def start(self, ctx: ScrimContext, move_voice: bool = True):
         """A command for starting a scrim with two full teams
 
         args
         ----
 
-        :param ctx: The invokation context of the command
-        :type ctx: commands.Context
+        :param ctx: The invocation context of the command
+        :type ctx: ScrimContext
         :param move_voice: Whether the bot should automatically move the participants to voice channels, default True
         :type move_voice: bool
         """
 
         await ctx.message.delete()
-        await ctx.scrim.start(ctx, move_voice)
+        started = True
+        if move_voice and ctx.scrim.teams_manager.supports_voice:
+            started = await ctx.scrim.start_with_voice()
+        else:
+            ctx.scrim.start()
+        if started:
+            await ctx.scrim.message.clear_reactions()
+        else:
+            self._waiting_scrim_service.register(ctx.scrim)
+        await self._response_builder.edit(ctx.scrim.message, displayable=ctx.scrim)
 
     @commands.command(aliases=["win", "w", "victor", "v"])
     @commands.guild_only()
-    @checks.active_scrim()
-    async def winner(self, ctx: commands.Context, winner: converters.parse_winner):
+    @ActiveScrimCheck.decorate()
+    async def winner(self, ctx: ScrimContext, winner: ScrimResultConverter):
         """A command for finishing a scrim and declaring a winner
 
         args
         ----
 
-        :param ctx: The invokation context of the command
-        :type ctx: commands.Context
-        :param winner: The team that won the scrim, should be '1', '2' or 'tie' (some aliases exist though)
+        :param ctx: The invocation context of the command
+        :type ctx: ScrimContext
+        :param winner: The team that won the scrim, should be a number or team name
         :type winner: str
         """
 
-        await ctx.scrim.finish(winner)
+        scrim = ctx.scrim
+        await scrim.end(winner)
         await ctx.message.delete()
+        await self._response_builder.edit(ctx.scrim.message, displayable=ctx.scrim)
 
     @commands.command(aliases=["draw"])
     @commands.guild_only()
-    @checks.active_scrim()
-    async def tie(self, ctx: commands.Context):
+    @ActiveScrimCheck.decorate()
+    async def tie(self, ctx: ScrimContext):
         """A command for finishing a scrim as a tie. Just calls the 'winner' command with 'tie' as argument
 
         args
         ----
 
-        :param ctx: The invokation context of the command
-        :type ctx: commands.Context
+        :param ctx: The invocation context of the command
+        :type ctx: ScrimContext
         """
 
-        await self.winner(ctx, "tie")
+        await self.winner(ctx, None)
 
     @commands.command()
     @commands.guild_only()
-    @checks.active_scrim()
-    async def terminate(self, ctx: commands.Context):
+    @ActiveScrimCheck.decorate()
+    async def terminate(self, ctx: ScrimContext):
         """A command that forcefully terminates a scrim on the channel
 
         args
         ----
 
-        :param ctx: The invokation context of the command
-        :type ctx: commands.Context
+        :param ctx: The invocation context of the command
+        :type ctx: ScrimContext
         """
 
-        await ctx.scrim.terminate(f"Scrim terminated manually by {ctx.author.display_name}")
+        scrim = ctx.scrim
+        scrim.terminate(ctx.author)
         await ctx.message.delete()
+        await self._response_builder.edit(ctx.scrim.message, displayable=ctx.scrim)
+        await scrim.message.clear_reactions()
+        self._scrims_manager.drop(scrim)
 
 
-def setup(client: ScrimClient):
+def setup(client: ScrimBotClient):
     """A method for adding the cog to the bot
 
     args
     ----
 
     :param client: The instance of the bot the cog should be added into
-    :type client: ScrimClient
+    :type client: ScrimBotClient
     """
 
-    client.add_cog(ScrimCommands(client))
+    client.add_cog(ScrimCommands())
     print(f"Using cog {__name__}, with version {__version__}")

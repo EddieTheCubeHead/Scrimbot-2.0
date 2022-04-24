@@ -1,0 +1,18 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Test WIP" type="PyBehaveRunConfigurationType" factoryName="Behave">
+    <module name="scrimbot2.0" />
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="PARENT_ENVS" value="true" />
+    <option name="SDK_HOME" value="" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Test/AcceptanceTest" />
+    <option name="IS_MODULE_SDK" value="true" />
+    <option name="ADD_CONTENT_ROOTS" value="true" />
+    <option name="ADD_SOURCE_ROOTS" value="true" />
+    <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+    <WHAT_TO_RUN WHAT_TO_RUN="$PROJECT_DIR$/Test/AcceptanceTest" />
+    <option name="ADDITIONAL_ARGS" value="-w --capture" />
+    <method v="2">
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Run Unit Tests" run_configuration_type="tests" />
+    </method>
+  </configuration>
+</component>

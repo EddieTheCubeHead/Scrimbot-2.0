@@ -1,10 +1,10 @@
 # Token, databases and logs
-/Src/Bot/secrets.json
 /Src/Database/DBFiles/
 /Src/Bot/scrim_bot.log
+/Src/Configs/secrets.json
+/Src/Database/Disposable*/
+/Src/Database/TestDBFiles/
 
 # Virtual environment
 /venv/
-
-# Learning rust atm and using the db data of the bot for some practice projects. Better exclude the unnecessary files
-/Src/Database/RustTesting/
+/DataFiles/

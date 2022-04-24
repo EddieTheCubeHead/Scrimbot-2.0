@@ -1,98 +1,54 @@
 from __future__ import annotations
 
-
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 
-from typing import Generator, List, Tuple
+from typing import TYPE_CHECKING
 
-from discord.ext import commands
+from sqlalchemy import Column, String, Integer
+from sqlalchemy.orm import relationship
 
-from Src.Bot.Exceptions.BotBaseUserException import BotBaseUserException
+from Bot.Converters.Convertable import Convertable
 
-class Game():
-    """A class that houses the data of the supported games. Might get subclassed in the future to implement FFA games.
+if TYPE_CHECKING:  # pragma: no cover
+    from Bot.Converters.GameConverter import GameConverter
+from Bot.DataClasses.DataClass import DataClass
+from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from Bot.DataClasses.Alias import Alias
+from Bot.DataClasses.UserElo import UserElo
+from Bot.DataClasses.Scrim import Scrim
 
-    classmethods
-    ------------
-    init_games(games_data_generator)
-        A classmethod that takes a generator and creates all games from the data fetched from the generator
 
-    convert(ctx, argument)
-        A classmethod implementing the discord.py converter pattern, enabling automatic converting in commands
-    """
+class Game(DataClass, Convertable):  # pragma: no cover
 
-    _games_dict = {}
+    name = Column(String, primary_key=True)
+    _colour = Column(String, default="0xffffff")
+    icon = Column(String, nullable=False)
+    min_team_size = Column(Integer, nullable=False)
+    max_team_size = Column(Integer, nullable=True, default=None)  # note: None = min_size, while 0 = no limit
+    team_count = Column(Integer, default=2)
 
-    def __init__(self, name: str, colour: str, icon: str, game_type: str, playercount: int, aliases: List[str]):
-        """A constructor for the Game-class
+    aliases = relationship("Alias", back_populates="game")
+    elos = relationship("UserElo", back_populates="game")
+    scrims = relationship("Scrim", back_populates="game")
 
-        args
-        ----
-
-        :param name: The name of the game, displayed in the scrim and usable for scrim creation
-        :type name: str
-        :param colour: A string-form representation of the hex-code of the color associated with scrims of the game
-        :type colour: str
-        :param icon: A link to an icon that should be used in the scrims of the game
-        :type icon: str
-        :param game_type: (Functionality TBA) Whether the game is a Team-based or FFA game
-        :type game_type: str
-        :param playercount: The amount of players required for the game
-        :type playercount: int
-        :param aliases: A list of game aliases that can be used for creating scrim
-        :type aliases: List[str]
-        """
+    def __init__(self, name: str, colour: str, icon: str, min_team_size: int, max_team_size: int = None,
+                 team_count: int = 2, aliases: list[Alias] = None):
 
         self.name = name
-        self.colour = int(colour, 16)
-        self.playercount = playercount
+        self._colour = colour
         self.icon = icon
-        self.type = game_type
-        self.aliases = aliases
+        self.aliases = aliases or []
+        self.min_team_size = min_team_size
+        self.max_team_size: int = max_team_size if max_team_size is not None else min_team_size
+        self.team_count = team_count
 
-        self._games_dict[name] = self
-        print(f"Created game {name}")
-
-    @classmethod
-    def init_games(cls, games_data_generator: Tuple[str, str, str, str, int, List[str]]):
-        """A classmethod for initializing the list of games based on a given generator.
-
-        args
-        ----
-
-        :param games_data_generator: A generator function that yields the data for one game instance each call
-        :type games_data_generator: Generator[(str, str, str, str, int, Optional[list[str]]), None, None]
-        """
-
-        while True:
-            try:
-                game_data = next(games_data_generator)
-                Game(*game_data)
-            except StopIteration:
-                break
+    @property
+    def colour(self):
+        return int(self._colour, 16)
 
     @classmethod
-    async def convert(cls, ctx: commands.Context, argument: str) -> Game:
-        """A classmethod for supporting the discord.py converter pattern. Tries to convert a string to a Game instance
-
-        args
-        ----
-
-        :param ctx: The invocation context of the command the conversion is done for
-        :type ctx: commands.Context
-        :param argument: The argument that should be converted into a game
-        :type argument: str
-        :return: A game that has a name or an alias matching the argument string
-        :rtype: Game
-        """
-
-        if argument in cls._games_dict:
-            return cls._games_dict[argument]
-        else:
-            for game in cls._games_dict:
-                if argument in cls._games_dict[game].aliases:
-                    return cls._games_dict[game]
-
-        raise BotBaseUserException(f"Unrecognized game: '{argument}'")
+    @BotDependencyInjector.inject
+    def set_converter(cls, converter: GameConverter):  # pragma: no-cover
+        super().set_converter(converter)

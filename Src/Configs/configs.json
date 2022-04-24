@@ -1,0 +1,6 @@
+{
+  "FileFolder": "DataFiles",
+  "DataBaseName": "BotDataBase",
+  "DefaultPrefix": [";"],
+  "DefaultTimeout": 15
+}
