@@ -96,7 +96,7 @@ class ScrimCommands(commands.Cog):
         ----
 
         :param ctx: The invocation context of the command
-        :type ctx: commands.Context
+        :type ctx: ScrimContext
         :param criteria: The criteria used for creating the teams
         :type criteria: TeamCreationStrategy
         """
@@ -116,7 +116,7 @@ class ScrimCommands(commands.Cog):
         ----
 
         :param ctx: The invocation context of the command
-        :type ctx: commands.Context
+        :type ctx: ScrimContext
         :param move_voice: Whether the bot should automatically move the participants to voice channels, default True
         :type move_voice: bool
         """
@@ -143,7 +143,7 @@ class ScrimCommands(commands.Cog):
         ----
 
         :param ctx: The invocation context of the command
-        :type ctx: commands.Context
+        :type ctx: ScrimContext
         :param winner: The team that won the scrim, should be a number or team name
         :type winner: str
         """
@@ -163,7 +163,7 @@ class ScrimCommands(commands.Cog):
         ----
 
         :param ctx: The invocation context of the command
-        :type ctx: commands.Context
+        :type ctx: ScrimContext
         """
 
         await self.winner(ctx, None)
@@ -178,7 +178,7 @@ class ScrimCommands(commands.Cog):
         ----
 
         :param ctx: The invocation context of the command
-        :type ctx: commands.Context
+        :type ctx: ScrimContext
         """
 
         scrim = ctx.scrim

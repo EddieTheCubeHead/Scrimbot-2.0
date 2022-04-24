@@ -44,6 +44,5 @@ class ScrimChannelConverter(ConverterBase[ScrimChannel]):
         if reserved_data:
             raise BotReservedChannelException(voice_channel.channel_id, parent_channel_id=reserved_data.channel_id)
 
-    @lru_cache
     def get_from_id(self, channel_id: int):
         return self.connection.get_channel(channel_id)

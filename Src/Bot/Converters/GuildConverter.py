@@ -1,8 +1,6 @@
 __version__ = "ver"
 __author__ = "Eetu Asikainen"
 
-from functools import lru_cache
-
 from discord.ext.commands import Context
 
 from Bot.Converters.ConverterBase import ConverterBase
@@ -23,7 +21,6 @@ class GuildConverter(ConverterBase):
     async def convert(self, ctx: Context, argument: str):
         return self.get_guild(int(argument))
 
-    @lru_cache
     def get_guild(self, guild_id: int):
         return self.connection.get_guild(guild_id)
 

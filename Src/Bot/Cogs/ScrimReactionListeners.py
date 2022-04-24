@@ -9,6 +9,7 @@ from discord.ext.commands import CommandError
 
 from Bot.Converters.UserConverter import UserConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from Bot.DataClasses.User import User
 from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
 from Bot.EmbedSystem.ScrimStates.scrim_states import *
 from Bot.Exceptions.BotAlreadyParticipantException import BotAlreadyParticipantException
@@ -16,6 +17,7 @@ from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
 from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
 from Bot.Exceptions.BotInvalidReactionJoinException import BotInvalidReactionJoinException
 from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
+from Bot.Logic.ScrimManager import ScrimManager
 from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Bot.Core.ScrimBotClient import ScrimBotClient
@@ -73,14 +75,10 @@ class ScrimReactionListeners(commands.Cog):
         try:
             user = self.user_converter.get_user(member.id)
             if react.emoji == "\U0001F3AE" and scrim.state == LFP:
-                self.participant_manager.ensure_not_participant(member)
-                scrim.teams_manager.add_player(ScrimTeamsManager.PARTICIPANTS, user)
-                self.participant_manager.try_add_participant(member)
+                await self._try_add_to_team(ScrimTeamsManager.PARTICIPANTS, member, scrim, user)
 
             elif react.emoji == "\U0001F441" and scrim.state == LFP:
-                self.participant_manager.ensure_not_participant(member)
-                scrim.teams_manager.add_player(ScrimTeamsManager.SPECTATORS, user)
-                self.participant_manager.try_add_participant(member)
+                await self._try_add_to_team(ScrimTeamsManager.SPECTATORS, member, scrim, user)
 
             elif re.match(r"^[1-9]\u20E3$", str(react.emoji)) and scrim.state == LOCKED:
                 new_team = int(str(react.emoji[0]))
@@ -95,12 +93,17 @@ class ScrimReactionListeners(commands.Cog):
                                f" because they are {exception.reason}."
             await BotInvalidReactionJoinException(member, react, exception_reason).resolve()
 
-        except BotAlreadyParticipantException as exception:
+        except BotAlreadyParticipantException:
             exception_reason = f"User '{member.id}' could not join the scrim with reaction {react}" \
                                f" because they are already a participant in another scrim."
             await BotInvalidReactionJoinException(member, react, exception_reason).resolve()
 
         await self.embed_builder.edit(react.message, displayable=scrim)
+
+    async def _try_add_to_team(self, team: str, member: Member, scrim: ScrimManager, user: User):
+        self.participant_manager.ensure_not_participant(member)
+        scrim.teams_manager.add_player(team, user)
+        self.participant_manager.try_add_participant(member)
 
     @commands.Cog.listener("on_reaction_remove")
     async def scrim_reaction_remove_listener(self, react: Reaction, member: Member):

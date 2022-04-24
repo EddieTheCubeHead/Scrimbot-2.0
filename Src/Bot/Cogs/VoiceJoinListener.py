@@ -34,19 +34,19 @@ class VoiceJoinListener(commands.Cog):
     @commands.Cog.listener("on_voice_state_update")
     async def scrim_player_voice_state_change_listener(self, member: discord.Member, before: discord.VoiceState,
                                                        after: discord.VoiceState):
-        if not self._participant_manager.try_get_participant(member.id):
-            return
-
-        if not after.channel:
+        if not self._participant_manager.try_get_participant(member.id) or not after.channel:
             return
 
         scrim = self.waiting_scrims_service.get_scrim(member)
         if scrim:
-            if before.channel and before.channel.guild.id == scrim.message.channel.guild.id:
-                return
-            if after.channel.guild.id == scrim.message.channel.guild.id:
-                if await scrim.start_with_voice():
-                    await self._handle_start(scrim)
+            await self._try_start_scrim(before, after, scrim)
+
+    async def _try_start_scrim(self, before, after, scrim):
+        if before.channel and before.channel.guild.id == scrim.message.channel.guild.id:
+            return
+        if after.channel.guild.id == scrim.message.channel.guild.id:
+            if await scrim.start_with_voice():
+                await self._handle_start(scrim)
 
     async def _handle_start(self, scrim):
         self.waiting_scrims_service.unregister(scrim)

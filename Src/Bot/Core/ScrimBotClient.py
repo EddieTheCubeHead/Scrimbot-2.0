@@ -61,8 +61,6 @@ class ScrimBotClient(commands.Bot):
             logger.setLevel(logging.DEBUG)
 
     def setup_cogs(self):
-        """A private helper method for loading and starting all the cogs of the bot."""
-
         parent_path = Path(os.path.dirname(__file__)).parent
         for cog in os.listdir(os.path.join(parent_path, "Cogs")):
             if cog[-3:] == ".py" and not cog.startswith("_"):
@@ -76,20 +74,14 @@ class ScrimBotClient(commands.Bot):
         await self.start(self.config.token)
 
     async def get_prefix(self, message: discord.Message):
-        """An overridden method from the base class required for custom prefix support"""
-
         guild_data = self.guild_converter.get_guild(message.guild.id)
         return guild_data.prefixes or self.config.default_prefix
 
     async def get_deletion_time(self, guild: discord.Guild) -> int:
-        """A method that returns the idle scrim deletion time for a given guild."""
-
         guild_data = await self.guild_converter.get_guild(guild.id)
         return guild_data.scrim_timeout or self.config.default_timeout
 
     async def get_context(self, message: discord.Message, *, cls=None) -> ScrimContext:
-        """An override for get context to facilitate custom context for the bot"""
-
         return await self.context_provider.get_context(super(), message)
 
     async def invoke(self, ctx: Context):
@@ -99,8 +91,6 @@ class ScrimBotClient(commands.Bot):
             raise BotUnrecognizedCommandException(ctx)
 
     async def on_command_error(self, context: commands.Context, exception: Exception):
-        """An override for the default discord.py command error handler"""
-
         if isinstance(exception, BotBaseContextException):
             await exception.resolve(context)
 
@@ -112,8 +102,6 @@ class ScrimBotClient(commands.Bot):
             raise exception
 
     async def on_ready(self):
-        """Bot initialization logic. Currently just functions to inform the user the bot is connected."""
-
         print(f"Successfully logged in as {self.user.name}, with version {__version__}")
         self.connected.set()
 

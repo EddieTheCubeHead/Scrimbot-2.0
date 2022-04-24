@@ -1,8 +1,0 @@
-CREATE TABLE Games (
-    Name VARCHAR(32) PRIMARY KEY,
-    Colour CHAR(8) NOT NULL,
-    Icon VARCHAR(256) NOT NULL,
-    MinTeamSize SMALLINT NOT NULL,
-    MaxTeamSize SMALLINT,
-    TeamCount SMALLINT DEFAULT 2
-)

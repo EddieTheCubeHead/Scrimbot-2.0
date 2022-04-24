@@ -30,9 +30,3 @@ class TestGuildConverter(AsyncUnittestBase):
         guild_id = self.id_mocker.generate_viable_id()
         self.converter.get_guild(guild_id)
         self.connection.get_guild.assert_called_with(guild_id)
-
-    def test_get_guild_given_called_twice_then_cache_utilized_and_connection_called_once(self):
-        guild_id = self.id_mocker.generate_viable_id()
-        self.converter.get_guild(guild_id)
-        self.converter.get_guild(guild_id)
-        self.connection.get_guild.assert_called_once()

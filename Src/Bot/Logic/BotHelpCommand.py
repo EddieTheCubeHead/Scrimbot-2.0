@@ -85,7 +85,7 @@ class BotHelpCommand(commands.DefaultHelpCommand):
         return re.fullmatch(r"Optional[.*]", param)
 
     def _help_command_builder(self, command: commands.Command, description: str,
-                              param_data: List[Tuple[str, str, str]]):
+                              param_data: list[(str, str, str)]):
         """A private helper method for building a help command's text out of data given
 
         args

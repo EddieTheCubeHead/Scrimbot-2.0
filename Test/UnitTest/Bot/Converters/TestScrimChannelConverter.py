@@ -38,16 +38,6 @@ class TestScrimChannelConverter(AsyncUnittestBase):
         actual = await self.converter.convert(MagicMock(), str(mock_id))
         self._assert_identical_data(actual, expected)
 
-    async def test_convert_given_called_twice_then_cache_utilized(self):
-        mock_id = self.id_generator.generate_viable_id()
-        mock_method = MagicMock()
-        self.mock_database_connection.get_channel = mock_method
-        expected = ScrimChannel(mock_id, self.GUILD_ID)
-        mock_method.return_value = expected
-        await self.converter.convert(MagicMock(), str(mock_id))
-        await self.converter.convert(MagicMock(), str(mock_id))
-        self.mock_database_connection.get_channel.assert_called_once_with(mock_id)
-
     def test_add_given_new_channel_id_with_no_voice_channels_then_channel_added(self):
         channel_id, guild_id = self.id_generator.generate_viable_id_group(2)
         self.converter.add(channel_id, guild_id)
