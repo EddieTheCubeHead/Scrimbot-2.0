@@ -104,6 +104,6 @@ def try_get_id(context, id_string):
 
 
 def _get_user_id(line: str):
-    match = re.match(r"^<@(\d*)>(| \*\*C\*\*)$", line)
+    match = re.match(r"^<@!(\d*)>(| \*\*C\*\*)$", line)
     assert match, f"Line {line} does not contain a user entry"
     return match.group(1)

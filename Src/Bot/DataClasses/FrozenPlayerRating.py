@@ -6,7 +6,7 @@ from sqlalchemy import Column, Integer, ForeignKey
 from Bot.DataClasses.DataClass import DataClass
 
 
-class TeamMember(DataClass):  # pragma: no cover
+class FrozenPlayerRating(DataClass):  # pragma: no cover
     user_id = Column(Integer, ForeignKey("Users.user_id"))
     team_id = Column(Integer, ForeignKey("Teams.team_id"))
-    frozen_elo = Column(Integer, nullable=False)
+    frozen_rating = Column(Integer, nullable=False)

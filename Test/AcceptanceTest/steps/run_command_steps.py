@@ -119,10 +119,10 @@ async def _create_scrim(context: Context, game, amount=0):
 @when("{command} is called")
 @async_run_until_complete
 async def step_impl(context: Context, command: str):
+    table = _create_call_ids(context)
     command = process_inserts(context, command)
     context.latest_command = command.split(" ")[0][1:]
     context.latest_prefix = command[0]
-    table = _create_call_ids(context)
     await call_command(command, context, table)
 
 

@@ -3,6 +3,9 @@ from __future__ import annotations
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from typing import TYPE_CHECKING, Optional
+
+import discord
 from sqlalchemy import Column, Integer, Boolean
 from sqlalchemy.orm import relationship
 
@@ -11,6 +14,9 @@ from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.DataClass import DataClass
 from Configs.Config import Config
 from Bot.DataClasses.Prefix import Prefix
+from Bot.DataClasses.UserRating import UserRating
+if TYPE_CHECKING:  # pragma: no cover
+    from Bot.Converters.GuildConverter import GuildConverter
 
 
 class Guild(DataClass, Convertable):  # pragma: no cover
@@ -20,13 +26,18 @@ class Guild(DataClass, Convertable):  # pragma: no cover
     enable_pings = Column(Boolean, default=False)
     reaction_message_id = Column(Integer, nullable=True)
 
-    user_elos = relationship("UserElo", back_populates="guild")
+    user_elos = relationship("UserRating", back_populates="guild")
     prefixes = relationship("Prefix", back_populates="guild")
     users = relationship("User", secondary="GuildMembers", viewonly=True)
     scrim_channels = relationship("ScrimChannel", back_populates="guild")
     teams = relationship("Team", back_populates="guild")
 
-    from Bot.Converters.GuildConverter import GuildConverter
+    def __init__(self, guild_id: int, prefixes: Optional[list[Prefix]] = None):
+        self.guild_id = guild_id
+        if prefixes is not None:
+            self.prefixes = prefixes
+        else:
+            self.prefixes = []
 
     @classmethod
     @BotDependencyInjector.inject

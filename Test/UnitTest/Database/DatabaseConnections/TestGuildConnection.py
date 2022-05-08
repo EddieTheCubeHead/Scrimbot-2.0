@@ -38,7 +38,7 @@ class TestGuildConnection(UnittestBase):
 
     def test_get_guild_given_existing_id_then_guild_returned(self):
         guild_id = self.id_generator.generate_viable_id()
-        mock_guild = Guild(guild_id=guild_id)
+        mock_guild = Guild(guild_id)
         with self.master.get_session() as session:
             session.add(mock_guild)
             session.commit()
@@ -48,7 +48,7 @@ class TestGuildConnection(UnittestBase):
     def test_get_guild_given_existing_id_with_prefixes_then_prefixes_returned(self):
         guild_id = self.id_generator.generate_viable_id()
         prefixes = _construct_prefixes("//", ";", "s?")
-        mock_guild = Guild(guild_id=guild_id, prefixes=prefixes)
+        mock_guild = Guild(guild_id, prefixes)
         with self.master.get_session() as session:
             
             session.add(mock_guild)

@@ -13,7 +13,7 @@ class ScrimState(ABC):
     @staticmethod
     def build_team_participants(team: Team):
         if team.members:
-            return os.linesep.join([f"<@{member.user_id}>" for member in team.members])
+            return os.linesep.join([f"<@!{member.user_id}>" for member in team.members])
         return "_empty_"
 
     @property
