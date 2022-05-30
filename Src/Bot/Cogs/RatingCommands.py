@@ -22,7 +22,7 @@ class RatingCommands(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
     async def rating(self, ctx: ScrimContext, user: User, game: Game, rating: RatingConverter):
-        new_rating = self._rating_converter.set_user_rating(rating, user, game, ctx.guild)
+        new_rating = self._rating_converter.create_user_rating(rating, user, game, ctx.guild)
 
 
 def setup(client: ScrimBotClient):

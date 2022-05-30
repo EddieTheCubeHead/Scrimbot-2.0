@@ -22,7 +22,7 @@ class TestUserRatingConverter(AsyncUnittestBase):
     def test_build_given_file_imported_then_singleton_dependency_created(self):
         self._assert_singleton_dependency(UserRatingConverter)
 
-    def test_get_rating_given_user_game_and_guild_then_calls_connection_with_ids_and_returns_result(self):
+    def test_get_user_rating_given_user_game_and_guild_then_calls_connection_with_ids_and_returns_result(self):
         mock_user = self._create_mock_user()
         mock_game = self._create_mock_game()
         mock_guild = self._create_mock_guild()
@@ -30,9 +30,19 @@ class TestUserRatingConverter(AsyncUnittestBase):
         self.connection.get_user_rating.return_value = mock_rating
         actual = self.converter.get_user_rating(mock_user, mock_game, mock_guild)
         self.assertEqual(mock_rating, actual)
-        self.connection.get_user_rating.assert_called_with(mock_user.user_id, mock_game.name, mock_guild.guild_id)
+        self.connection.get_user_rating.assert_called_with(mock_user, mock_game, mock_guild)
 
-    def test_set_rating_given_user_game_guild_and_rating_then_calls_connection_with_ids_and_returns_rating(self):
+    def test_get_user_statistics_given_user_game_and_guild_then_calls_connection_with_ids_and_returns_result(self):
+        mock_user = self._create_mock_user()
+        mock_game = self._create_mock_game()
+        mock_guild = self._create_mock_guild()
+        mock_rating = MagicMock()
+        self.connection.get_user_statistics.return_value = mock_rating
+        actual = self.converter.get_user_statistics(mock_user, mock_game, mock_guild)
+        self.assertEqual(mock_rating, actual)
+        self.connection.get_user_statistics.assert_called_with(mock_user, mock_game, mock_guild)
+
+    def test_set_user_rating_given_user_game_guild_and_rating_then_calls_connection_with_ids_and_returns_rating(self):
         mock_user = self._create_mock_user()
         mock_game = self._create_mock_game()
         mock_guild = self._create_mock_guild()
@@ -40,7 +50,19 @@ class TestUserRatingConverter(AsyncUnittestBase):
         self.connection.set_user_rating.return_value = mock_rating
         actual = self.converter.set_user_rating(4321, mock_user, mock_game, mock_guild)
         self.assertEqual(mock_rating, actual)
-        self.connection.set_user_rating.assert_called_with(4321, mock_user.user_id, mock_game.name, mock_guild.guild_id)
+        self.connection.set_user_rating.assert_called_with(4321, mock_user, mock_game, mock_guild)
+
+    def test_create_user_rating_given_user_game_guild_and_rating_then_statistics_fetched(self):
+        mock_user = self._create_mock_user()
+        mock_game = self._create_mock_game()
+        mock_guild = self._create_mock_guild()
+        mock_rating = MagicMock()
+        self.connection.set_user_rating.return_value = MagicMock()
+        self.connection.get_user_statistics.return_value = mock_rating
+        actual = self.converter.create_user_rating(4321, mock_user, mock_game, mock_guild)
+        self.assertEqual(mock_rating, actual)
+        self.connection.set_user_rating.assert_called_with(4321, mock_user, mock_game, mock_guild)
+        self.connection.get_user_statistics.assert_called_with(mock_user, mock_game, mock_guild)
 
     def _create_mock_user(self):
         mock_user = MagicMock()

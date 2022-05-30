@@ -22,7 +22,14 @@ class UserRatingConverter(ConverterBase):
         super().__init__(connection)
 
     def get_user_rating(self, user: User, game: Game, guild: Optional[Guild]) -> UserRating:
-        return self.connection.get_user_rating(user.user_id, game.name, guild.guild_id)
+        return self.connection.get_user_rating(user, game, guild)
+
+    def get_user_statistics(self, user: User, game: Game, guild: Optional[Guild]) -> UserRating:
+        return self.connection.get_user_statistics(user, game, guild)
 
     def set_user_rating(self, rating: int, user: User, game: Game, guild: Optional[Guild]) -> UserRating:
-        return self.connection.set_user_rating(rating, user.user_id, game.name, guild.guild_id)
+        return self.connection.set_user_rating(rating, user, game, guild)
+
+    def create_user_rating(self, rating: int, user: User, game: Game, guild: Optional[Guild]) -> UserRating:
+        self.connection.set_user_rating(rating, user, game, guild)
+        return self.connection.get_user_statistics(user, game, guild)
