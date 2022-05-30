@@ -25,7 +25,7 @@ class Team(DataClass):  # pragma: no-cover
     channel_id = Column(Integer, ForeignKey("VoiceChannels.channel_id"), nullable=True)
 
     guild = relationship("Guild", back_populates="teams")
-    members = association_proxy("team_members", "user", creator=lambda user: TeamMember(user=user))
+    members = relationship("User", secondary=TeamMember.__table__, back_populates="teams")
     scrims = relationship("ParticipantTeam", back_populates="team")
     voice_channel = relationship("VoiceChannel", back_populates="teams", lazy="joined")
 
