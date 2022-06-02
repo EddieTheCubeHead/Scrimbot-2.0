@@ -13,7 +13,7 @@ from Test.Utils.TestHelpers.DiscordPatcher import DiscordPatcher
 from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 from Test.Utils.TestHelpers.ResponseMessageCatcher import ResponseMessageCatcher
 from Test.Utils.TestHelpers.UserFetchPatcher import UserFetchPatcher
-from Utils.TestHelpers.MockMemberConverter import MockMemberConverter
+from Test.Utils.TestHelpers.MockMemberConverter import MockMemberConverter
 
 
 def before_feature(context, feature):
