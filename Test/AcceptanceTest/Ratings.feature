@@ -7,18 +7,19 @@ Feature: Setting, updating and displaying user ratings for games on both guild a
   #  - Usage: globalrating [user] [game] [value]
 
   @wip
+  @as_admin
   Scenario: Set rating for existing user in existing game with acceptable value
-    When ';rating {user_id} dota 2187' is called
+    When ;rating {user_id} dota 2187 is called
     Then embed received with fields
-      | name         | value                             |
-      | Author       | Dota 2                            |
-      | Icon         | https://i.imgur.com/OlWIlyY.jpg?1 |
-      | Colour       | 0xce0000                          |
-      | Thumbnail    | {user_id}.icon                    |
-      | Status       | <@!{user_id}>                     |
-      | Games played | 0                                 |
-      | Wins         | 0                                 |
-      | Losses       | 0                                 |
-      | Ties         | 0                                 |
-      | Unrecorded   | 0                                 |
-      | Rating       | 2187                              |
+      | name              | value                             |
+      | Author            | Dota 2                            |
+      | Icon              | https://i.imgur.com/OlWIlyY.jpg?1 |
+      | Colour            | 0xce0000                          |
+      | Thumbnail         | {user_id}.icon                    |
+      | Player statistics | <@!{user_id}>                     |
+      | Games played      | 0                                 |
+      | Wins              | 0                                 |
+      | Losses            | 0                                 |
+      | Ties              | 0                                 |
+      | Unrecorded        | 0                                 |
+      | Rating            | 2187                              |

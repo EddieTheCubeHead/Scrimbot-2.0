@@ -13,6 +13,7 @@ from Test.Utils.TestHelpers.DiscordPatcher import DiscordPatcher
 from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 from Test.Utils.TestHelpers.ResponseMessageCatcher import ResponseMessageCatcher
 from Test.Utils.TestHelpers.UserFetchPatcher import UserFetchPatcher
+from Utils.TestHelpers.MockMemberConverter import MockMemberConverter
 
 
 def before_feature(context, feature):
@@ -28,6 +29,7 @@ def before_scenario(context, scenario):
     context.command_messages = []
     context.mocked_users = {}
     context.patcher = DiscordPatcher()
+    context.patcher.add_patch("discord.ext.commands.converter.MemberConverter", MockMemberConverter())
     _create_user_fetch_patcher(context)
 
 

@@ -10,7 +10,6 @@ from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 class UserConnection(ConnectionBase[User]):
 
     def get_user(self, user_id: int):
-        from Bot.DataClasses.User import User
         with self._master_connection.get_session() as session:
             query = session.query(User).filter(User.user_id == user_id)
             user = query.first()
