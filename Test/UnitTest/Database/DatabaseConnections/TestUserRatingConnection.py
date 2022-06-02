@@ -57,12 +57,13 @@ class TestUserRatingConnection(UnittestBase):
         self.assertEqual(mock_game, actual_user_rating.game)
         self.assertEqual(mock_guild, actual_user_rating.guild)
 
-    def test_get_user_statistics_when_called_then_user_and_matches_joined(self):
+    def test_get_user_statistics_when_called_then_user_game_and_matches_joined(self):
         expected_user_rating = self._create_user_rating(2345)
         results = _create_results(12, 7)
         self._create_scrims(expected_user_rating.user, expected_user_rating.game, *results)
         actual_user_rating = self.connection.get_user_statistics(expected_user_rating.user, expected_user_rating.game,
                                                                  expected_user_rating.guild)
+        self.assertEqual(expected_user_rating.game.name, actual_user_rating.game.name)
         self._assert_results(12, 7, actual_user_rating)
 
     def test_set_rating_when_given_valid_user_guild_game_and_rating_then_new_rating_created_and_returned(self):

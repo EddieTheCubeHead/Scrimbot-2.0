@@ -42,11 +42,11 @@ class UserRatingConnection(ConnectionBase):
     def _try_get_user_statistics(self, user_id: int, game_name: str, guild_id: int = 0) -> UserRating:
         with self._master_connection.get_session() as session:
             query = session.query(UserRating)\
-                .outerjoin(User).outerjoin(User.teams).outerjoin(Team.scrims)\
+                .outerjoin(User).outerjoin(User.teams).outerjoin(Team.scrims).outerjoin(Game)\
                 .filter(UserRating.game_name == game_name).filter(UserRating.guild_id == guild_id)\
                 .filter(UserRating.user_id == user_id)\
                 .options(subqueryload(UserRating.user), subqueryload(UserRating.user, User.teams),
-                         subqueryload(UserRating.user, User.teams, Team.scrims))
+                         subqueryload(UserRating.user, User.teams, Team.scrims), subqueryload(UserRating.game))
             return query.first()
 
     def _create_user_rating(self, user: User, game: Game, guild: Guild = None, user_rating: int = None) -> UserRating:

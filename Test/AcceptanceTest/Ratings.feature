@@ -15,8 +15,8 @@ Feature: Setting, updating and displaying user ratings for games on both guild a
       | Author            | Dota 2                            |
       | Icon              | https://i.imgur.com/OlWIlyY.jpg?1 |
       | Colour            | 0xce0000                          |
-      | Thumbnail         | {user_id}.icon                    |
       | Player statistics | <@!{user_id}>                     |
+      | Thumbnail         | {user_id}.icon                    |
       | Games played      | 0                                 |
       | Wins              | 0                                 |
       | Losses            | 0                                 |
