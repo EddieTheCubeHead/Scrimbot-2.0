@@ -1,9 +1,10 @@
-__version__ = "ver"
+__version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from typing import Optional
 from unittest.mock import MagicMock
 
+from Bot.DataClasses.UserScrimResult import Result, UserScrimResult
 from Bot.DataClasses.Game import Game
 from Bot.DataClasses.Guild import Guild
 from Bot.DataClasses.ParticipantTeam import ParticipantTeam
@@ -18,8 +19,9 @@ from Utils.TestBases.UnittestBase import UnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
-def _create_results(wins: int, losses: int):
-    return [True for _ in range(wins)] + [False for _ in range(losses)]
+def _create_result_list(wins: int, losses: int, ties: int = 0, unregistered: int = 0):
+    return [Result.WIN for _ in range(wins)] + [Result.LOSS for _ in range(losses)] + [Result.TIE for _ in range(ties)]\
+           + [Result.UNREGISTERED for _ in range(unregistered)]
 
 
 class TestUserRatingConnection(UnittestBase):
@@ -59,12 +61,12 @@ class TestUserRatingConnection(UnittestBase):
 
     def test_get_user_statistics_when_called_then_user_game_and_matches_joined(self):
         expected_user_rating = self._create_user_rating(2345)
-        results = _create_results(12, 7)
-        self._create_scrims(expected_user_rating.user, expected_user_rating.game, *results)
+        results = _create_result_list(12, 7)
+        self._create_results(expected_user_rating, *results)
         actual_user_rating = self.connection.get_user_statistics(expected_user_rating.user, expected_user_rating.game,
                                                                  expected_user_rating.guild)
         self.assertEqual(expected_user_rating.game.name, actual_user_rating.game.name)
-        self._assert_results(12, 7, actual_user_rating)
+        self._assert_results(actual_user_rating, 12, 7)
 
     def test_set_rating_when_given_valid_user_guild_game_and_rating_then_new_rating_created_and_returned(self):
         mock_game = self._create_game()
@@ -87,20 +89,16 @@ class TestUserRatingConnection(UnittestBase):
         expected_user_rating.rating = 4424
         self._assert_equal_ratings(expected_user_rating, actual_user_rating)
 
-    def _assert_results(self, expected_wins: int, expected_losses: int, rating: UserRating):
-        wins, losses = 0, 0
-        checked_scrims = []
-        all_scrims = [scrim for team in rating.user.teams for scrim in team.scrims]
-        for scrim_team in all_scrims:
-            if scrim_team.placement == 1:
-                wins += 1
-            else:
-                losses += 1
-            checked_scrims.append(scrim_team)
-        self.assertEqual(expected_wins, wins, f"Expected teams '{checked_scrims}' to contain {expected_wins} wins, but "
-                                              f"found {wins} wins")
-        self.assertEqual(expected_wins, wins, f"Expected teams '{checked_scrims}' to contain {expected_losses} losses, "
-                                              f"but found {losses} losses")
+    def _assert_results(self, rating: UserRating, expected_wins: int, expected_losses: int, expected_ties: int = 0,
+                        expected_unregistered: int = 0):
+        wins = len(list(filter(lambda x: x.result == Result.WIN, rating.results)))
+        losses = len(list(filter(lambda x: x.result == Result.LOSS, rating.results)))
+        ties = len(list(filter(lambda x: x.result == Result.TIE, rating.results)))
+        unrecorded = len(list(filter(lambda x: x.result == Result.UNREGISTERED, rating.results)))
+        self.assertEqual(expected_wins, wins)
+        self.assertEqual(expected_losses, losses)
+        self.assertEqual(expected_ties, ties)
+        self.assertEqual(expected_unregistered, unrecorded)
 
     def _create_user_rating(self, user_rating: Optional[int] = None) -> UserRating:
         mock_game = self._create_game()
@@ -127,16 +125,6 @@ class TestUserRatingConnection(UnittestBase):
         self.assertEqual(expected_user_rating.guild_id, actual_user_rating.guild_id)
         self.assertEqual(expected_user_rating.rating, actual_user_rating.rating)
 
-    def _create_scrims(self, user: User, game: Game, *results: bool):
-        for result in results:
-            new_scrim = self._create_scrim(game)
-            new_team = self._create_team(user, game)
-            participant_team = ParticipantTeam(1 if result else 2)
-            participant_team.team = new_team
-            participant_team.scrim = new_scrim
-            with self.master.get_session() as session:
-                session.add(participant_team)
-
     def _create_scrim(self, game: Game):
         mock_manager = MagicMock()
         mock_manager.message.channel.id = self.id_generator.generate_viable_id()
@@ -146,10 +134,10 @@ class TestUserRatingConnection(UnittestBase):
             session.add(scrim)
         return scrim
 
-    def _create_team(self, user: User, game: Game):
-        players = [User(self.id_generator.generate_viable_id()) for _ in range(1, game.min_team_size)]
-        players.append(user)
-        team = Team(str(self.id_generator.generate_viable_id()), players, game.min_team_size, game.max_team_size)
-        with self.master.get_session() as session:
-            session.add(team)
-        return team
+    def _create_results(self, rating: UserRating, *results: Result):
+        for result in results:
+            new_scrim = self._create_scrim(rating.game)
+            new_result = UserScrimResult(rating.rating_id, rating.user.user_id, new_scrim.scrim_id, DEFAULT_RATING,
+                                         result)
+            with self.master.get_session() as session:
+                session.add(new_result)

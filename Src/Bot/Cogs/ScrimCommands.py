@@ -44,7 +44,7 @@ class ScrimCommands(commands.Cog):
 
     @commands.command(aliases=['s'])
     @commands.guild_only()
-    @FreeScrimCheck.decorate()
+    @FreeScrimCheck()
     async def scrim(self, ctx: ScrimContext, game: Game, deletion_time: int = 0):
         """A command that creates a scrim of the specified game on the channel
 
@@ -68,7 +68,7 @@ class ScrimCommands(commands.Cog):
 
     @commands.command(aliases=["l", "lockteams"])
     @commands.guild_only()
-    @ActiveScrimCheck.decorate()
+    @ActiveScrimCheck()
     async def lock(self, ctx: ScrimContext):
         """A command that locks a scrim when it has the required amount of players
 
@@ -88,7 +88,7 @@ class ScrimCommands(commands.Cog):
 
     @commands.command(aliases=["t", "maketeams"])
     @commands.guild_only()
-    @ActiveScrimCheck.decorate()
+    @ActiveScrimCheck()
     async def teams(self, ctx: ScrimContext, criteria: TeamCreationStrategy):
         """A command group for creating teams
 
@@ -108,7 +108,7 @@ class ScrimCommands(commands.Cog):
 
     @commands.command(aliases=["begin"])
     @commands.guild_only()
-    @ActiveScrimCheck.decorate()
+    @ActiveScrimCheck()
     async def start(self, ctx: ScrimContext, move_voice: bool = True):
         """A command for starting a scrim with two full teams
 
@@ -135,7 +135,7 @@ class ScrimCommands(commands.Cog):
 
     @commands.command(aliases=["win", "w", "victor", "v"])
     @commands.guild_only()
-    @ActiveScrimCheck.decorate()
+    @ActiveScrimCheck()
     async def winner(self, ctx: ScrimContext, winner: ScrimResultConverter):
         """A command for finishing a scrim and declaring a winner
 
@@ -155,7 +155,7 @@ class ScrimCommands(commands.Cog):
 
     @commands.command(aliases=["draw"])
     @commands.guild_only()
-    @ActiveScrimCheck.decorate()
+    @ActiveScrimCheck()
     async def tie(self, ctx: ScrimContext):
         """A command for finishing a scrim as a tie. Just calls the 'winner' command with 'tie' as argument
 
@@ -170,7 +170,7 @@ class ScrimCommands(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
-    @ActiveScrimCheck.decorate()
+    @ActiveScrimCheck()
     async def terminate(self, ctx: ScrimContext):
         """A command that forcefully terminates a scrim on the channel
 

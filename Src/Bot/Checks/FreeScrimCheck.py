@@ -13,9 +13,8 @@ from Bot.Exceptions.BotUnregisteredChannelException import BotUnregisteredChanne
 
 class FreeScrimCheck(CheckBase):
 
-    @classmethod
     @BotDependencyInjector.inject
-    async def check(cls, ctx: ScrimContext, channel_converter: ScrimChannelConverter):
+    async def check(self, ctx: ScrimContext, channel_converter: ScrimChannelConverter):
         try:
             channel_converter.get_from_id(ctx.channel.id)
         except NoResultFound as _:

@@ -11,6 +11,7 @@ from sqlalchemy.orm import relationship
 from Bot.Converters.Convertable import Convertable
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.DataClass import DataClass
+from Bot.DataClasses.UserScrimResult import UserScrimResult
 if TYPE_CHECKING:  # pragma: no cover
     from Bot.DataClasses.Game import Game
     from Bot.DataClasses.Guild import Guild
@@ -23,14 +24,16 @@ DEFAULT_RATING = 1700
 
 class UserRating(DataClass, Convertable):  # pragma: no cover
 
-    user_id = Column(Integer, ForeignKey("Users.user_id"), primary_key=True)
-    guild_id = Column(Integer, ForeignKey("Guilds.guild_id"), primary_key=True, default=0)
-    game_name = Column(String, ForeignKey("Games.name"), primary_key=True)
+    rating_id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("Users.user_id"))
+    guild_id = Column(Integer, ForeignKey("Guilds.guild_id"), default=0)
+    game_name = Column(String, ForeignKey("Games.name"))
     rating = Column(Integer, default=DEFAULT_RATING)
 
-    user = relationship("User", back_populates="elos")
-    game = relationship("Game", back_populates="elos")
-    guild = relationship("Guild", back_populates="user_elos")
+    user = relationship("User", back_populates="ratings")
+    game = relationship("Game", back_populates="ratings")
+    guild = relationship("Guild", back_populates="user_ratings")
+    results = relationship("UserScrimResult", back_populates="rating")
 
     def __init__(self, user_id: int, game_name: str, guild_id: int = 0, rating: int = DEFAULT_RATING):
         self.user_id = user_id

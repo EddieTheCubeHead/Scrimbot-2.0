@@ -25,7 +25,7 @@ class User(DataClass, Convertable):  # pragma: no cover
     global_rights_level = Column(Integer, default=0)
 
     guild_memberships = relationship("GuildMember", back_populates="user")
-    elos = relationship("UserRating", back_populates="user")
+    ratings = relationship("UserRating", back_populates="user")
     teams = relationship("Team", secondary=TeamMember.__table__, back_populates="members")
 
     def __init__(self, user_id: int, member: Member = None):

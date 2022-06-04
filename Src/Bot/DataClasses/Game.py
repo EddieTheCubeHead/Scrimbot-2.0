@@ -29,7 +29,7 @@ class Game(DataClass, Convertable):  # pragma: no cover
     team_count = Column(Integer, default=2)
 
     aliases = relationship("Alias", back_populates="game")
-    elos = relationship("UserRating", back_populates="game")
+    ratings = relationship("UserRating", back_populates="game")
     scrims = relationship("Scrim", back_populates="game")
 
     def __init__(self, name: str, colour: str, icon: str, min_team_size: int, max_team_size: int = None,

@@ -12,7 +12,7 @@ class MockMemberConverter:
     async def convert(ctx: ScrimContext, arg: str):
         mock_member = MagicMock()
         mock_member.id = int(arg)
-        mock_member.display_avatar.url = f"{arg}.icon"
+        mock_member.avatar_url = f"{arg}.icon"
         return mock_member
 
     def __call__(self, *args, **kwargs):

@@ -26,7 +26,7 @@ class Guild(DataClass, Convertable):  # pragma: no cover
     enable_pings = Column(Boolean, default=False)
     reaction_message_id = Column(Integer, nullable=True)
 
-    user_elos = relationship("UserRating", back_populates="guild")
+    user_ratings = relationship("UserRating", back_populates="guild")
     prefixes = relationship("Prefix", back_populates="guild")
     users = relationship("User", secondary="GuildMembers", viewonly=True)
     scrim_channels = relationship("ScrimChannel", back_populates="guild")

@@ -1,4 +1,4 @@
-__version__ = "ver"
+__version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock, patch, AsyncMock
@@ -25,14 +25,21 @@ class TestUserConverter(AsyncUnittestBase):
 
     async def test_convert_given_called_with_new_user_then_discord_converter_called_and_new_user_returned(self):
         mock_user = MagicMock()
-        mock_discord_member = MagicMock()
-        mock_discord_member.id = self.id_mocker.generate_viable_id()
         mock_user.id = self.id_mocker.generate_viable_id()
         self.connection.get_user.return_value = mock_user
-        self.discord_convert.return_value = mock_discord_member
+        self.discord_convert.return_value = mock_user
         with patch("discord.ext.commands.converter.MemberConverter.convert", self.discord_convert):
             actual_user = await self.converter.convert(self.context, str(mock_user.id))
         self.assertEqual(mock_user, actual_user)
+        self.connection.get_user.assert_called_with(mock_user.id)
+
+    async def test_convert_when_called_then_discord_member_added_to_the_user(self):
+        mock_user = MagicMock()
+        mock_discord_member = MagicMock()
+        mock_discord_member.id = self.id_mocker.generate_viable_id()
+        self.discord_convert.return_value = mock_discord_member
+        with patch("discord.ext.commands.converter.MemberConverter.convert", self.discord_convert):
+            actual_user = await self.converter.convert(self.context, str(mock_user.id))
         self.assertEqual(mock_discord_member, actual_user.member)
         self.connection.get_user.assert_called_with(mock_discord_member.id)
 
