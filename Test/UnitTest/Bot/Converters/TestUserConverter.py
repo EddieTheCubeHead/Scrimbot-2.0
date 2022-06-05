@@ -3,7 +3,11 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock, patch, AsyncMock
 
+from discord.ext.commands import MemberNotFound
+
 from Bot.Converters.UserConverter import UserConverter
+from Bot.DataClasses.User import User
+from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
@@ -42,6 +46,17 @@ class TestUserConverter(AsyncUnittestBase):
             actual_user = await self.converter.convert(self.context, str(mock_user.id))
         self.assertEqual(mock_discord_member, actual_user.member)
         self.connection.get_user.assert_called_with(mock_discord_member.id)
+
+    async def test_convert_given_discord_member_not_found_then_exception_caught_and_bot_exception_thrown(self):
+        mock_user = MagicMock()
+        mock_discord_member = MagicMock()
+        mock_discord_member.id = self.id_mocker.generate_viable_id()
+        self.discord_convert.side_effect = MemberNotFound(str(mock_user.id))
+        reason = "argument is not a valid username, nickname, user id or mention on this server"
+        expected_exception = BotConversionFailureException(User.__name__, str(mock_user.id), reason=reason)
+        with patch("discord.ext.commands.converter.MemberConverter.convert", self.discord_convert):
+            await self._async_assert_raises_correct_exception(expected_exception, self.converter.convert, self.context,
+                                                              str(mock_user.id))
 
     def test_get_user_given_called_with_user_id_then_user_returned(self):
         mock_user = MagicMock()

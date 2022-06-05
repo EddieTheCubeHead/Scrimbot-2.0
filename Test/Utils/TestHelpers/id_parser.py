@@ -67,6 +67,8 @@ def _parse_user_listing(match: Match) -> UserListMatch:
 def _try_replace(context: Context, inserted: re.Match, processed: str):
     if inserted.group() == r"{\n}":
         data = os.linesep
+    elif inserted.group() == r"{invalid_id}":
+        data = GLOBAL_ID_GENERATOR.generate_nonviable_id()
     else:
         data = context.discord_ids[inserted.group()[1:-1]]
     insert_start, insert_end = inserted.span()
