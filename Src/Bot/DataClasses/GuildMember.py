@@ -11,17 +11,20 @@ from Bot.DataClasses.DataClass import DataClass
 from Bot.DataClasses.Guild import Guild
 
 
-class PermissionLevel(enum.Enum):
-    NONE = 1
-    MODERATOR = 2
-    ADMIN = 3
-    BOT_ADMIN = 4
+class PermissionLevel(enum.IntEnum):
+    member = 1
+    moderator = 2
+    admin = 3
+    bot_owner = 4
+
+    def __str__(self):
+        return self.name
 
 
 class GuildMember(DataClass):  # pragma: no cover
     user_id = Column(Integer, ForeignKey("Users.user_id"), primary_key=True)
     guild_id = Column(Integer, ForeignKey("Guilds.guild_id"), primary_key=True)
-    bot_guild_rights_level = Column(Enum(PermissionLevel), default=PermissionLevel.NONE)
+    bot_guild_rights_level = Column(Enum(PermissionLevel), default=PermissionLevel.member)
 
     user = relationship("User", back_populates="guild_memberships")
 

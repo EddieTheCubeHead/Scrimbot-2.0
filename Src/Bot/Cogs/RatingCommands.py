@@ -3,6 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
 
+from Bot.Checks.PermissionsCheck import PermissionsCheck
 from Bot.Converters.GuildConverter import GuildConverter
 from Bot.Converters.RatingConverter import RatingConverter
 from Bot.Converters.UserRatingConverter import UserRatingConverter
@@ -10,6 +11,7 @@ from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.Core.ScrimContext import ScrimContext
 from Bot.DataClasses.Game import Game
+from Bot.DataClasses.GuildMember import PermissionLevel
 from Bot.DataClasses.User import User
 from Bot.EmbedSystem.RatingEmbedBuilder import RatingEmbedBuilder
 
@@ -25,6 +27,7 @@ class RatingCommands(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
+    @PermissionsCheck(PermissionLevel.moderator)
     async def rating(self, ctx: ScrimContext, user: User, game: Game, rating: RatingConverter):
         guild = self._guild_converter.get_guild(ctx.guild.id)
         new_rating = self._rating_converter.create_user_rating(rating, user, game, guild)

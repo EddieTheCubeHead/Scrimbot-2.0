@@ -7,7 +7,7 @@ Feature: Setting, updating and displaying user ratings for games on both guild a
   #  - Usage: globalrating [user] [game] [value]
 
   @wip
-  @as_moderator
+  @as_admin
   Scenario: Set rating for existing user in existing game with acceptable value
     When ;rating {user_id} dota 2187 is called
     Then embed received with fields
@@ -25,10 +25,9 @@ Feature: Setting, updating and displaying user ratings for games on both guild a
       | Rating            | 2187                              |
 
   @wip
-  @as_non_privileged
   Scenario: Attempting to set rating without moderator level rights
     When ;rating {user_id} dota 2187 is called
     Then error and help received with message
     """
-    Setting user rating requires at least moderator level rights for this guild.
+    Using command 'rating' requires at least moderator level rights for this guild. (Your permission level: member)
     """

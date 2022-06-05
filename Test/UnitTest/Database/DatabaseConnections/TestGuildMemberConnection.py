@@ -33,17 +33,17 @@ class TestGuildMemberConnection(UnittestBase):
         mock_guild = self._create_mock_guild()
         actual = self.connection.get_guild_member(mock_user.user_id, mock_guild.guild_id)
         self._assert_exists(actual)
-        self.assertEqual(PermissionLevel.NONE, actual.bot_guild_rights_level)
+        self.assertEqual(PermissionLevel.member, actual.bot_guild_rights_level)
 
     def test_get_guild_member_given_member_exists_then_member_fetched(self):
         mock_user = self._create_mock_user()
         mock_guild = self._create_mock_guild()
         expected = GuildMember(mock_user.user_id, mock_guild.guild_id)
-        expected.bot_guild_rights_level = PermissionLevel.BOT_ADMIN
+        expected.bot_guild_rights_level = PermissionLevel.bot_owner
         with self.master.get_session() as session:
             session.add(expected)
         actual = self.connection.get_guild_member(mock_user.user_id, mock_guild.guild_id)
-        self.assertEqual(PermissionLevel.BOT_ADMIN, actual.bot_guild_rights_level)
+        self.assertEqual(PermissionLevel.bot_owner, actual.bot_guild_rights_level)
 
 
     def _create_mock_guild(self):
