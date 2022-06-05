@@ -119,10 +119,10 @@ async def _create_scrim(context: Context, game, amount=0):
 @when("{command} is called")
 @async_run_until_complete
 async def step_impl(context: Context, command: str):
+    table = _create_call_ids(context)
     command = process_inserts(context, command)
     context.latest_command = command.split(" ")[0][1:]
     context.latest_prefix = command[0]
-    table = _create_call_ids(context)
     await call_command(command, context, table)
 
 
@@ -235,6 +235,14 @@ async def _remove_reaction(context: Context, guild, reaction_string, user_id):
     context.client.dispatch("reaction_remove", reaction, user)
 
 
+@when("the task to prune waiting scrims is ran")
+@async_run_until_complete
+async def step_impl(context):
+    with context.patcher.patch_all():
+        await context.client.cogs['VoiceJoinListener'].prune_observers()
+        await sleep(0)
+
+
 @then("command message is deleted")
 @then("command messages are deleted")
 def step_impl(context: Context):
@@ -304,11 +312,3 @@ def step_impl(context: Context):
 def step_impl(context: Context, seconds):
     assert context.latest_fetched.deletion_time == float(seconds), f"Expected deletion time to be {seconds} seconds, " \
                                                                    f"but it was {context.latest_fetched.deletion_time}."
-
-
-@when("the task to prune waiting scrims is ran")
-@async_run_until_complete
-async def step_impl(context):
-    with context.patcher.patch_all():
-        await context.client.cogs['VoiceJoinListener'].prune_observers()
-        await sleep(0)

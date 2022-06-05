@@ -54,7 +54,7 @@ class TestLookingForPlayersState(StateUnittest):
                 self.participants.members.clear()
                 participants = list(range(1, player_count))
                 self.add_participants(*participants)
-                expected_participants = "<@" + f">{os.linesep}<@".join([str(num) for num in participants]) + ">"
+                expected_participants = "<@!" + f">{os.linesep}<@!".join([str(num) for num in participants]) + ">"
                 actual_fields = state.build_fields(self.teams_manager)
                 self.assertEqual([(ScrimTeamsManager.PARTICIPANTS, expected_participants, True),
                                   (ScrimTeamsManager.SPECTATORS, "_empty_", True)], actual_fields)
@@ -66,7 +66,7 @@ class TestLookingForPlayersState(StateUnittest):
                 self.spectators.members.clear()
                 spectators = list(range(1, spectator_count))
                 self.add_spectators(*spectators)
-                expected_spectators = "<@" + f">{os.linesep}<@".join([str(num) for num in spectators]) + ">"
+                expected_spectators = "<@!" + f">{os.linesep}<@!".join([str(num) for num in spectators]) + ">"
                 actual_fields = state.build_fields(self.teams_manager)
                 self.assertEqual([(ScrimTeamsManager.PARTICIPANTS, "_empty_", True),
                                   (ScrimTeamsManager.SPECTATORS, expected_spectators, True)], actual_fields)
@@ -81,8 +81,8 @@ class TestLookingForPlayersState(StateUnittest):
                 queue = list(range(1, player_count))
                 self.add_participants(*participants)
                 self.add_queued(*queue)
-                expected_participants = "<@" + f">{os.linesep}<@".join([str(num) for num in participants]) + ">"
-                expected_queue = "<@" + f">{os.linesep}<@".join([str(num) for num in queue]) + ">"
+                expected_participants = "<@!" + f">{os.linesep}<@!".join([str(num) for num in participants]) + ">"
+                expected_queue = "<@!" + f">{os.linesep}<@!".join([str(num) for num in queue]) + ">"
                 actual_fields = state.build_fields(self.teams_manager)
                 self.assertEqual([(ScrimTeamsManager.PARTICIPANTS, expected_participants, True),
                                   (ScrimTeamsManager.SPECTATORS, "_empty_", True),

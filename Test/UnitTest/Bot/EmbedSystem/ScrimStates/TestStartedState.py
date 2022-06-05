@@ -40,8 +40,8 @@ class TestStartedState(StateUnittest):
         self.add_team_1(*list(range(5)))
         self.add_team_2(*list(range(5, 9)))
         state = StartedState()
-        expected_team_1 = "<@" + f">{os.linesep}<@".join([str(num) for num in range(5)]) + ">"
-        expected_team_2 = "<@" + f">{os.linesep}<@".join([str(num) for num in range(5, 9)]) + ">"
+        expected_team_1 = "<@!" + f">{os.linesep}<@!".join([str(num) for num in range(5)]) + ">"
+        expected_team_2 = "<@!" + f">{os.linesep}<@!".join([str(num) for num in range(5, 9)]) + ">"
         actual_fields = state.build_fields(self.teams_manager)
         self.assertEqual([("Team 1", expected_team_1, True),
                           ("Team 2", expected_team_2, True)], actual_fields)

@@ -15,6 +15,8 @@ def _build_message(conversion_type: str, argument: str) -> str:
 class BotConversionFailureException(BotBaseRespondToContextException, commands.ConversionError):
 
     @BotDependencyInjector.inject
-    def __init__(self, conversion_type: str, argument: str, embed_builder: ExceptionEmbedBuilder):
+    def __init__(self, conversion_type: str, argument: str, embed_builder: ExceptionEmbedBuilder, reason=None):
         message = _build_message(conversion_type, argument)
+        if reason is not None:
+            message += f" because {reason}"
         super().__init__(message, embed_builder)

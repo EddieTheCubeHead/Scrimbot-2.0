@@ -9,4 +9,4 @@ class Prefix(DataClass):  # pragma: no cover
     prefix = Column(String, primary_key=True)
     guild_id = Column(Integer, ForeignKey("Guilds.guild_id"), primary_key=True)
 
-    guild = relationship("Guild", back_populates="prefixes")
+    guild = relationship("Guild", back_populates="prefixes", lazy="joined")

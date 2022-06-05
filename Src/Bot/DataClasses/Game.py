@@ -16,7 +16,6 @@ if TYPE_CHECKING:  # pragma: no cover
 from Bot.DataClasses.DataClass import DataClass
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.Alias import Alias
-from Bot.DataClasses.UserElo import UserElo
 from Bot.DataClasses.Scrim import Scrim
 
 
@@ -30,7 +29,7 @@ class Game(DataClass, Convertable):  # pragma: no cover
     team_count = Column(Integer, default=2)
 
     aliases = relationship("Alias", back_populates="game")
-    elos = relationship("UserElo", back_populates="game")
+    ratings = relationship("UserRating", back_populates="game")
     scrims = relationship("Scrim", back_populates="game")
 
     def __init__(self, name: str, colour: str, icon: str, min_team_size: int, max_team_size: int = None,

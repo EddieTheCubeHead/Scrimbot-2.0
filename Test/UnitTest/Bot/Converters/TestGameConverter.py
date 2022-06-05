@@ -110,7 +110,8 @@ class TestGameConverter(AsyncUnittestBase):
 
     async def test_convert_given_argument_with_no_hits_then_error_raised(self):
         invalid_argument = "Nonexistent"
-        expected_exception = BotConversionFailureException("Game", invalid_argument)
+        reason = "argument did not correspond to any name or alias for a registered game"
+        expected_exception = BotConversionFailureException("Game", invalid_argument, reason=reason)
         await self._async_assert_raises_correct_exception(expected_exception, self.converter.convert, MagicMock(),
                                                           invalid_argument)
 

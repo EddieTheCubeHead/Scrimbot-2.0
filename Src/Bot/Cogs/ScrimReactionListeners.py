@@ -145,14 +145,5 @@ class ScrimReactionListeners(commands.Cog):
 
 
 def setup(client: ScrimBotClient):
-    """A method for adding the cog to the bot
-
-    args
-    ----
-
-    :param client: The instance of the bot the cog should be added into
-    :type client: ScrimBotClient
-    """
-
     client.add_cog(ScrimReactionListeners())
     print(f"Using cog {__name__}, with version {__version__}")

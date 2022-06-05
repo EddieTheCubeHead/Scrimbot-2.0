@@ -40,7 +40,7 @@ class TestLockedState(StateUnittest):
     def test_build_fields_given_all_unassigned_no_spectators_then_teams_empty_and_unassigned_shown_correctly(self):
         state = LockedState()
         self.add_participants(*range(1, 11))
-        expected_participants = "<@" + f">{os.linesep}<@".join([str(num) for num in range(1, 11)]) + ">"
+        expected_participants = "<@!" + f">{os.linesep}<@!".join([str(num) for num in range(1, 11)]) + ">"
         actual_fields = state.build_fields(self.teams_manager)
         self.assertEqual([("Unassigned", expected_participants, True),
                           (ScrimTeamsManager.SPECTATORS, "_empty_", True),
@@ -56,13 +56,13 @@ class TestLockedState(StateUnittest):
                 self.team_1.members.clear()
                 self.add_participants(*range(6, 16 - num))
                 self.add_team_1(*range(1, num + 1))
-                expected_participants = "<@" + f">{os.linesep}<@".join([str(num) for num in range(6, 16 - num)]) + ">"
-                expected_team_1_members = "<@" + f">{os.linesep}<@".join([str(num) for num in range(1, num + 1)]) + ">"
+                expected_participants = "<@!" + f">{os.linesep}<@!".join([str(num) for num in range(6, 16 - num)]) + ">"
+                expected_team_members = "<@!" + f">{os.linesep}<@!".join([str(num) for num in range(1, num + 1)]) + ">"
                 actual_fields = state.build_fields(self.teams_manager)
                 self.assertEqual([("Unassigned", expected_participants, True),
                                   (ScrimTeamsManager.SPECTATORS, "_empty_", True),
                                   (self._divider, self._divider, False),
-                                  (f"Team 1 _({5 - num} more needed)_", expected_team_1_members, True),
+                                  (f"Team 1 _({5 - num} more needed)_", expected_team_members, True),
                                   ("Team 2 _(5 more needed)_", "_empty_", True)], actual_fields)
 
     def test_build_fields_given_team_full_enough_but_room_left_then_members_shown_correctly(self):
@@ -71,8 +71,8 @@ class TestLockedState(StateUnittest):
         self.team_2.max_size = 8
         self.add_participants(*range(6, 11))
         self.add_team_1(*range(1, 6))
-        expected_participants = "<@" + f">{os.linesep}<@".join([str(num) for num in range(6, 11)]) + ">"
-        expected_team_1_members = "<@" + f">{os.linesep}<@".join([str(num) for num in range(1, 6)]) + ">"
+        expected_participants = "<@!" + f">{os.linesep}<@!".join([str(num) for num in range(6, 11)]) + ">"
+        expected_team_1_members = "<@!" + f">{os.linesep}<@!".join([str(num) for num in range(1, 6)]) + ">"
         actual_fields = state.build_fields(self.teams_manager)
         self.assertEqual([("Unassigned", expected_participants, True),
                           (ScrimTeamsManager.SPECTATORS, "_empty_", True),
@@ -84,8 +84,8 @@ class TestLockedState(StateUnittest):
         state = LockedState()
         self.add_participants(*range(6, 11))
         self.add_team_1(*range(1, 6))
-        expected_participants = "<@" + f">{os.linesep}<@".join([str(num) for num in range(6, 11)]) + ">"
-        expected_team_1_members = "<@" + f">{os.linesep}<@".join([str(num) for num in range(1, 6)]) + ">"
+        expected_participants = "<@!" + f">{os.linesep}<@!".join([str(num) for num in range(6, 11)]) + ">"
+        expected_team_1_members = "<@!" + f">{os.linesep}<@!".join([str(num) for num in range(1, 6)]) + ">"
         actual_fields = state.build_fields(self.teams_manager)
         self.assertEqual([("Unassigned", expected_participants, True),
                           (ScrimTeamsManager.SPECTATORS, "_empty_", True),

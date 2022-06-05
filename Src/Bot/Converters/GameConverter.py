@@ -56,7 +56,8 @@ class GameConverter(ConverterBase[Game]):
         for game in self.games.values():
             if alias in [candidate.name for candidate in game.aliases]:
                 return game
-        raise BotConversionFailureException("Game", alias)
+        reason = "argument did not correspond to any name or alias for a registered game"
+        raise BotConversionFailureException("Game", alias, reason=reason)
 
     @staticmethod
     def _init_aliases(game_name: str, game_data: dict[str, Union[str, int, list[str]]]):

@@ -1,4 +1,4 @@
-__version__ = "ver"
+__version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL, NOTSET

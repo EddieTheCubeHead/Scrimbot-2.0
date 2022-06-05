@@ -35,6 +35,9 @@ def parse_embed_from_table(context: Context) -> Embed:
     if table[0][0] == "Author" and table[1][0] == "Icon" and table[2][0] == "Colour":
         embed = _insert_author_info(context, table)
         field_start = 4
+        if table[4][0] == "Thumbnail":
+            embed.set_thumbnail(url=process_inserts(context, table[4][1]))
+            field_start = 5
     else:
         embed = _MockEmbed(title=table[0][0], description=table[0][1])
 
@@ -83,6 +86,10 @@ def assert_same_embed_text(context, expected: Embed, actual: Embed):
     assert expected.description == actual.description, f"{expected.description} != {actual.description}\n" \
                                                        f"{pretty_print(expected, actual)}"
 
+    if expected.thumbnail or actual.thumbnail:
+        assert expected.thumbnail.url == actual.thumbnail.url, f"{expected.thumbnail.url} != {actual.thumbnail.url}\n" \
+                                                               f"{pretty_print(expected, actual)}"
+
     assert len(expected.fields) == len(actual.fields), \
         f"Expected {len(expected.fields)} fields, but got {len(actual.fields)}\n{pretty_print(expected, actual)}"
     for expected_field, actual_field in zip(expected.fields, actual.fields):
@@ -112,6 +119,8 @@ def pretty_print(expected, actual):
     string += f"{expected.colour} | {actual.colour}\n\n"
     string += f"{expected.title} | {actual.title}\n"
     string += f"{expected.description} | {actual.description}\n\n"
+    if expected.thumbnail:
+        string += f"{expected.thumbnail.url} | {actual.thumbnail.url}\n\n"
     for expected_field, actual_field in itertools.zip_longest(expected.fields, actual.fields, fillvalue=EmptyField):
         string += f"{expected_field.name} | {actual_field.name}\n"
         string += f"{expected_field.value} | {actual_field.value}\n"

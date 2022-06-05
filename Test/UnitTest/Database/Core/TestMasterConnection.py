@@ -17,6 +17,6 @@ class TestMasterConnection(UnittestBase):
     def test_build_given_file_imported_then_singleton_dependency_created(self):
         self._assert_singleton_dependency(MasterConnection)
 
-    def test_get_session_given_db_address_given_then_session_connected_to_db_received(self):
+    def test_get_session_given_session_exists_given_db_address_given_then_session_connected_to_db_received(self):
         self.assertEqual(self.db_address, self.connection.session().bind.engine.url.database)
 

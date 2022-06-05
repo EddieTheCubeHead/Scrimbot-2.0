@@ -14,4 +14,6 @@ class AsyncUnittestBase(UnittestBase, IsolatedAsyncioTestCase):
             await call(*args, **kwargs)
 
         self.assertEqual(str(excepted_exception), str(context.exception))
+        if hasattr(excepted_exception, "message"):
+            self.assertEqual(excepted_exception.message, context.exception.message)
         return context.exception

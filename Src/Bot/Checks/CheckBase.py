@@ -8,13 +8,12 @@ from discord.ext.commands import check, Context
 
 class CheckBase(ABC):
 
-    @classmethod
-    def decorate(cls):
-        async def check_decorator(ctx: Context):
-            return await cls.check(ctx)
-        return check(check_decorator)
+    def __call__(self, func):
+        @check
+        async def check_wrapper(ctx: Context):
+            return await self.check(ctx)
+        return check_wrapper(func)
 
-    @classmethod
     @abstractmethod
-    async def check(cls, ctx: Context):  # pragma: no cover
+    async def check(self, ctx: Context):  # pragma: no cover
         pass

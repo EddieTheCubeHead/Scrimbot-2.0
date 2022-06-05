@@ -30,7 +30,6 @@ class TestScrimChannelConnection(ConnectionUnittest[User]):
         mock_user = User(user_id)
         with self.master.get_session() as session:
             session.add(mock_user)
-            session.commit()
         actual = self.connection.get_user(user_id)
         self.assertEqual(user_id, actual.user_id)
 

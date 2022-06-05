@@ -8,8 +8,7 @@ from Bot.Exceptions.BotMissingScrimException import BotMissingScrimException
 
 class ActiveScrimCheck(CheckBase):
 
-    @classmethod
-    async def check(cls, ctx: ScrimContext):
+    async def check(self, ctx: ScrimContext):
         if not ctx.scrim:
             raise BotMissingScrimException(ctx.channel.id)
         return True
