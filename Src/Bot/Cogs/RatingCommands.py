@@ -27,7 +27,7 @@ class RatingCommands(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
-    @PermissionsCheck(PermissionLevel.moderator)
+    @PermissionsCheck(PermissionLevel.admin)
     async def rating(self, ctx: ScrimContext, user: User, game: Game, rating: RatingConverter):
         guild = self._guild_converter.get_guild(ctx.guild.id)
         new_rating = self._rating_converter.create_user_rating(rating, user, game, guild)
