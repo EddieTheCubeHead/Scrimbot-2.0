@@ -18,6 +18,5 @@ class ParticipantTeam(DataClass):  # pragma: no cover
     team = relationship("Team", back_populates="scrims")
     scrim = relationship("Scrim", back_populates="teams")
 
-    def __init__(self, placement: int, tied: bool = False):
+    def __init__(self, placement: int):
         self.placement = placement
-        self.tied = tied
