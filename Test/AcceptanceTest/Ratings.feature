@@ -98,7 +98,7 @@ Feature: Setting, updating and displaying user ratings for games on both guild a
     Could not convert argument 'invalid' into type Game because argument did not correspond to any name or alias for a registered game
     """
 
-  Scenario: Displaying statistics for uninitialized user
+  Scenario: Displaying statistics for an uninitialized user
     When ;statistics {user_id} dota is called
     Then embed received with fields
       | name              | value                             |
