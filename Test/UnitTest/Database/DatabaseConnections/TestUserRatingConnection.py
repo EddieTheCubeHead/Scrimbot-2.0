@@ -89,6 +89,19 @@ class TestUserRatingConnection(UnittestBase):
         expected_user_rating.rating = 4424
         self._assert_equal_ratings(expected_user_rating, actual_user_rating)
 
+    def test_rating_given_existing_results_when_new_rating_created_then_results_linked(self):
+        expected_user_rating = MagicMock()
+        expected_user_rating.game = self._create_game()
+        expected_user_rating.user = self._create_user()
+        expected_user_rating.guild = self._create_guild()
+        expected_user_rating.rating_id = None
+        results = _create_result_list(12, 7)
+        self._create_results(expected_user_rating, *results)
+        actual_user_rating = self.connection.get_user_rating(expected_user_rating.user, expected_user_rating.game,
+                                                             expected_user_rating.guild)
+        self.assertEqual(expected_user_rating.game.name, actual_user_rating.game.name)
+        self._assert_results(actual_user_rating, 12, 7)
+
     def _assert_results(self, rating: UserRating, expected_wins: int, expected_losses: int, expected_ties: int = 0,
                         expected_unregistered: int = 0):
         wins = len(list(filter(lambda x: x.result == Result.WIN, rating.results)))

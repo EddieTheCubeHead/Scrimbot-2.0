@@ -12,7 +12,7 @@ from behave.runner import Context
 
 from Test.Utils.TestHelpers.MockDiscordConverter import MockDiscordConverter
 from Test.Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
-from Test.Utils.TestHelpers.id_parser import get_id_increment, try_get_id, parse_player_spec
+from Test.Utils.TestHelpers.id_parser import get_id_increment, try_get_id, parse_player_spec, process_inserts
 from Test.Utils.TestHelpers.test_utils import create_mock_channel, create_mock_guild, create_mock_channel_group, \
     set_member_voice_present, set_member_voice_not_present, create_mock_author
 from Test.Utils.TestHelpers.VoiceChannelFetchPatcher import VoiceChannelFetchPatcher

@@ -31,3 +31,16 @@ class TestRatingCommands(AsyncUnittestBase):
         self.mock_guild_converter.get_guild.assert_called_with(mock_context.guild.id)
         self.mock_user_rating_converter.create_user_rating.assert_called_with(rating, mock_user, mock_game, mock_guild)
         self.mock_embed_builder.send.assert_called_with(mock_context, displayable=mock_rating)
+
+    async def test_statistics_when_given_user_and_game_then_stats_fetched_and_displayed(self):
+        mock_user = MagicMock()
+        mock_game = MagicMock()
+        mock_context = MagicMock()
+        mock_rating = MagicMock()
+        mock_guild = MagicMock()
+        self.mock_guild_converter.get_guild.return_value = mock_guild
+        self.mock_user_rating_converter.get_user_statistics.return_value = mock_rating
+        await self.cog.statistics(mock_context, mock_user, mock_game)
+        self.mock_guild_converter.get_guild.assert_called_with(mock_context.guild.id)
+        self.mock_user_rating_converter.get_user_statistics.assert_called_with(mock_user, mock_game, mock_guild)
+        self.mock_embed_builder.send.assert_called_with(mock_context, displayable=mock_rating)

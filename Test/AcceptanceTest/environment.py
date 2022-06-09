@@ -14,6 +14,7 @@ from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 from Test.Utils.TestHelpers.ResponseMessageCatcher import ResponseMessageCatcher
 from Test.Utils.TestHelpers.UserFetchPatcher import UserFetchPatcher
 from Test.Utils.TestHelpers.MockMemberConverter import MockMemberConverter
+from Test.Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
 
 
 def before_feature(context, feature):
@@ -25,7 +26,8 @@ def before_feature(context, feature):
 
 
 def before_scenario(context, scenario):
-    context.discord_ids = {"divider": "----------------------------------------------"}
+    context.discord_ids = {"divider": "----------------------------------------------",
+                           "user_id": GLOBAL_ID_GENERATOR.generate_viable_id()}
     context.command_messages = []
     context.mocked_users = {}
     context.patcher = DiscordPatcher()
