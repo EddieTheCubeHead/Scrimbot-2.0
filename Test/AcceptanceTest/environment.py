@@ -14,7 +14,7 @@ from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 from Test.Utils.TestHelpers.ResponseMessageCatcher import ResponseMessageCatcher
 from Test.Utils.TestHelpers.UserFetchPatcher import UserFetchPatcher
 from Test.Utils.TestHelpers.MockMemberConverter import MockMemberConverter
-from Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
+from Test.Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
 
 
 def before_feature(context, feature):

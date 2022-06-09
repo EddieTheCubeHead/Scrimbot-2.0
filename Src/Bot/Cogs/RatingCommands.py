@@ -29,6 +29,18 @@ class RatingCommands(commands.Cog):
     @commands.guild_only()
     @PermissionsCheck(PermissionLevel.admin)
     async def rating(self, ctx: ScrimContext, user: User, game: Game, rating: RatingConverter):
+        """
+        A command that sets the given user's rating for the given game as the given value. Only usable by admins
+
+        :param ctx: The invocation context of the command
+        :type ctx: ScrimContext
+        :param user: The user whose rating is being set
+        :type user: User
+        :param game: The game of which rating is being set for the given user
+        :type game: Game
+        :param rating: The rating value the user's rating for the game will be set as
+        :type rating: RatingConverter
+        """
         guild = self._guild_converter.get_guild(ctx.guild.id)
         new_rating = self._rating_converter.create_user_rating(rating, user, game, guild)
         await self._embed_builder.send(ctx, displayable=new_rating)
@@ -36,6 +48,16 @@ class RatingCommands(commands.Cog):
     @commands.command(aliases=["stats"])
     @commands.guild_only()
     async def statistics(self, ctx: ScrimContext, user: User, game: Game):
+        """
+        A command that displays given user's statistics for the given game
+
+        :param ctx: The invocation context of the command
+        :type ctx: ScrimContext
+        :param user: The user whose statistics are being requested
+        :type user: User
+        :param game: The game of which statistics for the given user are being requested
+        :type game: Game
+        """
         guild = self._guild_converter.get_guild(ctx.guild.id)
         new_rating = self._rating_converter.get_user_statistics(user, game, guild)
         await self._embed_builder.send(ctx, displayable=new_rating)
