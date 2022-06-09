@@ -55,7 +55,17 @@ class UserRatingConnection(ConnectionBase):
         new_rating.user = user
         new_rating.game = game
         new_rating.guild = guild
+        new_rating.results = []
         with self._master_connection.get_session() as session:
             session.add(new_rating)
+        self._bind_results(new_rating)
         return new_rating
+
+    def _bind_results(self, new_rating: UserRating):
+        with self._master_connection.get_session() as session:
+            query = session.query(UserScrimResult).outerjoin(UserScrimResult.scrim)\
+                .filter(Scrim.game_name == new_rating.game.name)\
+                .filter(UserScrimResult.user_id == new_rating.user_id)
+            for result in query.all():
+                new_rating.results.append(result)
 

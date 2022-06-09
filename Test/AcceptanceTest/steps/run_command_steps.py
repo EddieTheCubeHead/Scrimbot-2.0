@@ -21,7 +21,7 @@ from Test.Utils.TestHelpers.test_utils import create_mock_guild, create_mock_aut
     create_async_mock_message
 
 
-def _hide_command_calls(context: Context, amount: int) -> Optional[Message]:
+def hide_command_calls(context: Context, amount: int) -> Optional[Message]:
     latest_fetched = None
     for _ in range(amount):
         latest_fetched = ResponseLoggerContext.get_oldest()
@@ -33,8 +33,8 @@ def _hide_command_calls(context: Context, amount: int) -> Optional[Message]:
 @async_run_until_complete
 async def step_impl(context: Context):
     table = _create_call_ids(context)
-    await call_command(';register', context, table)
-    context.latest_fetched = _hide_command_calls(context, 1)
+    await execute_command(';register', context, table)
+    context.latest_fetched = hide_command_calls(context, 1)
 
 
 @given("a {game} scrim")
@@ -69,7 +69,7 @@ async def _create_locked_scrim(context, game, amount=0):
     await _add_reactions(amount, context, "🎮")
     await sleep(0)  # Discord.py queue system for events is dumb. This ensures all reactions are added
     table = _create_call_ids(context)
-    await call_command(";lock", context, table)
+    await execute_command(";lock", context, table)
     context.command_messages.pop(-1)
 
 
@@ -87,6 +87,15 @@ async def step_impl(context: Context, game, amount):
 @async_run_until_complete
 async def step_impl(context: Context, game):
     await create_filled_game(0, context, game)
+
+
+@given("user {user} has a {game} rating of {value}")
+@given("user {user} has an {game} rating of {value}")
+@async_run_until_complete
+async def step_impl(context, user: str, game: str, value: str):
+    with context.mock_context_provider.as_admin():
+        await call_command(context, f";rating {user} {game} {value}")
+    hide_command_calls(context, 1)
 
 
 async def create_filled_game(amount, context, game):
@@ -111,29 +120,29 @@ async def _create_scrim(context: Context, game, amount=0):
         register_command += " l:{voice_0_id}"
         register_command = process_inserts(context, register_command)
     table = _create_call_ids(context)
-    await call_command(register_command, context, table)
-    await call_command(f';scrim "{game}"', context, table)
-    context.latest_fetched = _hide_command_calls(context, 2)
+    await execute_command(register_command, context, table)
+    await execute_command(f';scrim "{game}"', context, table)
+    context.latest_fetched = hide_command_calls(context, 2)
 
 
 @when("{command} is called")
 @async_run_until_complete
 async def step_impl(context: Context, command: str):
-    table = _create_call_ids(context)
-    command = process_inserts(context, command)
-    context.latest_command = command.split(" ")[0][1:]
-    context.latest_prefix = command[0]
-    await call_command(command, context, table)
+    await call_command(context, command)
 
 
 @when("{command} is called from another channel")
 @async_run_until_complete
 async def step_impl(context: Context, command: str):
+    await call_command(context, command, True)
+
+
+async def call_command(context: Context, command: str, alternative_text_channel: bool = False):
+    table = _create_call_ids(context, alternative_text_channel=alternative_text_channel)
     command = process_inserts(context, command)
     context.latest_command = command.split(" ")[0][1:]
     context.latest_prefix = command[0]
-    table = _create_call_ids(context, alternative_text_channel=True)
-    await call_command(command, context, table)
+    await execute_command(command, context, table)
 
 
 def _create_call_ids(context: Context, *, alternative_text_channel=False) -> list[list[str]]:
@@ -143,7 +152,7 @@ def _create_call_ids(context: Context, *, alternative_text_channel=False) -> lis
     return [[user_id, channel_id, guild_id]]
 
 
-async def call_command(command, context: Context, table):
+async def execute_command(command, context: Context, table):
     for row in table:
         mock_guild = create_mock_guild(int(row[2]))
         mock_author = create_mock_author(int(row[0]), mock_guild, context)

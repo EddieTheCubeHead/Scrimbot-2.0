@@ -97,3 +97,36 @@ Feature: Setting, updating and displaying user ratings for games on both guild a
     """
     Could not convert argument 'invalid' into type Game because argument did not correspond to any name or alias for a registered game
     """
+
+  Scenario: Displaying statistics for uninitialized user
+    When ;statistics {user_id} dota is called
+    Then embed received with fields
+      | name              | value                             |
+      | Author            | Dota 2                            |
+      | Icon              | https://i.imgur.com/OlWIlyY.jpg?1 |
+      | Colour            | 0xce0000                          |
+      | Player statistics | <@!{user_id}>                     |
+      | Thumbnail         | {user_id}.icon                    |
+      | Games played      | 0                                 |
+      | Wins              | 0                                 |
+      | Losses            | 0                                 |
+      | Ties              | 0                                 |
+      | Unrecorded        | 0                                 |
+      | Rating            | 1700                              |
+
+  Scenario: Displaying statistics for an initialized user
+    Given user {user_id} has a dota rating of 400
+    When ;statistics {user_id} dota is called
+    Then embed received with fields
+      | name              | value                             |
+      | Author            | Dota 2                            |
+      | Icon              | https://i.imgur.com/OlWIlyY.jpg?1 |
+      | Colour            | 0xce0000                          |
+      | Player statistics | <@!{user_id}>                     |
+      | Thumbnail         | {user_id}.icon                    |
+      | Games played      | 0                                 |
+      | Wins              | 0                                 |
+      | Losses            | 0                                 |
+      | Ties              | 0                                 |
+      | Unrecorded        | 0                                 |
+      | Rating            | 400                               |

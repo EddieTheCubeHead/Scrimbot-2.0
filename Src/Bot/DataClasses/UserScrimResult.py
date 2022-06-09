@@ -17,13 +17,14 @@ class Result(enum.Enum):
 
 
 class UserScrimResult(DataClass):  # pragma: no cover
-    rating_id = Column(Integer, ForeignKey("UserRatings.rating_id"), primary_key=True)
     user_id = Column(Integer, ForeignKey("Users.user_id"), primary_key=True)
     scrim_id = Column(Integer, ForeignKey("Scrims.scrim_id"), primary_key=True)
+    rating_id = Column(Integer, ForeignKey("UserRatings.rating_id"), default=None)
     frozen_rating = Column(Integer, nullable=False)
     result = Column(Enum(Result), default=Result.UNREGISTERED)
 
     rating = relationship("UserRating", back_populates="results")
+    scrim = relationship("Scrim", back_populates="results")
 
     def __init__(self, rating_id: int, user_id: int, scrim_id: int, frozen_rating: int,
                  result: Result = Result.UNREGISTERED):

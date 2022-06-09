@@ -33,6 +33,13 @@ class RatingCommands(commands.Cog):
         new_rating = self._rating_converter.create_user_rating(rating, user, game, guild)
         await self._embed_builder.send(ctx, displayable=new_rating)
 
+    @commands.command(aliases=["stats"])
+    @commands.guild_only()
+    async def statistics(self, ctx: ScrimContext, user: User, game: Game):
+        guild = self._guild_converter.get_guild(ctx.guild.id)
+        new_rating = self._rating_converter.get_user_statistics(user, game, guild)
+        await self._embed_builder.send(ctx, displayable=new_rating)
+
 
 def setup(client: ScrimBotClient):
     client.add_cog(RatingCommands())

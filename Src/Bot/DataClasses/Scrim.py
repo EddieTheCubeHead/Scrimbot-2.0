@@ -24,3 +24,4 @@ class Scrim(DataClass):  # pragma: no cover
     game = relationship("Game", back_populates="scrims")
     scrim_channel = relationship("ScrimChannel", back_populates="scrims")
     teams = relationship("ParticipantTeam", back_populates="scrim")
+    results = relationship("UserScrimResult", back_populates="scrim")
