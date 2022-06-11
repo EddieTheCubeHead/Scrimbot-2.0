@@ -161,10 +161,10 @@ class TestScrimManager(AsyncUnittestBase):
     async def test_end_given_two_teams_when_called_with_winner_then_scrim_ended_with_winner_data(self):
         self.scrim_manager.state = STARTED
         self.mock_teams_manager.move_to_lobby = AsyncMock()
-        result = "Team 1"
+        result = [(MagicMock(),), (MagicMock(),)]
         await self.scrim_manager.end(result)
         self.assertEqual(ENDED, self.scrim_manager.state)
-        self.assertEqual("Team 1", self.mock_teams_manager.winner)
+        self.assertEqual(result, self.mock_teams_manager.result)
         self.mock_teams_manager.move_to_lobby.assert_called()
 
     def test_terminate_when_called_with_author_then_state_set_to_terminated_and_terminator_set_to_teams_manager(self):

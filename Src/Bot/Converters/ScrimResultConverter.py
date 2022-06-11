@@ -14,14 +14,17 @@ from Bot.DataClasses.Team import Team
 from Database.DatabaseConnections.ScrimConnection import ScrimConnection
 
 
-def _name_conversion(ctx: ScrimContext, argument: str) -> list[tuple[Team]]:
+ScrimResult = list[tuple[Team]]
+
+
+def _name_conversion(ctx: ScrimContext, argument: str) -> ScrimResult:
     results = []
     for team in ctx.scrim.teams_manager.get_game_teams():
         _insert_result(team.name, argument, team, results)
     return results
 
 
-def _digit_conversion(ctx: ScrimContext, argument: int) -> list[tuple[Team]]:
+def _digit_conversion(ctx: ScrimContext, argument: int) -> ScrimResult:
     results = []
     for number, team in enumerate(ctx.scrim.teams_manager.get_game_teams(), 1):
         _insert_result(number, argument, team, results)
@@ -73,4 +76,4 @@ class ScrimResultConverter(ConverterBase):
             results = _name_conversion(ctx, argument)
         result_scrim = _create_result_scrim(ctx, results)
         self.connection.add_scrim(result_scrim)
-        return results[0][0].name
+        return results

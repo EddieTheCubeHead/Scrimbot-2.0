@@ -2,13 +2,14 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
+from typing_extensions import Annotated
 
 from Bot.Checks.ActiveScrimCheck import ActiveScrimCheck
 from Bot.Checks.FreeScrimCheck import FreeScrimCheck
 from Bot.Cogs.Helpers.BotSettingsService import BotSettingsService
 from Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
 from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
-from Bot.Converters.ScrimResultConverter import ScrimResultConverter
+from Bot.Converters.ScrimResultConverter import ScrimResultConverter, ScrimResult
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.Core.ScrimContext import ScrimContext
@@ -166,7 +167,22 @@ class ScrimCommands(commands.Cog):
         :type ctx: ScrimContext
         """
 
-        await self.winner(ctx, None)
+        await self.winner(ctx, [tuple(team for team in ctx.scrim.teams_manager.get_game_teams())])
+
+    @commands.command()
+    @commands.guild_only()
+    @ActiveScrimCheck()
+    async def end(self, ctx: ScrimContext):
+        """A command for finishing a scrim without registering the results
+
+        args
+        ----
+
+        :param ctx: The invocation context of the command
+        :type ctx: ScrimContext
+        """
+
+        await self.winner(ctx, [])
 
     @commands.command()
     @commands.guild_only()

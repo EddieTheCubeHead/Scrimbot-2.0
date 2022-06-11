@@ -4,10 +4,12 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 import threading
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from discord import Message, Member
 
+if TYPE_CHECKING:
+    from Bot.Converters.ScrimResultConverter import ScrimResult
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.Team import Team
 from Bot.DataClasses.User import User
@@ -81,9 +83,9 @@ class ScrimManager:
     def cancel_voice_wait(self):
         self._secure_state_change(LOCKED, VOICE_WAIT)
 
-    async def end(self, result: Optional[str]):
+    async def end(self, result: ScrimResult):
         self._secure_state_change(ENDED, STARTED)
-        self.teams_manager.winner = result
+        self.teams_manager.result = result
         await self.teams_manager.move_to_lobby()
 
     def terminate(self, author: Optional[Member]):

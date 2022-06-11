@@ -175,34 +175,65 @@ class TestScrimCommands(AsyncUnittestBase):
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
         ctx.scrim.message = AsyncMock()
-        team_name = "Team 1"
-        await self.cog.winner(ctx, team_name)
+        team_1 = MagicMock()
+        team_2 = MagicMock()
+        await self.cog.winner(ctx, [(team_1,), (team_2,)])
         ctx.message.delete.assert_called()
-        mock_scrim.end.assert_called_with(team_name)
+        mock_scrim.end.assert_called_with([(team_1,), (team_2,)])
         self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
 
-    async def test_winner_given_none_then_no_winner_set(self):
+    async def test_winner_given_single_tuple_then_tie_result_set(self):
         mock_scrim = AsyncMock()
         mock_scrim.state = STARTED
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
         ctx.scrim.message = AsyncMock()
-        await self.cog.winner(ctx, None)
+        team_1 = MagicMock()
+        team_2 = MagicMock()
+        await self.cog.winner(ctx, [(team_1, team_2)])
         ctx.message.delete.assert_called()
-        mock_scrim.end.assert_called_with(None)
+        mock_scrim.end.assert_called_with([(team_1, team_2)])
         self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
 
-    async def test_tie_when_called_then_behaviour_identical_to_winner_with_none_argument(self):
+    async def test_winner_given_empty_list_then_unregistered_result_set(self):
         mock_scrim = AsyncMock()
         mock_scrim.state = STARTED
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
         ctx.scrim.message = AsyncMock()
+        await self.cog.winner(ctx, [])
+        ctx.message.delete.assert_called()
+        mock_scrim.end.assert_called_with([])
+        self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
+
+    async def test_tie_when_called_then_behaviour_identical_to_winner_with_single_tuple_argument(self):
+        mock_scrim = AsyncMock()
+        mock_scrim.state = STARTED
+        ctx = AsyncMock()
+        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.scrim = mock_scrim
+        ctx.scrim.message = AsyncMock()
+        team_1 = MagicMock()
+        team_2 = MagicMock()
+        mock_scrim.teams_manager = MagicMock()
+        ctx.scrim.teams_manager.get_game_teams.return_value = [team_1, team_2]
         await self.cog.tie(ctx)
         ctx.message.delete.assert_called()
-        mock_scrim.end.assert_called_with(None)
+        mock_scrim.end.assert_called_with([(team_1, team_2)])
+        self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
+
+    async def test_end_when_called_then_behaviour_identical_to_winner_with_empty_list_argument(self):
+        mock_scrim = AsyncMock()
+        mock_scrim.state = STARTED
+        ctx = AsyncMock()
+        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.scrim = mock_scrim
+        ctx.scrim.message = AsyncMock()
+        await self.cog.end(ctx)
+        ctx.message.delete.assert_called()
+        mock_scrim.end.assert_called_with([])
         self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
 
     async def test_terminate_when_called_then_scrim_manager_terminate_called_and_message_deleted(self):
