@@ -14,7 +14,7 @@ from Bot.DataClasses.Team import Team
 from Database.DatabaseConnections.ScrimConnection import ScrimConnection
 
 
-ScrimResult = list[tuple[Team]]
+ScrimResult = list[tuple[Team, ...]]
 
 
 def _name_conversion(ctx: ScrimContext, argument: str) -> ScrimResult:

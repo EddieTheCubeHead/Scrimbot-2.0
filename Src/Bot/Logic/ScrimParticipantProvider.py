@@ -26,3 +26,10 @@ class ScrimParticipantProvider(DiscordObjectProvider):
     def try_get_participant(self, participant_id: int):
         if participant_id in self.participants:
             return self.client.get_guild(self.participants[participant_id]).get_member(participant_id)
+
+    def drop_participants(self, *participant_ids: int):
+        for participant_id in participant_ids:
+            self._drop_participant(participant_id)
+
+    def _drop_participant(self, participant_id: int):
+        self.participants.pop(participant_id)

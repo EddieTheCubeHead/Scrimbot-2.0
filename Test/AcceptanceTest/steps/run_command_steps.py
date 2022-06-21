@@ -10,6 +10,7 @@ from behave.api.async_step import async_run_until_complete
 from behave.runner import Context
 from discord import Reaction, Message
 
+from Bot.DataClasses.UserScrimResult import Result
 from Test.AcceptanceTest.steps.mock_discord_objects_steps import create_voice_channels
 from Bot.Converters.GameConverter import GameConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
@@ -66,7 +67,7 @@ async def _create_locked_scrim(context, game, amount=0):
     await _create_scrim(context, game, amount)
     game_instance = await BotDependencyInjector.dependencies[GameConverter].convert(MagicMock(), game)
     amount = game_instance.team_count * game_instance.min_team_size
-    await _add_reactions(amount, context, "🎮")
+    await _add_reactions(amount, context, "🎮", 1)
     await sleep(0)  # Discord.py queue system for events is dumb. This ensures all reactions are added
     table = _create_call_ids(context)
     await execute_command(";lock", context, table)
@@ -98,6 +99,40 @@ async def step_impl(context, user: str, game: str, value: str):
     hide_command_calls(context, 1)
 
 
+@given("user {user} has prior {game} results")
+@async_run_until_complete
+async def step_impl(context, user: str, game: str):
+    wins = int(context.table[0][0])
+    losses = int(context.table[0][1])
+    ties = int(context.table[0][2])
+    unregistered = int(context.table[0][3])
+    for _ in range(wins):
+        await _create_scrim_result(context, game, Result.WIN)
+    for _ in range(losses):
+        await _create_scrim_result(context, game, Result.LOSS)
+    for _ in range(ties):
+        await _create_scrim_result(context, game, Result.TIE)
+    for _ in range(unregistered):
+        await _create_scrim_result(context, game, Result.UNREGISTERED)
+
+
+async def _create_scrim_result(context: Context, game: str, result: Result):
+    await create_filled_game(0, context, game)
+    await call_command(context, ';start false')
+    result_call = _get_result_command(result)
+    await call_command(context, result_call)
+
+
+def _get_result_command(result: Result):
+    if result == Result.WIN:
+        return ';winner 1'
+    elif result == Result.LOSS:
+        return ';winner 2'
+    elif result == Result.TIE:
+        return ';tie'
+    return ';end'
+
+
 async def create_filled_game(amount, context, game):
     await _create_locked_scrim(context, game, amount)
     await sleep(0)
@@ -111,6 +146,19 @@ async def create_filled_game(amount, context, game):
 
 
 async def _create_scrim(context: Context, game, amount=0):
+    table = _create_call_ids(context)
+    await _ensure_registered_channel(context, table, amount)
+    await execute_command(f';scrim "{game}"', context, table)
+    context.latest_fetched = hide_command_calls(context, 1)
+
+
+async def _ensure_registered_channel(context: Context, table, amount: int = 0):
+    if not context.scrim_channel_registered:
+        await _register_channel(context, table, amount)
+        context.scrim_channel_registered = True
+
+
+async def _register_channel(context: Context, table, amount: int = 0):
     register_command = ";register"
     if amount:
         create_voice_channels(context, amount, lobby=True)
@@ -119,10 +167,8 @@ async def _create_scrim(context: Context, game, amount=0):
         register_command += "_id}"
         register_command += " l:{voice_0_id}"
         register_command = process_inserts(context, register_command)
-    table = _create_call_ids(context)
     await execute_command(register_command, context, table)
-    await execute_command(f';scrim "{game}"', context, table)
-    context.latest_fetched = hide_command_calls(context, 2)
+    context.latest_fetched = hide_command_calls(context, 1)
 
 
 @when("{command} is called")
@@ -214,15 +260,16 @@ async def step_impl(context: Context, amount, reaction_string):
     await _add_reactions(amount, context, _try_insert_number_react(reaction_string))
 
 
-async def _add_reactions(amount, context: Context, reaction_string):
+async def _add_reactions(amount, context: Context, reaction_string, increment_start=None):
     guild = create_mock_guild(try_get_id(context, "guild_id"))
-    user_increment = get_id_increment(context, "user")
+    user_increment = get_id_increment(context, "user") if increment_start is None else increment_start
     for increment in range(user_increment, user_increment + int(amount)):
         await _add_reaction(context, guild, reaction_string, increment)
 
 
 async def _add_reaction(context: Context, guild, reaction_string, user_increment):
-    user = create_mock_author(GLOBAL_ID_GENERATOR.generate_viable_id(), guild, context)
+    user_id = try_get_id(context, f"user_{user_increment}_id")
+    user = create_mock_author(user_id, guild, context)
     context.discord_ids[f"user_{user_increment}_id"] = user.id
     reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
     await context.latest_fetched.add_reaction(reaction_string, user)

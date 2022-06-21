@@ -63,3 +63,11 @@ class TestScrimParticipantProvider(AsyncUnittestBase):
         mock_member.id = mock_id
         self.manager.ensure_not_participant(mock_member)
 
+    def test_drop_participants_when_called_with_participants_then_all_given_participants_dropped(self):
+        mock_participant_ids = self.id_generator.generate_viable_id_group(10)
+        mock_guild_id = self.id_generator.generate_viable_id()
+        for participant_id in mock_participant_ids:
+            self.manager.participants[participant_id] = mock_guild_id
+        self.manager.drop_participants(*mock_participant_ids)
+        self.assertEqual(0, len(self.manager.participants))
+

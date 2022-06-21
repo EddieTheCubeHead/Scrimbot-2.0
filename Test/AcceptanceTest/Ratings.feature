@@ -58,6 +58,27 @@ Feature: Setting, updating and displaying user ratings for games on both guild a
       | Unrecorded        | 0                                 |
       | Rating            | 1008                              |
 
+  @wip
+  @as_admin
+  Scenario: Set rating for user with prior results
+    Given user {user_1_id} has prior Dota 2 results
+      | Wins | Losses | Ties | Unregistered |
+      | 11   | 8      | 3    | 4            |
+    When ;rating {user_1_id} dota 1234 is called
+    Then embed received with fields
+      | name              | value                             |
+      | Author            | Dota 2                            |
+      | Icon              | https://i.imgur.com/OlWIlyY.jpg?1 |
+      | Colour            | 0xce0000                          |
+      | Player statistics | <@!{user_1_id}>                   |
+      | Thumbnail         | {user_1_id}.icon                  |
+      | Games played      | 26                                |
+      | Wins              | 11                                |
+      | Losses            | 8                                 |
+      | Ties              | 3                                 |
+      | Unrecorded        | 4                                 |
+      | Rating            | 1234                              |
+
   @as_admin
   Scenario: Attempting to set rating for existing user in existing game with too low value
     When ;rating {user_id} csgo 5001 is called

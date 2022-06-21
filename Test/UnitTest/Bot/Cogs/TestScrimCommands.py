@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, call
 
 from Bot.Cogs.ScrimCommands import ScrimCommands
 from Bot.DataClasses.Game import Game
+from Bot.DataClasses.User import User
 from Bot.EmbedSystem.ScrimStates.scrim_states import *
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
@@ -22,8 +23,9 @@ class TestScrimCommands(AsyncUnittestBase):
         self.settings_service = MagicMock()
         self.active_scrims_manager = MagicMock()
         self.waiting_scrim_service = MagicMock()
+        self.participant_provider = MagicMock()
         self.cog = ScrimCommands(self.scrim_channel_converter, self.response_builder, self.settings_service,
-                                 self.active_scrims_manager, self.waiting_scrim_service)
+                                 self.active_scrims_manager, self.waiting_scrim_service, self.participant_provider)
         self.cog._inject(MagicMock())
 
     async def test_scrim_given_called_with_game_then_scrim_with_game_created_and_embed_sent(self):
@@ -203,10 +205,15 @@ class TestScrimCommands(AsyncUnittestBase):
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
         ctx.scrim.message = AsyncMock()
+        participants = self._create_participants(10)
+        ctx.scrim.teams_manager.all_participants = participants
         await self.cog.winner(ctx, [])
         ctx.message.delete.assert_called()
         mock_scrim.end.assert_called_with([])
         self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
+        self.active_scrims_manager.drop.assert_called_with(mock_scrim)
+        self.participant_provider.drop_participants.assert_called_with(
+            *[participant.user_id for participant in participants])
 
     async def test_tie_when_called_then_behaviour_identical_to_winner_with_single_tuple_argument(self):
         mock_scrim = AsyncMock()
@@ -219,10 +226,15 @@ class TestScrimCommands(AsyncUnittestBase):
         team_2 = MagicMock()
         mock_scrim.teams_manager = MagicMock()
         ctx.scrim.teams_manager.get_game_teams.return_value = [team_1, team_2]
+        participants = self._create_participants(10)
+        ctx.scrim.teams_manager.all_participants = participants
         await self.cog.tie(ctx)
         ctx.message.delete.assert_called()
         mock_scrim.end.assert_called_with([(team_1, team_2)])
         self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
+        self.active_scrims_manager.drop.assert_called_with(mock_scrim)
+        self.participant_provider.drop_participants.assert_called_with(
+            *[participant.user_id for participant in participants])
 
     async def test_end_when_called_then_behaviour_identical_to_winner_with_empty_list_argument(self):
         mock_scrim = AsyncMock()
@@ -231,10 +243,15 @@ class TestScrimCommands(AsyncUnittestBase):
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
         ctx.scrim.message = AsyncMock()
+        participants = self._create_participants(10)
+        ctx.scrim.teams_manager.all_participants = participants
         await self.cog.end(ctx)
         ctx.message.delete.assert_called()
         mock_scrim.end.assert_called_with([])
         self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
+        self.active_scrims_manager.drop.assert_called_with(mock_scrim)
+        self.participant_provider.drop_participants.assert_called_with(
+            *[participant.user_id for participant in participants])
 
     async def test_terminate_when_called_then_scrim_manager_terminate_called_and_message_deleted(self):
         mock_scrim = MagicMock()
@@ -243,12 +260,16 @@ class TestScrimCommands(AsyncUnittestBase):
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
         ctx.scrim.message = AsyncMock()
+        participants = self._create_participants(10)
+        ctx.scrim.teams_manager.all_participants = participants
         await self.cog.terminate(ctx)
         ctx.message.delete.assert_called()
         mock_scrim.terminate.assert_called_with(ctx.author)
         self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
         self.active_scrims_manager.drop.assert_called_with(mock_scrim)
         mock_scrim.message.clear_reactions.assert_called()
+        self.participant_provider.drop_participants.assert_called_with(
+            *[participant.user_id for participant in participants])
 
     async def test_teams_when_called_then_strategy_create_teams_called_embed_edited_and_message_deleted(self):
         mock_scrim = MagicMock()
@@ -263,3 +284,11 @@ class TestScrimCommands(AsyncUnittestBase):
         mock_strategy.create_teams.assert_called_with(mock_scrim)
         self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
         ctx.scrim.message.clear_reactions.assert_not_called()
+
+    def _create_participants(self, amount: int) -> list[User]:
+        participants = []
+        for _ in range(amount):
+            mock_participant = MagicMock()
+            mock_participant.user_id = self.id_generator.generate_viable_id()
+            participants.append(mock_participant)
+        return participants

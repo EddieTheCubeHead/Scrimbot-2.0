@@ -110,5 +110,10 @@ class ResponseLoggerContext(ScrimContext):
         return message
 
     @classmethod
-    def reset(cls):
+    def reset_position(cls):
         cls.dict_index = len(cls.sent_dict.items())
+
+    @classmethod
+    def full_reset(cls):
+        cls.sent_dict = OrderedDict()
+        cls.dict_index = 0

@@ -33,6 +33,7 @@ def before_scenario(context, scenario):
     context.patcher = DiscordPatcher()
     context.mock_context_provider.set_administrator_status("as_admin" in scenario.tags)
     context.patcher.add_patch("discord.ext.commands.converter.MemberConverter", MockMemberConverter())
+    context.scrim_channel_registered = False
     _create_user_fetch_patcher(context)
 
 
@@ -44,7 +45,7 @@ def _setup_bot(context):
     BotDependencyInjector.dependencies[ScrimParticipantProvider] = ScrimParticipantProvider()
     context.mock_context_provider = ResponseMessageCatcher()
     context.client = ScrimBotClient(config, logger, context.mock_context_provider)
-    ResponseLoggerContext.reset()
+    ResponseLoggerContext.reset_position()
 
 
 def _create_user_fetch_patcher(context):

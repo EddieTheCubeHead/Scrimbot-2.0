@@ -23,7 +23,7 @@ def _setup_bot(context):
     logger = BotClientLogger(config)
     BotDependencyInjector.dependencies[MasterConnection] = MasterConnection(config, ":memory:")
     context.client = ScrimBotClient(config, logger, ResponseMessageCatcher())
-    ResponseLoggerContext.reset()
+    ResponseLoggerContext.reset_position()
 
 
 @when("bot is started")

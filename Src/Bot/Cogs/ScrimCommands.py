@@ -19,6 +19,7 @@ from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 from Bot.Converters.GameConverter import GameConverter
 from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
 from Bot.Logic.ScrimManager import ScrimManager
+from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
 from Bot.Matchmaking.TeamCreationStrategy import TeamCreationStrategy
 from Bot.Matchmaking.RandomTeamsStrategy import RandomTeamsStrategy
 from Bot.Matchmaking.ClearTeamsStrategy import ClearTeamsStrategy
@@ -36,12 +37,13 @@ class ScrimCommands(commands.Cog):
     @BotDependencyInjector.inject
     def __init__(self, scrim_channel_converter: ScrimChannelConverter, response_builder: ScrimEmbedBuilder,
                  settings_service: BotSettingsService, scrims_manager: ActiveScrimsManager,
-                 waiting_scrim_service: WaitingScrimService):
+                 waiting_scrim_service: WaitingScrimService, participant_provider: ScrimParticipantProvider):
         self._scrim_channel_converter = scrim_channel_converter
         self._response_builder = response_builder
         self._settings_service = settings_service
         self._scrims_manager = scrims_manager
         self._waiting_scrim_service = waiting_scrim_service
+        self._participant_provider = participant_provider
 
     @commands.command(aliases=['s'])
     @commands.guild_only()
@@ -153,6 +155,9 @@ class ScrimCommands(commands.Cog):
         await scrim.end(winner)
         await ctx.message.delete()
         await self._response_builder.edit(ctx.scrim.message, displayable=ctx.scrim)
+        self._scrims_manager.drop(scrim)
+        self._participant_provider.drop_participants(
+            *[participant.user_id for participant in scrim.teams_manager.all_participants])
 
     @commands.command(aliases=["draw"])
     @commands.guild_only()
@@ -203,6 +208,8 @@ class ScrimCommands(commands.Cog):
         await self._response_builder.edit(ctx.scrim.message, displayable=ctx.scrim)
         await scrim.message.clear_reactions()
         self._scrims_manager.drop(scrim)
+        self._participant_provider.drop_participants(
+            *[participant.user_id for participant in scrim.teams_manager.all_participants])
 
 
 def setup(client: ScrimBotClient):
