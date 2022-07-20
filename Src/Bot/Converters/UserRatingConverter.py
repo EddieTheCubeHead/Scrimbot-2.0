@@ -9,6 +9,7 @@ from Bot.DataClasses.Game import Game
 from Bot.DataClasses.Guild import Guild
 from Bot.DataClasses.User import User
 from Bot.DataClasses.UserRating import UserRating
+from Bot.DataClasses.UserScrimResult import Result
 from Database.DatabaseConnections.UserRatingConnection import UserRatingConnection
 
 
@@ -35,3 +36,8 @@ class UserRatingConverter(ConverterBase):
     def create_user_rating(self, rating: int, user: User, game: Game, guild: Optional[Guild]) -> UserRating:
         self.connection.set_user_rating(rating, user, game, guild)
         return self.get_user_statistics(user, game, guild)
+
+    def update_user_rating(self, change: int, user: User, game: Game, guild: Optional[Guild])\
+            -> UserRating:
+        original_rating = self.connection.get_user_rating(user, game, guild)
+        return self.connection.set_user_rating(original_rating.rating + change, user, game, guild)

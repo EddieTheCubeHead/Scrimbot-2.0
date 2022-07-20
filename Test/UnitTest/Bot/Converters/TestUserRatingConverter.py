@@ -4,6 +4,7 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import MagicMock
 
 from Bot.Converters.UserRatingConverter import UserRatingConverter
+from Bot.DataClasses.UserScrimResult import Result
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
@@ -86,6 +87,20 @@ class TestUserRatingConverter(AsyncUnittestBase):
         self.connection.get_user_statistics.return_value = mock_rating
         actual = self.converter.create_user_rating(4321, mock_user, mock_game, mock_guild)
         self.assertEqual(mock_member, actual.user.member)
+
+    def test_update_user_rating_given_called_then_user_rating_fetched_and_updated_and_user_scrim_result_created(self):
+        mock_user = self._create_mock_user()
+        mock_game = self._create_mock_game()
+        mock_guild = self._create_mock_guild()
+        mock_original_rating = MagicMock()
+        mock_original_rating.rating = 1234
+        mock_member = MagicMock()
+        mock_user.member = mock_member
+        mock_updated_rating = MagicMock()
+        self.connection.get_user_rating.return_value = mock_original_rating
+        self.connection.set_user_rating.return_value = mock_updated_rating
+        self.converter.update_user_rating(10, mock_user, mock_game, mock_guild)
+        self.connection.set_user_rating.assert_called_with(1244, mock_user, mock_game, mock_guild)
 
     def _create_mock_user(self):
         mock_user = MagicMock()

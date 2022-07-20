@@ -3,18 +3,14 @@ __author__ = "Eetu Asikainen"
 
 from typing import Union
 
-from discord.ext import commands
-
 from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimContext import ScrimContext
-from Bot.DataClasses.ParticipantTeam import ParticipantTeam
-from Bot.DataClasses.Scrim import Scrim
 from Bot.DataClasses.Team import Team
 from Database.DatabaseConnections.ScrimConnection import ScrimConnection
 
 
-ScrimResult = list[tuple[Team, ...]]
+ScrimResult = list[tuple[Team, ...]] | None
 
 
 def _name_conversion(ctx: ScrimContext, argument: str) -> ScrimResult:
