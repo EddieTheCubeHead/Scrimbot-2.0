@@ -12,6 +12,9 @@ from Database.DatabaseConnections.UserScrimResultConnection import UserScrimResu
 @BotDependencyInjector.singleton
 class UserScrimResultConverter(ConverterBase[UserScrimResult]):
 
+    connection: UserScrimResultConnection
+
+    @BotDependencyInjector.inject
     def __init__(self, connection: UserScrimResultConnection):
         super().__init__(connection)
 

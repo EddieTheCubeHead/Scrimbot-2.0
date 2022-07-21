@@ -3,6 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from Bot.Converters.ScrimResultConverter import ScrimResult
 from Bot.Converters.UserRatingConverter import UserRatingConverter
+from Bot.Converters.UserScrimResultConverter import UserScrimResultConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimContext import ScrimContext
 from Bot.DataClasses.ParticipantTeam import ParticipantTeam
@@ -77,5 +78,5 @@ class ResultHandler:
             for player in [player for team in losing_teams for player in team.members]:
                 self._update_user_rating(ctx, player, Result.LOSS)
 
-    def _update_user_rating(self, ctx: ScrimContext, user: User, result: Result):
-        self._converter.update_user_rating(0, user, ctx.scrim.game, ctx.guild)
+    def _update_user_rating(self, ctx: ScrimContext, user: User, result: Result, change: int = 0):
+        self._converter.update_user_rating(change, result, user, ctx.scrim, ctx.guild)

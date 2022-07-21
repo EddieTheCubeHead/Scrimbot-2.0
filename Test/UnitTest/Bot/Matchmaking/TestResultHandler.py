@@ -63,10 +63,10 @@ class TestResultHandler(UnittestBase):
         self.mock_teams_manager.get_game_teams.return_value = self.mocked_teams
         self.service.save_result(self.mock_context, result)
         for player in self.mocked_teams[0].members:
-            self.mock_converter.update_user_rating.assert_any_call(0, player, self.mock_scrim.game,
+            self.mock_converter.update_user_rating.assert_any_call(0, Result.WIN, player, self.mock_scrim,
                                                                    self.mock_context.guild)
         for player in self.mocked_teams[1].members:
-            self.mock_converter.update_user_rating.assert_any_call(0, player, self.mock_scrim.game,
+            self.mock_converter.update_user_rating.assert_any_call(0, Result.LOSS, player, self.mock_scrim,
                                                                    self.mock_context.guild)
 
     def _create_results(self, *team_groups: tuple[str, ...]) -> ScrimResult:

@@ -18,7 +18,8 @@ class TestUserRatingConverter(AsyncUnittestBase):
     def setUp(self) -> None:
         self.connection = MagicMock()
         self.context = MagicMock()
-        self.converter = UserRatingConverter(self.connection)
+        self.result_converter = MagicMock()
+        self.converter = UserRatingConverter(self.connection, self.result_converter)
 
     def test_build_given_file_imported_then_singleton_dependency_created(self):
         self._assert_singleton_dependency(UserRatingConverter)
@@ -91,16 +92,36 @@ class TestUserRatingConverter(AsyncUnittestBase):
     def test_update_user_rating_given_called_then_user_rating_fetched_and_updated_and_user_scrim_result_created(self):
         mock_user = self._create_mock_user()
         mock_game = self._create_mock_game()
+        mock_scrim = MagicMock()
+        mock_scrim.game = mock_game
         mock_guild = self._create_mock_guild()
         mock_original_rating = MagicMock()
         mock_original_rating.rating = 1234
         mock_member = MagicMock()
         mock_user.member = mock_member
         mock_updated_rating = MagicMock()
+        mock_result = MagicMock()
         self.connection.get_user_rating.return_value = mock_original_rating
         self.connection.set_user_rating.return_value = mock_updated_rating
-        self.converter.update_user_rating(10, mock_user, mock_game, mock_guild)
+        self.converter.update_user_rating(10, mock_result, mock_user, mock_scrim, mock_guild)
         self.connection.set_user_rating.assert_called_with(1244, mock_user, mock_game, mock_guild)
+
+    def test_update_user_rating_when_called_then_frozen_rating_before_update_saved(self):
+        mock_user = self._create_mock_user()
+        mock_game = self._create_mock_game()
+        mock_scrim = MagicMock()
+        mock_scrim.game = mock_game
+        mock_guild = self._create_mock_guild()
+        mock_original_rating = MagicMock()
+        mock_original_rating.rating = 1234
+        mock_member = MagicMock()
+        mock_user.member = mock_member
+        mock_updated_rating = MagicMock()
+        mock_result = MagicMock()
+        self.connection.get_user_rating.return_value = mock_original_rating
+        self.connection.set_user_rating.return_value = mock_updated_rating
+        self.converter.update_user_rating(10, mock_result, mock_user, mock_scrim, mock_guild)
+        self.result_converter.create_result.assert_called_with(mock_original_rating, mock_scrim, mock_result)
 
     def _create_mock_user(self):
         mock_user = MagicMock()
