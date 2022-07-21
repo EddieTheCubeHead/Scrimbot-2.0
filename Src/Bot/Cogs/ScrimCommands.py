@@ -20,6 +20,7 @@ from Bot.Converters.GameConverter import GameConverter
 from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
 from Bot.Logic.ScrimManager import ScrimManager
 from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
+from Bot.Matchmaking.ResultHandler import ResultHandler
 from Bot.Matchmaking.TeamCreationStrategy import TeamCreationStrategy
 from Bot.Matchmaking.RandomTeamsStrategy import RandomTeamsStrategy
 from Bot.Matchmaking.ClearTeamsStrategy import ClearTeamsStrategy
@@ -37,13 +38,15 @@ class ScrimCommands(commands.Cog):
     @BotDependencyInjector.inject
     def __init__(self, scrim_channel_converter: ScrimChannelConverter, response_builder: ScrimEmbedBuilder,
                  settings_service: BotSettingsService, scrims_manager: ActiveScrimsManager,
-                 waiting_scrim_service: WaitingScrimService, participant_provider: ScrimParticipantProvider):
+                 waiting_scrim_service: WaitingScrimService, participant_provider: ScrimParticipantProvider,
+                 result_handler: ResultHandler):
         self._scrim_channel_converter = scrim_channel_converter
         self._response_builder = response_builder
         self._settings_service = settings_service
         self._scrims_manager = scrims_manager
         self._waiting_scrim_service = waiting_scrim_service
         self._participant_provider = participant_provider
+        self._result_handler = result_handler
 
     @commands.command(aliases=['s'])
     @commands.guild_only()
@@ -155,6 +158,7 @@ class ScrimCommands(commands.Cog):
         await scrim.end(winner)
         await ctx.message.delete()
         await self._response_builder.edit(ctx.scrim.message, displayable=ctx.scrim)
+        self._result_handler.save_result(ctx, winner)
         self._scrims_manager.drop(scrim)
         self._participant_provider.drop_participants(
             *[participant.user_id for participant in scrim.teams_manager.all_participants])

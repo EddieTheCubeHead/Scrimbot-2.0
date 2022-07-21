@@ -14,6 +14,7 @@ from Bot.DataClasses.UserScrimResult import Result
 from Database.DatabaseConnections.ScrimConnection import ScrimConnection
 
 
+@BotDependencyInjector.singleton
 class ResultHandler:
 
     @BotDependencyInjector.inject
@@ -24,7 +25,7 @@ class ResultHandler:
     def save_result(self, ctx: ScrimContext, result: ScrimResult):
         result_scrim = self._create_result_scrim(ctx, result)
         self._connection.add_scrim(result_scrim)
-        self._update_user_ratings(ctx, result)
+        self._update_user_ratings(ctx, result_scrim, result)
 
     def _create_result_scrim(self, ctx: ScrimContext, results: ScrimResult):
         result_scrim = Scrim(ctx.scrim)
@@ -56,27 +57,27 @@ class ResultHandler:
         participant_team.team = team
         return participant_team
 
-    def _update_user_ratings(self, ctx: ScrimContext, result: ScrimResult):
+    def _update_user_ratings(self, ctx: ScrimContext, result_scrim, result: ScrimResult):
         if result is None:
-            self._update_unregistered_ratings(ctx)
+            self._update_unregistered_ratings(ctx, result_scrim)
         else:
-            self._update_result_ratings(ctx, result)
+            self._update_result_ratings(ctx, result_scrim, result)
 
-    def _update_unregistered_ratings(self, ctx: ScrimContext):
+    def _update_unregistered_ratings(self, ctx: ScrimContext, result_scrim: Scrim):
         for player in [player for team in ctx.scrim.teams_manager.get_game_teams() for player in team.members]:
-            self._update_user_rating(ctx, player, Result.UNREGISTERED)
+            self._update_user_rating(ctx, result_scrim, player, Result.UNREGISTERED)
 
-    def _update_result_ratings(self, ctx: ScrimContext, result: ScrimResult):
+    def _update_result_ratings(self, ctx: ScrimContext, result_scrim: Scrim, result: ScrimResult):
         if len(result[0]) > 1:
             for player in [player for team in result[0] for player in team.members]:
-                self._update_user_rating(ctx, player, Result.TIE)
+                self._update_user_rating(ctx, result_scrim, player, Result.TIE)
         else:
             for player in result[0][0].members:
-                self._update_user_rating(ctx, player, Result.WIN)
+                self._update_user_rating(ctx, result_scrim, player, Result.WIN)
         if len(result) > 1:
             losing_teams = [team for group in result[1:] for team in group]
             for player in [player for team in losing_teams for player in team.members]:
-                self._update_user_rating(ctx, player, Result.LOSS)
+                self._update_user_rating(ctx, result_scrim, player, Result.LOSS)
 
-    def _update_user_rating(self, ctx: ScrimContext, user: User, result: Result, change: int = 0):
-        self._converter.update_user_rating(change, result, user, ctx.scrim, ctx.guild)
+    def _update_user_rating(self, ctx: ScrimContext, scrim: Scrim, user: User, result: Result, change: int = 0):
+        self._converter.update_user_rating(change, result, user, scrim, ctx.guild)

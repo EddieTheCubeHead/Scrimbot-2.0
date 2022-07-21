@@ -24,8 +24,10 @@ class TestScrimCommands(AsyncUnittestBase):
         self.active_scrims_manager = MagicMock()
         self.waiting_scrim_service = MagicMock()
         self.participant_provider = MagicMock()
+        self.result_handler = MagicMock()
         self.cog = ScrimCommands(self.scrim_channel_converter, self.response_builder, self.settings_service,
-                                 self.active_scrims_manager, self.waiting_scrim_service, self.participant_provider)
+                                 self.active_scrims_manager, self.waiting_scrim_service, self.participant_provider,
+                                 self.result_handler)
         self.cog._inject(MagicMock())
 
     async def test_scrim_given_called_with_game_then_scrim_with_game_created_and_embed_sent(self):
@@ -214,6 +216,20 @@ class TestScrimCommands(AsyncUnittestBase):
         self.active_scrims_manager.drop.assert_called_with(mock_scrim)
         self.participant_provider.drop_participants.assert_called_with(
             *[participant.user_id for participant in participants])
+
+    async def test_winner_when_called_then_result_saved(self):
+        mock_scrim = AsyncMock()
+        mock_scrim.state = STARTED
+        ctx = AsyncMock()
+        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.scrim = mock_scrim
+        ctx.scrim.message = AsyncMock()
+        participants = self._create_participants(10)
+        ctx.scrim.teams_manager.all_participants = participants
+        team_1 = MagicMock()
+        team_2 = MagicMock()
+        await self.cog.winner(ctx, [(team_1, team_2)])
+        self.result_handler.save_result.assert_called_with(ctx, [(team_1, team_2)])
 
     async def test_tie_when_called_then_behaviour_identical_to_winner_with_single_tuple_argument(self):
         mock_scrim = AsyncMock()

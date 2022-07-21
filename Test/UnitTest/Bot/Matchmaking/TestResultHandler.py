@@ -28,6 +28,9 @@ class TestResultHandler(UnittestBase):
         self.service = ResultHandler(self.mock_connection, self.mock_converter)
         self.mocked_teams = []
 
+    def test_build_given_file_imported_then_singleton_dependency_created(self):
+        self._assert_singleton_dependency(ResultHandler)
+
     def test_save_results_given_two_team_scrim_when_winner_and_loser_present_then_results_saved_correctly(self):
         result = self._create_results(("Team 1",), ("Team 2",))
         self.mock_teams_manager.get_game_teams.return_value = self.mocked_teams
@@ -62,11 +65,12 @@ class TestResultHandler(UnittestBase):
         result = self._create_results(("Team 1",), ("Team 2",))
         self.mock_teams_manager.get_game_teams.return_value = self.mocked_teams
         self.service.save_result(self.mock_context, result)
+        created_scrim = self.mock_connection.add_scrim.call_args[0][0]
         for player in self.mocked_teams[0].members:
-            self.mock_converter.update_user_rating.assert_any_call(0, Result.WIN, player, self.mock_scrim,
+            self.mock_converter.update_user_rating.assert_any_call(0, Result.WIN, player, created_scrim,
                                                                    self.mock_context.guild)
         for player in self.mocked_teams[1].members:
-            self.mock_converter.update_user_rating.assert_any_call(0, Result.LOSS, player, self.mock_scrim,
+            self.mock_converter.update_user_rating.assert_any_call(0, Result.LOSS, player, created_scrim,
                                                                    self.mock_context.guild)
 
     def _create_results(self, *team_groups: tuple[str, ...]) -> ScrimResult:
