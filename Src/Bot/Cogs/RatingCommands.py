@@ -2,7 +2,6 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
-from typing_extensions import Annotated
 
 from Bot.Checks.PermissionsCheck import PermissionsCheck
 from Bot.Converters.GuildConverter import GuildConverter

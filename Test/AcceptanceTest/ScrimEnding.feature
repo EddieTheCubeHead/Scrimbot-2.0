@@ -48,7 +48,6 @@ Feature: Ending a scrim
     And scrim message has no reactions
     And players 1 to 10 moved to lobby voice channel
 
-  @wip
   Scenario: Ending a scrim with two teams and automatic voice switching without recording result
     Given a Dota 2 scrim with full teams and 2 registered voice channels
     When all players are in voice chat

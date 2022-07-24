@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 import re
 
-from discord import Reaction, Member, DiscordException, Message
+from discord import Reaction, Member, Message
 from discord.ext import commands
 from discord.ext.commands import CommandError
 

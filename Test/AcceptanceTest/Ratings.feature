@@ -58,7 +58,6 @@ Feature: Setting, updating and displaying user ratings for games on both guild a
       | Unrecorded        | 0                                 |
       | Rating            | 1008                              |
 
-  @wip
   @as_admin
   Scenario: Set rating for user with prior results
     Given user {user_1_id} has prior Dota 2 results
