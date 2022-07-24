@@ -25,8 +25,9 @@ class UserScrimResult(DataClass):  # pragma: no cover
 
     rating = relationship("UserRating", back_populates="results")
     scrim = relationship("Scrim", back_populates="results")
+    user = relationship("User", back_populates="results")
 
-    def __init__(self, rating_id: int, user_id: int, scrim_id: int, frozen_rating: int,
+    def __init__(self, user_id: int, rating_id: int | None, scrim_id: int, frozen_rating: int,
                  result: Result = Result.UNREGISTERED):
         self.rating_id = rating_id
         self.user_id = user_id

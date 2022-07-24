@@ -8,7 +8,7 @@ from Bot.Checks.FreeScrimCheck import FreeScrimCheck
 from Bot.Cogs.Helpers.BotSettingsService import BotSettingsService
 from Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
 from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
-from Bot.Converters.ScrimResultConverter import ScrimResultConverter
+from Bot.Converters.ScrimResultConverter import ScrimResultConverter, ScrimResult
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.Core.ScrimContext import ScrimContext
@@ -18,6 +18,8 @@ from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 from Bot.Converters.GameConverter import GameConverter
 from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
 from Bot.Logic.ScrimManager import ScrimManager
+from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
+from Bot.Matchmaking.ResultHandler import ResultHandler
 from Bot.Matchmaking.TeamCreationStrategy import TeamCreationStrategy
 from Bot.Matchmaking.RandomTeamsStrategy import RandomTeamsStrategy
 from Bot.Matchmaking.ClearTeamsStrategy import ClearTeamsStrategy
@@ -35,12 +37,15 @@ class ScrimCommands(commands.Cog):
     @BotDependencyInjector.inject
     def __init__(self, scrim_channel_converter: ScrimChannelConverter, response_builder: ScrimEmbedBuilder,
                  settings_service: BotSettingsService, scrims_manager: ActiveScrimsManager,
-                 waiting_scrim_service: WaitingScrimService):
+                 waiting_scrim_service: WaitingScrimService, participant_provider: ScrimParticipantProvider,
+                 result_handler: ResultHandler):
         self._scrim_channel_converter = scrim_channel_converter
         self._response_builder = response_builder
         self._settings_service = settings_service
         self._scrims_manager = scrims_manager
         self._waiting_scrim_service = waiting_scrim_service
+        self._participant_provider = participant_provider
+        self._result_handler = result_handler
 
     @commands.command(aliases=['s'])
     @commands.guild_only()
@@ -152,6 +157,10 @@ class ScrimCommands(commands.Cog):
         await scrim.end(winner)
         await ctx.message.delete()
         await self._response_builder.edit(ctx.scrim.message, displayable=ctx.scrim)
+        self._result_handler.save_result(ctx, winner)
+        self._scrims_manager.drop(scrim)
+        self._participant_provider.drop_participants(
+            *[participant.user_id for participant in scrim.teams_manager.all_participants])
 
     @commands.command(aliases=["draw"])
     @commands.guild_only()
@@ -166,7 +175,22 @@ class ScrimCommands(commands.Cog):
         :type ctx: ScrimContext
         """
 
-        await self.winner(ctx, None)
+        await self.winner(ctx, [tuple(team for team in ctx.scrim.teams_manager.get_game_teams())])
+
+    @commands.command()
+    @commands.guild_only()
+    @ActiveScrimCheck()
+    async def end(self, ctx: ScrimContext):
+        """A command for finishing a scrim without registering the results
+
+        args
+        ----
+
+        :param ctx: The invocation context of the command
+        :type ctx: ScrimContext
+        """
+
+        await self.winner(ctx, [])
 
     @commands.command()
     @commands.guild_only()
@@ -187,6 +211,8 @@ class ScrimCommands(commands.Cog):
         await self._response_builder.edit(ctx.scrim.message, displayable=ctx.scrim)
         await scrim.message.clear_reactions()
         self._scrims_manager.drop(scrim)
+        self._participant_provider.drop_participants(
+            *[participant.user_id for participant in scrim.teams_manager.all_participants])
 
 
 def setup(client: ScrimBotClient):

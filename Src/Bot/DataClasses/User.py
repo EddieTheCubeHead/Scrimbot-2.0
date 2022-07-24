@@ -27,6 +27,7 @@ class User(DataClass, Convertable):  # pragma: no cover
     guild_memberships = relationship("GuildMember", back_populates="user")
     ratings = relationship("UserRating", back_populates="user")
     teams = relationship("Team", secondary=TeamMember.__table__, back_populates="members")
+    results = relationship("UserScrimResult", back_populates="user")
 
     def __init__(self, user_id: int, member: Member = None):
         self.user_id = user_id

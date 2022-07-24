@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from typing import List, Dict, Union, Optional
+from typing import List, Dict, Union, Optional, TYPE_CHECKING
 
 import discord
 
+if TYPE_CHECKING:
+    from Bot.Converters.ScrimResultConverter import ScrimResult
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
 from Bot.DataClasses.Game import Game
@@ -64,7 +68,7 @@ class ScrimTeamsManager:
         self._captains = self._build_captains()
         self._add_channels_to_teams(team_channels)
         self._add_lobby_channel(lobby)
-        self.winner: Optional[str] = None
+        self.result: Optional[ScrimResult] = None
         self.terminator: Optional[int] = None
 
     @classmethod
@@ -105,10 +109,10 @@ class ScrimTeamsManager:
         participant_members = [self._participant_manager.try_get_participant(player.user_id) for player in team.members]
         return all(is_in_guild_voice_chat(team.voice_channel.parent_channel, member) for member in participant_members)
 
-    def get_standard_teams(self):
+    def get_standard_teams(self) -> list[Team]:
         return list(self._teams.values())[self.game.team_count:]
 
-    def get_game_teams(self):
+    def get_game_teams(self) -> list[Team]:
         return list(self._teams.values())[:self.game.team_count]
 
     def _build_teams(self, premade_teams):

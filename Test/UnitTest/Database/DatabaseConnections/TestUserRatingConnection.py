@@ -89,7 +89,7 @@ class TestUserRatingConnection(UnittestBase):
         expected_user_rating.rating = 4424
         self._assert_equal_ratings(expected_user_rating, actual_user_rating)
 
-    def test_rating_given_existing_results_when_new_rating_created_then_results_linked(self):
+    def test_get_rating_given_existing_results_when_new_rating_created_then_results_linked(self):
         expected_user_rating = MagicMock()
         expected_user_rating.game = self._create_game()
         expected_user_rating.user = self._create_user()
@@ -150,7 +150,7 @@ class TestUserRatingConnection(UnittestBase):
     def _create_results(self, rating: UserRating, *results: Result):
         for result in results:
             new_scrim = self._create_scrim(rating.game)
-            new_result = UserScrimResult(rating.rating_id, rating.user.user_id, new_scrim.scrim_id, DEFAULT_RATING,
+            new_result = UserScrimResult(rating.user.user_id, rating.rating_id, new_scrim.scrim_id, DEFAULT_RATING,
                                          result)
             with self.master.get_session() as session:
                 session.add(new_result)
