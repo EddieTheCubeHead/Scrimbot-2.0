@@ -19,5 +19,4 @@ class UserScrimResultConverter(ConverterBase[UserScrimResult]):
         super().__init__(connection)
 
     def create_result(self, user_rating: UserRating, scrim: Scrim, result: Result) -> UserScrimResult:
-        return self.connection.create_result(user_rating.rating_id, user_rating.user_id, scrim.scrim_id,
-                                             user_rating.rating, result)
+        return self.connection.create_result(user_rating, scrim, result)

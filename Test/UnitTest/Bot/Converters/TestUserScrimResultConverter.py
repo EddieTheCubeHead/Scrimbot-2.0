@@ -20,6 +20,5 @@ class TestUserScrimResultConverter(UnittestBase):
         expected = MagicMock()
         self.mock_connection.create_result.return_value = expected
         actual = self.converter.create_result(mock_user_rating, mock_scrim, mock_result)
-        self.mock_connection.create_result.assert_called_with(mock_user_rating.rating_id, mock_user_rating.user_id,
-                                                              mock_scrim.scrim_id, mock_user_rating.rating, mock_result)
+        self.mock_connection.create_result.assert_called_with(mock_user_rating, mock_scrim, mock_result)
         self.assertEqual(actual, expected)
