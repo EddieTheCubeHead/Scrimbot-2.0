@@ -12,6 +12,9 @@ import discord
 
 from Bot.Core.ScrimContext import ScrimContext
 from Bot import Cogs
+from Bot.DataClasses.Team import Team
+from Bot.DataClasses.User import User
+from Bot.DataClasses.UserRating import UserRating
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
@@ -146,3 +149,16 @@ def create_mock_context(guild_id: int, channel_id: int, author_id: int,
     mock_context.bot = _create_mock_bot()
     mock_context.send = AsyncMock()
     return mock_context
+
+
+def create_team_from_ratings(*ratings: int) -> list[UserRating]:
+    team_members = []
+    for rating in ratings:
+        team_members.append(_create_user_rating(rating))
+    return team_members
+
+
+def _create_user_rating(rating: int) -> UserRating:
+    mock_rating = MagicMock()
+    mock_rating.rating = rating
+    return mock_rating

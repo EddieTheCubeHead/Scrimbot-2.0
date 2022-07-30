@@ -5,7 +5,7 @@ __author__ = "Eetu Asikainen"
 from Bot.Converters.TeamCreationStrategyConverter import TeamCreationStrategyConverter
 from Bot.Logic import ScrimManager
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
-from Bot.Matchmaking.TeamCreationStrategy import TeamCreationStrategy
+from Bot.Matchmaking.TeamCreation.TeamCreationStrategy import TeamCreationStrategy
 
 
 @TeamCreationStrategyConverter.register("clear")

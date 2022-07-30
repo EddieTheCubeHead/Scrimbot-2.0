@@ -3,8 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock, AsyncMock
 
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
-from Bot.Matchmaking.RandomTeamsStrategy import RandomTeamsStrategy
+from Bot.Matchmaking.TeamCreation.RandomTeamsStrategy import RandomTeamsStrategy
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
 
