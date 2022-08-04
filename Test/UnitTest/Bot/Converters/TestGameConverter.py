@@ -62,6 +62,19 @@ class TestGameConverter(AsyncUnittestBase):
         self.system_logger.info.assert_called_with(f"An exception occurred during bot operation: Cannot initialize two "
                                                    f"games with the same name ('Test')")
 
+    def test_init_games_given_games_already_inited_then_does_nothing(self):
+        db_game = Game("Test", "0xffffff", "icon_url", 5)
+        self.connection.get_all.return_value = [db_game]
+        self.converter.init_games({})
+        games = {"CS:GO": {"colour": "0xffffff",
+                           "icon": "icon_url",
+                           "min_team_size": 5},
+                 "Dota 2": {"colour": "0xffffff",
+                            "icon": "icon_url",
+                            "min_team_size": 5}}
+        self.converter.init_games(games)
+        self.assertEqual(1, len(self.converter.games))
+
     def test_add_game_given_valid_game_then_successful(self):
         new_game_name = "New game"
         new_game = {"colour": "0xffffff", "icon": "icon_url", "min_team_size": 5, "max_team_size": 7,

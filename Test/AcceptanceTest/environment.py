@@ -2,6 +2,7 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
+from Bot.Converters.GameConverter import GameConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.Logging.BotClientLogger import BotClientLogger
 from Bot.Core.ScrimBotClient import ScrimBotClient
@@ -43,6 +44,7 @@ def _setup_bot(context):
     BotDependencyInjector.dependencies[MasterConnection] = MasterConnection(config, ":memory:")
     BotDependencyInjector.dependencies[DiscordVoiceChannelProvider] = DiscordVoiceChannelProvider()
     BotDependencyInjector.dependencies[ScrimParticipantProvider] = ScrimParticipantProvider()
+    BotDependencyInjector.dependencies[GameConverter] = GameConverter()
     context.mock_context_provider = ResponseMessageCatcher()
     context.client = ScrimBotClient(config, logger, context.mock_context_provider)
     ResponseLoggerContext.reset_position()

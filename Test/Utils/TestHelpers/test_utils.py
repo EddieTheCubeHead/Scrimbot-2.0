@@ -11,10 +11,6 @@ from unittest.mock import MagicMock, AsyncMock
 import discord
 
 from Bot.Core.ScrimContext import ScrimContext
-from Bot import Cogs
-from Bot.DataClasses.Team import Team
-from Bot.DataClasses.User import User
-from Bot.DataClasses.UserRating import UserRating
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 
@@ -42,6 +38,7 @@ def assert_almost_now(timestamp: datetime, delta: timedelta = timedelta(millisec
 
 
 def get_cogs_messages():
+    from Bot import Cogs
     for cog in os.listdir(os.path.dirname(Cogs.__file__)):
         if re.match(r"^[^_][a-zA-Z]*\.py$", cog):
             yield rf"Using cog Bot.Cogs.{cog[:-3]}, with version {__version__}"
@@ -151,14 +148,14 @@ def create_mock_context(guild_id: int, channel_id: int, author_id: int,
     return mock_context
 
 
-def create_team_from_ratings(*ratings: int) -> list[UserRating]:
+def create_team_from_ratings(*ratings: int):
     team_members = []
     for rating in ratings:
         team_members.append(_create_user_rating(rating))
     return team_members
 
 
-def _create_user_rating(rating: int) -> UserRating:
+def _create_user_rating(rating: int):
     mock_rating = MagicMock()
     mock_rating.rating = rating
     return mock_rating

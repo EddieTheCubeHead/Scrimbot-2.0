@@ -19,6 +19,12 @@ from Bot.Logic.ScrimManager import ScrimManager
 from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
 from Bot.Matchmaking.ResultHandler import ResultHandler
 from Bot.Matchmaking.TeamCreation.TeamCreationStrategy import TeamCreationStrategy
+# These need to be imported to enable registering them for DI
+from Bot.Converters.GameConverter import GameConverter
+from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
+from Bot.Matchmaking.TeamCreation.RandomTeamsStrategy import RandomTeamsStrategy
+from Bot.Matchmaking.TeamCreation.ClearTeamsStrategy import ClearTeamsStrategy
+from Configs.Config import Config
 
 
 async def _add_team_reactions(scrim: ScrimManager):
