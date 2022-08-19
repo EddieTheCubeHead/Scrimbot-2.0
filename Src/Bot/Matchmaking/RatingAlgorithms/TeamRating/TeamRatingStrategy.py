@@ -9,5 +9,5 @@ from Bot.DataClasses.UserRating import UserRating
 class TeamRatingStrategy(ABC):
 
     @abstractmethod
-    def get_rating(self, *member_ratings: UserRating) -> int:
+    def get_rating(self, *member_ratings: UserRating) -> float:
         pass
