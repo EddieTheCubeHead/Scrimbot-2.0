@@ -6,7 +6,7 @@ from collections.abc import Iterator
 
 from Bot.Converters.TeamCreationStrategyConverter import TeamCreationStrategyConverter
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
-from Bot.Matchmaking.TeamCreationStrategy import TeamCreationStrategy
+from Bot.Matchmaking.TeamCreation.TeamCreationStrategy import TeamCreationStrategy
 
 
 def _next_team_iterator(team_count: int) -> Iterator[int]:

@@ -32,6 +32,8 @@ class GameConverter(ConverterBase[Game]):
         self._reserved_alias_names: Set = set()
 
     def init_games(self, games: dict[str, dict[str, Union[str, int, list[str]]]]):
+        if self.games:
+            return
         for db_game in self.connection.get_all():
             self.games[db_game.name] = db_game
         for game, data in games.items():
@@ -79,5 +81,5 @@ class GameConverter(ConverterBase[Game]):
         for alias in aliases:
             if alias.name in self._reserved_alias_names:
                 raise BotLoggedContextException(f"Cannot initialize two games with the same alias "
-                                                     f"('{alias.name}')")
+                                                f"('{alias.name}')")
             self._reserved_alias_names.add(alias.name)

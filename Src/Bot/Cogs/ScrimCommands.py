@@ -8,21 +8,22 @@ from Bot.Checks.FreeScrimCheck import FreeScrimCheck
 from Bot.Cogs.Helpers.BotSettingsService import BotSettingsService
 from Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
 from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
-from Bot.Converters.ScrimResultConverter import ScrimResultConverter, ScrimResult
+from Bot.Converters.ScrimResultConverter import ScrimResultConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.Core.ScrimContext import ScrimContext
 from Bot.DataClasses.Game import Game
 from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
 from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
-from Bot.Converters.GameConverter import GameConverter
-from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
 from Bot.Logic.ScrimManager import ScrimManager
 from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
 from Bot.Matchmaking.ResultHandler import ResultHandler
-from Bot.Matchmaking.TeamCreationStrategy import TeamCreationStrategy
-from Bot.Matchmaking.RandomTeamsStrategy import RandomTeamsStrategy
-from Bot.Matchmaking.ClearTeamsStrategy import ClearTeamsStrategy
+from Bot.Matchmaking.TeamCreation.TeamCreationStrategy import TeamCreationStrategy
+# These need to be imported to enable registering them for DI
+from Bot.Converters.GameConverter import GameConverter
+from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
+from Bot.Matchmaking.TeamCreation.RandomTeamsStrategy import RandomTeamsStrategy
+from Bot.Matchmaking.TeamCreation.ClearTeamsStrategy import ClearTeamsStrategy
 from Configs.Config import Config
 
 

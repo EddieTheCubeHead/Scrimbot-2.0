@@ -1,5 +1,5 @@
 # Created by EddieTheCubeHead at 27/12/2021
-Feature: Channel registration rewrite
+Feature: Channel registration
   # Bot should be able to register channels to be used as scrim setup/voice channels
   # Channel registration can be done without arguments
   #  - This creates a scrim capable text channel with no associated voice channels
