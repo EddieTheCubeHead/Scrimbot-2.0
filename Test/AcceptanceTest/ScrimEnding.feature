@@ -73,7 +73,7 @@ Feature: Ending a scrim
     And ;winner 2 is called
     Then error and help received with message
       """
-      Could not convert argument '1' into type scrim result because recording results for scrims with more than two teams is not currently supported
+      Could not convert argument '2' into type scrim result because recording results for scrims with more than two teams is not currently supported
       """
 
   Scenario: Attempting to end a scrim with only one team by declaring a winner
