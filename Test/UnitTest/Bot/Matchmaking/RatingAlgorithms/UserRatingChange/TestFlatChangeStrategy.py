@@ -14,6 +14,9 @@ class TestFlatChangeStrategy(UnittestBase):
     def setUp(self) -> None:
         self.strategy = FlatChangeStrategy()
 
+    def test_build_given_file_imported_then_singleton_dependency_created(self):
+        self._assert_singleton_dependency(FlatChangeStrategy)
+
     def test_get_rating_when_winning_returns_positive_flat_change(self):
         mock_user_rating = self._create_mock_user_rating()
         self.assertEqual(25, self.strategy.get_rating_change(mock_user_rating, Result.WIN, 3421, 1111))
@@ -31,3 +34,6 @@ class TestFlatChangeStrategy(UnittestBase):
         mock_rating = MagicMock()
         mock_rating.rating = rating
         return mock_rating
+
+    def test_get_name_returns_flat(self):
+        self.assertEqual("flat", self.strategy.name)

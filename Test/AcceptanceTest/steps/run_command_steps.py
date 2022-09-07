@@ -99,9 +99,9 @@ async def step_impl(context, user: str, game: str, value: str):
     hide_command_calls(context, 1)
 
 
-@given("user {user} has prior {game} results")
+@given("user has prior {game} results")
 @async_run_until_complete
-async def step_impl(context, user: str, game: str):
+async def step_impl(context, game: str):
     wins = int(context.table[0][0])
     losses = int(context.table[0][1])
     ties = int(context.table[0][2])
@@ -116,14 +116,38 @@ async def step_impl(context, user: str, game: str):
         await _create_scrim_result(context, game, Result.UNREGISTERED)
 
 
-async def _create_scrim_result(context: Context, game: str, result: Result):
+@given("user won a {game} scrim")
+@async_run_until_complete
+async def step_impl(context, game: str):
+    await _create_scrim_result(context, game, Result.WIN)
+
+
+@given("user tied a {game} scrim")
+@async_run_until_complete
+async def step_impl(context, game: str):
+    await _create_scrim_result(context, game, Result.TIE)
+
+
+@given("user lost a {game} scrim")
+@async_run_until_complete
+async def step_impl(context, game: str):
+    await _create_scrim_result(context, game, Result.LOSS)
+
+
+@given("user played an unregistered {game} scrim")
+@async_run_until_complete
+async def step_impl(context, game: str):
+    await _create_scrim_result(context, game, None)
+
+
+async def _create_scrim_result(context: Context, game: str, result: Optional[Result]):
     await create_filled_game(0, context, game)
     await call_command(context, ';start false')
     result_call = _get_result_command(result)
     await call_command(context, result_call)
 
 
-def _get_result_command(result: Result):
+def _get_result_command(result: Optional[Result]):
     if result == Result.WIN:
         return ';winner 1'
     elif result == Result.LOSS:

@@ -28,12 +28,18 @@ class Game(DataClass, Convertable):  # pragma: no cover
     max_team_size = Column(Integer, nullable=True, default=None)  # note: None = min_size, while 0 = no limit
     team_count = Column(Integer, default=2)
 
+    # Not enums because config file is json and editable by user so enums cannot be enforced there anyways. Incorrect
+    # names will default to "flat" and "mean" respectively
+    rating_change_algorithm = Column(String, default="flat")
+    team_rating_algorithm = Column(String, default="mean")
+
     aliases = relationship("Alias", back_populates="game")
     ratings = relationship("UserRating", back_populates="game")
     scrims = relationship("Scrim", back_populates="game")
 
     def __init__(self, name: str, colour: str, icon: str, min_team_size: int, max_team_size: int = None,
-                 team_count: int = 2, aliases: list[Alias] = None):
+                 team_count: int = 2, aliases: list[Alias] = None, rating_change: str = "flat",
+                 team_rating: str = "mean"):
 
         self.name = name
         self._colour = colour
@@ -42,6 +48,8 @@ class Game(DataClass, Convertable):  # pragma: no cover
         self.min_team_size = min_team_size
         self.max_team_size: int = max_team_size if max_team_size is not None else min_team_size
         self.team_count = team_count
+        self.rating_change_algorithm = rating_change
+        self.team_rating_algorithm = team_rating
 
     @property
     def colour(self):

@@ -73,5 +73,12 @@
     "icon": "https://cdn.pixabay.com/photo/2012/04/24/12/43/t-39853_960_720.png",
     "colour": "0xffffff",
     "alias": [ "Teams of 2 to 4" ]
+  },
+  "FlatRatingChangeGame": {
+    "min_team_size": 5,
+    "icon": "https://cdn.pixabay.com/photo/2012/04/24/12/43/t-39853_960_720.png",
+    "colour": "0xffffff",
+    "alias": [],
+    "rating_change": "flat"
   }
 }

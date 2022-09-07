@@ -4,7 +4,6 @@ __author__ = "Eetu Asikainen"
 from Bot.Converters.GuildConverter import GuildConverter
 from Bot.Converters.ScrimResultConverter import ScrimResult
 from Bot.Converters.UserRatingConverter import UserRatingConverter
-from Bot.Converters.UserScrimResultConverter import UserScrimResultConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimContext import ScrimContext
 from Bot.DataClasses.Guild import Guild
@@ -13,6 +12,7 @@ from Bot.DataClasses.Scrim import Scrim
 from Bot.DataClasses.Team import Team
 from Bot.DataClasses.User import User
 from Bot.DataClasses.UserScrimResult import Result
+from Bot.Matchmaking.RatingAlgorithms.RatingChangeCalculator import RatingChangeCalculator
 from Database.DatabaseConnections.ScrimConnection import ScrimConnection
 
 
@@ -21,10 +21,11 @@ class ResultHandler:
 
     @BotDependencyInjector.inject
     def __init__(self, connection: ScrimConnection, rating_converter: UserRatingConverter,
-                 guild_converter: GuildConverter):
+                 guild_converter: GuildConverter, rating_change_calculator: RatingChangeCalculator):
         self._connection = connection
         self._rating_converter = rating_converter
         self._guild_converter = guild_converter
+        self._rating_change_calculator = rating_change_calculator
 
     def save_result(self, ctx: ScrimContext, result: ScrimResult):
         result_scrim = self._create_result_scrim(ctx, result)
@@ -74,16 +75,17 @@ class ResultHandler:
 
     def _update_result_ratings(self, ctx: ScrimContext, result_scrim: Scrim, result: ScrimResult):
         guild = self._guild_converter.get_guild(ctx.guild.id)
+        changes = self._rating_change_calculator.calculate_changes(result_scrim.game, guild, result)
         if len(result[0]) > 1:
             for player in [player for team in result[0] for player in team.members]:
-                self._update_user_rating(guild, result_scrim, player, Result.TIE)
+                self._update_user_rating(guild, result_scrim, player, Result.TIE, changes[player])
         else:
             for player in result[0][0].members:
-                self._update_user_rating(guild, result_scrim, player, Result.WIN)
+                self._update_user_rating(guild, result_scrim, player, Result.WIN, changes[player])
         if len(result) > 1:
             losing_teams = [team for group in result[1:] for team in group]
             for player in [player for team in losing_teams for player in team.members]:
-                self._update_user_rating(guild, result_scrim, player, Result.LOSS)
+                self._update_user_rating(guild, result_scrim, player, Result.LOSS, changes[player])
 
     def _update_user_rating(self, guild: Guild, scrim: Scrim, user: User, result: Result, change: int = 0):
         self._rating_converter.update_user_rating(change, result, user, scrim, guild)

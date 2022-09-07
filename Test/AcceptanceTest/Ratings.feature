@@ -3,7 +3,6 @@ Feature: Setting, updating and displaying user ratings for games
   # Guild admins can set and update user ratings with the command 'rating'
   #  - Usage: rating [user] [game] [value]
 
-  @wip
   @as_admin
   Scenario: Set rating for existing user in existing game with acceptable value
     When ;rating {user_id} dota 2187 is called
@@ -21,7 +20,6 @@ Feature: Setting, updating and displaying user ratings for games
       | Unrecorded        | 0                                 |
       | Rating            | 2187                              |
 
-  @wip
   Scenario: Attempting to set rating without moderator level rights
     When ;rating {user_id} dota 2187 is called
     Then error and help received with message
@@ -62,7 +60,7 @@ Feature: Setting, updating and displaying user ratings for games
 
   @as_admin
   Scenario: Set rating for user with prior results
-    Given user {user_1_id} has prior Dota 2 results
+    Given user has prior Dota 2 results
       | Wins | Losses | Ties | Unregistered |
       | 11   | 8      | 3    | 4            |
     When ;rating {user_1_id} dota 1234 is called
@@ -152,3 +150,72 @@ Feature: Setting, updating and displaying user ratings for games
       | Ties              | 0                                 |
       | Unrecorded        | 0                                 |
       | Rating            | 400                               |
+
+  Scenario: Updating ratings after a won game with flat rating change algorithm
+    Given user won a FlatRatingChangeGame scrim
+    When ;statistics {user_1_id} FlatRatingChangeGame is called
+    Then embed received with fields
+      | name              | value                                                              |
+      | Author            | FlatRatingChangeGame                                               |
+      | Icon              | https://cdn.pixabay.com/photo/2012/04/24/12/43/t-39853_960_720.png |
+      | Colour            | 0xce0000                                                           |
+      | Player statistics | <@!{user_1_id}>                                                    |
+      | Thumbnail         | {user_1_id}.icon                                                   |
+      | Games played      | 1                                                                  |
+      | Wins              | 1                                                                  |
+      | Losses            | 0                                                                  |
+      | Ties              | 0                                                                  |
+      | Unrecorded        | 0                                                                  |
+      | Rating            | 1725                                                               |
+
+  Scenario: Updating ratings after a tied game with flat rating change algorithm
+    Given user tied a FlatRatingChangeGame scrim
+    When ;statistics {user_1_id} FlatRatingChangeGame is called
+    Then embed received with fields
+      | name              | value                                                              |
+      | Author            | FlatRatingChangeGame                                               |
+      | Icon              | https://cdn.pixabay.com/photo/2012/04/24/12/43/t-39853_960_720.png |
+      | Colour            | 0xce0000                                                           |
+      | Player statistics | <@!{user_1_id}>                                                    |
+      | Thumbnail         | {user_1_id}.icon                                                   |
+      | Games played      | 1                                                                  |
+      | Wins              | 0                                                                  |
+      | Losses            | 0                                                                  |
+      | Ties              | 1                                                                  |
+      | Unrecorded        | 0                                                                  |
+      | Rating            | 1700                                                               |
+
+  Scenario: Updating ratings after a lost game with flat rating change algorithm
+    Given user lost a FlatRatingChangeGame scrim
+    When ;statistics {user_1_id} FlatRatingChangeGame is called
+    Then embed received with fields
+      | name              | value                                                              |
+      | Author            | FlatRatingChangeGame                                               |
+      | Icon              | https://cdn.pixabay.com/photo/2012/04/24/12/43/t-39853_960_720.png |
+      | Colour            | 0xce0000                                                           |
+      | Player statistics | <@!{user_1_id}>                                                    |
+      | Thumbnail         | {user_1_id}.icon                                                   |
+      | Games played      | 1                                                                  |
+      | Wins              | 0                                                                  |
+      | Losses            | 1                                                                  |
+      | Ties              | 0                                                                  |
+      | Unrecorded        | 0                                                                  |
+      | Rating            | 1675                                                               |
+
+  Scenario: Updating ratings after an unrecorded game with flat rating change algorithm
+    Given user played an unregistered FlatRatingChangeGame scrim
+    When ;statistics {user_1_id} FlatRatingChangeGame is called
+    Then embed received with fields
+      | name              | value                                                              |
+      | Author            | FlatRatingChangeGame                                               |
+      | Icon              | https://cdn.pixabay.com/photo/2012/04/24/12/43/t-39853_960_720.png |
+      | Colour            | 0xce0000                                                           |
+      | Player statistics | <@!{user_1_id}>                                                    |
+      | Thumbnail         | {user_1_id}.icon                                                   |
+      | Games played      | 1                                                                  |
+      | Wins              | 0                                                                  |
+      | Losses            | 0                                                                  |
+      | Ties              | 0                                                                  |
+      | Unrecorded        | 1                                                                  |
+      | Rating            | 1700                                                               |
+

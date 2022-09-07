@@ -13,3 +13,8 @@ class UserRatingChangeStrategy(ABC):
     def get_rating_change(self, user_rating: UserRating, result: Result, own_team_rating: int,
                           *opposing_team_ratings: int) -> int:
         pass
+
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        pass
