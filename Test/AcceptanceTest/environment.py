@@ -10,6 +10,7 @@ from Bot.Logic.DiscordVoiceChannelProvider import DiscordVoiceChannelProvider
 from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
+from Database.DatabaseConnections.GameConnection import GameConnection
 from Test.Utils.TestHelpers.DiscordPatcher import DiscordPatcher
 from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 from Test.Utils.TestHelpers.ResponseMessageCatcher import ResponseMessageCatcher
@@ -42,6 +43,7 @@ def _setup_bot(context):
     config = Config()
     logger = BotClientLogger(config)
     BotDependencyInjector.dependencies[MasterConnection] = MasterConnection(config, ":memory:")
+    BotDependencyInjector.dependencies[GameConnection] = GameConnection()
     BotDependencyInjector.dependencies[DiscordVoiceChannelProvider] = DiscordVoiceChannelProvider()
     BotDependencyInjector.dependencies[ScrimParticipantProvider] = ScrimParticipantProvider()
     BotDependencyInjector.dependencies[GameConverter] = GameConverter()

@@ -1,6 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+import unittest
 from unittest.mock import MagicMock
 
 from Bot.Converters.ScrimResultConverter import ScrimResult
@@ -26,7 +27,9 @@ class TestResultHandler(UnittestBase):
         self.mock_connection = MagicMock()
         self.mock_result_converter = MagicMock()
         self.mock_guild_converter = MagicMock()
-        self.service = ResultHandler(self.mock_connection, self.mock_result_converter, self.mock_guild_converter)
+        self.mock_change_calculator = MagicMock()
+        self.service = ResultHandler(self.mock_connection, self.mock_result_converter, self.mock_guild_converter,
+                                     self.mock_change_calculator)
         self.mocked_teams = []
 
     def test_build_given_file_imported_then_singleton_dependency_created(self):
@@ -76,10 +79,29 @@ class TestResultHandler(UnittestBase):
             self.mock_result_converter.update_user_rating.assert_any_call(0, Result.LOSS, player, created_scrim,
                                                                           mock_guild)
 
+    def test_save_results_given_given_two_team_scrim_when_using_flat_rating_change_used_then_ratings_updated(self):
+        result = self._create_results(("Team 1",), ("Team 2",))
+        mock_changes = {user: 25 for user in result[0][0].members} | {user: -25 for user in result[1][0].members}
+        self.mock_change_calculator.calculate_changes.return_value = mock_changes
+        mock_guild = MagicMock()
+        self.mock_guild_converter.get_guild.return_value = mock_guild
+        self.mock_teams_manager.get_game_teams.return_value = self.mocked_teams
+        self.service.save_result(self.mock_context, result)
+        created_scrim = self.mock_connection.add_scrim.call_args[0][0]
+        for player in self.mocked_teams[0].members:
+            self.mock_result_converter.update_user_rating.assert_any_call(25, Result.WIN, player, created_scrim,
+                                                                          mock_guild)
+        for player in self.mocked_teams[1].members:
+            self.mock_result_converter.update_user_rating.assert_any_call(-25, Result.LOSS, player, created_scrim,
+                                                                          mock_guild)
+
     def _create_results(self, *team_groups: tuple[str, ...]) -> ScrimResult:
         result_list = []
         for team_group in team_groups:
             result_list.append(self._create_result_group(team_group))
+        flattened_teams = [team for team_group in result_list for team in team_group]
+        flattened_players = [player for team in flattened_teams for player in team.members]
+        self.mock_change_calculator.calculate_changes.return_value = {player: 0 for player in flattened_players}
         return result_list
 
     def _create_result_group(self, result_group: tuple[str, ...]) -> tuple[Team]:

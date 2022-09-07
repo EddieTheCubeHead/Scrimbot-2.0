@@ -11,3 +11,8 @@ class TeamRatingStrategy(ABC):
     @abstractmethod
     def get_rating(self, *member_ratings: UserRating) -> float:
         pass
+
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        pass

@@ -99,9 +99,9 @@ async def step_impl(context, user: str, game: str, value: str):
     hide_command_calls(context, 1)
 
 
-@given("user {user} has prior {game} results")
+@given("user has prior {game} results")
 @async_run_until_complete
-async def step_impl(context, user: str, game: str):
+async def step_impl(context, game: str):
     wins = int(context.table[0][0])
     losses = int(context.table[0][1])
     ties = int(context.table[0][2])
@@ -114,6 +114,12 @@ async def step_impl(context, user: str, game: str):
         await _create_scrim_result(context, game, Result.TIE)
     for _ in range(unregistered):
         await _create_scrim_result(context, game, Result.UNREGISTERED)
+
+
+@given("user won a {game} scrim")
+@async_run_until_complete
+async def step_impl(context, game: str):
+    await _create_scrim_result(context, game, Result.WIN)
 
 
 async def _create_scrim_result(context: Context, game: str, result: Result):

@@ -159,3 +159,9 @@ def _create_user_rating(rating: int):
     mock_rating = MagicMock()
     mock_rating.rating = rating
     return mock_rating
+
+
+def create_mock_strategy(strategy_name: str):
+    mock_strategy = MagicMock()
+    mock_strategy.name = strategy_name
+    return mock_strategy
