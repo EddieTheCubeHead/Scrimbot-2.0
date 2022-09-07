@@ -1,6 +1,8 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from typing import Iterable
+
 from Bot.Converters.ScrimResultConverter import ScrimResult
 from Bot.Converters.UserRatingConverter import UserRatingConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
@@ -13,6 +15,7 @@ from Bot.DataClasses.UserRating import UserRating
 from Bot.DataClasses.UserScrimResult import Result
 from Bot.Matchmaking.RatingAlgorithms.TeamRating.TeamRatingStrategy import TeamRatingStrategy
 from Bot.Matchmaking.RatingAlgorithms.TeamRating.TeamRatingStrategyProvider import TeamRatingStrategyProvider
+from Bot.Matchmaking.RatingAlgorithms.UserRatingChange.UserRatingChangeStrategy import UserRatingChangeStrategy
 from Bot.Matchmaking.RatingAlgorithms.UserRatingChange.UserRatingChangeStrategyProvider import \
     UserRatingChangeStrategyProvider
 
@@ -43,30 +46,41 @@ class RatingChangeCalculator:
         team_ratings = {team: self._get_team_rating(team, team_strategy, player_ratings) for team in flattened_teams}
         player_rating_changes = {}
         if len(results[0]) > 1:
-            for team in results[0]:
-                other_team_ratings = _get_other_team_ratings(team, team_ratings)
-                for player in team.members:
-                    player_rating_changes[player] = user_strategy.get_rating_change(player_ratings[player], Result.TIE,
-                                                                                    team_ratings[team],
-                                                                                    *other_team_ratings)
+            self._get_tying_rating_changes(results[0], team_ratings, player_rating_changes, user_strategy,
+                                           player_ratings)
         else:
-            for player in results[0][0].members:
-                team = results[0][0]
-                other_team_ratings = _get_other_team_ratings(team, team_ratings)
-                player_rating_changes[player] = user_strategy.get_rating_change(player_ratings[player], Result.WIN,
-                                                                                team_ratings[team],
-                                                                                *other_team_ratings)
+            self._update_team_ratings(results[0][0], user_strategy, player_ratings, team_ratings, player_rating_changes,
+                                      Result.WIN)
         if len(results) > 1:
             losing_teams = [team for group in results[1:] for team in group]
-            for team in losing_teams:
-                other_team_ratings = _get_other_team_ratings(team, team_ratings)
-                for player in team.members:
-                    player_rating_changes[player] = user_strategy.get_rating_change(player_ratings[player], Result.LOSS,
-                                                                                    team_ratings[team],
-                                                                                    *other_team_ratings)
+            self._get_losing_rating_changes(losing_teams, team_ratings, player_rating_changes, user_strategy,
+                                            player_ratings)
         return player_rating_changes
 
     @staticmethod
     def _get_team_rating(team: Team, strategy: TeamRatingStrategy, player_ratings: dict[User: int]):
         member_ratings = [player_ratings[player] for player in team.members]
         return strategy.get_rating(*member_ratings)
+
+    def _get_tying_rating_changes(self, teams: Iterable[Team], team_ratings: dict[Team: int],
+                                  player_rating_changes: dict[User, int], user_strategy: UserRatingChangeStrategy,
+                                  player_ratings: dict[User: UserRating]):
+        for team in teams:
+            self._update_team_ratings(team, user_strategy, player_ratings, team_ratings, player_rating_changes,
+                                      Result.TIE)
+
+    def _get_losing_rating_changes(self, teams: Iterable[Team], team_ratings: dict[Team: int],
+                                   player_rating_changes: dict[User, int], user_strategy: UserRatingChangeStrategy,
+                                   player_ratings: dict[User: UserRating]):
+        for team in teams:
+            self._update_team_ratings(team, user_strategy, player_ratings, team_ratings, player_rating_changes,
+                                      Result.LOSS)
+
+    @staticmethod
+    def _update_team_ratings(team: Team, user_strategy: UserRatingChangeStrategy,
+                             player_ratings: dict[User: UserRating], team_ratings: dict[Team, int],
+                             player_rating_changes: dict[User: UserRating], result: Result):
+        other_team_ratings = _get_other_team_ratings(team, team_ratings)
+        for player in team.members:
+            player_rating_changes[player] = user_strategy.get_rating_change(player_ratings[player], result,
+                                                                            team_ratings[team], *other_team_ratings)

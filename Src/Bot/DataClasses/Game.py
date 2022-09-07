@@ -38,7 +38,8 @@ class Game(DataClass, Convertable):  # pragma: no cover
     scrims = relationship("Scrim", back_populates="game")
 
     def __init__(self, name: str, colour: str, icon: str, min_team_size: int, max_team_size: int = None,
-                 team_count: int = 2, aliases: list[Alias] = None, rating_change: str = "flat"):
+                 team_count: int = 2, aliases: list[Alias] = None, rating_change: str = "flat",
+                 team_rating: str = "mean"):
 
         self.name = name
         self._colour = colour
@@ -48,6 +49,7 @@ class Game(DataClass, Convertable):  # pragma: no cover
         self.max_team_size: int = max_team_size if max_team_size is not None else min_team_size
         self.team_count = team_count
         self.rating_change_algorithm = rating_change
+        self.team_rating_algorithm = team_rating
 
     @property
     def colour(self):
