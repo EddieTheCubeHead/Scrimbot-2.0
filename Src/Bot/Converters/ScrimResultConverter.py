@@ -7,6 +7,7 @@ from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimContext import ScrimContext
 from Bot.DataClasses.Team import Team
+from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 from Database.DatabaseConnections.ScrimConnection import ScrimConnection
 
 
@@ -44,8 +45,18 @@ class ScrimResultConverter(ConverterBase):
         super().__init__(scrim_connection)
 
     async def convert(self, ctx: ScrimContext, argument: str):
+        self._assert_correct_team_amount(argument, ctx)
         if argument.isnumeric():
             results = _digit_conversion(ctx, int(argument))
         else:
             results = _name_conversion(ctx, argument)
         return results
+
+    @staticmethod
+    def _assert_correct_team_amount(argument, ctx):
+        if len(ctx.scrim.teams_manager.get_game_teams()) > 2:
+            reason = "recording results for scrims with more than two teams is not currently supported"
+            raise BotConversionFailureException("scrim result", argument, reason=reason)
+        elif len(ctx.scrim.teams_manager.get_game_teams()) == 1:
+            reason = "recording results for scrims with only one team is not currently supported"
+            raise BotConversionFailureException("scrim result", argument, reason=reason)
