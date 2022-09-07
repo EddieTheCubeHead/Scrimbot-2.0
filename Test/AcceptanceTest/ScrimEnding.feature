@@ -66,3 +66,21 @@ Feature: Ending a scrim
       | Footer | gg wp!                            |
     And scrim message has no reactions
     And players 1 to 10 moved to lobby voice channel
+
+  Scenario: Attempting to end a scrim with more than two teams by declaring a winner
+    Given an ThreeTeamTest scrim with full teams and 3 registered voice channels
+    When ;start false is called
+    And ;winner 2 is called
+    Then error and help received with message
+      """
+      Could not convert argument '1' into type scrim result because recording results for scrims with more than two teams is not currently supported
+      """
+
+  Scenario: Attempting to end a scrim with only one team by declaring a winner
+    Given an Among Us scrim with full teams and 1 registered voice channels
+    When ;start false is called
+    And ;winner 1 is called
+    Then error and help received with message
+      """
+      Could not convert argument '1' into type scrim result because recording results for scrims with only one team is not currently supported
+      """
