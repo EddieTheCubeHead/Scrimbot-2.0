@@ -19,14 +19,17 @@ class TestFreeScrimCheck(AsyncUnittestBase):
         self.check = ActiveScrimCheck()
         self.context = AsyncMock()
         self.mock_converter = MagicMock()
+        self.mock_converter.exists.return_value = True
 
     async def test_check_given_scrim_exists_then_returns_true(self):
         self.context.scrim = MagicMock()
-        self.assertTrue(await self.check.check(self.context))
+        self.assertTrue(await self.check.check(self.context, self.mock_converter))
 
     async def test_check_given_no_scrim_then_error_raised(self):
+        self.mock_converter.exists.return_value = False
         self.context.scrim = None
         channel_id = self.id_generator.generate_viable_id()
         self.context.channel.id = channel_id
         expected_exception = BotMissingScrimException(channel_id)
-        await self._async_assert_raises_correct_exception(expected_exception, self.check.check, self.context)
+        await self._async_assert_raises_correct_exception(expected_exception, self.check.check, self.context,
+                                                          self.mock_converter)

@@ -8,7 +8,7 @@ from sqlalchemy.orm import subqueryload, joinedload
 
 from Bot.DataClasses.Game import Game
 from Bot.DataClasses.ParticipantTeam import ParticipantTeam
-from Bot.DataClasses.Scrim import Scrim
+from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.DataClasses.Team import Team
 from Bot.DataClasses.User import User
 from Bot.DataClasses.UserScrimResult import UserScrimResult, Result
@@ -61,6 +61,25 @@ class TestScrimConnection(UnittestBase):
         actual_scrim = self.connection.add_scrim(result_scrim)
         for team in expected_results:
             self._assert_team_results_created(team, actual_scrim)
+
+    def test_exists_given_scrim_on_channel_when_called_with_channel_id_then_returns_true(self):
+        valid_states = [ScrimState.LFP, ScrimState.LOCKED, ScrimState.STARTED, ScrimState.VOICE_WAIT, ScrimState.CAPS,
+                        ScrimState.CAPS_PREP]
+        for state in valid_states:
+            with self.subTest(f"exists returns true with state {state}"):
+                expected_scrim = self._save_scrim(state, self._test_game)
+            self.assertTrue(self.connection.exists(expected_scrim.channel_id))
+
+    def test_exists_given_ended_scrim_on_channel_when_called_with_channel_id_then_returns_false(self):
+        invalid_states = [ScrimState.ENDED, ScrimState.TERMINATED]
+        for state in invalid_states:
+            with self.subTest(f"exists returns false with state {state}"):
+                expected_scrim = self._save_scrim(state, self._test_game)
+            self.assertFalse(self.connection.exists(expected_scrim.channel_id))
+
+    def test_get_active_scrim_when_fetched_with_channel_id_then_returns_the_active_scrim_on_channel(self):
+        expected_scrim = self._save_scrim(ScrimState.LFP, self._test_game)
+        self._assert_same_scrim(expected_scrim, self.connection.get_active_scrim(expected_scrim.channel_id))
 
     def _create_mock_scrim(self):
         mock_manager = MagicMock()
@@ -130,3 +149,27 @@ class TestScrimConnection(UnittestBase):
                 .filter(UserScrimResult.scrim_id == scrim_id).first()
         self.assertIsNotNone(result)
         return result
+
+    def _save_scrim(self, state: ScrimState, game: Game):
+        mock_manager = MagicMock()
+        mock_manager.message.channel.id = self.id_generator.generate_viable_id()
+        mock_manager.teams_manager.game = game
+        scrim = Scrim(mock_manager, state)
+        with self.master.get_session() as session:
+            session.add(scrim)
+        return scrim
+
+    def _assert_same_scrim(self, expected_scrim: Scrim, actual_scrim: Scrim):
+        self.assertEqual(expected_scrim.scrim_id, actual_scrim.scrim_id)
+        self.assertEqual(expected_scrim.channel_id, actual_scrim.channel_id)
+        self.assertEqual(expected_scrim.game.name, actual_scrim.game.name)
+        self.assertEqual(expected_scrim.state, actual_scrim.state)
+        for expected_team, actual_team in zip(expected_scrim.teams, actual_scrim.teams):
+            self._assert_equal_team(expected_team, actual_team)
+
+    def _assert_equal_team(self, expected_team: ParticipantTeam, actual_team: ParticipantTeam):
+        self.assertEqual(expected_team.team.name, actual_team.team.name)
+        self.assertEqual(expected_team.team_id, actual_team.team_id)
+        self.assertEqual(expected_team.scrim_id, actual_team.scrim_id)
+        self.assertEqual(len(expected_team.team.members), actual_team.team.members)
+
