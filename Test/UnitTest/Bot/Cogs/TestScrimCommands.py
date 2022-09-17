@@ -21,13 +21,14 @@ class TestScrimCommands(AsyncUnittestBase):
         self.scrim_channel_converter = MagicMock()
         self.response_builder = AsyncMock()
         self.settings_service = MagicMock()
+        self.scrim_converter = MagicMock()
         self.active_scrims_manager = MagicMock()
         self.waiting_scrim_service = MagicMock()
         self.participant_provider = MagicMock()
         self.result_handler = MagicMock()
         self.cog = ScrimCommands(self.scrim_channel_converter, self.response_builder, self.settings_service,
-                                 self.active_scrims_manager, self.waiting_scrim_service, self.participant_provider,
-                                 self.result_handler)
+                                 self.scrim_converter, self.active_scrims_manager, self.waiting_scrim_service,
+                                 self.participant_provider, self.result_handler)
         self.cog._inject(MagicMock())
 
     async def test_scrim_given_called_with_game_then_scrim_with_game_created_and_embed_sent(self):

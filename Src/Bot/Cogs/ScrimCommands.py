@@ -8,6 +8,7 @@ from Bot.Checks.FreeScrimCheck import FreeScrimCheck
 from Bot.Cogs.Helpers.BotSettingsService import BotSettingsService
 from Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
 from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
+from Bot.Converters.ScrimConverter import ScrimConverter
 from Bot.Converters.ScrimResultConverter import ScrimResultConverter
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimBotClient import ScrimBotClient
@@ -37,9 +38,9 @@ class ScrimCommands(commands.Cog):
 
     @BotDependencyInjector.inject
     def __init__(self, scrim_channel_converter: ScrimChannelConverter, response_builder: ScrimEmbedBuilder,
-                 settings_service: BotSettingsService, scrims_manager: ActiveScrimsManager,
-                 waiting_scrim_service: WaitingScrimService, participant_provider: ScrimParticipantProvider,
-                 result_handler: ResultHandler):
+                 settings_service: BotSettingsService, scrim_converter: ScrimConverter,
+                 scrims_manager: ActiveScrimsManager, waiting_scrim_service: WaitingScrimService,
+                 participant_provider: ScrimParticipantProvider, result_handler: ResultHandler):
         self._scrim_channel_converter = scrim_channel_converter
         self._response_builder = response_builder
         self._settings_service = settings_service
