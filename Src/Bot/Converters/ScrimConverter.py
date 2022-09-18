@@ -1,4 +1,4 @@
-__version__ = "ver"
+__version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from asyncio import Lock
@@ -12,6 +12,7 @@ from Database.DatabaseConnections.ScrimConnection import ScrimConnection
 @BotDependencyInjector.singleton
 class ScrimConverter:
 
+    @BotDependencyInjector.inject
     def __init__(self, connection: ScrimConnection):
         self._connection = connection
         self._scrims: dict[int: Lock] = {}

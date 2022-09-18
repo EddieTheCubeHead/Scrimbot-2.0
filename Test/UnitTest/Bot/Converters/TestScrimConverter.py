@@ -21,6 +21,9 @@ class TestScrimConverter(AsyncUnittestBase):
         self.connection = MagicMock()
         self.converter = ScrimConverter(self.connection)
 
+    def test_build_given_file_imported_then_singleton_dependency_created(self):
+        self._assert_singleton_dependency(ScrimConverter)
+
     async def test_fetch_scrim_when_called_with_valid_id_then_scrim_provided_to_context_manager(self):
         mock_scrim = self._create_mock_scrim()
         self.connection.get_active_scrim.return_value = mock_scrim

@@ -18,6 +18,9 @@ class TestTeamCreationStrategyConverter(AsyncUnittestBase):
         self.converter = TeamCreationStrategyConverter()
         self.mock_context = MagicMock()
 
+    def test_build_given_file_imported_then_singleton_dependency_created(self):
+        self._assert_singleton_dependency(TeamCreationStrategyConverter)
+
     async def test_convert_given_strategy_in_dict_then_strategy_returned(self):
         mock_strategies = {
             "1": MagicMock(),
