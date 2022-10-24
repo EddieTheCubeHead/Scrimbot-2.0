@@ -9,6 +9,7 @@ from sqlalchemy.orm import subqueryload, joinedload
 from Bot.DataClasses.Game import Game
 from Bot.DataClasses.ParticipantTeam import ParticipantTeam
 from Bot.DataClasses.Scrim import Scrim, ScrimState
+from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.Team import Team
 from Bot.DataClasses.User import User
 from Bot.DataClasses.UserScrimResult import UserScrimResult, Result
@@ -153,10 +154,14 @@ class TestScrimConnection(UnittestBase):
     def _save_scrim(self, state: ScrimState, game: Game):
         mock_manager = MagicMock()
         mock_manager.message.channel.id = self.id_generator.generate_viable_id()
+        channel = ScrimChannel(mock_manager.message.channel.id, self.id_generator.generate_viable_id())
         mock_manager.teams_manager.game = game
         scrim = Scrim(mock_manager, state)
         with self.master.get_session() as session:
             session.add(scrim)
+            session.add(channel)
+            scrim.scrim_channel = channel
+            pass
         return scrim
 
     def _assert_same_scrim(self, expected_scrim: Scrim, actual_scrim: Scrim):
@@ -166,10 +171,19 @@ class TestScrimConnection(UnittestBase):
         self.assertEqual(expected_scrim.state, actual_scrim.state)
         for expected_team, actual_team in zip(expected_scrim.teams, actual_scrim.teams):
             self._assert_equal_team(expected_team, actual_team)
+        self._assert_same_channel(expected_scrim.scrim_channel, actual_scrim.scrim_channel)
 
     def _assert_equal_team(self, expected_team: ParticipantTeam, actual_team: ParticipantTeam):
         self.assertEqual(expected_team.team.name, actual_team.team.name)
         self.assertEqual(expected_team.team_id, actual_team.team_id)
         self.assertEqual(expected_team.scrim_id, actual_team.scrim_id)
         self.assertEqual(len(expected_team.team.members), actual_team.team.members)
+
+    def _assert_same_channel(self, expected_channel: ScrimChannel, actual_channel: ScrimChannel):
+        if expected_channel is None:
+            self.assertIsNone(actual_channel)
+            return
+        self.assertEqual(expected_channel.channel_id, actual_channel.channel_id)
+        for expected_voice, actual_voice in zip(expected_channel.voice_channels, actual_channel.voice_channels):
+            self.assertEqual(expected_voice.channel_id, actual_voice.channel_id)
 

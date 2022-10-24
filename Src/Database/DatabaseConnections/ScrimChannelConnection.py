@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from typing import Union, Optional
 
-from sqlalchemy.orm import subqueryload
+from sqlalchemy.orm import subqueryload, selectinload
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.ScrimChannel import ScrimChannel
@@ -40,4 +40,4 @@ class ScrimChannelConnection(ConnectionBase[ScrimChannel]):
         with self._master_connection.get_session() as session:
             return session.query(ScrimChannel).join(ScrimChannel.voice_channels)\
                 .filter(VoiceChannel.channel_id == channel_id)\
-                .options(subqueryload(ScrimChannel.voice_channels)).first()
+                .options(selectinload(ScrimChannel.voice_channels)).first()

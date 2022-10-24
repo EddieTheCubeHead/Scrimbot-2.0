@@ -1,7 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from sqlalchemy.orm import subqueryload
+from sqlalchemy.orm import subqueryload, selectinload
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
@@ -14,7 +14,7 @@ class GuildConnection(ConnectionBase):
         from Bot.DataClasses.Guild import Guild
         with self._master_connection.get_session() as session:
             query = session.query(Guild).filter(Guild.guild_id == guild_id).outerjoin(Guild.prefixes)\
-                .options(subqueryload(Guild.prefixes))
+                .options(selectinload(Guild.prefixes))
             guild = query.first()
         return guild or self._create_guild(guild_id)
 

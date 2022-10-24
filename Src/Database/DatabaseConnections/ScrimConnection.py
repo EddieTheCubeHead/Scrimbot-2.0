@@ -1,11 +1,12 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from sqlalchemy.orm import subqueryload
+from sqlalchemy.orm import subqueryload, selectinload, joinedload
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.ParticipantTeam import ParticipantTeam
 from Bot.DataClasses.Scrim import Scrim, ScrimState
+from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.Team import Team
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
@@ -26,11 +27,11 @@ class ScrimConnection(ConnectionBase):
 
     def get_active_scrim(self, channel_id: int) -> Scrim:
         with self._master_connection.get_session() as session:
-            scrim = session.query(Scrim).filter(Scrim.channel_id == channel_id)\
-                .outerjoin(Scrim.game).outerjoin(Scrim.teams).outerjoin(ParticipantTeam.team).outerjoin(Team.members)\
+            scrim = session.query(Scrim)\
                 .filter(Scrim.state != ScrimState.ENDED).filter(Scrim.state != ScrimState.TERMINATED)\
-                .options(subqueryload(Scrim.game),
-                         subqueryload(Scrim.teams),
-                         subqueryload(Scrim.teams, ParticipantTeam.team, Team.members))\
+                .filter(Scrim.channel_id == channel_id)\
+                .options(selectinload(Scrim.teams).selectinload(ParticipantTeam.team).selectinload(Team.members),
+                         selectinload(Scrim.game),
+                         selectinload(Scrim.scrim_channel).selectinload(ScrimChannel.voice_channels))\
                 .first()
         return scrim

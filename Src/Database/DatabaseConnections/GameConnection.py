@@ -1,7 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from sqlalchemy.orm import subqueryload
+from sqlalchemy.orm import subqueryload, selectinload
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.Alias import Alias
@@ -24,6 +24,6 @@ class GameConnection(ConnectionBase[Game]):
 
     def get_all(self) -> list[Game]:
         with self._master_connection.get_session() as session:
-            query = session.query(Game).join(Alias).options(subqueryload(Game.aliases))
+            query = session.query(Game).join(Alias).options(selectinload(Game.aliases))
             games = query.all()
         return games

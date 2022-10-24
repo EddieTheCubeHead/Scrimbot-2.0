@@ -52,7 +52,6 @@ class ScrimTeamsManager:
     SPECTATORS = "Spectators"
     QUEUE = "Queue"
 
-    # TODO extract data into separate DTO
     @BotDependencyInjector.inject
     def __init__(self, game: Game, participant_manager: ScrimParticipantProvider,
                  channels_provider: DiscordVoiceChannelProvider, *,

@@ -1,7 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from sqlalchemy.orm import subqueryload, contains_eager
+from sqlalchemy.orm import subqueryload, contains_eager, selectinload
 
 from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.Game import Game
@@ -46,7 +46,7 @@ class UserRatingConnection(ConnectionBase):
                 .outerjoin(User).outerjoin(UserScrimResult).outerjoin(Game)\
                 .filter(UserRating.game_name == game_name).filter(UserRating.guild_id == guild_id)\
                 .filter(UserRating.user_id == user_id)\
-                .options(subqueryload(UserRating.user), subqueryload(UserRating.results), subqueryload(UserRating.game))
+                .options(selectinload(UserRating.user), selectinload(UserRating.results), selectinload(UserRating.game))
             return query.first()
 
     def _create_user_rating(self, user: User, game: Game, guild: Guild = None, user_rating: int = None) -> UserRating:
