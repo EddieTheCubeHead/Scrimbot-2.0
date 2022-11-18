@@ -1,15 +1,16 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
+
 from Bot.Matchmaking.RatingAlgorithms.TeamRating.MeanRatingStrategy import MeanRatingStrategy
 from Bot.Matchmaking.RatingAlgorithms.TeamRating.WeightBestPlayerRatingStrategy import WeightBestPlayerRatingStrategy
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class TeamRatingStrategyProvider:
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, mean_strategy: MeanRatingStrategy, weight_best_player_strategy: WeightBestPlayerRatingStrategy):
         self._default_strategy = mean_strategy
         self._strategies = {strategy.name: strategy for strategy in (mean_strategy, weight_best_player_strategy)}

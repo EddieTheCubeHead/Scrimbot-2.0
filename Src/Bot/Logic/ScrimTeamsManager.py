@@ -6,10 +6,10 @@ __author__ = "Eetu Asikainen"
 from typing import List, Dict, Union, Optional, TYPE_CHECKING
 
 import discord
+from hintedi import HinteDI
 
 if TYPE_CHECKING:
     from Bot.Converters.ScrimResultConverter import ScrimResult
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
 from Bot.DataClasses.Game import Game
 from Bot.DataClasses.ScrimChannel import ScrimChannel
@@ -52,7 +52,7 @@ class ScrimTeamsManager:
     SPECTATORS = "Spectators"
     QUEUE = "Queue"
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, game: Game, participant_manager: ScrimParticipantProvider,
                  channels_provider: DiscordVoiceChannelProvider, *,
                  team_channels: List[VoiceChannel] = None, lobby: VoiceChannel = None,

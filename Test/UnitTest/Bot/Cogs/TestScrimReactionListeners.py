@@ -7,7 +7,6 @@ from discord import Emoji, Reaction
 from discord.ext.commands import CommandError
 
 from Bot.Cogs.ScrimReactionListeners import ScrimReactionListeners
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
 from Bot.DataClasses.Game import Game
 from Bot.EmbedSystem.ScrimStates.scrim_states import LFP, LOCKED

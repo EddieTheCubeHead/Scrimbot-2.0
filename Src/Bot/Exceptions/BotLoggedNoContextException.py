@@ -3,7 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from logging import WARNING
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
+
 from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
 from Bot.Exceptions.BotBaseNoContextException import BotBaseNoContextException
 from Bot.Exceptions.BotLoggedContextException import log_with_level
@@ -11,7 +12,7 @@ from Bot.Exceptions.BotLoggedContextException import log_with_level
 
 class BotLoggedNoContextException(BotBaseNoContextException):
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, message: str, logger: BotSystemLogger, *, log=WARNING):
         self.log = log
         self.logger = logger

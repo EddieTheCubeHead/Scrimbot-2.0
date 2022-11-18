@@ -2,15 +2,15 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 
 
 class ScrimContext(commands.Context):
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, active_scrims_manager: ActiveScrimsManager, **kwargs):
         super().__init__(**kwargs)
         self.scrims_manager = active_scrims_manager

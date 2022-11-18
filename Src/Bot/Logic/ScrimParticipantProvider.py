@@ -2,13 +2,13 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from discord import Member
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Exceptions.BotAlreadyParticipantException import BotAlreadyParticipantException
 from Bot.Logic.DiscordObjectProvider import DiscordObjectProvider
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class ScrimParticipantProvider(DiscordObjectProvider):
 
     def __init__(self):

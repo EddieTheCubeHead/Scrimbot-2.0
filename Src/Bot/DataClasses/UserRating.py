@@ -3,13 +3,13 @@ from __future__ import annotations
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
+from hintedi import HinteDI
 
 from Bot.Converters.Convertable import Convertable
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.DataClass import DataClass
 from Bot.DataClasses.UserScrimResult import UserScrimResult
 if TYPE_CHECKING:  # pragma: no cover
@@ -42,6 +42,6 @@ class UserRating(DataClass, Convertable):  # pragma: no cover
         self.rating = rating
 
     @classmethod
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def set_converter(cls, converter: UserRatingConverter):  # pragma: no cover
         super().set_converter(converter)

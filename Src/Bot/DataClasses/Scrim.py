@@ -6,13 +6,15 @@ __author__ = "Eetu Asikainen"
 import enum
 from typing import TYPE_CHECKING
 
+from discord import Message
 from sqlalchemy import Column, String, Integer, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
 from Bot.DataClasses.DataClass import DataClass
-from Bot.DataClasses.ParticipantTeam import ParticipantTeam
+
 if TYPE_CHECKING:
-    from Bot.Logic.ScrimManager import ScrimManager
+    from Bot.DataClasses.Game import Game
+    from Bot.DataClasses.ScrimChannel import ScrimChannel
 
 
 class ScrimState(enum.Enum):
@@ -28,10 +30,11 @@ class ScrimState(enum.Enum):
 
 class Scrim(DataClass):  # pragma: no cover
 
-    def __init__(self, scrim_manager: ScrimManager, state: ScrimState = ScrimState.LFP):
-        self.channel_id = scrim_manager.message.channel.id
-        self.game_name = scrim_manager.teams_manager.game.name
-        self.game = scrim_manager.teams_manager.game
+    def __init__(self, message: Message, game: Game, state: ScrimState = ScrimState.LFP):
+        self.channel_id = message.channel.id
+        self.message_id = message.id
+        self.game_name = game.name
+        self.game = game
         self.state = state
         self.teams = []
 
@@ -39,6 +42,7 @@ class Scrim(DataClass):  # pragma: no cover
     channel_id = Column(Integer, ForeignKey("ScrimChannels.channel_id"), nullable=False)
     game_name = Column(String, ForeignKey("Games.name"), nullable=False)
     state = Column(Enum(ScrimState), default=ScrimState.LFP)
+    message_id = Column(Integer, unique=True)
 
     game = relationship("Game", back_populates="scrims")
     scrim_channel = relationship("ScrimChannel", back_populates="scrims")

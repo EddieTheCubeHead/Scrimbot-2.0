@@ -3,8 +3,8 @@ __author__ = "Eetu Asikainen"
 
 
 from discord import Embed
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
 from Bot.Logic.ScrimManager import ScrimManager
 
@@ -14,7 +14,7 @@ def _build_fields(embed: Embed, fields: list[(str, str, bool)]):
         embed.add_field(name=name, value=value, inline=inline)
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class ScrimEmbedBuilder(ResponseBuilder[ScrimManager]):
 
     DIVIDER_STRING = "----------------------------------------------"

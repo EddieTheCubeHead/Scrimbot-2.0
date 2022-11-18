@@ -35,6 +35,7 @@ class TestResultHandler(UnittestBase):
     def test_build_given_file_imported_then_singleton_dependency_created(self):
         self._assert_singleton_dependency(ResultHandler)
 
+    @unittest.skip("Waiting for scrim handling rewrite")
     def test_save_results_given_two_team_scrim_when_winner_and_loser_present_then_results_saved_correctly(self):
         result = self._create_results(("Team 1",), ("Team 2",))
         self.mock_teams_manager.get_game_teams.return_value = self.mocked_teams
@@ -45,6 +46,7 @@ class TestResultHandler(UnittestBase):
         self.assertEqual(1, added_scrim.teams[0].placement)
         self.assertEqual(2, added_scrim.teams[1].placement)
 
+    @unittest.skip("Waiting for scrim handling rewrite")
     def test_save_results_given_two_team_scrim_when_tie_result_then_results_saved_correctly(self):
         result = self._create_results(("Team 1", "Team 2"))
         self.mock_teams_manager.get_game_teams.return_value = self.mocked_teams
@@ -55,6 +57,7 @@ class TestResultHandler(UnittestBase):
         self.assertEqual(1, added_scrim.teams[0].placement)
         self.assertEqual(1, added_scrim.teams[1].placement)
 
+    @unittest.skip("Waiting for scrim handling rewrite")
     def test_save_results_given_two_team_scrim_when_unregistered_result_then_results_saved_correctly(self):
         result = None
         self.mocked_teams = [self._create_mock_team("Team 1"), self._create_mock_team("Team 2")]
@@ -65,6 +68,7 @@ class TestResultHandler(UnittestBase):
         self.assertIn("Team 2", [scrim_team.team.name for scrim_team in added_scrim.teams])
         self.assertTrue(all([scrim_team.placement == 0 for scrim_team in added_scrim.teams]))
 
+    @unittest.skip("Waiting for scrim handling rewrite")
     def test_save_results_given_two_team_scrim_when_called_then_user_personal_results_saved(self):
         result = self._create_results(("Team 1",), ("Team 2",))
         mock_guild = MagicMock()
@@ -79,6 +83,7 @@ class TestResultHandler(UnittestBase):
             self.mock_result_converter.update_user_rating.assert_any_call(0, Result.LOSS, player, created_scrim,
                                                                           mock_guild)
 
+    @unittest.skip("Waiting for scrim handling rewrite")
     def test_save_results_given_given_two_team_scrim_when_using_flat_rating_change_used_then_ratings_updated(self):
         result = self._create_results(("Team 1",), ("Team 2",))
         mock_changes = {user: 25 for user in result[0][0].members} | {user: -25 for user in result[1][0].members}

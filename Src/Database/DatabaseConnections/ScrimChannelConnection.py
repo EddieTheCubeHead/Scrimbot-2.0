@@ -4,8 +4,8 @@ __author__ = "Eetu Asikainen"
 from typing import Union, Optional
 
 from sqlalchemy.orm import subqueryload, selectinload
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
@@ -17,7 +17,7 @@ def _get_from_id(channel_id, session):
     return query
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class ScrimChannelConnection(ConnectionBase[ScrimChannel]):
 
     def get_channel(self, channel_id: int) -> ScrimChannel:

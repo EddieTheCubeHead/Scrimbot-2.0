@@ -1,14 +1,15 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
+
 from Bot.DataClasses.Scrim import Scrim
 from Bot.DataClasses.UserRating import UserRating
 from Bot.DataClasses.UserScrimResult import UserScrimResult, Result
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class UserScrimResultConnection(ConnectionBase[UserScrimResult]):
 
     def create_result(self, user_rating: UserRating, scrim: Scrim, result: Result) -> \

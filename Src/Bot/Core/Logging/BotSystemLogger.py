@@ -1,14 +1,15 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
+
 from Bot.Core.Logging.LoggerBase import LoggerBase
 from Configs.Config import Config
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class BotSystemLogger(LoggerBase):
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, config: Config):
         super().__init__("scrimbot system", config)

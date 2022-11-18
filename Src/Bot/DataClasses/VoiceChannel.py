@@ -7,12 +7,12 @@ from typing import Optional, TYPE_CHECKING
 
 from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
+from hintedi import HinteDI
 
 from Bot.Converters.Convertable import Convertable
 
 if TYPE_CHECKING:  # pragma: no cover
     from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.DataClass import DataClass
 
 
@@ -31,6 +31,6 @@ class VoiceChannel(DataClass, Convertable):  # pragma: no cover
         self.team_number: Optional[int] = team_number
 
     @classmethod
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def set_converter(cls, converter: VoiceChannelConverter):
         super().set_converter(converter)

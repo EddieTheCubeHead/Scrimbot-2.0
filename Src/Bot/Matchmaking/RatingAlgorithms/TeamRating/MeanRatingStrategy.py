@@ -3,12 +3,13 @@ __author__ = "Eetu Asikainen"
 
 from statistics import mean
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
+
 from Bot.DataClasses.UserRating import UserRating
 from Bot.Matchmaking.RatingAlgorithms.TeamRating.TeamRatingStrategy import TeamRatingStrategy
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class MeanRatingStrategy(TeamRatingStrategy):
 
     def get_rating(self, *member_ratings: UserRating) -> float:

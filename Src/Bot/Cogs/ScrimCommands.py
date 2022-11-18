@@ -2,6 +2,7 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
+from hintedi import HinteDI
 
 from Bot.Checks.ActiveScrimCheck import ActiveScrimCheck
 from Bot.Checks.FreeScrimCheck import FreeScrimCheck
@@ -10,7 +11,6 @@ from Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
 from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
 from Bot.Converters.ScrimConverter import ScrimConverter
 from Bot.Converters.ScrimResultConverter import ScrimResultConverter
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.Core.ScrimContext import ScrimContext
 from Bot.DataClasses.Game import Game
@@ -36,7 +36,7 @@ async def _add_team_reactions(scrim: ScrimManager):
 class ScrimCommands(commands.Cog):
     """A cog housing the commands directly related to creating and manipulating scrims"""
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, scrim_channel_converter: ScrimChannelConverter, response_builder: ScrimEmbedBuilder,
                  settings_service: BotSettingsService, scrim_converter: ScrimConverter,
                  scrims_manager: ActiveScrimsManager, waiting_scrim_service: WaitingScrimService,
@@ -44,6 +44,7 @@ class ScrimCommands(commands.Cog):
         self._scrim_channel_converter = scrim_channel_converter
         self._response_builder = response_builder
         self._settings_service = settings_service
+        self._scrim_converter = scrim_converter
         self._scrims_manager = scrims_manager
         self._waiting_scrim_service = waiting_scrim_service
         self._participant_provider = participant_provider
@@ -67,11 +68,11 @@ class ScrimCommands(commands.Cog):
         """
 
         scrim_channel = self._scrim_channel_converter.get_from_id(ctx.channel.id)
-        scrim = self._scrims_manager.create_scrim(scrim_channel, game)
         message = await self._response_builder.send(ctx, displayable=scrim)
+        scrim = await self._scrim_converter.create_scrim(scrim_channel, game)
         await message.add_reaction(emoji="\U0001F3AE")  # video game controller
         await message.add_reaction(emoji="\U0001F441")  # eye
-        scrim.message = message
+        await self._scrim_converter.set_message(scrim, message)
 
     @commands.command(aliases=["l", "lockteams"])
     @commands.guild_only()

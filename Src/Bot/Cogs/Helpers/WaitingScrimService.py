@@ -5,12 +5,12 @@ import datetime
 from typing import Optional
 
 from discord import Member
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Logic.ScrimManager import ScrimManager
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class WaitingScrimService:
 
     def __init__(self):

@@ -5,6 +5,7 @@ from logging import INFO
 from typing import Tuple, List, Dict, Iterator, Set, Any, Union
 
 from discord.ext.commands import Context
+from hintedi import HinteDI
 
 from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
@@ -13,18 +14,17 @@ from Bot.DataClasses.Game import Game
 from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
 from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 from Database.DatabaseConnections.GameConnection import GameConnection
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class GameConverter(ConverterBase[Game]):
 
     MISSING_TEXTURE = "https://upload.wikimedia.org/wikipedia/commons/5/59/Minecraft_missing_texture_block.svg"
     connection: GameConnection
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, connection: GameConnection, system_logger: BotSystemLogger):
         super().__init__(connection)
         self.games: Dict[str, Game] = {}

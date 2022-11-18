@@ -3,8 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from discord import Embed
 from discord.ext.commands import Context
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
@@ -19,7 +19,7 @@ def _create_channel_mention(channel_id):
 
 
 # noinspection PyMethodMayBeStatic
-@BotDependencyInjector.instance
+@HinteDI.instance
 class ScrimChannelEmbedBuilder(ResponseBuilder):
 
     def build(self, ctx: Context, scrim_channel: ScrimChannel) -> Embed:

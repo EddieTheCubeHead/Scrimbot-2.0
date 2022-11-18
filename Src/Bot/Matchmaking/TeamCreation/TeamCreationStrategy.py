@@ -3,11 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from abc import ABC, abstractmethod
 
-from discord import Message
+from hintedi import HinteDI
 
 from Bot.Converters.Convertable import Convertable
 from Bot.Converters.TeamCreationStrategyConverter import TeamCreationStrategyConverter
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Logic.ScrimManager import ScrimManager
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
@@ -27,6 +26,6 @@ class TeamCreationStrategy(ABC, Convertable):
         await scrim_manager.message.clear_reactions()
 
     @classmethod
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def set_converter(cls, converter: TeamCreationStrategyConverter):  # pragma: no cover
         super().set_converter(converter)

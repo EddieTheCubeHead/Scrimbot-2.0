@@ -1,10 +1,11 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from hintedi import HinteDI
+
 from Bot.Converters.GuildConverter import GuildConverter
 from Bot.Converters.ScrimResultConverter import ScrimResult
 from Bot.Converters.UserRatingConverter import UserRatingConverter
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimContext import ScrimContext
 from Bot.DataClasses.Guild import Guild
 from Bot.DataClasses.ParticipantTeam import ParticipantTeam
@@ -16,10 +17,10 @@ from Bot.Matchmaking.RatingAlgorithms.RatingChangeCalculator import RatingChange
 from Database.DatabaseConnections.ScrimConnection import ScrimConnection
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class ResultHandler:
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, connection: ScrimConnection, rating_converter: UserRatingConverter,
                  guild_converter: GuildConverter, rating_change_calculator: RatingChangeCalculator):
         self._connection = connection

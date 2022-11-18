@@ -2,8 +2,8 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from sqlalchemy.orm import subqueryload, contains_eager, selectinload
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.Game import Game
 from Bot.DataClasses.Guild import Guild
 from Bot.DataClasses.ParticipantTeam import ParticipantTeam
@@ -15,7 +15,7 @@ from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 from Bot.DataClasses.UserRating import UserRating
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class UserRatingConnection(ConnectionBase):
 
     def get_user_rating(self, user: User, game: Game, guild: Guild = None) -> UserRating:

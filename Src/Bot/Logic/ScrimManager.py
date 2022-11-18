@@ -7,10 +7,10 @@ import threading
 from typing import Optional, TYPE_CHECKING
 
 from discord import Message, Member
+from hintedi import HinteDI
 
 if TYPE_CHECKING:
     from Bot.Converters.ScrimResultConverter import ScrimResult
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.Team import Team
 from Bot.DataClasses.User import User
 from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState

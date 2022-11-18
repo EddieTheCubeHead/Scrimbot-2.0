@@ -3,13 +3,14 @@ __author__ = "Eetu Asikainen"
 
 from sqlalchemy.orm import subqueryload, selectinload
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
+
 from Bot.DataClasses.Alias import Alias
 from Bot.DataClasses.Game import Game
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class GameConnection(ConnectionBase[Game]):
 
     def get_game(self, search: str) -> Game:

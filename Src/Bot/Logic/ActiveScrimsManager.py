@@ -1,7 +1,8 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
+
 from Bot.DataClasses.Game import Game
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.Logic.ScrimManager import ScrimManager
@@ -14,7 +15,7 @@ def _create_voice_channels(scrim_channel):
     return team_channels, lobby_channel
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class ActiveScrimsManager:
 
     def __init__(self):

@@ -5,7 +5,8 @@ import logging
 from abc import ABC
 from logging import Logger, DEBUG
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
+
 from Configs.Config import Config
 
 
@@ -13,7 +14,7 @@ class LoggerBase(Logger, ABC):
 
     handler = None
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, name: str, config: Config):
         super().__init__(name)
         self.setLevel(DEBUG)

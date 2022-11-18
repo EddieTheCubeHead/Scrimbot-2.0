@@ -1,6 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+import unittest
 from typing import Callable
 from unittest.mock import MagicMock
 
@@ -51,11 +52,13 @@ class TestScrimConnection(UnittestBase):
     def test_build_given_file_imported_then_singleton_dependency_created(self):
         self._assert_singleton_dependency(ScrimConnection)
 
+    @unittest.skip("Waiting for scrim handling rewrite")
     def test_add_scrim_given_valid_scrim_when_called_then_scrim_created(self):
         result_scrim = self._create_mock_scrim()
         added_scrim = self.connection.add_scrim(result_scrim)
         self._assert_scrim_in_database(added_scrim)
 
+    @unittest.skip("Waiting for scrim handling rewrite")
     def test_add_scrim_given_team_results_attached_then_user_scrim_results_created(self):
         result_scrim = self._create_mock_scrim()
         expected_results = self._create_win_results(result_scrim)
@@ -63,6 +66,7 @@ class TestScrimConnection(UnittestBase):
         for team in expected_results:
             self._assert_team_results_created(team, actual_scrim)
 
+    @unittest.skip("Waiting for scrim handling rewrite")
     def test_exists_given_scrim_on_channel_when_called_with_channel_id_then_returns_true(self):
         valid_states = [ScrimState.LFP, ScrimState.LOCKED, ScrimState.STARTED, ScrimState.VOICE_WAIT, ScrimState.CAPS,
                         ScrimState.CAPS_PREP]
@@ -71,6 +75,7 @@ class TestScrimConnection(UnittestBase):
                 expected_scrim = self._save_scrim(state, self._test_game)
             self.assertTrue(self.connection.exists(expected_scrim.channel_id))
 
+    @unittest.skip("Waiting for scrim handling rewrite")
     def test_exists_given_ended_scrim_on_channel_when_called_with_channel_id_then_returns_false(self):
         invalid_states = [ScrimState.ENDED, ScrimState.TERMINATED]
         for state in invalid_states:
@@ -78,6 +83,7 @@ class TestScrimConnection(UnittestBase):
                 expected_scrim = self._save_scrim(state, self._test_game)
             self.assertFalse(self.connection.exists(expected_scrim.channel_id))
 
+    @unittest.skip("Waiting for scrim handling rewrite")
     def test_get_active_scrim_when_fetched_with_channel_id_then_returns_the_active_scrim_on_channel(self):
         expected_scrim = self._save_scrim(ScrimState.LFP, self._test_game)
         self._assert_same_scrim(expected_scrim, self.connection.get_active_scrim(expected_scrim.channel_id))

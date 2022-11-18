@@ -3,9 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock, patch, AsyncMock
 
-from discord import Message
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
 from Test.Utils.TestHelpers.test_utils import create_mock_context
@@ -19,7 +18,7 @@ class TestResponseBuilder(AsyncUnittestBase):
         self.ctx.message = AsyncMock()
 
     def test_class_given_builder_exists_then_instance_dependency_created(self):
-        self.assertIsNotNone(BotDependencyInjector.dependencies[ResponseBuilder])
+        self.assertIsNotNone(HinteDI.dependencies[ResponseBuilder])
 
     async def test_send_given_text_and_no_embed_then_text_response_sent(self):
         _response = "Pong!"

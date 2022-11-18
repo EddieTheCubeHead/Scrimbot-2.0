@@ -4,8 +4,8 @@ __author__ = "Eetu Asikainen"
 from logging import DEBUG
 
 from discord import Member, Reaction
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
 from Bot.DataClasses.Team import Team
 from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
@@ -13,7 +13,7 @@ from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextExcepti
 
 class BotInvalidReactionJoinException(BotLoggedNoContextException):
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, user: Member, reaction: Reaction, message: str, logger: BotSystemLogger):
         self.reaction = reaction
         self.user = user

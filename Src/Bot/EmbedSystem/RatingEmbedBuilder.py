@@ -3,15 +3,15 @@ __author__ = "Eetu Asikainen"
 
 from discord import Embed
 from discord.ext.commands import Context
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.UserScrimResult import Result
 from Bot.DataClasses.ParticipantTeam import ParticipantTeam
 from Bot.DataClasses.UserRating import UserRating
 from Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
 
 
-@BotDependencyInjector.instance
+@HinteDI.instance
 class RatingEmbedBuilder(ResponseBuilder):
 
     def build(self, ctx: Context, rating: UserRating) -> Embed:

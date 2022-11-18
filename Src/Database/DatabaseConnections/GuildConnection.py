@@ -3,11 +3,12 @@ __author__ = "Eetu Asikainen"
 
 from sqlalchemy.orm import subqueryload, selectinload
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
+
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class GuildConnection(ConnectionBase):
 
     def get_guild(self, guild_id: int):

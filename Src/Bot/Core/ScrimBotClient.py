@@ -5,15 +5,14 @@ import asyncio
 import logging
 import os
 from pathlib import Path
-from sys import argv
 
 import discord
 from discord.ext import commands
 from discord.ext.commands import Context
+from hintedi import HinteDI
 
 from Bot.Converters.GameConverter import GameConverter
 from Bot.Converters.GuildConverter import GuildConverter
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ContextProvider import ContextProvider
 from Bot.Core.Logging.BotClientLogger import BotClientLogger
 from Bot.Exceptions.BotBaseContextException import BotBaseContextException
@@ -32,7 +31,7 @@ from Bot.Core.ScrimContext import ScrimContext
 class ScrimBotClient(commands.Bot):
     """The class that implements the discord.py bot class. The heart of the bot."""
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, config: Config, logger: BotClientLogger, context_provider: ContextProvider,
                  guild_converter: GuildConverter, game_converter: GameConverter,
                  channel_provider: DiscordVoiceChannelProvider, participant_provider: ScrimParticipantProvider,

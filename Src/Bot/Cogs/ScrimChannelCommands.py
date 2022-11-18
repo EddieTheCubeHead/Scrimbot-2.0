@@ -5,10 +5,10 @@ from typing import Optional
 
 from discord.ext import commands
 from discord.ext.commands import Greedy
+from hintedi import HinteDI
 
 from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
 from Bot.Converters.VoiceChannelGroupConverter import VoiceChannelGroupConverter
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Bot.EmbedSystem.ScrimChannelEmbedBuilder import ScrimChannelEmbedBuilder
@@ -18,7 +18,7 @@ from Bot.Logic.ScrimChannelManager import ScrimChannelManager
 class ScrimChannelCommands(commands.Cog):
     """A cog housing the channel maintenance related commands of the bot"""
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, response_builder: ScrimChannelEmbedBuilder, channel_converter: ScrimChannelConverter,
                  scrim_channel_manager: ScrimChannelManager):
         self._response_builder: ScrimChannelEmbedBuilder = response_builder

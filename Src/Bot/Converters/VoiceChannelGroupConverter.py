@@ -2,10 +2,10 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from discord.ext.commands import Context
+from hintedi import HinteDI
 
 from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Converters.Helpers.ChannelGroupParser import ChannelGroupParser
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
@@ -14,10 +14,10 @@ from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConn
 DO_CONVERSION_STRINGS = ["auto", "group", "category", "from_group", "from_category"]
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class VoiceChannelGroupConverter(ConverterBase[VoiceChannel]):
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, connection: ScrimChannelConnection, parser: ChannelGroupParser):
         super().__init__(connection)
         self._parser = parser

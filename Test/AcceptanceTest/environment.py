@@ -2,8 +2,10 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
+
+from hintedi import HinteDI
+
 from Bot.Converters.GameConverter import GameConverter
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.Logging.BotClientLogger import BotClientLogger
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.Logic.DiscordVoiceChannelProvider import DiscordVoiceChannelProvider
@@ -42,11 +44,11 @@ def before_scenario(context, scenario):
 def _setup_bot(context):
     config = Config()
     logger = BotClientLogger(config)
-    BotDependencyInjector.dependencies[MasterConnection] = MasterConnection(config, ":memory:")
-    BotDependencyInjector.dependencies[GameConnection] = GameConnection()
-    BotDependencyInjector.dependencies[DiscordVoiceChannelProvider] = DiscordVoiceChannelProvider()
-    BotDependencyInjector.dependencies[ScrimParticipantProvider] = ScrimParticipantProvider()
-    BotDependencyInjector.dependencies[GameConverter] = GameConverter()
+    HinteDI.dependencies[MasterConnection] = MasterConnection(config, ":memory:")
+    HinteDI.dependencies[GameConnection] = GameConnection()
+    HinteDI.dependencies[DiscordVoiceChannelProvider] = DiscordVoiceChannelProvider()
+    HinteDI.dependencies[ScrimParticipantProvider] = ScrimParticipantProvider()
+    HinteDI.dependencies[GameConverter] = GameConverter()
     context.mock_context_provider = ResponseMessageCatcher()
     context.client = ScrimBotClient(config, logger, context.mock_context_provider)
     ResponseLoggerContext.reset_position()

@@ -1,13 +1,10 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from functools import lru_cache
-
-import discord
 from discord.ext.commands import Context
+from hintedi import HinteDI
 
 from Bot.Converters.ConverterBase import ConverterBase
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
@@ -15,12 +12,12 @@ from Bot.Exceptions.BotReservedChannelException import BotReservedChannelExcepti
 from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class ScrimChannelConverter(ConverterBase[ScrimChannel]):
 
     connection: ScrimChannelConnection = None
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, connection: ScrimChannelConnection):
         super().__init__(connection)
 

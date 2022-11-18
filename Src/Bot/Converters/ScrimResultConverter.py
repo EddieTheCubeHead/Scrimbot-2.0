@@ -3,8 +3,9 @@ __author__ = "Eetu Asikainen"
 
 from typing import Union
 
+from hintedi import HinteDI
+
 from Bot.Converters.ConverterBase import ConverterBase
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimContext import ScrimContext
 from Bot.DataClasses.Team import Team
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
@@ -40,7 +41,7 @@ class ScrimResultConverter(ConverterBase):
 
     connection: ScrimConnection
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, scrim_connection: ScrimConnection):
         super().__init__(scrim_connection)
 

@@ -2,8 +2,7 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from discord.ext.commands import Context, Converter
-
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
 
 
 class Convertable:
@@ -11,7 +10,7 @@ class Convertable:
     converter: Converter = None
 
     @classmethod
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def set_converter(cls, converter: Converter):
         cls.converter = converter
         return converter

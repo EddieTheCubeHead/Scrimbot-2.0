@@ -3,9 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from typing import Optional
 
+from hintedi import HinteDI
+
 from Bot.Converters.ConverterBase import ConverterBase
 from Bot.Converters.UserScrimResultConverter import UserScrimResultConverter
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.Game import Game
 from Bot.DataClasses.Guild import Guild
 from Bot.DataClasses.Scrim import Scrim
@@ -15,12 +16,12 @@ from Bot.DataClasses.UserScrimResult import Result
 from Database.DatabaseConnections.UserRatingConnection import UserRatingConnection
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class UserRatingConverter(ConverterBase):
 
     connection: UserRatingConnection
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, connection: UserRatingConnection, result_converter: UserScrimResultConverter):
         super().__init__(connection)
         self._result_converter = result_converter

@@ -8,13 +8,12 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import relationship
+from hintedi import HinteDI
 
 from Bot.Converters.Convertable import Convertable
-
 if TYPE_CHECKING:  # pragma: no cover
     from Bot.Converters.GameConverter import GameConverter
 from Bot.DataClasses.DataClass import DataClass
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.Alias import Alias
 from Bot.DataClasses.Scrim import Scrim
 
@@ -56,6 +55,6 @@ class Game(DataClass, Convertable):  # pragma: no cover
         return int(self._colour, 16)
 
     @classmethod
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def set_converter(cls, converter: GameConverter):  # pragma: no-cover
         super().set_converter(converter)

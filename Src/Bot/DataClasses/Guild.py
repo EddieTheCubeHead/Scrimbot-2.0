@@ -8,9 +8,9 @@ from typing import TYPE_CHECKING, Optional
 import discord
 from sqlalchemy import Column, Integer, Boolean
 from sqlalchemy.orm import relationship
+from hintedi import HinteDI
 
 from Bot.Converters.Convertable import Convertable
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.DataClass import DataClass
 from Configs.Config import Config
 from Bot.DataClasses.Prefix import Prefix
@@ -40,6 +40,6 @@ class Guild(DataClass, Convertable):  # pragma: no cover
             self.prefixes = []
 
     @classmethod
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def set_converter(cls, converter: GuildConverter):
         super().set_converter(converter)

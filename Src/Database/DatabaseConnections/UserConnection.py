@@ -1,12 +1,13 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
+
 from Bot.DataClasses.User import User
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class UserConnection(ConnectionBase[User]):
 
     def get_user(self, user_id: int):

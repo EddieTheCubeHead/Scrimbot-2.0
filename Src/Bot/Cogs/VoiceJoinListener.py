@@ -3,9 +3,9 @@ __author__ = "Eetu Asikainen"
 
 import discord
 from discord.ext import commands, tasks
+from hintedi import HinteDI
 
 from Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
 from Bot.Logic.ScrimManager import ScrimManager
@@ -22,7 +22,7 @@ class VoiceJoinListener(commands.Cog):
         A listener for scrim players changing voice state
     """
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, participant_manager: ScrimParticipantProvider, waiting_scrim_service: WaitingScrimService,
                  response_builder: ScrimEmbedBuilder):
         self._participant_manager = participant_manager

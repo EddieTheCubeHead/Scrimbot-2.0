@@ -11,7 +11,6 @@ from sqlalchemy.orm import declared_attr, declarative_base
 
 if TYPE_CHECKING:  # pragma: no cover
     from Bot.Converters.ConverterBase import ConverterBase
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 
 
 class _DataClass:

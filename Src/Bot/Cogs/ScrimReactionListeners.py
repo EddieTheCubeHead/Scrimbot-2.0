@@ -6,9 +6,9 @@ import re
 from discord import Reaction, Member, Message
 from discord.ext import commands
 from discord.ext.commands import CommandError
+from hintedi import HinteDI
 
 from Bot.Converters.UserConverter import UserConverter
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.User import User
 from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
 from Bot.EmbedSystem.ScrimStates.scrim_states import *
@@ -45,7 +45,7 @@ class ScrimReactionListeners(commands.Cog):
         A listener for processing removed reactions
     """
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, scrim_manager: ActiveScrimsManager, embed_builder: ScrimEmbedBuilder,
                  user_converter: UserConverter, participant_manager: ScrimParticipantProvider):
         self.scrim_manager = scrim_manager

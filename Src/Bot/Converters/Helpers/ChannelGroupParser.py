@@ -5,11 +5,10 @@ import os
 import re
 
 from discord import CategoryChannel, VoiceChannel
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 
-
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class ChannelGroupParser:
 
     def parse(self, channel_group: CategoryChannel) -> list[tuple[VoiceChannel, int]]:

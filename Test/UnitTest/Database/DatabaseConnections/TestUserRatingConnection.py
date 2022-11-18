@@ -1,6 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+import unittest
 from typing import Optional
 from unittest.mock import MagicMock
 
@@ -59,6 +60,7 @@ class TestUserRatingConnection(UnittestBase):
         self.assertEqual(mock_game, actual_user_rating.game)
         self.assertEqual(mock_guild, actual_user_rating.guild)
 
+    @unittest.skip("Waiting for scrim handling rewrite")
     def test_get_user_statistics_when_called_then_user_game_and_matches_joined(self):
         expected_user_rating = self._create_user_rating(2345)
         results = _create_result_list(12, 7)
@@ -89,6 +91,7 @@ class TestUserRatingConnection(UnittestBase):
         expected_user_rating.rating = 4424
         self._assert_equal_ratings(expected_user_rating, actual_user_rating)
 
+    @unittest.skip("Waiting for scrim handling rewrite")
     def test_get_rating_given_existing_results_when_new_rating_created_then_results_linked(self):
         expected_user_rating = MagicMock()
         expected_user_rating.game = self._create_game()

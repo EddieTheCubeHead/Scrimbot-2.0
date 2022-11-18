@@ -2,8 +2,8 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from sqlalchemy.orm import subqueryload, selectinload, joinedload
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.ParticipantTeam import ParticipantTeam
 from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.DataClasses.ScrimChannel import ScrimChannel
@@ -11,7 +11,7 @@ from Bot.DataClasses.Team import Team
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class ScrimConnection(ConnectionBase):
 
     def add_scrim(self, scrim: Scrim) -> Scrim:

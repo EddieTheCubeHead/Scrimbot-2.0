@@ -8,16 +8,16 @@ import sqlalchemy
 import sqlalchemy.orm
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.DataClass import DataClass
 from Configs.Config import Config
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class MasterConnection:
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, config: Config, db_address: str = None, debug=False):
         db_address = db_address or f"{config.file_folder}/{config.database_name}"
         self.engine = sqlalchemy.create_engine(f"sqlite:///{db_address}", echo=debug)

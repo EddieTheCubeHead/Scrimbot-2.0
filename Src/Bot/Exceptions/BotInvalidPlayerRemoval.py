@@ -3,7 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from logging import DEBUG
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
+
 from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
 from Bot.DataClasses.Team import Team
 from Bot.DataClasses.User import User
@@ -17,7 +18,7 @@ def _construct_message(player: User, team: Team) -> str:
 
 class BotInvalidPlayerRemoval(BotLoggedNoContextException):
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, player: User, team: Team, logger: BotSystemLogger):
         self.message = _construct_message(player, team)
         super().__init__(self.message, logger, log=DEBUG)

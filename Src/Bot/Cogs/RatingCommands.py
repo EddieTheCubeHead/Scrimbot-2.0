@@ -2,12 +2,12 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
+from hintedi import HinteDI
 
 from Bot.Checks.PermissionsCheck import PermissionsCheck
 from Bot.Converters.GuildConverter import GuildConverter
 from Bot.Converters.RatingConverter import RatingConverter
 from Bot.Converters.UserRatingConverter import UserRatingConverter
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.Core.ScrimContext import ScrimContext
 from Bot.DataClasses.Game import Game
@@ -18,7 +18,7 @@ from Bot.EmbedSystem.RatingEmbedBuilder import RatingEmbedBuilder
 
 class RatingCommands(commands.Cog):
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, rating_converter: UserRatingConverter, guild_converter: GuildConverter,
                  embed_builder: RatingEmbedBuilder):
         self._rating_converter = rating_converter

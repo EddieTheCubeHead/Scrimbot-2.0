@@ -6,21 +6,21 @@ __author__ = "Eetu Asikainen"
 from typing import TYPE_CHECKING
 
 from discord.ext.commands import Context, converter, MemberNotFound
+from hintedi import HinteDI
 
 from Bot.Converters.ConverterBase import ConverterBase
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 
 from Bot.DataClasses.User import User
 from Database.DatabaseConnections.UserConnection import UserConnection
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class UserConverter(ConverterBase):
 
     connection: UserConnection
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, connection: UserConnection):
         super().__init__(connection)
 

@@ -4,8 +4,8 @@ __author__ = "Eetu Asikainen"
 from logging import WARNING, DEBUG, INFO, ERROR, CRITICAL
 
 from discord.ext.commands import Context
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.Logging.BotClientLogger import BotClientLogger
 from Bot.Exceptions.BotBaseContextException import BotBaseContextException
 
@@ -26,7 +26,7 @@ def log_with_level(log, logger, message):
 class BotLoggedContextException(BotBaseContextException):
     """A base class for all the exceptions excepted in the code that should get handled silently internally."""
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, message: str, logger: BotClientLogger, *, log: int = WARNING):
         self.log = log
         self.logger = logger

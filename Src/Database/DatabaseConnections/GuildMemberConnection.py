@@ -1,12 +1,13 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
+
 from Bot.DataClasses.GuildMember import GuildMember
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class GuildMemberConnection(ConnectionBase):
 
     def get_guild_member(self, user_id: int, guild_id: int):

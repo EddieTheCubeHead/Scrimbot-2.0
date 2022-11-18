@@ -1,15 +1,16 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
+
 from Bot.Matchmaking.RatingAlgorithms.UserRatingChange.FlatChangeStrategy import FlatChangeStrategy
 from Bot.Matchmaking.RatingAlgorithms.UserRatingChange.UserRatingChangeStrategy import UserRatingChangeStrategy
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class UserRatingChangeStrategyProvider:
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, flat_change_strategy: FlatChangeStrategy):
         self._default_strategy = flat_change_strategy
         self._strategies: dict[str, UserRatingChangeStrategy] = {flat_change_strategy.name: flat_change_strategy}

@@ -2,19 +2,18 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from discord.ext.commands import Context
+from hintedi import HinteDI
 
 from Bot.Converters.ConverterBase import ConverterBase
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
-
 from Database.DatabaseConnections.GuildConnection import GuildConnection
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class GuildConverter(ConverterBase):
 
     connection: GuildConnection = None
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, connection: GuildConnection):
         super().__init__(connection)
 

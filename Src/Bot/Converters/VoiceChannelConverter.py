@@ -2,9 +2,9 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from discord.ext.commands import converter, Context
+from hintedi import HinteDI
 
 from Bot.Converters.ConverterBase import ConverterBase
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
 
@@ -12,12 +12,12 @@ from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConn
 _LOBBY_CHANNEL_PREFIX: str = "l:"
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class VoiceChannelConverter(ConverterBase[VoiceChannel]):
 
     connection: ScrimChannelConnection = None
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, connection: ScrimChannelConnection):
         super().__init__(connection)
 

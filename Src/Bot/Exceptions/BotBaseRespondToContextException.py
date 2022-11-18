@@ -3,15 +3,15 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
 from discord.ext.commands import Context
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
 from Bot.Exceptions.BotBaseContextException import BotBaseContextException
 
 
 class BotBaseRespondToContextException(BotBaseContextException, commands.CommandError):
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, message: str, embed_builder: ExceptionEmbedBuilder, *, send_help: bool = True,
                  delete_after: float = None):
         self.message = message

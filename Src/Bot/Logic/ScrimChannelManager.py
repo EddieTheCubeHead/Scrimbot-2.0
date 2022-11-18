@@ -3,11 +3,12 @@ from __future__ import annotations
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
+
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class ScrimChannelManager:
 
     @staticmethod

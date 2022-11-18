@@ -9,11 +9,11 @@ from behave import *
 from behave.api.async_step import async_run_until_complete
 from behave.runner import Context
 from discord import Reaction, Message
+from hintedi import HinteDI
 
 from Bot.DataClasses.UserScrimResult import Result
 from Test.AcceptanceTest.steps.mock_discord_objects_steps import create_voice_channels
 from Bot.Converters.GameConverter import GameConverter
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Test.Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
 from Test.Utils.TestHelpers.embed_test_helper import parse_embed_from_table, create_error_embed, assert_same_embed_text
 from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
@@ -51,7 +51,7 @@ async def step_impl(context: Context, game):
 async def step_impl(context: Context, game, amount):
     await _create_scrim(context, game)
     if amount == "enough":
-        game_instance = await BotDependencyInjector.dependencies[GameConverter].convert(MagicMock(), game)
+        game_instance = await HinteDI.dependencies[GameConverter].convert(MagicMock(), game)
         amount = game_instance.team_count * game_instance.min_team_size
     await _add_reactions(amount, context, "🎮")
 
@@ -65,7 +65,7 @@ async def step_impl(context: Context, game):
 
 async def _create_locked_scrim(context, game, amount=0):
     await _create_scrim(context, game, amount)
-    game_instance = await BotDependencyInjector.dependencies[GameConverter].convert(MagicMock(), game)
+    game_instance = await HinteDI.dependencies[GameConverter].convert(MagicMock(), game)
     amount = game_instance.team_count * game_instance.min_team_size
     await _add_reactions(amount, context, "🎮", 1)
     await sleep(0)  # Discord.py queue system for events is dumb. This ensures all reactions are added
@@ -160,7 +160,7 @@ def _get_result_command(result: Optional[Result]):
 async def create_filled_game(amount, context, game):
     await _create_locked_scrim(context, game, amount)
     await sleep(0)
-    game_instance = await BotDependencyInjector.dependencies[GameConverter].convert(MagicMock(), game)
+    game_instance = await HinteDI.dependencies[GameConverter].convert(MagicMock(), game)
     max_team_players = game_instance.max_team_size
     team_count = game_instance.team_count
     for team in range(team_count):

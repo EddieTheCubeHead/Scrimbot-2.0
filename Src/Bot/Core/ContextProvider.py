@@ -3,12 +3,12 @@ __author__ = "Eetu Asikainen"
 
 from discord import Message
 from discord.ext.commands import Bot
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimContext import ScrimContext
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class ContextProvider:
     """An abstraction layer between the bot and discord.py mainly used for overriding context creation in testing."""
 

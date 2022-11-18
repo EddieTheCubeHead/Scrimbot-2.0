@@ -2,16 +2,16 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from discord import Guild
+from hintedi import HinteDI
 
 from Bot.Converters.GuildConverter import GuildConverter
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Configs.Config import Config
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class BotSettingsService:
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, config: Config, guild_converter: GuildConverter):
         self.config = config
         self.guild_converter = guild_converter

@@ -1,12 +1,13 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
+
 from Bot.Exceptions.BuildException import BuildException
 from Bot.Logic.DiscordObjectProvider import DiscordObjectProvider
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class DiscordVoiceChannelProvider(DiscordObjectProvider):
 
     def get_channel(self, channel_id: int):

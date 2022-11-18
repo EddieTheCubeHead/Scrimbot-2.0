@@ -2,11 +2,10 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from discord.ext.commands import Converter
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 
-
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class TeamCreationStrategyConverter(Converter):
 
     _strategies: dict[str, Converter] = {}

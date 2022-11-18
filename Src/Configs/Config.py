@@ -5,7 +5,7 @@ import json
 import os
 from pathlib import Path
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
 
 
 def _get_config(config_name: str):
@@ -18,7 +18,7 @@ def _construct_path(file_folder: str) -> str:
     return str(Path(os.path.dirname(__file__)).parent.parent.joinpath(file_folder).absolute())
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class Config:
 
     def __init__(self):

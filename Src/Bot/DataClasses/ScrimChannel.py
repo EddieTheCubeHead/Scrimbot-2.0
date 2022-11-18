@@ -5,9 +5,10 @@ __author__ = "Eetu Asikainen"
 
 from typing import TYPE_CHECKING
 
-from discord import Embed
-from sqlalchemy import Column, Integer, ForeignKey, String
+
+from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
+from hintedi import HinteDI
 
 from Bot.Converters.Convertable import Convertable
 from Bot.DataClasses.Displayable import Displayable
@@ -15,7 +16,6 @@ from Bot.DataClasses.Displayable import Displayable
 if TYPE_CHECKING:  # pragma: no cover
     from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
 from Bot.DataClasses.DataClass import DataClass
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 
 
@@ -34,6 +34,6 @@ class ScrimChannel(DataClass, Convertable):  # pragma: no cover
         self.voice_channels: list[VoiceChannel] = list(voice_channels)
 
     @classmethod
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def set_converter(cls, converter: ScrimChannelConverter):  # pragma: no cover
         super().set_converter(converter)

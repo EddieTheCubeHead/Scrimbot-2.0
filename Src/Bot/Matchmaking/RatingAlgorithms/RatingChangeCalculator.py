@@ -3,9 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from typing import Iterable
 
+from hintedi import HinteDI
+
 from Bot.Converters.ScrimResultConverter import ScrimResult
 from Bot.Converters.UserRatingConverter import UserRatingConverter
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimContext import ScrimContext
 from Bot.DataClasses.Game import Game
 from Bot.DataClasses.Guild import Guild
@@ -24,10 +25,10 @@ def _get_other_team_ratings(team: Team, team_ratings: dict[Team: int]):
     return [team_rating[1] for team_rating in team_ratings.items() if team_rating[0] != team]
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class RatingChangeCalculator:
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, user_rating_change_strategy_provider: UserRatingChangeStrategyProvider,
                  team_rating_strategy_provider: TeamRatingStrategyProvider,
                  rating_converter: UserRatingConverter):
@@ -36,8 +37,8 @@ class RatingChangeCalculator:
         self._rating_converter = rating_converter
 
     def calculate_changes(self, game: Game, guild: Guild, results: ScrimResult) -> dict[User: int]:
-        team_strategy = self._team_rating_strategy_provider.get_strategy(game.name)
-        user_strategy = self._user_rating_change_strategy_provider.get_strategy(game.name)
+        team_strategy = self._team_rating_strategy_provider.get_strategy(game.team_rating_algorithmame)
+        user_strategy = self._user_rating_change_strategy_provider.get_strategy(game.rating_change_algorithm)
         flattened_teams = [team for team_group in results for team in team_group]
         flattened_players = [player for team in flattened_teams for player in team.members]
         player_ratings = {

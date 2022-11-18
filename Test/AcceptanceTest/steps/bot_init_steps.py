@@ -7,9 +7,9 @@ from unittest.mock import patch
 
 from behave import *
 from behave.api.async_step import async_run_until_complete
+from hintedi import HinteDI
 
 from Bot.Core.Logging.BotClientLogger import BotClientLogger
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
@@ -21,7 +21,7 @@ from Test.Utils.TestHelpers.test_utils import get_cogs_messages
 def _setup_bot(context):
     config = Config()
     logger = BotClientLogger(config)
-    BotDependencyInjector.dependencies[MasterConnection] = MasterConnection(config, ":memory:")
+    HinteDI.dependencies[MasterConnection] = MasterConnection(config, ":memory:")
     context.client = ScrimBotClient(config, logger, ResponseMessageCatcher())
     ResponseLoggerContext.reset_position()
 

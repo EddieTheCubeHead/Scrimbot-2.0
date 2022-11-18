@@ -2,8 +2,8 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from discord.ext.commands import CheckFailure
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.Core.ScrimContext import ScrimContext
 from Bot.DataClasses.GuildMember import PermissionLevel
 from Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder

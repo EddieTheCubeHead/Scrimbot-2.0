@@ -3,7 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from logging import DEBUG
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
+from hintedi import HinteDI
+
 from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
 from Bot.DataClasses.Team import Team
 from Bot.DataClasses.User import User
@@ -12,7 +13,7 @@ from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextExcepti
 
 class BotInvalidJoinException(BotLoggedNoContextException):
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, user: User, team: Team, reason: str, logger: BotSystemLogger):
         self.user = user
         self.team = team

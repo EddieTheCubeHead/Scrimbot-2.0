@@ -3,12 +3,12 @@ __author__ = "Eetu Asikainen"
 
 from discord import Embed
 from discord.ext.commands import Context
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
 
 
-@BotDependencyInjector.singleton
+@HinteDI.singleton
 class ExceptionEmbedBuilder(ResponseBuilder):
 
     def build(self, ctx: Context, exception) -> Embed:

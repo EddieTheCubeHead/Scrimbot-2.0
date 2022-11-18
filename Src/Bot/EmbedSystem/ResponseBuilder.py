@@ -6,9 +6,9 @@ from typing import TypeVar, Generic
 
 from discord import Embed, Message, Guild
 from discord.ext.commands import Context
+from hintedi import HinteDI
 
 from Bot.DataClasses.DataClass import DataClass
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 
 
 T = TypeVar('T', bound=DataClass)  # pylint: disable=invalid-name
@@ -23,7 +23,7 @@ class _EditWrapperContext(Context):
         super().__init__(message=message, prefix="")
 
 
-@BotDependencyInjector.instance
+@HinteDI.instance
 class ResponseBuilder(Generic[T]):
 
     async def send(self, ctx: Context, text=None, *, displayable: T = None, delete_after=None, delete_parent=True) \

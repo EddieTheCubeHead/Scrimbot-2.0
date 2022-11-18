@@ -2,8 +2,8 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from discord.ext import commands
+from hintedi import HinteDI
 
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
 from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 
@@ -14,7 +14,7 @@ def _build_message(conversion_type: str, argument: str) -> str:
 
 class BotConversionFailureException(BotBaseRespondToContextException, commands.ConversionError):
 
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def __init__(self, conversion_type: str, argument: str, embed_builder: ExceptionEmbedBuilder, reason=None):
         message = _build_message(conversion_type, argument)
         if reason is not None:

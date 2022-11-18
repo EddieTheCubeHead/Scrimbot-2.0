@@ -6,14 +6,13 @@ __author__ = "Eetu Asikainen"
 from typing import TYPE_CHECKING
 
 from discord import Member
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy import Column, Integer
 from sqlalchemy.orm import relationship
+from hintedi import HinteDI
 
 from Bot.Converters.Convertable import Convertable
 if TYPE_CHECKING:  # pragma: no cover
     from Bot.Converters.UserConverter import UserConverter
-from Bot.Core.BotDependencyInjector import BotDependencyInjector
 from Bot.DataClasses.DataClass import DataClass
 from Bot.DataClasses.GuildMember import GuildMember
 from Bot.DataClasses.TeamMember import TeamMember
@@ -34,6 +33,6 @@ class User(DataClass, Convertable):  # pragma: no cover
         self.member = member
 
     @classmethod
-    @BotDependencyInjector.inject
+    @HinteDI.inject
     def set_converter(cls, converter: UserConverter):
         super().set_converter(converter)
