@@ -34,6 +34,3 @@ class TestFlatChangeStrategy(UnittestBase):
         mock_rating = MagicMock()
         mock_rating.rating = rating
         return mock_rating
-
-    def test_get_name_returns_flat(self):
-        self.assertEqual("flat", self.strategy.name)

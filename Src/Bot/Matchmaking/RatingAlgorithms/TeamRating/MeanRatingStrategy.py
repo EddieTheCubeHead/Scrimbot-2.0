@@ -9,7 +9,7 @@ from Bot.DataClasses.UserRating import UserRating
 from Bot.Matchmaking.RatingAlgorithms.TeamRating.TeamRatingStrategy import TeamRatingStrategy
 
 
-@HinteDI.singleton
+@HinteDI.singleton_implementation(base=TeamRatingStrategy, key='mean')
 class MeanRatingStrategy(TeamRatingStrategy):
 
     def get_rating(self, *member_ratings: UserRating) -> float:

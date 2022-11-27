@@ -70,7 +70,7 @@ class TestScrimConverter(AsyncUnittestBase):
     async def test_create_scrim_when_scrim_created_then_scrim_saved_to_database(self):
         mock_game = self._create_mock_game()
         mock_channel = self._create_mock_channel()
-        actual_scrim = self.converter.create_scrim(mock_channel, mock_game)
+        actual_scrim = await self.converter.create_scrim(mock_channel, mock_game)
         self.connection.add_scrim.assert_called_with(actual_scrim)
 
     async def test_create_scrim_when_scrim_on_channel_then_exception_raised(self):
@@ -78,13 +78,14 @@ class TestScrimConverter(AsyncUnittestBase):
         mock_channel = self._create_mock_channel()
         expected_exception = BotChannelHasScrimException(mock_channel.channel_id)
         await self.converter.create_scrim(mock_channel, mock_game)
-        self._assert_raises_correct_exception(expected_exception, self.converter.create_scrim, mock_channel, mock_game)
+        await self._async_assert_raises_correct_exception(expected_exception, self.converter.create_scrim, mock_channel,
+                                                          mock_game)
 
     async def test_create_scrim_when_scrim_created_then_channel_lock_acquired(self):
         mock_game = self._create_mock_game()
         mock_channel = self._create_mock_channel()
         await self.converter.create_scrim(mock_channel, mock_game)
-        self.assertTrue(self.converter._scrims[mock_channel.channel_id].locked(()))
+        self.assertTrue(self.converter._scrims[mock_channel.channel_id].locked())
 
     def test_exists_when_called_with_existing_scrim_then_returns_true(self):
         mock_scrim = self._create_mock_scrim()

@@ -15,10 +15,7 @@ from Bot.DataClasses.User import User
 from Bot.DataClasses.UserRating import UserRating
 from Bot.DataClasses.UserScrimResult import Result
 from Bot.Matchmaking.RatingAlgorithms.TeamRating.TeamRatingStrategy import TeamRatingStrategy
-from Bot.Matchmaking.RatingAlgorithms.TeamRating.TeamRatingStrategyProvider import TeamRatingStrategyProvider
 from Bot.Matchmaking.RatingAlgorithms.UserRatingChange.UserRatingChangeStrategy import UserRatingChangeStrategy
-from Bot.Matchmaking.RatingAlgorithms.UserRatingChange.UserRatingChangeStrategyProvider import \
-    UserRatingChangeStrategyProvider
 
 
 def _get_other_team_ratings(team: Team, team_ratings: dict[Team: int]):
@@ -29,16 +26,16 @@ def _get_other_team_ratings(team: Team, team_ratings: dict[Team: int]):
 class RatingChangeCalculator:
 
     @HinteDI.inject
-    def __init__(self, user_rating_change_strategy_provider: UserRatingChangeStrategyProvider,
-                 team_rating_strategy_provider: TeamRatingStrategyProvider,
+    def __init__(self, user_rating_change_strategy_provider: UserRatingChangeStrategy,
+                 team_rating_strategy_provider: TeamRatingStrategy,
                  rating_converter: UserRatingConverter):
         self._user_rating_change_strategy_provider = user_rating_change_strategy_provider
         self._team_rating_strategy_provider = team_rating_strategy_provider
         self._rating_converter = rating_converter
 
     def calculate_changes(self, game: Game, guild: Guild, results: ScrimResult) -> dict[User: int]:
-        team_strategy = self._team_rating_strategy_provider.get_strategy(game.team_rating_algorithmame)
-        user_strategy = self._user_rating_change_strategy_provider.get_strategy(game.rating_change_algorithm)
+        team_strategy = self._team_rating_strategy_provider.resolve_from_key(game.team_rating_algorithmame)
+        user_strategy = self._user_rating_change_strategy_provider.resolve_from_key(game.rating_change_algorithm)
         flattened_teams = [team for team_group in results for team in team_group]
         flattened_players = [player for team in flattened_teams for player in team.members]
         player_ratings = {

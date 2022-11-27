@@ -26,6 +26,3 @@ class TestWeightBestPlayerRatingStrategy(UnittestBase):
         rating_team = create_team_from_ratings(*ratings)
         expected_team_rating = (sum(ratings) + sqrt((sum(ratings) / len(ratings)) * max(ratings))) / (len(ratings) + 1)
         self.assertEqual(expected_team_rating, self.strategy.get_rating(*rating_team))
-
-    def test_get_name_returns_weighted_best(self):
-        self.assertEqual("weighted_best", self.strategy.name)

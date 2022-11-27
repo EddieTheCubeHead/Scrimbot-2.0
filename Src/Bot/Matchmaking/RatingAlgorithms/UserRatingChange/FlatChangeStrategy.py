@@ -9,7 +9,7 @@ from Bot.DataClasses.UserScrimResult import Result
 from Bot.Matchmaking.RatingAlgorithms.UserRatingChange.UserRatingChangeStrategy import UserRatingChangeStrategy
 
 
-@HinteDI.singleton
+@HinteDI.singleton_implementation(base=UserRatingChangeStrategy, key='flat')
 class FlatChangeStrategy(UserRatingChangeStrategy):
 
     def get_rating_change(self, user_rating: UserRating, result: Result, own_team_rating: int,
@@ -19,7 +19,3 @@ class FlatChangeStrategy(UserRatingChangeStrategy):
         elif result == Result.WIN:
             return 25
         return 0
-
-    @property
-    def name(self) -> str:
-        return "flat"

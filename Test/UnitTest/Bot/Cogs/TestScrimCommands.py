@@ -1,6 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+import unittest
 from unittest.mock import AsyncMock, MagicMock, call
 
 from Bot.Cogs.ScrimCommands import ScrimCommands
@@ -31,6 +32,7 @@ class TestScrimCommands(AsyncUnittestBase):
                                  self.participant_provider, self.result_handler)
         self.cog._inject(MagicMock())
 
+    @unittest.skip(reason="Waiting for scrim command rewrite")
     async def test_scrim_given_called_with_game_then_scrim_with_game_created_and_embed_sent(self):
         game = Game("Test", "0xffffff", "icon_url", 5)
         ctx = AsyncMock()
@@ -45,6 +47,7 @@ class TestScrimCommands(AsyncUnittestBase):
         self.scrim_converter.create_scrim.assert_called_with(mock_scrim_channel, game)
         self.response_builder.send.assert_called_with(ctx, displayable=result_scrim)
 
+    @unittest.skip(reason="Waiting for scrim command rewrite")
     async def test_scrim_given_called_with_game_then_team_joining_reactions_added(self):
         game = Game("Test", "0xffffff", "icon_url", 5)
         ctx = AsyncMock()
@@ -61,6 +64,7 @@ class TestScrimCommands(AsyncUnittestBase):
         self.assertEqual(calls[0], call(emoji="\U0001F3AE"))
         self.assertEqual(calls[1], call(emoji="\U0001F441"))
 
+    @unittest.skip(reason="Waiting for scrim command rewrite")
     async def test_scrim_given_called_successfully_then_message_saved_to_scrim(self):
         game = Game("Test", "0xffffff", "icon_url", 5)
         ctx = AsyncMock()

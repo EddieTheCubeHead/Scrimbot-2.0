@@ -22,9 +22,9 @@ class TestRatingChangeCalculator(UnittestBase):
         self.calculator = RatingChangeCalculator(self.user_rating_change_strategy_provider,
                                                  self.team_rating_strategy_provider, self.rating_converter)
         self.user_rating_change_strategy = MagicMock()
-        self.user_rating_change_strategy_provider.get_strategy.return_value = self.user_rating_change_strategy
+        self.user_rating_change_strategy_provider.resolve_from_key.return_value = self.user_rating_change_strategy
         self.team_rating_strategy = MagicMock()
-        self.team_rating_strategy_provider.get_strategy.return_value = self.team_rating_strategy
+        self.team_rating_strategy_provider.resolve_from_key.return_value = self.team_rating_strategy
         self.mock_game = MagicMock()
         self.mock_guild = MagicMock()
 
