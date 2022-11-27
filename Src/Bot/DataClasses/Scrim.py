@@ -15,6 +15,7 @@ from Bot.DataClasses.DataClass import DataClass
 if TYPE_CHECKING:
     from Bot.DataClasses.Game import Game
     from Bot.DataClasses.ScrimChannel import ScrimChannel
+    from Bot.DataClasses.Team import Team
 
 
 class ScrimState(enum.Enum):
@@ -36,7 +37,7 @@ class Scrim(DataClass):  # pragma: no cover
         self.game_name = game.name
         self.game = game
         self.state = state
-        self.teams = []
+        self.teams: list[Team] = []
 
     scrim_id = Column(Integer, primary_key=True, autoincrement=True)
     channel_id = Column(Integer, ForeignKey("ScrimChannels.channel_id"), nullable=False)
