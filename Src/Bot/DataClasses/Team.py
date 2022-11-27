@@ -14,6 +14,11 @@ from Bot.DataClasses.User import User
 from Bot.DataClasses.VoiceChannel import VoiceChannel
 
 
+PARTICIPANTS = "Participants"
+SPECTATORS = "Spectators"
+QUEUE = "Queue"
+
+
 class Team(DataClass):  # pragma: no-cover
 
     team_id = Column(Integer, primary_key=True, autoincrement=True)
