@@ -2,4 +2,4 @@ inflect~=6.0.0
 behave~=1.2.6
 discord.py==1.7.3  # Prevent using 2.0.0 before migration
 SQLAlchemy==1.4.23  # Strong equals here, because there is a breaking bug in newer versions. Need to investigate
-HinteDI~=0.3.1  # Custom DI implementation moved to a separate package
+HinteDI~=0.3.2  # Custom DI implementation moved to a separate package
