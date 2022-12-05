@@ -9,7 +9,6 @@ from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Test.Utils.TestBases.StateUnittest import StateUnittest
 
 
-@unittest.skip(reason="Waiting for scrim state refactor")
 class TestLookingForPlayersState(StateUnittest):
 
     def test_build_description_given_not_enough_players_then_remaining_players_returned(self):

@@ -5,9 +5,9 @@ __author__ = "Eetu Asikainen"
 
 import os
 
-from Bot.DataClasses.Team import Team
+from Bot.DataClasses.Scrim import Scrim
+from Bot.DataClasses.Team import Team, QUEUE
 from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
 
 class LookingForPlayersState(ScrimState):
@@ -16,12 +16,11 @@ class LookingForPlayersState(ScrimState):
     def description(self) -> str:
         return "looking for players"
 
-    @staticmethod
-    def build_description(teams_manager: ScrimTeamsManager) -> str:
-        game = teams_manager.game
+    def build_description(self, scrim: Scrim) -> str:
+        game = scrim.game
         min_players = game.team_count * game.min_team_size
         max_players = game.team_count * game.max_team_size
-        current_players = len(teams_manager.get_standard_teams()[0].members)
+        current_players = len(self.get_setup_teams(scrim)[0].members)
         if current_players < min_players:
             return f"Looking for players, {min_players - current_players} more required."
         elif current_players <  max_players:
@@ -29,20 +28,18 @@ class LookingForPlayersState(ScrimState):
                    f"start team selection."
         return "All players present. Send command 'lock' to start team selection."
 
-    @staticmethod
-    def build_fields(teams_manager: ScrimTeamsManager) -> list[(str, str, bool)]:
+    def build_fields(self, scrim: Scrim) -> list[(str, str, bool)]:
         fields = []
-        for team in teams_manager.get_standard_teams():
-            if team.name == ScrimTeamsManager.QUEUE and not team.members:
+        for team in self.get_setup_teams(scrim):
+            if team.name == QUEUE and not team.members:
                 continue
-            fields.append((team.name, ScrimState.build_team_participants(team), True))
+            fields.append((team.name, self.build_team_participants(team), True))
         return fields
 
-    @staticmethod
-    def build_footer(teams_manager: ScrimTeamsManager) -> str:
-        game = teams_manager.game
+    def build_footer(self, scrim: Scrim) -> str:
+        game = scrim.game
         min_players = game.team_count * game.min_team_size
-        current_players = len(teams_manager.get_standard_teams()[0].members)
+        current_players = len(self.get_setup_teams(scrim)[0].members)
         if current_players < min_players:
             return "To join players react 🎮 To join spectators react 👁"
         return "To join players react 🎮 To join spectators react 👁 To lock the teams send command 'lock'"
