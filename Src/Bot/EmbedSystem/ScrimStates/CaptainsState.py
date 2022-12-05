@@ -1,8 +1,8 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from Bot.DataClasses.Scrim import Scrim
 from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
 
 class CaptainsState(ScrimState):
@@ -12,13 +12,13 @@ class CaptainsState(ScrimState):
         return "letting captains pick players"
 
     @staticmethod
-    def build_description(teams_manager: ScrimTeamsManager) -> str:
+    def build_description(scrim: Scrim) -> str:
         pass
 
     @staticmethod
-    def build_fields(teams_manager: ScrimTeamsManager) -> list[(str, str, bool)]:
+    def build_fields(scrim: Scrim) -> list[(str, str, bool)]:
         pass
 
     @staticmethod
-    def build_footer(teams_manager: ScrimTeamsManager) -> str:
+    def build_footer(scrim: Scrim) -> str:
         pass

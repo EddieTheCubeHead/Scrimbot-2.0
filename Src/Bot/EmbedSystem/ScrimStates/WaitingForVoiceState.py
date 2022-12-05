@@ -12,9 +12,9 @@ class WaitingForVoiceState(StartedState):
         return "waiting for players to join voice channel"
 
     @staticmethod
-    def build_description(teams_manager: ScrimTeamsManager) -> str:
-        return f"Starting {teams_manager.game.name} scrim. Waiting for all players to join voice chat..."
+    def build_description(scrim: ScrimTeamsManager) -> str:
+        return f"Starting {scrim.game.name} scrim. Waiting for all players to join voice chat..."
 
     @staticmethod
-    def build_footer(teams_manager: ScrimTeamsManager) -> str:
+    def build_footer(scrim: ScrimTeamsManager) -> str:
         return "Scrim will start automatically when all players are in voice chat"

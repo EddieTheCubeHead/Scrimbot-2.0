@@ -9,7 +9,6 @@ from Bot.EmbedSystem.ScrimStates.WaitingForVoiceState import WaitingForVoiceStat
 from Utils.TestBases.StateUnittest import StateUnittest
 
 
-@unittest.skip(reason="Waiting for scrim state refactor")
 class TestWaitingForVoiceState(StateUnittest):
 
     def test_get_description_when_called_then_returns_waiting_info(self):

@@ -8,7 +8,6 @@ from Bot.EmbedSystem.ScrimStates.StartedState import StartedState
 from Utils.TestBases.StateUnittest import StateUnittest
 
 
-@unittest.skip(reason="Waiting for scrim state refactor")
 class TestStartedState(StateUnittest):
 
     def test_build_description_given_game_has_two_teams_then_winner_and_tie_instructions_returned(self):

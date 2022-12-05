@@ -1,8 +1,8 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from Bot.DataClasses.Scrim import Scrim
 from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
 
 class StartedState(ScrimState):
@@ -12,26 +12,25 @@ class StartedState(ScrimState):
         return "underway"
 
     @staticmethod
-    def build_description(teams_manager: ScrimTeamsManager) -> str:
-        description_string = f"{teams_manager.game.name} scrim underway. Declare the winner with the command 'winner ["
-        if teams_manager.game.team_count > 1:
+    def build_description(scrim: Scrim) -> str:
+        description_string = f"{scrim.game.name} scrim underway. Declare the winner with the command 'winner ["
+        if scrim.game.team_count > 1:
             description_string += "team]' "
-            if teams_manager.game.team_count == 2:
+            if scrim.game.team_count == 2:
                 description_string += "or 'tie' "
         else:
             description_string += "user]' "
-            if teams_manager.game.max_team_size == 2:
+            if scrim.game.max_team_size == 2:
                 description_string += "or 'tie' "
         description_string += "or end the scrim without declaring a winner with 'end'."
         return description_string
 
-    @staticmethod
-    def build_fields(teams_manager: ScrimTeamsManager) -> list[(str, str, bool)]:
+    def build_fields(self, scrim: Scrim) -> list[(str, str, bool)]:
         fields = []
-        for team in teams_manager.get_game_teams():
-            fields.append((team.name, ScrimState.build_team_participants(team), True))
+        for team in self.get_game_teams(scrim):
+            fields.append((team.name, self.build_team_participants(team), True))
         return fields
 
     @staticmethod
-    def build_footer(teams_manager: ScrimTeamsManager) -> str:
+    def build_footer(scrim: Scrim) -> str:
         return "gl hf!"

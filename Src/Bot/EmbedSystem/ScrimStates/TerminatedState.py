@@ -1,8 +1,8 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from Bot.DataClasses.Scrim import Scrim
 from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
 
 class TerminatedState(ScrimState):
@@ -12,15 +12,15 @@ class TerminatedState(ScrimState):
         return "terminated"
 
     @staticmethod
-    def build_description(teams_manager: ScrimTeamsManager) -> str:
-        if teams_manager.terminator:
-            return f"Scrim terminated manually by <@{teams_manager.terminator}>"
+    def build_description(scrim: Scrim) -> str:
+        if scrim.terminator_id:
+            return f"Scrim terminated manually by <@{scrim.terminator_id}>"
         return "Scrim terminated automatically after inactivity"
 
     @staticmethod
-    def build_fields(teams_manager: ScrimTeamsManager) -> list[(str, str, bool)]:
+    def build_fields(scrim: Scrim) -> list[(str, str, bool)]:
         return []
 
     @staticmethod
-    def build_footer(teams_manager: ScrimTeamsManager) -> str:
+    def build_footer(scrim: Scrim) -> str:
         return "f"

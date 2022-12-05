@@ -19,14 +19,15 @@ if TYPE_CHECKING:
 
 
 class ScrimState(enum.Enum):
-    LFP = 0,
-    LOCKED = 1,
-    STARTED = 2,
-    ENDED = 3,
-    CAPS = 4,
-    VOICE_WAIT = 5,
-    CAPS_PREP = 6,
-    TERMINATED = 7
+    SETTING_UP = 0,
+    LFP = 1,
+    LOCKED = 2,
+    STARTED = 3,
+    ENDED = 4,
+    CAPS = 5,
+    VOICE_WAIT = 6,
+    CAPS_PREP = 7,
+    TERMINATED = 8
 
 
 class Scrim(DataClass):  # pragma: no cover
@@ -44,6 +45,7 @@ class Scrim(DataClass):  # pragma: no cover
     game_name = Column(String, ForeignKey("Games.name"), nullable=False)
     state = Column(Enum(ScrimState), default=ScrimState.LFP)
     message_id = Column(Integer, unique=True)
+    terminator_id = Column(Integer, default=None)
 
     game = relationship("Game", back_populates="scrims")
     scrim_channel = relationship("ScrimChannel", back_populates="scrims")
