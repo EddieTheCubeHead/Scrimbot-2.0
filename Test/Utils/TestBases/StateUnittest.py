@@ -30,17 +30,10 @@ class StateUnittest(UnittestBase):
         self.team_1 = Team("Team 1", min_size=5)
         self.team_2 = Team("Team 2", min_size=5)
         self.name_mappings = {}
-        self.teams_manager = MagicMock()
-        self.teams_manager.get_standard_teams = self.mock_standard_teams
-        self.teams_manager.get_game_teams = self.mock_game_teams
+        self.scrim = MagicMock()
+        self.scrim.teams = [self.participants, self.spectators, self.queue, self.team_1, self.team_2]
         self.mock_game = self.create_mock_game("Test", 2, 5)
-        self.teams_manager.game = self.mock_game
-
-    def mock_standard_teams(self):
-        return [self.participants, self.spectators, self.queue]
-
-    def mock_game_teams(self):
-        return [self.team_1, self.team_2]
+        self.scrim.game = self.mock_game
 
     def create_mock_game(self, name, team_count, min_team_size, max_team_size=None) -> Game:
         mock_game = MagicMock()

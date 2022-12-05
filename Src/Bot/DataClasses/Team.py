@@ -22,8 +22,8 @@ QUEUE = "Queue"
 class Team(DataClass):  # pragma: no-cover
 
     team_id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)  # TODO: when teams are more refined, create check for these two
-    code = Column(String, nullable=True)   # columns should be unique per guild with global guild (id=0) considered
+    name = Column(String, nullable=False)
+    code = Column(String, nullable=True)
     guild_id = Column(Integer, ForeignKey("Guilds.guild_id"), nullable=False)
 
     # TODO: implement check for not allowing channels on global teams

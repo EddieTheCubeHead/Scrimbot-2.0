@@ -1,9 +1,9 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.DataClasses.Team import Team
+from Bot.DataClasses.Scrim import Scrim
+from Bot.DataClasses.Team import Team, QUEUE, PARTICIPANTS
 from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
 _divider = "----------------------------------------------"
 
@@ -24,39 +24,45 @@ class LockedState(ScrimState):
         return "waiting for team selection"
 
     @staticmethod
-    def build_description(teams_manager: ScrimTeamsManager) -> str:
-        if teams_manager.has_full_teams and not teams_manager.has_participants:
+    def build_description(scrim: Scrim) -> str:
+        if scrim.has_full_teams and not scrim.has_participants:
             return "Teams full, use the command 'start' to start the scrim or 'teams clear' to clear teams"
-        if not teams_manager.has_full_teams and not teams_manager.has_participants:
+        if not scrim.has_full_teams and not scrim.has_participants:
             return "No unassigned players left but all teams are not full! Please rebalance the teams with reactions " \
                    "or use the command 'teams _random/balanced/balancedrandom/pickup_'."
         return "Players locked. Use reactions for manual team selection or the command 'teams " \
                "_random/balanced/balancedrandom/pickup_' to define teams."
 
-    @staticmethod
-    def build_fields(teams_manager: ScrimTeamsManager) -> list[(str, str, bool)]:
-        fields = []
-        LockedState._build_standard_team_fields(fields, teams_manager)
+    def build_fields(self, scrim: Scrim) -> list[(str, str, bool)]:
+        fields = self._build_standard_team_fields(scrim)
         fields.append((_divider, _divider, False))
-        LockedState._build_game_team_fields(fields, teams_manager)
+        self._build_game_team_fields(fields, scrim)
         return fields
 
-    @staticmethod
-    def _build_standard_team_fields(fields, teams_manager):
-        for team in teams_manager.get_standard_teams():
-            if team.name == ScrimTeamsManager.QUEUE:
+    def _build_standard_team_fields(self, scrim: Scrim):
+        fields = []
+        for team in self.get_setup_teams(scrim):
+            if team.name == QUEUE:
                 continue
-            fields.append((team.name if team.name != ScrimTeamsManager.PARTICIPANTS else "Unassigned",
-                           ScrimState.build_team_participants(team), True))
+            fields.append((team.name if team.name != PARTICIPANTS else "Unassigned",
+                           self.build_team_participants(team), True))
+        return fields
 
-    @staticmethod
-    def _build_game_team_fields(fields, teams_manager):
-        for team in teams_manager.get_game_teams():
+    def _build_game_team_fields(self, fields: list[(str, str)], scrim: Scrim):
+        for team in self.get_game_teams(scrim):
             name_text = team.name + _get_team_fill_status(team)
             fields.append((name_text, ScrimState.build_team_participants(team), True))
 
-    @staticmethod
-    def build_footer(teams_manager: ScrimTeamsManager) -> str:
-        if teams_manager.has_full_teams and not teams_manager.has_participants:
+    def build_footer(self, scrim: Scrim) -> str:
+        if self.has_full_teams(scrim) and not self.has_participants(scrim):
             return "Send command 'start' to start the scrim or send command 'teams clear' to clear teams"
         return "React 1️⃣ to join Team 1 or 2️⃣ to join Team 2"
+
+    def has_full_teams(self, scrim: Scrim):
+        for team in self.get_game_teams(scrim):
+            if not len(team.members) >= team.min_size:
+                return False
+        return True
+
+    def has_participants(self, scrim: Scrim):
+        return len(self.get_setup_teams(scrim)[0].members) > 0

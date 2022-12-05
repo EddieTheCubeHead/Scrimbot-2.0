@@ -11,7 +11,7 @@ from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
 class ScrimState(ABC):
 
-    _setup_team_names = (PARTICIPANTS, SPECTATORS, QUEUE)
+    _setup_teams = (PARTICIPANTS, SPECTATORS, QUEUE)
 
     @staticmethod
     def build_team_participants(team: Team) -> str:
@@ -22,14 +22,15 @@ class ScrimState(ABC):
     def get_setup_teams(self, scrim: Scrim) -> list[Team]:
         setup_teams = []
         for team in scrim.teams:
-            if team.name in self._setup_team_names:
+            if team.name in self._setup_teams:
                 setup_teams.append(team)
+        setup_teams.sort(key=lambda x: -1 if x.name not in self._setup_teams else self._setup_teams.index(x.name))
         return setup_teams
 
     def get_game_teams(self, scrim: Scrim) -> list[Team]:
         game_teams = []
         for team in scrim.teams:
-            if team.name not in self._setup_team_names:
+            if team.name not in self._setup_teams:
                 game_teams.append(team)
         return game_teams
 
@@ -40,15 +41,15 @@ class ScrimState(ABC):
 
     @staticmethod
     @abstractmethod
-    def build_description(teams_manager: ScrimTeamsManager) -> str:  # pragma: no cover
+    def build_description(scrim: Scrim) -> str:  # pragma: no cover
         pass
 
     @staticmethod
     @abstractmethod
-    def build_fields(teams_manager: ScrimTeamsManager) -> list[(str, str, bool)]:  # pragma: no cover
+    def build_fields(scrim: Scrim) -> list[(str, str, bool)]:  # pragma: no cover
         pass
 
     @staticmethod
     @abstractmethod
-    def build_footer(teams_manager: ScrimTeamsManager) -> str:  # pragma: no cover
+    def build_footer(scrim: Scrim) -> str:  # pragma: no cover
         pass
