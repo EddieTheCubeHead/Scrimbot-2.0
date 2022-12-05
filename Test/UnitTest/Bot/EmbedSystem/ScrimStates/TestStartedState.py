@@ -4,11 +4,16 @@ __author__ = "Eetu Asikainen"
 import os
 import unittest
 
+from Bot.DataClasses.Scrim import ScrimState
+from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 from Bot.EmbedSystem.ScrimStates.StartedState import StartedState
 from Utils.TestBases.StateUnittest import StateUnittest
 
 
 class TestStartedState(StateUnittest):
+
+    def test_build_given_file_imported_then_singleton_dependency_created(self):
+        self._assert_singleton_concrete_dependency(StartedState, ScrimStateBase, ScrimState.STARTED)
 
     def test_build_description_given_game_has_two_teams_then_winner_and_tie_instructions_returned(self):
         state = StartedState()

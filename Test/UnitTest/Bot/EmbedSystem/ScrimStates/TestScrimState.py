@@ -6,12 +6,12 @@ from unittest.mock import MagicMock
 
 from Bot.DataClasses.Scrim import Scrim
 from Bot.DataClasses.Team import Team, PARTICIPANTS, SPECTATORS, QUEUE
-from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
+from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Test.Utils.TestBases.StateUnittest import UnittestBase
 
 
-class BasicStateImplementation(ScrimState):
+class BasicStateImplementation(ScrimStateBase):
 
     @staticmethod
     def build_description(teams_manager: ScrimTeamsManager) -> str:
@@ -50,10 +50,13 @@ def _create_mock_scrim(*team_names: str) -> Scrim:
     return mock_scrim
 
 
-class TestLookingForPlayersState(UnittestBase):
+class TestScrimState(UnittestBase):
 
     def setUp(self) -> None:
         self.state = BasicStateImplementation()
+
+    def test_build_given_file_imported_then_singleton_dependency_created(self):
+        self._assert_abstract_base_dependency(ScrimStateBase)
 
     def test_build_team_participants_given_a_team_has_members_then_members_listed_with_nickname_mentions(self):
         mock_team = _create_mock_team(1, 2, 3)

@@ -4,7 +4,9 @@ __author__ = "Eetu Asikainen"
 import os
 import unittest
 
+from Bot.DataClasses.Scrim import ScrimState
 from Bot.EmbedSystem.ScrimStates.LockedState import LockedState
+from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Test.Utils.TestBases.StateUnittest import StateUnittest
 
@@ -12,6 +14,9 @@ from Test.Utils.TestBases.StateUnittest import StateUnittest
 class TestLockedState(StateUnittest):
 
     _divider = "----------------------------------------------"
+
+    def test_build_given_file_imported_then_singleton_dependency_created(self):
+        self._assert_singleton_concrete_dependency(LockedState, ScrimStateBase, ScrimState.LOCKED)
 
     def test_build_description_given_unassigned_left_then_joining_info_returned(self):
         expected_description = "Players locked. Use reactions for manual team selection or the command 'teams " \

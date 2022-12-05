@@ -4,12 +4,15 @@ __author__ = "Eetu Asikainen"
 import os
 from abc import ABC, abstractmethod
 
+from hintedi import HinteDI
+
 from Bot.DataClasses.Scrim import Scrim
 from Bot.DataClasses.Team import Team, QUEUE, SPECTATORS, PARTICIPANTS
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
 
-class ScrimState(ABC):
+@HinteDI.abstract_base
+class ScrimStateBase(ABC):
 
     _setup_teams = (PARTICIPANTS, SPECTATORS, QUEUE)
 

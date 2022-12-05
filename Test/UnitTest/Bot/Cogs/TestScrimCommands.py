@@ -6,8 +6,8 @@ from unittest.mock import AsyncMock, MagicMock, call
 
 from Bot.Cogs.ScrimCommands import ScrimCommands
 from Bot.DataClasses.Game import Game
+from Bot.DataClasses.Scrim import ScrimState
 from Bot.DataClasses.User import User
-from Bot.EmbedSystem.ScrimStates.scrim_states import *
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
@@ -82,7 +82,7 @@ class TestScrimCommands(AsyncUnittestBase):
 
     async def test_lock_given_called_with_enough_participants_then_scrim_locked_and_message_edited(self):
         mock_scrim = MagicMock()
-        mock_scrim.state = LFP
+        mock_scrim.state = ScrimState.LFP
         mock_message = AsyncMock()
         mock_scrim.message = mock_message
         ctx = AsyncMock()
@@ -95,7 +95,7 @@ class TestScrimCommands(AsyncUnittestBase):
 
     async def test_lock_given_locked_then_scrim_joining_reactions_removed_and_team_joining_reactions_added(self):
         mock_scrim = MagicMock()
-        mock_scrim.state = LFP
+        mock_scrim.state = ScrimState.LFP
         mock_message = AsyncMock()
         mock_scrim.message = mock_message
         ctx = AsyncMock()
@@ -114,7 +114,7 @@ class TestScrimCommands(AsyncUnittestBase):
     async def test_start_given_no_move_voice_arg_then_player_moving_attempted(self):
         mock_scrim = AsyncMock()
         mock_scrim.start = MagicMock()
-        mock_scrim.state = LOCKED
+        mock_scrim.state = ScrimState.LOCKED
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
@@ -128,7 +128,7 @@ class TestScrimCommands(AsyncUnittestBase):
     async def test_start_when_player_moving_attended_successfully_then_scrim_not_registered_for_wait(self):
         mock_scrim = AsyncMock()
         mock_scrim.start = MagicMock()
-        mock_scrim.state = LOCKED
+        mock_scrim.state = ScrimState.LOCKED
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
@@ -140,7 +140,7 @@ class TestScrimCommands(AsyncUnittestBase):
     async def test_start_when_player_moving_attended_unsuccessfully_then_scrim_registered_for_wait(self):
         mock_scrim = AsyncMock()
         mock_scrim.start = MagicMock()
-        mock_scrim.state = LOCKED
+        mock_scrim.state = ScrimState.LOCKED
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
@@ -152,7 +152,7 @@ class TestScrimCommands(AsyncUnittestBase):
     async def test_start_given_negative_move_voice_arg_then_started_without_moving(self):
         mock_scrim = AsyncMock()
         mock_scrim.start = MagicMock()
-        mock_scrim.state = LOCKED
+        mock_scrim.state = ScrimState.LOCKED
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
@@ -166,7 +166,7 @@ class TestScrimCommands(AsyncUnittestBase):
     async def test_start_given_not_enough_voice_channels_then_started_without_moving(self):
         mock_scrim = AsyncMock()
         mock_scrim.start = MagicMock()
-        mock_scrim.state = LOCKED
+        mock_scrim.state = ScrimState.LOCKED
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
@@ -180,7 +180,7 @@ class TestScrimCommands(AsyncUnittestBase):
 
     async def test_winner_given_team_name_then_team_made_winner(self):
         mock_scrim = AsyncMock()
-        mock_scrim.state = STARTED
+        mock_scrim.state = ScrimState.STARTED
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
@@ -194,7 +194,7 @@ class TestScrimCommands(AsyncUnittestBase):
 
     async def test_winner_given_single_tuple_then_tie_result_set(self):
         mock_scrim = AsyncMock()
-        mock_scrim.state = STARTED
+        mock_scrim.state = ScrimState.STARTED
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
@@ -208,7 +208,7 @@ class TestScrimCommands(AsyncUnittestBase):
 
     async def test_winner_given_empty_list_then_unregistered_result_set(self):
         mock_scrim = AsyncMock()
-        mock_scrim.state = STARTED
+        mock_scrim.state = ScrimState.STARTED
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
@@ -225,7 +225,7 @@ class TestScrimCommands(AsyncUnittestBase):
 
     async def test_winner_when_called_then_result_saved(self):
         mock_scrim = AsyncMock()
-        mock_scrim.state = STARTED
+        mock_scrim.state = ScrimState.STARTED
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
@@ -239,7 +239,7 @@ class TestScrimCommands(AsyncUnittestBase):
 
     async def test_tie_when_called_then_behaviour_identical_to_winner_with_single_tuple_argument(self):
         mock_scrim = AsyncMock()
-        mock_scrim.state = STARTED
+        mock_scrim.state = ScrimState.STARTED
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
@@ -260,7 +260,7 @@ class TestScrimCommands(AsyncUnittestBase):
 
     async def test_end_when_called_then_behaviour_identical_to_winner_with_empty_list_argument(self):
         mock_scrim = AsyncMock()
-        mock_scrim.state = STARTED
+        mock_scrim.state = ScrimState.STARTED
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
@@ -277,7 +277,7 @@ class TestScrimCommands(AsyncUnittestBase):
 
     async def test_terminate_when_called_then_scrim_manager_terminate_called_and_message_deleted(self):
         mock_scrim = MagicMock()
-        mock_scrim.state = STARTED
+        mock_scrim.state = ScrimState.STARTED
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
@@ -295,7 +295,7 @@ class TestScrimCommands(AsyncUnittestBase):
 
     async def test_teams_when_called_then_strategy_create_teams_called_embed_edited_and_message_deleted(self):
         mock_scrim = MagicMock()
-        mock_scrim.state = LOCKED
+        mock_scrim.state = ScrimState.LOCKED
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim

@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 
 import unittest
-from typing import Callable
+from typing import Callable, Hashable
 
 from hintedi import HinteDI, InstanceSentinel
 
@@ -24,3 +24,10 @@ class UnittestBase(unittest.TestCase):
 
     def _assert_instance_dependency(self, dependency_class: type):
         self.assertIsInstance(HinteDI.dependencies[dependency_class], InstanceSentinel)
+
+    def _assert_abstract_base_dependency(self, dependency_class: type):
+        self.assertEqual(dict, type(HinteDI.dependencies[dependency_class]))
+
+    def _assert_singleton_concrete_dependency(self, dependency_class: type, base_class: type, key: Hashable):
+        self._assert_singleton_dependency(dependency_class)
+        self.assertEqual(dependency_class, HinteDI.dependencies[base_class][key])

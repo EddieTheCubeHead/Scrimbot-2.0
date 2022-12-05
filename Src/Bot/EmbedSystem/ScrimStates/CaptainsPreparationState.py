@@ -2,10 +2,10 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from Bot.DataClasses.Scrim import Scrim
-from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
+from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 
 
-class CaptainsPreparationState(ScrimState):
+class CaptainsPreparationState(ScrimStateBase):
 
     @property
     def description(self) -> str:

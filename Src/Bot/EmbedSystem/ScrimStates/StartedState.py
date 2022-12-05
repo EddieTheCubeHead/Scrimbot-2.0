@@ -1,11 +1,14 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.DataClasses.Scrim import Scrim
-from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
+from hintedi import HinteDI
+
+from Bot.DataClasses.Scrim import Scrim, ScrimState
+from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 
 
-class StartedState(ScrimState):
+@HinteDI.singleton_implementation(base=ScrimStateBase, key=ScrimState.STARTED)
+class StartedState(ScrimStateBase):
 
     @property
     def description(self) -> str:

@@ -7,7 +7,7 @@ from hintedi import HinteDI
 
 from Bot.DataClasses.Scrim import Scrim
 from Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
-from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
+from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 
 
 def _build_fields(embed: Embed, fields: list[(str, str, bool)]):
@@ -21,7 +21,7 @@ class NewScrimEmbedBuilder(ResponseBuilder[Scrim]):
     DIVIDER_STRING = "----------------------------------------------"
 
     @HinteDI.inject
-    def __init__(self, state_provider: ScrimState):
+    def __init__(self, state_provider: ScrimStateBase):
         self._state_provider = state_provider
 
     def build(self, ctx, scrim: Scrim) -> Embed:

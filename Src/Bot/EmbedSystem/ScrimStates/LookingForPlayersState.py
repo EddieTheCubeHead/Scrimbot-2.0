@@ -5,12 +5,15 @@ __author__ = "Eetu Asikainen"
 
 import os
 
-from Bot.DataClasses.Scrim import Scrim
+from hintedi import HinteDI
+
+from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.DataClasses.Team import Team, QUEUE
-from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
+from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 
 
-class LookingForPlayersState(ScrimState):
+@HinteDI.singleton_implementation(base=ScrimStateBase, key=ScrimState.LFP)
+class LookingForPlayersState(ScrimStateBase):
 
     @property
     def description(self) -> str:

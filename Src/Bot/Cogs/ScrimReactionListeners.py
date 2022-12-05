@@ -9,9 +9,9 @@ from discord.ext.commands import CommandError
 from hintedi import HinteDI
 
 from Bot.Converters.UserConverter import UserConverter
+from Bot.DataClasses.Scrim import ScrimState
 from Bot.DataClasses.User import User
 from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
-from Bot.EmbedSystem.ScrimStates.scrim_states import *
 from Bot.Exceptions.BotAlreadyParticipantException import BotAlreadyParticipantException
 from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
 from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
@@ -74,13 +74,13 @@ class ScrimReactionListeners(commands.Cog):
 
         try:
             user = self.user_converter.get_user(member.id)
-            if react.emoji == "\U0001F3AE" and scrim.state == LFP:
+            if react.emoji == "\U0001F3AE" and scrim.state == ScrimState.LFP:
                 await self._try_add_to_team(ScrimTeamsManager.PARTICIPANTS, member, scrim, user)
 
-            elif react.emoji == "\U0001F441" and scrim.state == LFP:
+            elif react.emoji == "\U0001F441" and scrim.state == ScrimState.LFP:
                 await self._try_add_to_team(ScrimTeamsManager.SPECTATORS, member, scrim, user)
 
-            elif re.match(r"^[1-9]\u20E3$", str(react.emoji)) and scrim.state == LOCKED:
+            elif re.match(r"^[1-9]\u20E3$", str(react.emoji)) and scrim.state == ScrimState.LOCKED:
                 new_team = int(str(react.emoji[0]))
                 scrim.teams_manager.set_team(new_team - 1, user)
                 await _try_remove_old_reaction(react.message, new_team, member)
@@ -127,13 +127,13 @@ class ScrimReactionListeners(commands.Cog):
 
         try:
             user = self.user_converter.get_user(member.id)
-            if react.emoji == "\U0001F3AE" and scrim.state == LFP:
+            if react.emoji == "\U0001F3AE" and scrim.state == ScrimState.LFP:
                 scrim.teams_manager.remove_player(ScrimTeamsManager.PARTICIPANTS, user)
 
-            elif react.emoji == "\U0001F441" and scrim.state == LFP:
+            elif react.emoji == "\U0001F441" and scrim.state == ScrimState.LFP:
                 scrim.teams_manager.remove_player(ScrimTeamsManager.SPECTATORS, user)
 
-            elif re.match(r"^[1-9]\u20E3$", str(react.emoji)) and scrim.state == LOCKED:
+            elif re.match(r"^[1-9]\u20E3$", str(react.emoji)) and scrim.state == ScrimState.LOCKED:
                 new_team = int(str(react.emoji[0]))
                 scrim.teams_manager.remove_player(new_team - 1, user)
                 scrim.teams_manager.add_player(ScrimTeamsManager.PARTICIPANTS, user)

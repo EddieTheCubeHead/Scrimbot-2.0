@@ -1,9 +1,11 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.DataClasses.Scrim import Scrim
+from hintedi import HinteDI
+
+from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.DataClasses.Team import Team, QUEUE, PARTICIPANTS
-from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
+from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 
 _divider = "----------------------------------------------"
 
@@ -17,7 +19,8 @@ def _get_team_fill_status(team: Team):
         return " _(full)_"
 
 
-class LockedState(ScrimState):
+@HinteDI.singleton_implementation(base=ScrimStateBase, key=ScrimState.LOCKED)
+class LockedState(ScrimStateBase):
 
     @property
     def description(self) -> str:
@@ -51,7 +54,7 @@ class LockedState(ScrimState):
     def _build_game_team_fields(self, fields: list[(str, str)], scrim: Scrim):
         for team in self.get_game_teams(scrim):
             name_text = team.name + _get_team_fill_status(team)
-            fields.append((name_text, ScrimState.build_team_participants(team), True))
+            fields.append((name_text, ScrimStateBase.build_team_participants(team), True))
 
     def build_footer(self, scrim: Scrim) -> str:
         if self.has_full_teams(scrim) and not self.has_participants(scrim):

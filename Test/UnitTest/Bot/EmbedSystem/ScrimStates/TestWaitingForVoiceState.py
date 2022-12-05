@@ -4,12 +4,17 @@ __author__ = "Eetu Asikainen"
 import os
 import unittest
 
+from Bot.DataClasses.Scrim import ScrimState
+from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 from Bot.EmbedSystem.ScrimStates.StartedState import StartedState
 from Bot.EmbedSystem.ScrimStates.WaitingForVoiceState import WaitingForVoiceState
 from Utils.TestBases.StateUnittest import StateUnittest
 
 
 class TestWaitingForVoiceState(StateUnittest):
+
+    def test_build_given_file_imported_then_singleton_dependency_created(self):
+        self._assert_singleton_concrete_dependency(WaitingForVoiceState, ScrimStateBase, ScrimState.VOICE_WAIT)
 
     def test_get_description_when_called_then_returns_waiting_info(self):
         state = WaitingForVoiceState()

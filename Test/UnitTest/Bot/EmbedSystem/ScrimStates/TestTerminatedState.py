@@ -4,11 +4,16 @@ __author__ = "Eetu Asikainen"
 import unittest
 from unittest.mock import MagicMock
 
+from Bot.DataClasses.Scrim import ScrimState
+from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 from Bot.EmbedSystem.ScrimStates.TerminatedState import TerminatedState
 from Utils.TestBases.StateUnittest import StateUnittest
 
 
 class TestTerminatedState(StateUnittest):
+
+    def test_build_given_file_imported_then_singleton_dependency_created(self):
+        self._assert_singleton_concrete_dependency(TerminatedState, ScrimStateBase, ScrimState.TERMINATED)
 
     def test_build_description_when_manager_has_terminator_then_terminator_given(self):
         state = TerminatedState()

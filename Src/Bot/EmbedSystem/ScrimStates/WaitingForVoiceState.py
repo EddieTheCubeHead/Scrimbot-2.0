@@ -1,10 +1,15 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from hintedi import HinteDI
+
+from Bot.DataClasses.Scrim import ScrimState
+from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 from Bot.EmbedSystem.ScrimStates.StartedState import StartedState
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
 
+@HinteDI.singleton_implementation(base=ScrimStateBase, key=ScrimState.VOICE_WAIT)
 class WaitingForVoiceState(StartedState):
 
     @property

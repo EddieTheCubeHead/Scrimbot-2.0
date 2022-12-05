@@ -5,8 +5,8 @@ import datetime
 from unittest.mock import MagicMock, AsyncMock
 
 from Bot.Cogs.VoiceJoinListener import VoiceJoinListener
+from Bot.DataClasses.Scrim import ScrimState
 from Bot.DataClasses.User import User
-from Bot.EmbedSystem.ScrimStates.scrim_states import VOICE_WAIT
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
@@ -34,7 +34,7 @@ class TestVoiceJoinListener(AsyncUnittestBase):
         mock_participant.id = self.id_generator.generate_viable_id()
         self.mock_participant_manager.try_get_participant.return_value = mock_participant
         mock_scrim = AsyncMock()
-        mock_scrim.state = VOICE_WAIT
+        mock_scrim.state = ScrimState.VOICE_WAIT
         mock_scrim.message.channel.guild.id = self.id_generator.generate_viable_id()
         self.mock_waiting_scrim_service.get_scrim.return_value = mock_scrim
         mock_scrim.teams_manager.all_participants = {User(mock_participant.id)}
@@ -53,7 +53,7 @@ class TestVoiceJoinListener(AsyncUnittestBase):
         mock_participant.id = self.id_generator.generate_viable_id()
         self.mock_participant_manager.try_get_participant.return_value = mock_participant
         mock_scrim = AsyncMock()
-        mock_scrim.state = VOICE_WAIT
+        mock_scrim.state = ScrimState.VOICE_WAIT
         self.mock_waiting_scrim_service.get_scrim.return_value = mock_scrim
         mock_scrim.teams_manager.all_participants = {User(mock_participant.id)}
         mock_before = MagicMock()
@@ -68,7 +68,7 @@ class TestVoiceJoinListener(AsyncUnittestBase):
         mock_participant.id = self.id_generator.generate_viable_id()
         self.mock_participant_manager.try_get_participant.return_value = mock_participant
         mock_scrim = AsyncMock()
-        mock_scrim.state = VOICE_WAIT
+        mock_scrim.state = ScrimState.VOICE_WAIT
         mock_scrim.message.channel.guild.id = self.id_generator.generate_viable_id()
         self.mock_waiting_scrim_service.get_scrim.return_value = mock_scrim
         mock_scrim.teams_manager.all_participants = {User(mock_participant.id)}
@@ -84,7 +84,7 @@ class TestVoiceJoinListener(AsyncUnittestBase):
         mock_participant.id = self.id_generator.generate_viable_id()
         self.mock_participant_manager.try_get_participant.return_value = mock_participant
         mock_scrim = AsyncMock()
-        mock_scrim.state = VOICE_WAIT
+        mock_scrim.state = ScrimState.VOICE_WAIT
         mock_scrim.message.channel.guild.id = self.id_generator.generate_viable_id()
         self.mock_waiting_scrim_service.get_scrim.return_value = mock_scrim
         mock_scrim.teams_manager.all_participants = {User(mock_participant.id)}

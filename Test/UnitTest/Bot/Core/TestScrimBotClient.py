@@ -42,7 +42,7 @@ class TestScrimBotClient(AsyncUnittestBase):
         self.client = ScrimBotClient(self.config, self.logger, self.context_provider, self.guild_converter,
                                      self.game_converter, self.channel_provider, self.loop)
 
-    def init_when_created_then_channel_provider_client_set(self):
+    def test_init_when_created_then_channel_provider_client_set(self):
         self.assertEqual(self.client, self.channel_provider.client)
 
     def test_setup_logging_when_called_then_discord_logger_setup(self):

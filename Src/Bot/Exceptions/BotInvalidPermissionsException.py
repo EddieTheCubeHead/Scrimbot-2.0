@@ -7,7 +7,7 @@ from hintedi import HinteDI
 from Bot.Core.ScrimContext import ScrimContext
 from Bot.DataClasses.GuildMember import PermissionLevel
 from Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
-from Bot.EmbedSystem.ScrimStates.ScrimState import ScrimState
+from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 
 

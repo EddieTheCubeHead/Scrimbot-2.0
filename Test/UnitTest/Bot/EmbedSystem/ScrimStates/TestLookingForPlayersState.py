@@ -4,12 +4,17 @@ __author__ = "Eetu Asikainen"
 import os
 import unittest
 
+from Bot.DataClasses.Scrim import ScrimState
 from Bot.EmbedSystem.ScrimStates.LookingForPlayersState import LookingForPlayersState
+from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Test.Utils.TestBases.StateUnittest import StateUnittest
 
 
 class TestLookingForPlayersState(StateUnittest):
+
+    def test_build_given_file_imported_then_singleton_dependency_created(self):
+        self._assert_singleton_concrete_dependency(LookingForPlayersState, ScrimStateBase, ScrimState.LFP)
 
     def test_build_description_given_not_enough_players_then_remaining_players_returned(self):
         state = LookingForPlayersState()

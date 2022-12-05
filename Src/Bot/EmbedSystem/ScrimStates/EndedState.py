@@ -1,8 +1,11 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.DataClasses.Scrim import Scrim
+from hintedi import HinteDI
+
+from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.DataClasses.Team import Team
+from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 from Bot.EmbedSystem.ScrimStates.StartedState import StartedState
 
 
@@ -18,6 +21,7 @@ def _get_winners(scrim: Scrim) -> list[Team]:
     return winners
 
 
+@HinteDI.singleton_implementation(base=ScrimStateBase, key=ScrimState.ENDED)
 class EndedState(StartedState):
 
     @staticmethod

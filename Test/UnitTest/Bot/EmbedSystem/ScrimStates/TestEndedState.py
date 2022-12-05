@@ -4,9 +4,10 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import MagicMock
 
 from Bot.Converters.ScrimResultConverter import ScrimResult
-from Bot.DataClasses.Scrim import Scrim
+from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.DataClasses.Team import Team
 from Bot.EmbedSystem.ScrimStates.EndedState import EndedState
+from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 from Bot.EmbedSystem.ScrimStates.StartedState import StartedState
 from Utils.TestBases.StateUnittest import StateUnittest
 
@@ -18,6 +19,9 @@ def _create_winners(scrim: Scrim, *winner_names: str) -> ScrimResult:
 
 
 class TestEndedState(StateUnittest):
+
+    def test_build_given_file_imported_then_singleton_dependency_created(self):
+        self._assert_singleton_concrete_dependency(EndedState, ScrimStateBase, ScrimState.ENDED)
 
     def test_build_description_when_winner_is_empty_list_then_only_scrim_ended_info_returned(self):
         state = EndedState()
