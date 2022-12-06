@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 from discord import Embed, Color
 
 from Bot.DataClasses.Game import Game
+from Bot.DataClasses.ParticipantTeam import ParticipantTeam
 from Bot.DataClasses.Team import Team
 from Bot.DataClasses.User import User
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
@@ -17,6 +18,12 @@ def _create_mock_player(user_id):
     return User(user_id=user_id)
 
 
+def _create_participant_team(team: Team, placement: int = None):
+    participant_team = ParticipantTeam(placement)
+    participant_team.team = team
+    return participant_team
+
+
 class StateUnittest(UnittestBase):
 
     @classmethod
@@ -24,11 +31,11 @@ class StateUnittest(UnittestBase):
         cls.id_builder = TestIdGenerator()
 
     def setUp(self) -> None:
-        self.participants = Team(ScrimTeamsManager.PARTICIPANTS)
-        self.spectators = Team(ScrimTeamsManager.SPECTATORS)
-        self.queue = Team(ScrimTeamsManager.QUEUE)
-        self.team_1 = Team("Team 1", min_size=5)
-        self.team_2 = Team("Team 2", min_size=5)
+        self.participants = _create_participant_team(Team(ScrimTeamsManager.PARTICIPANTS))
+        self.spectators = _create_participant_team(Team(ScrimTeamsManager.SPECTATORS))
+        self.queue = _create_participant_team(Team(ScrimTeamsManager.QUEUE))
+        self.team_1 = _create_participant_team(Team("Team 1", min_size=5))
+        self.team_2 = _create_participant_team(Team("Team 2", min_size=5))
         self.name_mappings = {}
         self.scrim = MagicMock()
         self.scrim.teams = [self.participants, self.spectators, self.queue, self.team_1, self.team_2]
@@ -52,21 +59,21 @@ class StateUnittest(UnittestBase):
 
     def add_participants(self, *user_ids: int):
         for user_id in user_ids:
-            self.participants.members.append(_create_mock_player(user_id))
+            self.participants.team.members.append(_create_mock_player(user_id))
 
     def add_queued(self, *user_ids: int):
         for user_id in user_ids:
-            self.queue.members.append(_create_mock_player(user_id))
+            self.queue.team.members.append(_create_mock_player(user_id))
 
     def add_spectators(self, *user_ids: int):
         for user_id in user_ids:
-            self.spectators.members.append(_create_mock_player(user_id))
+            self.spectators.team.members.append(_create_mock_player(user_id))
 
     def add_team_1(self, *user_ids):
         for user_id in user_ids:
-            self.team_1.members.append(_create_mock_player(user_id))
+            self.team_1.team.members.append(_create_mock_player(user_id))
 
     def add_team_2(self, *user_ids):
         for user_id in user_ids:
-            self.team_2.members.append(_create_mock_player(user_id))
+            self.team_2.team.members.append(_create_mock_player(user_id))
 

@@ -58,8 +58,8 @@ class TestLockedState(StateUnittest):
         state = LockedState()
         for num in range(1, 5):
             with self.subTest(f"Displaying team members in team creation stage ({num} members)"):
-                self.participants.members.clear()
-                self.team_1.members.clear()
+                self.participants.team.members.clear()
+                self.team_1.team.members.clear()
                 self.add_participants(*range(6, 16 - num))
                 self.add_team_1(*range(1, num + 1))
                 expected_participants = "<@!" + f">{os.linesep}<@!".join([str(num) for num in range(6, 16 - num)]) + ">"
@@ -73,8 +73,8 @@ class TestLockedState(StateUnittest):
 
     def test_build_fields_given_team_full_enough_but_room_left_then_members_shown_correctly(self):
         state = LockedState()
-        self.team_1.max_size = 8
-        self.team_2.max_size = 8
+        self.team_1.team.max_size = 8
+        self.team_2.team.max_size = 8
         self.add_participants(*range(6, 11))
         self.add_team_1(*range(1, 6))
         expected_participants = "<@!" + f">{os.linesep}<@!".join([str(num) for num in range(6, 11)]) + ">"

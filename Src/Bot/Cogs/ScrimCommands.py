@@ -14,6 +14,8 @@ from Bot.Converters.ScrimResultConverter import ScrimResultConverter
 from Bot.Core.ScrimBotClient import ScrimBotClient
 from Bot.Core.ScrimContext import ScrimContext
 from Bot.DataClasses.Game import Game
+from Bot.DataClasses.Scrim import Scrim, ScrimState
+from Bot.EmbedSystem.NewScrimEmbedBuilder import NewScrimEmbedBuilder
 from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
 from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 from Bot.Logic.ScrimManager import ScrimManager
@@ -26,6 +28,18 @@ from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
 from Bot.Matchmaking.TeamCreation.RandomTeamsStrategy import RandomTeamsStrategy
 from Bot.Matchmaking.TeamCreation.ClearTeamsStrategy import ClearTeamsStrategy
 from Configs.Config import Config
+from Bot.EmbedSystem.ScrimStates.StartedState import StartedState
+from Bot.EmbedSystem.ScrimStates.CaptainsPreparationState import CaptainsPreparationState
+from Bot.EmbedSystem.ScrimStates.CaptainsState import CaptainsState
+from Bot.EmbedSystem.ScrimStates.EndedState import EndedState
+from Bot.EmbedSystem.ScrimStates.LockedState import LockedState
+from Bot.EmbedSystem.ScrimStates.LookingForPlayersState import LookingForPlayersState
+from Bot.EmbedSystem.ScrimStates.SettingUpState import SettingUpState
+from Bot.EmbedSystem.ScrimStates.TerminatedState import TerminatedState
+from Bot.EmbedSystem.ScrimStates.WaitingForVoiceState import WaitingForVoiceState
+from Bot.Matchmaking.RatingAlgorithms.UserRatingChange.FlatChangeStrategy import FlatChangeStrategy
+from Bot.Matchmaking.RatingAlgorithms.TeamRating.MeanRatingStrategy import MeanRatingStrategy
+from Bot.Matchmaking.RatingAlgorithms.TeamRating.WeightBestPlayerRatingStrategy import WeightBestPlayerRatingStrategy
 
 
 async def _add_team_reactions(scrim: ScrimManager):
@@ -37,7 +51,7 @@ class ScrimCommands(commands.Cog):
     """A cog housing the commands directly related to creating and manipulating scrims"""
 
     @HinteDI.inject
-    def __init__(self, scrim_channel_converter: ScrimChannelConverter, response_builder: ScrimEmbedBuilder,
+    def __init__(self, scrim_channel_converter: ScrimChannelConverter, response_builder: NewScrimEmbedBuilder,
                  settings_service: BotSettingsService, scrim_converter: ScrimConverter,
                  scrims_manager: ActiveScrimsManager, waiting_scrim_service: WaitingScrimService,
                  participant_provider: ScrimParticipantProvider, result_handler: ResultHandler):
@@ -68,11 +82,12 @@ class ScrimCommands(commands.Cog):
         """
 
         scrim_channel = self._scrim_channel_converter.get_from_id(ctx.channel.id)
-        message = await self._response_builder.send(ctx, displayable=scrim)
-        scrim = await self._scrim_converter.create_scrim(scrim_channel, game)
+        setup_scrim = Scrim(None, game, ScrimState.SETTING_UP)
+        message = await self._response_builder.send(ctx, displayable=setup_scrim)
+        scrim = await self._scrim_converter.create_scrim(message, game)
         await message.add_reaction(emoji="\U0001F3AE")  # video game controller
         await message.add_reaction(emoji="\U0001F441")  # eye
-        await self._scrim_converter.set_message(scrim, message)
+        await self._response_builder.edit(message, displayable=scrim)
 
     @commands.command(aliases=["l", "lockteams"])
     @commands.guild_only()

@@ -13,7 +13,7 @@ from Utils.TestBases.StateUnittest import StateUnittest
 
 
 def _create_winners(scrim: Scrim, *winner_names: str) -> ScrimResult:
-    for team in scrim.teams:
+    for team in [participant_team.team for participant_team in scrim.teams]:
         if team.name in winner_names:
             team.winner = True
 

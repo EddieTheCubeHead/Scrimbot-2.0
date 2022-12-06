@@ -22,7 +22,7 @@ class TestStartedState(StateUnittest):
         self.assertEqual("setting up a scrim", self.state.description)
 
     def test_build_description_returns_setting_up(self):
-        self.assertEqual("Setting up a scrim...", self.state.build_description(self.scrim))
+        self.assertEqual("Setting up...", self.state.build_description(self.scrim))
 
     def test_build_fields_returns_empty_array(self):
         self.assertEqual([], self.state.build_fields(self.scrim))

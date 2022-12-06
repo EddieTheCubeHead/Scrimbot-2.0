@@ -64,7 +64,6 @@ class TestScrimCommands(AsyncUnittestBase):
         self.assertEqual(calls[0], call(emoji="\U0001F3AE"))
         self.assertEqual(calls[1], call(emoji="\U0001F441"))
 
-    @unittest.skip(reason="Waiting for scrim command rewrite")
     async def test_scrim_given_called_successfully_then_message_saved_to_scrim(self):
         game = Game("Test", "0xffffff", "icon_url", 5)
         ctx = AsyncMock()
@@ -77,8 +76,10 @@ class TestScrimCommands(AsyncUnittestBase):
         self.scrim_channel_converter.get_from_id.return_value = mock_scrim_channel
         self.scrim_converter.create_scrim.return_value = result_scrim
         self.response_builder.send.return_value = scrim_message
+
         await self.cog.scrim(ctx, game)
-        self.assertEqual(scrim_message.id, result_scrim.message_id)
+
+        self.response_builder.edit.assert_called_with(scrim_message, displayable=result_scrim)
 
     async def test_lock_given_called_with_enough_participants_then_scrim_locked_and_message_edited(self):
         mock_scrim = MagicMock()

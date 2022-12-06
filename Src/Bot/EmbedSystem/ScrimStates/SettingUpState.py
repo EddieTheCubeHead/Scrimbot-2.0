@@ -15,7 +15,7 @@ class SettingUpState(ScrimStateBase):
 
     @staticmethod
     def build_description(scrim: Scrim) -> str:
-        return "Setting up a scrim..."
+        return "Setting up..."
 
     @staticmethod
     def build_fields(scrim: Scrim) -> list[(str, str, bool)]:

@@ -44,13 +44,15 @@ def _create_mock_scrim(*team_names: str) -> Scrim:
     mock_scrim = MagicMock()
     mock_scrim.teams = []
     for team_name in team_names:
+        mock_participant_team = MagicMock()
         mock_team = MagicMock()
         mock_team.name = team_name
-        mock_scrim.teams.append(mock_team)
+        mock_participant_team.team = mock_team
+        mock_scrim.teams.append(mock_participant_team)
     return mock_scrim
 
 
-class TestScrimState(UnittestBase):
+class TestScrimStateBase(UnittestBase):
 
     def setUp(self) -> None:
         self.state = BasicStateImplementation()

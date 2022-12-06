@@ -24,7 +24,7 @@ class ScrimStateBase(ABC):
 
     def get_setup_teams(self, scrim: Scrim) -> list[Team]:
         setup_teams = []
-        for team in scrim.teams:
+        for team in [participant_team.team for participant_team in scrim.teams]:
             if team.name in self._setup_teams:
                 setup_teams.append(team)
         setup_teams.sort(key=lambda x: -1 if x.name not in self._setup_teams else self._setup_teams.index(x.name))
@@ -32,7 +32,7 @@ class ScrimStateBase(ABC):
 
     def get_game_teams(self, scrim: Scrim) -> list[Team]:
         game_teams = []
-        for team in scrim.teams:
+        for team in [participant_team.team for participant_team in scrim.teams]:
             if team.name not in self._setup_teams:
                 game_teams.append(team)
         return game_teams

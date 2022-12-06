@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 
 from Bot.Converters.ScrimConverter import ScrimConverter
 from Bot.DataClasses.Scrim import Scrim
+from Bot.DataClasses.Team import PARTICIPANTS, SPECTATORS, QUEUE
 from Bot.Exceptions.BotChannelHasScrimException import BotChannelHasScrimException
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
@@ -73,19 +74,14 @@ class TestScrimConverter(AsyncUnittestBase):
         actual_scrim = await self.converter.create_scrim(mock_channel, mock_game)
         self.connection.add_scrim.assert_called_with(actual_scrim)
 
-    async def test_create_scrim_when_scrim_on_channel_then_exception_raised(self):
+    async def test_create_scrim_when_scrim_created_then_setup_teams_created_and_saved_to_database(self):
         mock_game = self._create_mock_game()
         mock_channel = self._create_mock_channel()
-        expected_exception = BotChannelHasScrimException(mock_channel.channel_id)
-        await self.converter.create_scrim(mock_channel, mock_game)
-        await self._async_assert_raises_correct_exception(expected_exception, self.converter.create_scrim, mock_channel,
-                                                          mock_game)
+        actual_scrim = await self.converter.create_scrim(mock_channel, mock_game)
 
-    async def test_create_scrim_when_scrim_created_then_channel_lock_acquired(self):
-        mock_game = self._create_mock_game()
-        mock_channel = self._create_mock_channel()
-        await self.converter.create_scrim(mock_channel, mock_game)
-        self.assertTrue(self.converter._scrims[mock_channel.channel_id].locked())
+        self.assertEqual(3, len(actual_scrim.teams))
+        for team in (PARTICIPANTS, SPECTATORS, QUEUE):
+            self._assert_team_created(team, actual_scrim)
 
     def test_exists_when_called_with_existing_scrim_then_returns_true(self):
         mock_scrim = self._create_mock_scrim()
@@ -126,3 +122,6 @@ class TestScrimConverter(AsyncUnittestBase):
         self.assertEqual(expected_scrim.game_name, actual_scrim.game_name)
         self.assertEqual(expected_scrim.scrim_id, actual_scrim.scrim_id)
         self.assertEqual(expected_scrim.channel_id, actual_scrim.channel_id)
+
+    def _assert_team_created(self, team_name: str, scrim: Scrim):
+        self.assertIn(team_name, [team.team.name for team in scrim.teams])

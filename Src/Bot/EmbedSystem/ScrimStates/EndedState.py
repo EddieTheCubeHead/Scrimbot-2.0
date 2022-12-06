@@ -15,7 +15,7 @@ def _create_plural(teams: list[Team]):
 
 def _get_winners(scrim: Scrim) -> list[Team]:
     winners = []
-    for team in scrim.teams:
+    for team in [participant_team.team for participant_team in scrim.teams]:
         if team.winner:
             winners.append(team)
     return winners

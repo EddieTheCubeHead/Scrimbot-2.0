@@ -20,7 +20,7 @@ class TestLookingForPlayersState(StateUnittest):
         state = LookingForPlayersState()
         for player_count in range(10):
             with self.subTest(f"Test LFP needed players description ({10 - player_count} required)"):
-                self.participants.members.clear()
+                self.participants.team.members.clear()
                 self.add_participants(*range(player_count))
                 expected_description = f"Looking for players, {10 - player_count} more required."
                 self.assertEqual(expected_description, state.build_description(self.scrim))
@@ -57,7 +57,7 @@ class TestLookingForPlayersState(StateUnittest):
         state = LookingForPlayersState()
         for player_count in range(2, 11):
             with self.subTest(f"Test LFP build participants field ({player_count - 1} participants)"):
-                self.participants.members.clear()
+                self.participants.team.members.clear()
                 participants = list(range(1, player_count))
                 self.add_participants(*participants)
                 expected_participants = "<@!" + f">{os.linesep}<@!".join([str(num) for num in participants]) + ">"
@@ -69,7 +69,7 @@ class TestLookingForPlayersState(StateUnittest):
         state = LookingForPlayersState()
         for spectator_count in range(2, 21):
             with self.subTest(f"Test LFP build spectators field ({spectator_count - 1} spectators)"):
-                self.spectators.members.clear()
+                self.spectators.team.members.clear()
                 spectators = list(range(1, spectator_count))
                 self.add_spectators(*spectators)
                 expected_spectators = "<@!" + f">{os.linesep}<@!".join([str(num) for num in spectators]) + ">"
@@ -81,8 +81,8 @@ class TestLookingForPlayersState(StateUnittest):
         state = LookingForPlayersState()
         for player_count in range(2, 6):
             with self.subTest(f"Test LFP build participants field with queue ({player_count - 1} participants)"):
-                self.participants.members.clear()
-                self.queue.members.clear()
+                self.participants.team.members.clear()
+                self.queue.team.members.clear()
                 participants = list(range(1, 11))
                 queue = list(range(1, player_count))
                 self.add_participants(*participants)
@@ -98,14 +98,14 @@ class TestLookingForPlayersState(StateUnittest):
         state = LookingForPlayersState()
         for player_count in range(10):
             with self.subTest(f"Test LFP joining info footer ({player_count} players present)"):
-                self.participants.members.clear()
+                self.participants.team.members.clear()
                 self.add_participants(*range(player_count))
                 expected_footer = "To join players react 🎮 To join spectators react 👁"
                 self.assertEqual(expected_footer, state.build_footer(self.scrim))
 
     def test_build_footer_given_game_full_then_joining_and_locking_info_returned(self):
         state = LookingForPlayersState()
-        self.participants.members.clear()
+        self.participants.team.members.clear()
         self.add_participants(*range(10))
         expected_footer = "To join players react 🎮 To join spectators react 👁 To lock the teams send " \
                           "command 'lock'"
