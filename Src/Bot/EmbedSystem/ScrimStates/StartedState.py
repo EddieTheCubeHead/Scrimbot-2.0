@@ -11,11 +11,14 @@ from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 class StartedState(ScrimStateBase):
 
     @property
+    def valid_transitions(self) -> list[ScrimState]:
+        return []
+
+    @property
     def description(self) -> str:
         return "underway"
 
-    @staticmethod
-    def build_description(scrim: Scrim) -> str:
+    def build_description(self, scrim: Scrim) -> str:
         description_string = f"{scrim.game.name} scrim underway. Declare the winner with the command 'winner ["
         if scrim.game.team_count > 1:
             description_string += "team]' "
@@ -34,6 +37,5 @@ class StartedState(ScrimStateBase):
             fields.append((team.name, self.build_team_participants(team), True))
         return fields
 
-    @staticmethod
-    def build_footer(scrim: Scrim) -> str:
+    def build_footer(self, scrim: Scrim) -> str:
         return "gl hf!"

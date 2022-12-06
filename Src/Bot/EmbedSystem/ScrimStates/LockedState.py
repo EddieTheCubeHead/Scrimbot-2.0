@@ -23,11 +23,14 @@ def _get_team_fill_status(team: Team):
 class LockedState(ScrimStateBase):
 
     @property
+    def valid_transitions(self) -> list[ScrimState]:
+        return []
+
+    @property
     def description(self) -> str:
         return "waiting for team selection"
 
-    @staticmethod
-    def build_description(scrim: Scrim) -> str:
+    def build_description(self, scrim: Scrim) -> str:
         if scrim.has_full_teams and not scrim.has_participants:
             return "Teams full, use the command 'start' to start the scrim or 'teams clear' to clear teams"
         if not scrim.has_full_teams and not scrim.has_participants:

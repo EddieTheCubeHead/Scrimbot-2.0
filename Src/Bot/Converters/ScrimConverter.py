@@ -13,6 +13,7 @@ from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.Team import PARTICIPANTS, SPECTATORS, QUEUE, Team
 from Bot.Exceptions.BotChannelHasScrimException import BotChannelHasScrimException
+from Bot.Logic.ScrimManager import ScrimManager
 from Database.DatabaseConnections.ScrimConnection import ScrimConnection
 
 

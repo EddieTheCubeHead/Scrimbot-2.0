@@ -8,6 +8,7 @@ Feature: Scrim locking and team creation
   # Teams can be joined by reacting the team number (works only with games with less than ten teams)
   #   - This functionality is covered in the ScrimReactions.feature file
 
+  @wip
   Scenario: Locking a scrim with enough participants
     Given a Dota 2 scrim with enough players present
     When ;lock is called

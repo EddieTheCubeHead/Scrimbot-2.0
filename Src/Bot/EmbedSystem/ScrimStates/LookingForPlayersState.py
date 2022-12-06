@@ -3,8 +3,6 @@ from __future__ import annotations
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import os
-
 from hintedi import HinteDI
 
 from Bot.DataClasses.Scrim import Scrim, ScrimState
@@ -14,6 +12,10 @@ from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 
 @HinteDI.singleton_implementation(base=ScrimStateBase, key=ScrimState.LFP)
 class LookingForPlayersState(ScrimStateBase):
+
+    @property
+    def valid_transitions(self) -> list[ScrimState]:
+        return []
 
     @property
     def description(self) -> str:

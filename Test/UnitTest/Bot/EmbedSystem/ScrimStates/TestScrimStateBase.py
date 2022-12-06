@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 import os
 from unittest.mock import MagicMock
 
-from Bot.DataClasses.Scrim import Scrim
+from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.DataClasses.Team import Team, PARTICIPANTS, SPECTATORS, QUEUE
 from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
@@ -13,16 +13,17 @@ from Test.Utils.TestBases.StateUnittest import UnittestBase
 
 class BasicStateImplementation(ScrimStateBase):
 
-    @staticmethod
-    def build_description(teams_manager: ScrimTeamsManager) -> str:
+    @property
+    def valid_transitions(self) -> list[ScrimState]:
+        return [ScrimState.LOCKED]
+
+    def build_description(self, scrim: Scrim) -> str:
         pass
 
-    @staticmethod
-    def build_fields(teams_manager: ScrimTeamsManager) -> list[(str, str, bool)]:
+    def build_fields(self, scrim: Scrim) -> list[(str, str, bool)]:
         pass
 
-    @staticmethod
-    def build_footer(teams_manager: ScrimTeamsManager) -> str:
+    def build_footer(self, scrim: Scrim) -> str:
         pass
 
     @property
@@ -89,6 +90,16 @@ class TestScrimStateBase(UnittestBase):
         mock_scrim = _create_mock_scrim(PARTICIPANTS, SPECTATORS, QUEUE, "Team 1", "Team 2")
         setup_teams = self.state.get_game_teams(mock_scrim)
         self._assert_teams_returned(setup_teams, "Team 1", "Team 2")
+
+    def test_transition_when_state_in_valid_transitions_and_assert_transition_runs_then_transitioned(self):
+        mock_scrim = _create_mock_scrim(PARTICIPANTS, SPECTATORS, QUEUE, "Team 1", "Team 2")
+        mock_scrim.state = ScrimState.LFP
+        mock_state_provider = MagicMock()
+        mock_locked_state = MagicMock()
+        mock_state_provider.resolve_from_key.return_value = mock_locked_state
+        new_state = self.state.transition(mock_scrim, ScrimState.LOCKED, mock_state_provider)
+        self.assertEqual(ScrimState.LOCKED, mock_scrim.state)
+        self.assertEqual(mock_locked_state, new_state)
 
     def _assert_teams_returned(self, setup_teams, *team_names: str):
         self.assertEqual(len(team_names), len(setup_teams))

@@ -11,19 +11,20 @@ from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 class TerminatedState(ScrimStateBase):
 
     @property
+    def valid_transitions(self) -> list[ScrimState]:
+        return []
+
+    @property
     def description(self) -> str:
         return "terminated"
 
-    @staticmethod
-    def build_description(scrim: Scrim) -> str:
+    def build_description(self, scrim: Scrim) -> str:
         if scrim.terminator_id:
             return f"Scrim terminated manually by <@{scrim.terminator_id}>"
         return "Scrim terminated automatically after inactivity"
 
-    @staticmethod
-    def build_fields(scrim: Scrim) -> list[(str, str, bool)]:
+    def build_fields(self, scrim: Scrim) -> list[(str, str, bool)]:
         return []
 
-    @staticmethod
-    def build_footer(scrim: Scrim) -> str:
+    def build_footer(self, scrim: Scrim) -> str:
         return "f"

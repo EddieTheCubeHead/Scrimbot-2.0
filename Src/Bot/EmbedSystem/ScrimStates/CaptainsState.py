@@ -1,24 +1,25 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.DataClasses.Scrim import Scrim
+from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 
 
 class CaptainsState(ScrimStateBase):
 
     @property
+    def valid_transitions(self) -> list[ScrimState]:
+        return []
+
+    @property
     def description(self) -> str:
         return "letting captains pick players"
 
-    @staticmethod
-    def build_description(scrim: Scrim) -> str:
+    def build_description(self, scrim: Scrim) -> str:
         pass
 
-    @staticmethod
-    def build_fields(scrim: Scrim) -> list[(str, str, bool)]:
+    def build_fields(self, scrim: Scrim) -> list[(str, str, bool)]:
         pass
 
-    @staticmethod
-    def build_footer(scrim: Scrim) -> str:
+    def build_footer(self, scrim: Scrim) -> str:
         pass

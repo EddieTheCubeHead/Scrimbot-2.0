@@ -24,8 +24,11 @@ def _get_winners(scrim: Scrim) -> list[Team]:
 @HinteDI.singleton_implementation(base=ScrimStateBase, key=ScrimState.ENDED)
 class EndedState(StartedState):
 
-    @staticmethod
-    def build_description(scrim: Scrim) -> str:
+    @property
+    def valid_transitions(self) -> list[ScrimState]:
+        return []
+
+    def build_description(self, scrim: Scrim) -> str:
         winners = _get_winners(scrim)
         if len(winners) < 1:
             return "Scrim has ended"
@@ -33,6 +36,5 @@ class EndedState(StartedState):
             return f"Scrim has ended in a tie between {_create_plural(winners)}"
         return f"Scrim has ended with {winners[0].name} being victorious. Congratulations!"
 
-    @staticmethod
-    def build_footer(scrim: Scrim) -> str:
+    def build_footer(self, scrim: Scrim) -> str:
         return "gg wp!"

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
@@ -6,9 +8,8 @@ from abc import ABC, abstractmethod
 
 from hintedi import HinteDI
 
-from Bot.DataClasses.Scrim import Scrim
+from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.DataClasses.Team import Team, QUEUE, SPECTATORS, PARTICIPANTS
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
 
 @HinteDI.abstract_base
@@ -42,17 +43,31 @@ class ScrimStateBase(ABC):
     def description(self) -> str:  # pragma: no cover
         pass
 
-    @staticmethod
     @abstractmethod
-    def build_description(scrim: Scrim) -> str:  # pragma: no cover
+    def build_description(self, scrim: Scrim) -> str:  # pragma: no cover
         pass
 
-    @staticmethod
     @abstractmethod
-    def build_fields(scrim: Scrim) -> list[(str, str, bool)]:  # pragma: no cover
+    def build_fields(self, scrim: Scrim) -> list[(str, str, bool)]:  # pragma: no cover
         pass
 
-    @staticmethod
     @abstractmethod
-    def build_footer(scrim: Scrim) -> str:  # pragma: no cover
+    def build_footer(self, scrim: Scrim) -> str:  # pragma: no cover
         pass
+
+    @property
+    @abstractmethod
+    def valid_transitions(self) -> list[ScrimState]:
+        pass
+
+    def validate_transition(self, scrim: Scrim, new_state: ScrimState):
+        pass
+
+    @HinteDI.inject
+    def transition(self, scrim: Scrim, new_state: ScrimState, state_provider: ScrimStateBase):
+        if new_state not in self.valid_transitions:
+            return
+        self.validate_transition(scrim, new_state)
+        scrim.state = new_state
+        return state_provider.resolve_from_key(new_state)
+

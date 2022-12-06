@@ -81,7 +81,6 @@ class ScrimCommands(commands.Cog):
         :type deletion_time: Optional[int]
         """
 
-        scrim_channel = self._scrim_channel_converter.get_from_id(ctx.channel.id)
         setup_scrim = Scrim(None, game, ScrimState.SETTING_UP)
         message = await self._response_builder.send(ctx, displayable=setup_scrim)
         scrim = await self._scrim_converter.create_scrim(message, game)

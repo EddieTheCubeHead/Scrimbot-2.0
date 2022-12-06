@@ -9,18 +9,20 @@ from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 
 @HinteDI.singleton_implementation(base=ScrimStateBase, key=ScrimState.SETTING_UP)
 class SettingUpState(ScrimStateBase):
+
+    @property
+    def valid_transitions(self) -> list[ScrimState]:
+        return []
+
     @property
     def description(self) -> str:
         return "setting up a scrim"
 
-    @staticmethod
-    def build_description(scrim: Scrim) -> str:
+    def build_description(self, scrim: Scrim) -> str:
         return "Setting up..."
 
-    @staticmethod
-    def build_fields(scrim: Scrim) -> list[(str, str, bool)]:
+    def build_fields(self, scrim: Scrim) -> list[(str, str, bool)]:
         return []
 
-    @staticmethod
-    def build_footer(scrim: Scrim) -> str:
+    def build_footer(self, scrim: Scrim) -> str:
         return "This should not take too long."

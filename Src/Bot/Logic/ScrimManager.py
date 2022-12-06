@@ -24,6 +24,7 @@ from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
 
 class ScrimManager:
 
+    @HinteDI.inject
     def __init__(self, scrim: Scrim, state: ScrimStateBase):
         self.scrim = scrim
         self.state: ScrimStateBase = state.resolve_from_key(scrim.state)
