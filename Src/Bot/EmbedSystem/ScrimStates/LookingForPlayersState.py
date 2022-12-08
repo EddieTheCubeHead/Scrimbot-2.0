@@ -8,6 +8,7 @@ from hintedi import HinteDI
 from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.DataClasses.Team import Team, QUEUE
 from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 
 
 @HinteDI.singleton_implementation(base=ScrimStateBase, key=ScrimState.LFP)
@@ -15,7 +16,7 @@ class LookingForPlayersState(ScrimStateBase):
 
     @property
     def valid_transitions(self) -> list[ScrimState]:
-        return []
+        return [ScrimState.LOCKED]
 
     @property
     def description(self) -> str:
@@ -48,3 +49,12 @@ class LookingForPlayersState(ScrimStateBase):
         if current_players < min_players:
             return "To join players react 🎮 To join spectators react 👁"
         return "To join players react 🎮 To join spectators react 👁 To lock the teams send command 'lock'"
+
+    def validate_transition(self, scrim: Scrim, new_state: ScrimState):
+        participant_team: Team = self.get_setup_teams(scrim)[0]
+        if len(participant_team.members) < participant_team.min_size:
+            raise BotBaseRespondToContextException("Could not lock the scrim. Too few participants present.",
+                                                   delete_after=60)
+
+    def transition_hook(self, scrim: Scrim, new_state: ScrimState):
+        self.get_setup_teams(scrim)[2].members.clear()

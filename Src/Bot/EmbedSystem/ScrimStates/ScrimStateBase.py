@@ -10,6 +10,7 @@ from hintedi import HinteDI
 
 from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.DataClasses.Team import Team, QUEUE, SPECTATORS, PARTICIPANTS
+from Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
 
 
 @HinteDI.abstract_base
@@ -60,14 +61,19 @@ class ScrimStateBase(ABC):
     def valid_transitions(self) -> list[ScrimState]:
         pass
 
+    @HinteDI.inject
+    def transition(self, scrim: Scrim, new_state: ScrimState, state_provider: ScrimStateBase):
+        transitioned_state = state_provider.resolve_from_key(new_state)
+        if new_state not in self.valid_transitions:
+            raise BotInvalidStateChangeException(self, transitioned_state)
+        self.validate_transition(scrim, new_state)
+        self.transition_hook(scrim, new_state)
+        scrim.state = new_state
+        return transitioned_state
+
     def validate_transition(self, scrim: Scrim, new_state: ScrimState):
         pass
 
-    @HinteDI.inject
-    def transition(self, scrim: Scrim, new_state: ScrimState, state_provider: ScrimStateBase):
-        if new_state not in self.valid_transitions:
-            return
-        self.validate_transition(scrim, new_state)
-        scrim.state = new_state
-        return state_provider.resolve_from_key(new_state)
+    def transition_hook(self, scrim: Scrim, new_state: ScrimState):
+        pass
 

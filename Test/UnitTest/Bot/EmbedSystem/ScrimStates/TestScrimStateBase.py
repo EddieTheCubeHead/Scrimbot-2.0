@@ -7,11 +7,15 @@ from unittest.mock import MagicMock
 from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.DataClasses.Team import Team, PARTICIPANTS, SPECTATORS, QUEUE
 from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
 from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Test.Utils.TestBases.StateUnittest import UnittestBase
 
 
 class BasicStateImplementation(ScrimStateBase):
+
+    def __init__(self):
+        self.mock_method = MagicMock()
 
     @property
     def valid_transitions(self) -> list[ScrimState]:
@@ -29,6 +33,9 @@ class BasicStateImplementation(ScrimStateBase):
     @property
     def description(self) -> str:
         return 'description'
+
+    def transition_hook(self, scrim: Scrim, new_state: ScrimState):
+        self.mock_method(scrim, new_state)
 
 
 def _create_mock_team(*member_ids: int) -> Team:
@@ -100,6 +107,28 @@ class TestScrimStateBase(UnittestBase):
         new_state = self.state.transition(mock_scrim, ScrimState.LOCKED, mock_state_provider)
         self.assertEqual(ScrimState.LOCKED, mock_scrim.state)
         self.assertEqual(mock_locked_state, new_state)
+
+    def test_transition_when_state_not_in_valid_transitions_then_throws(self):
+        mock_scrim = _create_mock_scrim(PARTICIPANTS, SPECTATORS, QUEUE, "Team 1", "Team 2")
+        mock_scrim.state = ScrimState.LFP
+        mock_state_provider = MagicMock()
+        mock_new_state = MagicMock()
+        mock_state_provider.resolve_from_key.return_value = mock_new_state
+        for state in (ScrimState.STARTED, ScrimState.TERMINATED, ScrimState.SETTING_UP, ScrimState.VOICE_WAIT,
+                      ScrimState.ENDED, ScrimState.CAPS_PREP, ScrimState.CAPS):
+            with self.subTest(f"State transition should fail if target state is not valid ({state})"):
+                expected_exception = BotInvalidStateChangeException(self.state, mock_new_state)
+                self._assert_raises_correct_exception(expected_exception, self.state.transition, MagicMock(), state,
+                                                      mock_state_provider)
+
+    def test_transition_when_state_transition_performed_then_transition_hook_ran(self):
+        mock_scrim = _create_mock_scrim(PARTICIPANTS, SPECTATORS, QUEUE, "Team 1", "Team 2")
+        mock_scrim.state = ScrimState.LFP
+        mock_state_provider = MagicMock()
+        mock_locked_state = MagicMock()
+        mock_state_provider.resolve_from_key.return_value = mock_locked_state
+        self.state.transition(mock_scrim, ScrimState.LOCKED, mock_state_provider)
+        self.state.mock_method.assert_called_with(mock_scrim, ScrimState.LOCKED)
 
     def _assert_teams_returned(self, setup_teams, *team_names: str):
         self.assertEqual(len(team_names), len(setup_teams))

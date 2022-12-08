@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
+
+from typing import TYPE_CHECKING
 
 from hintedi import HinteDI
 
 from Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
-from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+if TYPE_CHECKING:
+    from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 
 
 class BotInvalidStateChangeException(BotBaseRespondToContextException):

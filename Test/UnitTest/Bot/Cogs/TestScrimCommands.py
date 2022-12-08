@@ -27,9 +27,10 @@ class TestScrimCommands(AsyncUnittestBase):
         self.waiting_scrim_service = MagicMock()
         self.participant_provider = MagicMock()
         self.result_handler = MagicMock()
+        self.state_provider = MagicMock()
         self.cog = ScrimCommands(self.scrim_channel_converter, self.response_builder, self.settings_service,
                                  self.scrim_converter, self.active_scrims_manager, self.waiting_scrim_service,
-                                 self.participant_provider, self.result_handler)
+                                 self.participant_provider, self.result_handler, self.state_provider)
         self.cog._inject(MagicMock())
 
     @unittest.skip(reason="Waiting for scrim command rewrite")
@@ -86,11 +87,16 @@ class TestScrimCommands(AsyncUnittestBase):
         mock_scrim.state = ScrimState.LFP
         mock_message = AsyncMock()
         mock_scrim.message = mock_message
+        mock_context_manager = MagicMock()
+        mock_context_manager.return_value.__aenter__.return_value = mock_scrim
+        self.scrim_converter.fetch_scrim = mock_context_manager
+        mock_lfp_state = MagicMock()
+        self.state_provider.resolve_from_key.return_value = mock_lfp_state
         ctx = AsyncMock()
-        ctx.channel.id = self.id_generator.generate_viable_id()
+        ctx.channel.get_message.return_value = mock_message
         ctx.scrim = mock_scrim
         await self.cog.lock(ctx)
-        mock_scrim.lock.assert_called_with()
+        mock_lfp_state.transition.assert_called_with(mock_scrim, ScrimState.LOCKED)
         self.response_builder.edit.assert_called_with(mock_message, displayable=mock_scrim)
         ctx.message.delete.assert_called()
 
@@ -99,6 +105,9 @@ class TestScrimCommands(AsyncUnittestBase):
         mock_scrim.state = ScrimState.LFP
         mock_message = AsyncMock()
         mock_scrim.message = mock_message
+        mock_context_manager = MagicMock()
+        mock_context_manager.return_value.__aenter__.return_value = mock_scrim
+        self.scrim_converter.fetch_scrim = mock_context_manager
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim

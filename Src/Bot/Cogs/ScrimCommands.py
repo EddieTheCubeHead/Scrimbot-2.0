@@ -17,6 +17,7 @@ from Bot.DataClasses.Game import Game
 from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.EmbedSystem.NewScrimEmbedBuilder import NewScrimEmbedBuilder
 from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
+from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 from Bot.Logic.ScrimManager import ScrimManager
 from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
@@ -54,7 +55,8 @@ class ScrimCommands(commands.Cog):
     def __init__(self, scrim_channel_converter: ScrimChannelConverter, response_builder: NewScrimEmbedBuilder,
                  settings_service: BotSettingsService, scrim_converter: ScrimConverter,
                  scrims_manager: ActiveScrimsManager, waiting_scrim_service: WaitingScrimService,
-                 participant_provider: ScrimParticipantProvider, result_handler: ResultHandler):
+                 participant_provider: ScrimParticipantProvider, result_handler: ResultHandler,
+                 scrim_state_provider: ScrimStateBase):
         self._scrim_channel_converter = scrim_channel_converter
         self._response_builder = response_builder
         self._settings_service = settings_service
@@ -63,6 +65,7 @@ class ScrimCommands(commands.Cog):
         self._waiting_scrim_service = waiting_scrim_service
         self._participant_provider = participant_provider
         self._result_handler = result_handler
+        self._scrim_state_provider = scrim_state_provider
 
     @commands.command(aliases=['s'])
     @commands.guild_only()
@@ -101,12 +104,13 @@ class ScrimCommands(commands.Cog):
         :type ctx: commands.Context
         """
 
-        scrim = ctx.scrim
-        scrim.lock()
-        await ctx.message.delete()
-        await self._response_builder.edit(scrim.message, displayable=scrim)
-        await scrim.message.clear_reactions()
-        await _add_team_reactions(scrim)
+        async with self._scrim_converter.fetch_scrim(ctx.channel.id) as scrim:
+            await ctx.message.delete()
+            self._scrim_state_provider.resolve_from_key(scrim.state).transition(scrim, ScrimState.LOCKED)
+            message = await ctx.channel.get_message(scrim.message_id)
+            await self._response_builder.edit(message, displayable=scrim)
+            await scrim.message.clear_reactions()
+            await _add_team_reactions(scrim)
 
     @commands.command(aliases=["t", "maketeams"])
     @commands.guild_only()

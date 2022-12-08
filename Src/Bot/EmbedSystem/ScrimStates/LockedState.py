@@ -6,6 +6,7 @@ from hintedi import HinteDI
 from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.DataClasses.Team import Team, QUEUE, PARTICIPANTS
 from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 
 _divider = "----------------------------------------------"
 
@@ -24,7 +25,7 @@ class LockedState(ScrimStateBase):
 
     @property
     def valid_transitions(self) -> list[ScrimState]:
-        return []
+        return [ScrimState.STARTED, ScrimState.VOICE_WAIT]
 
     @property
     def description(self) -> str:
@@ -72,3 +73,12 @@ class LockedState(ScrimStateBase):
 
     def has_participants(self, scrim: Scrim):
         return len(self.get_setup_teams(scrim)[0].members) > 0
+
+    def validate_transition(self, scrim: Scrim, new_state: ScrimState):
+        if not self.has_full_teams(scrim):
+            raise BotBaseRespondToContextException(
+                "Could not start the scrim. Some teams lack the minimum number of "
+                "players required.", send_help=False)
+        if self.has_participants(scrim):
+            raise BotBaseRespondToContextException("Could not start the scrim. All participants are not in a team.",
+                                                   send_help=False)
