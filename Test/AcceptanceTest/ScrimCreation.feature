@@ -3,7 +3,6 @@ Feature: Scrim creation
   # Users can create scrims of supported games
   #   - If the channel that scrim is trying to be created on is not registered for scrims a warning is given
 
-  @wip
   Scenario: Basic scrim creation
     Given channel registered for scrims
     When ;scrim dota is called
@@ -27,7 +26,6 @@ Feature: Scrim creation
       Cannot create a scrim on channel <#{channel_id}> because it is not registered for scrim usage.
       """
 
-  @wip
   Scenario: Trying to create a scrim on a channel that already houses a scrim
     Given channel registered for scrims
     When ;scrim dota is called

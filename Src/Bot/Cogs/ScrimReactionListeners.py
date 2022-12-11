@@ -8,8 +8,9 @@ from discord.ext import commands
 from discord.ext.commands import CommandError
 from hintedi import HinteDI
 
+from Bot.Converters.ScrimConverter import ScrimConverter
 from Bot.Converters.UserConverter import UserConverter
-from Bot.DataClasses.Scrim import ScrimState
+from Bot.DataClasses.Scrim import ScrimState, Scrim
 from Bot.DataClasses.User import User
 from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
 from Bot.Exceptions.BotAlreadyParticipantException import BotAlreadyParticipantException
@@ -47,11 +48,13 @@ class ScrimReactionListeners(commands.Cog):
 
     @HinteDI.inject
     def __init__(self, scrim_manager: ActiveScrimsManager, embed_builder: ScrimEmbedBuilder,
-                 user_converter: UserConverter, participant_manager: ScrimParticipantProvider):
-        self.scrim_manager = scrim_manager
-        self.embed_builder = embed_builder
-        self.user_converter = user_converter
-        self.participant_manager = participant_manager
+                 user_converter: UserConverter, participant_manager: ScrimParticipantProvider,
+                 scrim_converter: ScrimConverter):
+        self._scrim_manager = scrim_manager
+        self._embed_builder = embed_builder
+        self._user_converter = user_converter
+        self._participant_manager = participant_manager
+        self._scrim_converter = scrim_converter
 
     @commands.Cog.listener("on_reaction_add")
     async def scrim_reaction_add_listener(self, react: Reaction, member: Member):
@@ -68,12 +71,16 @@ class ScrimReactionListeners(commands.Cog):
         if member.bot:
             return
 
-        scrim = self.scrim_manager.try_get_scrim(react.message.channel.id)
-        if not scrim:
-            return
+        async with self._scrim_converter.fetch_scrim(react.message.channel.id) as scrim:
+            if not scrim:
+                return
+            await self.handle_reaction_add(scrim, react, member)
 
+        await self._embed_builder.edit(react.message, displayable=scrim)
+
+    async def handle_reaction_add(self, scrim: Scrim, react: Reaction, member: Member):
         try:
-            user = self.user_converter.get_user(member.id)
+            user = self._user_converter.get_user(member.id)
             if react.emoji == "\U0001F3AE" and scrim.state == ScrimState.LFP:
                 await self._try_add_to_team(ScrimTeamsManager.PARTICIPANTS, member, scrim, user)
 
@@ -98,12 +105,10 @@ class ScrimReactionListeners(commands.Cog):
                                f" because they are already a participant in another scrim."
             await BotInvalidReactionJoinException(member, react, exception_reason).resolve()
 
-        await self.embed_builder.edit(react.message, displayable=scrim)
-
     async def _try_add_to_team(self, team: str, member: Member, scrim: ScrimManager, user: User):
-        self.participant_manager.ensure_not_participant(member)
+        self._participant_manager.ensure_not_participant(member)
         scrim.teams_manager.add_player(team, user)
-        self.participant_manager.try_add_participant(member)
+        self._participant_manager.try_add_participant(member)
 
     @commands.Cog.listener("on_reaction_remove")
     async def scrim_reaction_remove_listener(self, react: Reaction, member: Member):
@@ -121,12 +126,16 @@ class ScrimReactionListeners(commands.Cog):
         if member.bot:
             return
 
-        scrim = self.scrim_manager.try_get_scrim(react.message.channel.id)
-        if not scrim:
-            return
+        async with self._scrim_converter.fetch_scrim(react.message.channel.id) as scrim:
+            if not scrim:
+                return
+            await self.handle_reaction_add(scrim, react, member)
 
+        await self._embed_builder.edit(react.message, displayable=scrim)
+
+    async def handle_reaction_remove(self, scrim: Scrim, react: Reaction, member: Member):
         try:
-            user = self.user_converter.get_user(member.id)
+            user = self._user_converter.get_user(member.id)
             if react.emoji == "\U0001F3AE" and scrim.state == ScrimState.LFP:
                 scrim.teams_manager.remove_player(ScrimTeamsManager.PARTICIPANTS, user)
 
@@ -140,9 +149,6 @@ class ScrimReactionListeners(commands.Cog):
 
         except BotInvalidPlayerRemoval as exception:
             exception.resolve()
-
-        await self.embed_builder.edit(react.message, displayable=scrim)
-
 
 def setup(client: ScrimBotClient):
     client.add_cog(ScrimReactionListeners())

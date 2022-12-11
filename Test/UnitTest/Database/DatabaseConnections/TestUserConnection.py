@@ -1,6 +1,12 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from unittest.mock import MagicMock
+
+from Bot.DataClasses.Game import Game
+from Bot.DataClasses.ParticipantTeam import ParticipantTeam
+from Bot.DataClasses.Scrim import Scrim, ScrimState
+from Bot.DataClasses.Team import Team
 from Bot.DataClasses.User import User
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
@@ -38,6 +44,49 @@ class TestScrimChannelConnection(ConnectionUnittest[User]):
         new_user = self.connection.get_user(new_user_id)
         self.assertEqual(new_user_id, new_user.user_id)
         self._assert_user_in_database(new_user_id)
+
+    def test_is_in_scrim_given_user_has_participant_team_with_scrim_in_progress_then_true_returned(self):
+        user_id = self.id_generator.generate_viable_id()
+        mock_user = User(user_id)
+        mock_game = Game(str(self.id_generator.generate_viable_id()), "0xffffff", "www.icon.example", 5)
+        mock_participant_team = ParticipantTeam(None)
+        mock_team = Team("Team 1")
+        for state in (ScrimState.LFP, ScrimState.LOCKED, ScrimState.VOICE_WAIT, ScrimState.STARTED, ScrimState.CAPS,
+                      ScrimState.CAPS_PREP):
+            with self.subTest(f"Test is user in active scrim: ScrimState: {state}"):
+                mock_message = MagicMock()
+                mock_message.channel.id = self.id_generator.generate_viable_id()
+                mock_message.id = self.id_generator.generate_viable_id()
+                mock_scrim = Scrim(mock_message, mock_game, state)
+                with self.master.get_session() as session:
+                    session.add(mock_user)
+                    session.add(mock_game)
+                    session.add(mock_scrim)
+                    mock_scrim.teams.append(mock_participant_team)
+                    mock_participant_team.team = mock_team
+                    mock_team.members.append(mock_user)
+                self.assertTrue(self.connection.is_in_scrim(user_id))
+
+    def test_is_in_scrim_given_user_has_participant_team_with_non_active_scrim_then_false_returned(self):
+        user_id = self.id_generator.generate_viable_id()
+        mock_user = User(user_id)
+        mock_game = Game(str(self.id_generator.generate_viable_id()), "0xffffff", "www.icon.example", 5)
+        mock_participant_team = ParticipantTeam(None)
+        mock_team = Team("Team 1")
+        for state in (ScrimState.ENDED, ScrimState.TERMINATED):
+            with self.subTest(f"Test is user in active scrim: ScrimState: {state}"):
+                mock_message = MagicMock()
+                mock_message.channel.id = self.id_generator.generate_viable_id()
+                mock_message.id = self.id_generator.generate_viable_id()
+                mock_scrim = Scrim(mock_message, mock_game, state)
+                with self.master.get_session() as session:
+                    session.add(mock_user)
+                    session.add(mock_game)
+                    session.add(mock_scrim)
+                    mock_scrim.teams.append(mock_participant_team)
+                    mock_participant_team.team = mock_team
+                    mock_team.members.append(mock_user)
+                self.assertFalse(self.connection.is_in_scrim(user_id))
 
     def _assert_user_in_database(self, user_id):
         with self.master.get_session() as session:

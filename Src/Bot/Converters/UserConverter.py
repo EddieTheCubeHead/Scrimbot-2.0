@@ -34,5 +34,8 @@ class UserConverter(ConverterBase):
         user.member = member
         return user
 
+    def is_in_scrim(self, user: User) -> bool:
+        return self.connection.is_in_scrim(user.user_id)
+
     def get_user(self, user_id: int) -> User:
         return self.connection.get_user(user_id)
