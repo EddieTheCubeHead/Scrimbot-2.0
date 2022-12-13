@@ -12,6 +12,7 @@ from Bot.DataClasses.ParticipantTeam import ParticipantTeam
 from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.DataClasses.ScrimChannel import ScrimChannel
 from Bot.DataClasses.Team import PARTICIPANTS, SPECTATORS, QUEUE, Team
+from Bot.DataClasses.User import User
 from Bot.Exceptions.BotChannelHasScrimException import BotChannelHasScrimException
 from Bot.Logic.ScrimManager import ScrimManager
 from Database.DatabaseConnections.ScrimConnection import ScrimConnection
@@ -50,6 +51,18 @@ class ScrimConverter:
             _add_team_to_scrim(team, scrim)
         self._connection.add_scrim(scrim)
         return scrim
+
+    @staticmethod
+    def add_to_team(scrim: Scrim, user: User, team_name: str):
+        for team in [participant_team.team for participant_team in scrim.teams]:
+            if team.name == team_name:
+                team.members.append(user)
+
+    @staticmethod
+    def remove_from_team(scrim: Scrim, user: User):
+        for team in [participant_team.team for participant_team in scrim.teams]:
+            if user in team.members:
+                team.members.remove(user)
 
     def exists(self, channel_id: int) -> bool:
         return self._connection.exists(channel_id)

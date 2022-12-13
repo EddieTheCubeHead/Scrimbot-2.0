@@ -14,10 +14,10 @@ from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextExcepti
 class BotInvalidJoinException(BotLoggedNoContextException):
 
     @HinteDI.inject
-    def __init__(self, user: User, team: Team, reason: str, logger: BotSystemLogger):
+    def __init__(self, user: User, team: str, reason: str, logger: BotSystemLogger):
         self.user = user
         self.team = team
         self.reason = reason
-        message = f"User '{user.user_id}' could not join team '{team.name}' because they are " \
+        message = f"User '{user.user_id}' could not join team '{team}' because they are " \
                   f"{reason}."
         super().__init__(message, logger, log=DEBUG)
