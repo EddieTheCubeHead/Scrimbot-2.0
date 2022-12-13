@@ -44,7 +44,9 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         self.user_converter.is_in_scrim.return_value = False
         self.scrim_converter = MagicMock()
         self.scrim_converter.fetch_scrim.return_value.__aenter__.return_value = self.scrim
-        self.cog = ScrimReactionListeners(self.embed_builder, self.user_converter, self.scrim_converter)
+        self.teams_service = MagicMock()
+        self.cog = ScrimReactionListeners(self.embed_builder, self.user_converter, self.scrim_converter,
+                                          self.teams_service)
         self.cog._inject(MagicMock())
         self.mock_message = AsyncMock()
         self.mock_message.id = self.id_generator.generate_viable_id()
@@ -64,14 +66,14 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         self.scrim.state = ScrimState.LFP
         players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji="\U0001F3AE")
         await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
-        self.scrim_converter.add_to_team.assert_called_with(self.scrim, self.mock_user, PARTICIPANTS)
+        self.teams_service.add_to_team.assert_called_with(self.scrim, self.mock_user, PARTICIPANTS)
         self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)
 
     async def test_on_reaction_add_given_spectator_reaction_then_user_added_to_spectators_and_message_edited(self):
         self.scrim.state = ScrimState.LFP
         players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji="\U0001F441")
         await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
-        self.scrim_converter.add_to_team.assert_called_with(self.scrim, self.mock_user, SPECTATORS)
+        self.teams_service.add_to_team.assert_called_with(self.scrim, self.mock_user, SPECTATORS)
         self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)
 
     async def test_on_reaction_add_given_team_reaction_then_user_added_to_correct_team_and_message_edited(self):
@@ -80,7 +82,7 @@ class TestScrimReactionListeners(AsyncUnittestBase):
             with self.subTest(f"Adding team joining reaction '{team}\u20E3'"):
                 players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji=f"{team}\u20E3")
                 await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
-                self.scrim_converter.add_to_team.assert_called_with(self.scrim, self.mock_user, f"Team {team}")
+                self.teams_service.add_to_team.assert_called_with(self.scrim, self.mock_user, f"Team {team}")
                 self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)
 
     async def test_on_reaction_add_given_old_reaction_removal_fails_then_exception_handled(self):
@@ -91,8 +93,8 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         self.mock_message.reactions = [invalid_removal_reaction]
         players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji=f"2\u20E3")
         await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
-        self.scrim_converter.remove_from_team.assert_called_with(self.scrim, self.mock_user)
-        self.scrim_converter.add_to_team.assert_called_with(self.scrim, self.mock_user, "Team 2")
+        self.teams_service.remove_from_team.assert_called_with(self.scrim, self.mock_user)
+        self.teams_service.add_to_team.assert_called_with(self.scrim, self.mock_user, "Team 2")
         self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)
 
     async def test_on_reaction_add_given_player_in_another_team_then_original_reaction_removed(self):
@@ -130,7 +132,7 @@ class TestScrimReactionListeners(AsyncUnittestBase):
             with self.subTest(f"Joining a scrim with reaction {emoji}"):
                 players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji=emoji)
                 await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
-                self.scrim_converter.add_to_team.assert_called_with(self.scrim, self.mock_user, team)
+                self.teams_service.add_to_team.assert_called_with(self.scrim, self.mock_user, team)
 
     async def test_on_reaction_add_when_joining_game_teams_then_participant_manager_not_updated(self):
         emojis = ("1\u20E3", "2\u20E3", "3\u20E3", "4\u20E3")
@@ -140,7 +142,7 @@ class TestScrimReactionListeners(AsyncUnittestBase):
             with self.subTest(f"Joining a scrim with reaction {emoji}"):
                 players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji=emoji)
                 await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
-                self.scrim_converter.add_to_team.assert_called_with(self.scrim, self.mock_user, team)
+                self.teams_service.add_to_team.assert_called_with(self.scrim, self.mock_user, team)
 
     async def test_on_reaction_remove_given_reacted_by_bot_then_nothing_happens(self):
         players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji="\U0001F3AE")
@@ -152,14 +154,14 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         self.scrim.state = ScrimState.LFP
         players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji="\U0001F3AE")
         await self.cog.scrim_reaction_remove_listener(players_joining_reaction, self.mock_member)
-        self.scrim_converter.remove_from_team.assert_called_with(self.scrim, self.mock_user)
+        self.teams_service.remove_from_team.assert_called_with(self.scrim, self.mock_user)
         self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)
 
     async def test_on_reaction_remove_given_spectators_reaction_then_spectator_removed_and_message_edited(self):
         self.scrim.state = ScrimState.LFP
         players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji="\U0001F441")
         await self.cog.scrim_reaction_remove_listener(players_joining_reaction, self.mock_member)
-        self.scrim_converter.remove_from_team.assert_called_with(self.scrim, self.mock_user)
+        self.teams_service.remove_from_team.assert_called_with(self.scrim, self.mock_user)
         self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)
 
     async def test_on_reaction_remove_given_team_reaction_then_user_removed_from_team_and_message_edited(self):
@@ -168,6 +170,6 @@ class TestScrimReactionListeners(AsyncUnittestBase):
             with self.subTest(f"Adding team joining reaction '{team}\u20E3'"):
                 players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji=f"{team}\u20E3")
                 await self.cog.scrim_reaction_remove_listener(players_joining_reaction, self.mock_member)
-                self.scrim_converter.remove_from_team.assert_called_with(self.scrim, self.mock_user)
-                self.scrim_converter.add_to_team.assert_called_with(self.scrim, self.mock_user, PARTICIPANTS)
+                self.teams_service.remove_from_team.assert_called_with(self.scrim, self.mock_user)
+                self.teams_service.add_to_team.assert_called_with(self.scrim, self.mock_user, PARTICIPANTS)
                 self.embed_builder.edit.assert_called_with(self.mock_message, displayable=self.scrim)

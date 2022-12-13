@@ -8,6 +8,7 @@ from discord.ext import commands
 from discord.ext.commands import CommandError
 from hintedi import HinteDI
 
+from Bot.Cogs.Helpers.ScrimTeamOperationService import ScrimTeamOperationService
 from Bot.Converters.ScrimConverter import ScrimConverter
 from Bot.Converters.UserConverter import UserConverter
 from Bot.DataClasses.Scrim import ScrimState, Scrim
@@ -50,10 +51,11 @@ class ScrimReactionListeners(commands.Cog):
 
     @HinteDI.inject
     def __init__(self, embed_builder: NewScrimEmbedBuilder, user_converter: UserConverter,
-                 scrim_converter: ScrimConverter):
+                 scrim_converter: ScrimConverter, teams_service: ScrimTeamOperationService):
         self._embed_builder = embed_builder
         self._user_converter = user_converter
         self._scrim_converter = scrim_converter
+        self._teams_service = teams_service
 
     @commands.Cog.listener("on_reaction_add")
     async def scrim_reaction_add_listener(self, react: Reaction, member: Member):
@@ -108,10 +110,10 @@ class ScrimReactionListeners(commands.Cog):
     def _try_add_to_team(self, scrim: Scrim, user: User, team: str):
         if self._user_converter.is_in_scrim(user):
             raise BotInvalidJoinException(user, team, "already a participant in another scrim")
-        self._scrim_converter.add_to_team(scrim, user, team)
+        self._teams_service.add_to_team(scrim, user, team)
 
     def _remove_from_team(self, scrim: Scrim, user: User):
-        self._scrim_converter.remove_from_team(scrim, user)
+        self._teams_service.remove_from_team(scrim, user)
 
     @commands.Cog.listener("on_reaction_remove")
     async def scrim_reaction_remove_listener(self, react: Reaction, member: Member):

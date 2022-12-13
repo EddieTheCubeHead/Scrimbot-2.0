@@ -105,27 +105,6 @@ class TestScrimConverter(AsyncUnittestBase):
         self.connection.exists.return_value = False
         self.assertFalse(self.converter.exists(self.id_generator.generate_nonviable_id()))
 
-    def test_add_to_team_when_called_then_player_appended_to_correct_team(self):
-        mock_scrim = self._create_mock_scrim()
-        team_names = (PARTICIPANTS, SPECTATORS, QUEUE)
-        mock_scrim.teams = _create_mock_teams(*team_names)
-        mock_user = MagicMock()
-        for index, team_name in enumerate(team_names):
-            with self.subTest(f"Adding player to team ({team_name})"):
-                self.converter.add_to_team(mock_scrim, mock_user, team_name)
-                self.assertEqual(1, len(mock_scrim.teams[index].team.members))
-                self.assertEqual(mock_user, mock_scrim.teams[index].team.members[0])
-
-    def test_remove_from_team_given_player_in_any_team_when_called_then_player_removed_from_the_team(self):
-        mock_scrim = self._create_mock_scrim()
-        mock_scrim.teams = _create_mock_teams(PARTICIPANTS, SPECTATORS, QUEUE)
-        mock_user = MagicMock()
-        for index in range(3):
-            with self.subTest(f"Removing player from team ({mock_scrim.teams[index].team.name})"):
-                mock_scrim.teams[index].team.members.append(mock_user)
-                self.converter.remove_from_team(mock_scrim, mock_user)
-                self.assertNotIn(mock_user, mock_scrim.teams[index].team.members)
-
     async def _start_fetch_task(self, waiter: Waiter, channel_id: int):
         async with self.converter.fetch_scrim(channel_id):
             await waiter.start()
