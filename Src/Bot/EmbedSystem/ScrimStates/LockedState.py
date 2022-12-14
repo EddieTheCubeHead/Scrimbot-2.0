@@ -11,12 +11,12 @@ from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToCont
 _divider = "----------------------------------------------"
 
 
-def _get_team_fill_status(team: Team):
-    if team.min_size > len(team.members):
-        return f" _({team.min_size - len(team.members)} more needed)_"
-    if team.max_size > len(team.members):
-        return f" _(enough players: room for {team.max_size - len(team.members)} more)_"
-    if team.max_size == len(team.members):
+def _get_team_fill_status(team: Team, min_size: int, max_size: int):
+    if min_size > len(team.members):
+        return f" _({min_size - len(team.members)} more needed)_"
+    if max_size > len(team.members):
+        return f" _(enough players: room for {max_size - len(team.members)} more)_"
+    if max_size == len(team.members):
         return " _(full)_"
 
 
@@ -32,9 +32,9 @@ class LockedState(ScrimStateBase):
         return "waiting for team selection"
 
     def build_description(self, scrim: Scrim) -> str:
-        if scrim.has_full_teams and not scrim.has_participants:
+        if self.has_full_teams(scrim) and not self.has_participants(scrim):
             return "Teams full, use the command 'start' to start the scrim or 'teams clear' to clear teams"
-        if not scrim.has_full_teams and not scrim.has_participants:
+        if not self.has_full_teams(scrim) and not self.has_participants(scrim):
             return "No unassigned players left but all teams are not full! Please rebalance the teams with reactions " \
                    "or use the command 'teams _random/balanced/balancedrandom/pickup_'."
         return "Players locked. Use reactions for manual team selection or the command 'teams " \
@@ -57,7 +57,7 @@ class LockedState(ScrimStateBase):
 
     def _build_game_team_fields(self, fields: list[(str, str)], scrim: Scrim):
         for team in self.get_game_teams(scrim):
-            name_text = team.name + _get_team_fill_status(team)
+            name_text = team.name + _get_team_fill_status(team, scrim.game.min_team_size, scrim.game.max_team_size)
             fields.append((name_text, ScrimStateBase.build_team_participants(team), True))
 
     def build_footer(self, scrim: Scrim) -> str:
@@ -67,7 +67,7 @@ class LockedState(ScrimStateBase):
 
     def has_full_teams(self, scrim: Scrim):
         for team in self.get_game_teams(scrim):
-            if not len(team.members) >= team.min_size:
+            if not len(team.members) >= scrim.game.min_team_size:
                 return False
         return True
 

@@ -24,8 +24,7 @@ class TestLockedState(StateUnittest):
         expected_description = "Players locked. Use reactions for manual team selection or the command 'teams " \
                                "_random/balanced/balancedrandom/pickup_' to define teams."
         state = LockedState()
-        self.scrim.has_participants = True
-        self.scrim.has_full_teams = False
+        self.add_participants(1)
         self.assertEqual(expected_description, state.build_description(self.scrim))
 
     def test_build_description_given_no_unassigned_left_and_all_teams_have_min_players_then_start_info_shown(self):
@@ -33,6 +32,8 @@ class TestLockedState(StateUnittest):
         state = LockedState()
         self.scrim.has_participants = False
         self.scrim.has_full_teams = True
+        self.add_team_1(*range(5))
+        self.add_team_2(*range(5, 10))
         actual_description = state.build_description(self.scrim)
         self.assertEqual(expected_description, actual_description)
 
@@ -75,8 +76,7 @@ class TestLockedState(StateUnittest):
 
     def test_build_fields_given_team_full_enough_but_room_left_then_members_shown_correctly(self):
         state = LockedState()
-        self.team_1.team.max_size = 8
-        self.team_2.team.max_size = 8
+        self.mock_game.max_team_size = 8
         self.add_participants(*range(6, 11))
         self.add_team_1(*range(1, 6))
         expected_participants = "<@!" + f">{os.linesep}<@!".join([str(num) for num in range(6, 11)]) + ">"

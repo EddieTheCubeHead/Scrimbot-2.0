@@ -1,6 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+from discord import Message
 from discord.ext import commands
 from hintedi import HinteDI
 
@@ -43,9 +44,9 @@ from Bot.Matchmaking.RatingAlgorithms.TeamRating.MeanRatingStrategy import MeanR
 from Bot.Matchmaking.RatingAlgorithms.TeamRating.WeightBestPlayerRatingStrategy import WeightBestPlayerRatingStrategy
 
 
-async def _add_team_reactions(scrim: ScrimManager):
-    for team in range(1, len(scrim.teams_manager.get_game_teams()) + 1):
-        await scrim.message.add_reaction(emoji=f"{team}\u20E3")
+async def _add_team_reactions(scrim: Scrim, state: ScrimState, message: Message):
+    for team in range(1, len(state.get_game_teams(scrim)) + 1):
+        await message.add_reaction(emoji=f"{team}\u20E3")
 
 
 class ScrimCommands(commands.Cog):
@@ -106,11 +107,11 @@ class ScrimCommands(commands.Cog):
 
         async with self._scrim_converter.fetch_scrim(ctx.channel.id) as scrim:
             await ctx.message.delete()
-            self._scrim_state_provider.resolve_from_key(scrim.state).transition(scrim, ScrimState.LOCKED)
+            state = self._scrim_state_provider.resolve_from_key(scrim.state).transition(scrim, ScrimState.LOCKED)
             message = await ctx.channel.get_message(scrim.message_id)
             await self._response_builder.edit(message, displayable=scrim)
-            await scrim.message.clear_reactions()
-            await _add_team_reactions(scrim)
+            await message.clear_reactions()
+            await _add_team_reactions(scrim, state, message)
 
     @commands.command(aliases=["t", "maketeams"])
     @commands.guild_only()

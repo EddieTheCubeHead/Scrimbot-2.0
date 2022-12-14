@@ -77,6 +77,13 @@ class ResponseLoggerContext(ScrimContext):
     dict_index = 0
     id_mocker = TestIdGenerator()
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.channel.get_message = self.get_message
+
+    async def get_message(self, message_id: int):
+        return self.sent_dict[message_id]
+
     async def send(self, content=None, *, tts=False, embed=None, file=None, files=None, delete_after=None, nonce=None,
                    allowed_mentions=None, reference=None, mention_author=None):
         message = LoggedMessage(state=AsyncMock(),

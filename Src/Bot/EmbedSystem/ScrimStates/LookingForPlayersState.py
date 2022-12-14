@@ -52,7 +52,7 @@ class LookingForPlayersState(ScrimStateBase):
 
     def validate_transition(self, scrim: Scrim, new_state: ScrimState):
         participant_team: Team = self.get_setup_teams(scrim)[0]
-        if len(participant_team.members) < participant_team.min_size:
+        if len(participant_team.members) < scrim.game.team_count * scrim.game.min_team_size:
             raise BotBaseRespondToContextException("Could not lock the scrim. Too few participants present.",
                                                    delete_after=60)
 

@@ -111,9 +111,14 @@ class TestScrimCommands(AsyncUnittestBase):
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
         ctx.scrim = mock_scrim
+        ctx.channel.get_message.return_value = mock_message
+        mock_state = MagicMock()
+        mock_transitioned_state = MagicMock()
+        mock_state.transition.return_value = mock_transitioned_state
+        self.state_provider.resolve_from_key.return_value = mock_state
         for team_count in range(2, 10):
             with self.subTest(f"Scrim locking reaction updates ({team_count} teams)"):
-                mock_scrim.teams_manager.get_game_teams.return_value = ["Team"] * team_count
+                mock_transitioned_state.get_game_teams.return_value = ["Team"] * team_count
                 await self.cog.lock(ctx)
                 mock_message.clear_reactions.assert_called()
                 calls = mock_message.add_reaction.call_args_list

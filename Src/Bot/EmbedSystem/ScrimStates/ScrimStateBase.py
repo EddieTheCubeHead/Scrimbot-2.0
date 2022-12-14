@@ -62,7 +62,7 @@ class ScrimStateBase(ABC):
         pass
 
     @HinteDI.inject
-    def transition(self, scrim: Scrim, new_state: ScrimState, state_provider: ScrimStateBase):
+    def transition(self, scrim: Scrim, new_state: ScrimState, state_provider: ScrimStateBase) -> ScrimState:
         transitioned_state = state_provider.resolve_from_key(new_state)
         if new_state not in self.valid_transitions:
             raise BotInvalidStateChangeException(self, transitioned_state)
