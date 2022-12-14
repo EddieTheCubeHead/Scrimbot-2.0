@@ -19,7 +19,7 @@ def _create_mock_player(user_id):
 
 
 def _create_participant_team(team: Team, placement: int = None):
-    participant_team = ParticipantTeam(placement)
+    participant_team = ParticipantTeam(placement, 5)
     participant_team.team = team
     return participant_team
 

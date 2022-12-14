@@ -19,8 +19,8 @@ from Database.DatabaseConnections.ScrimConnection import ScrimConnection
 
 
 def _add_team_to_scrim(team_name: str, scrim: Scrim, min_size: int = 0, max_size: int = 0):
-    team = Team(team_name, min_size=min_size, max_size=max_size)
-    participant_team = ParticipantTeam(None)
+    team = Team(team_name)
+    participant_team = ParticipantTeam(None, max_size, min_size)
     participant_team.team = team
     scrim.teams.append(participant_team)
 
@@ -39,9 +39,10 @@ class ScrimConverter:
             self._scrims[channel_id] = Lock()
         try:
             async with self._scrims[channel_id]:
-                yield self._connection.get_active_scrim(channel_id)
+                scrim = self._connection.get_active_scrim(channel_id)
+                yield scrim
         finally:
-            pass
+            self._connection.edit_scrim(scrim)
 
     async def create_scrim(self, message: Message, game: Game) -> Scrim:
         scrim = Scrim(message, game)
@@ -49,6 +50,8 @@ class ScrimConverter:
                            scrim.game.max_team_size * scrim.game.team_count)
         for team in (SPECTATORS, QUEUE):
             _add_team_to_scrim(team, scrim)
+        for team_num in range(1, game.team_count + 1):
+            _add_team_to_scrim(f"Team {team_num}", scrim, game.min_team_size, game.max_team_size)
         self._connection.add_scrim(scrim)
         return scrim
 

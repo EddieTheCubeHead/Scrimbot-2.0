@@ -35,3 +35,7 @@ class ScrimConnection(ConnectionBase):
                          selectinload(Scrim.scrim_channel).selectinload(ScrimChannel.voice_channels))\
                 .first()
         return scrim
+
+    def edit_scrim(self, scrim: Scrim):
+        with self._master_connection.get_session() as session:
+            session.add(scrim)

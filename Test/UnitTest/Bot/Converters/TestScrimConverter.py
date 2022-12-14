@@ -45,6 +45,13 @@ class TestScrimConverter(AsyncUnittestBase):
         async with self.converter.fetch_scrim(mock_scrim.channel_id) as actual_scrim:
             self.assertEqual(mock_scrim, actual_scrim)
 
+    async def test_fetch_scrim_when_exited_then_scrim_saved(self):
+        mock_scrim = self._create_mock_scrim()
+        self.connection.get_active_scrim.return_value = mock_scrim
+        async with self.converter.fetch_scrim(mock_scrim.channel_id):
+            pass
+        self.connection.edit_scrim.assert_called()
+
     async def test_fetch_scrim_when_same_scrim_fetch_attempted_twice_then_second_waits_for_first_context(self):
         wait_checker = WaitChecker()
         first_event = Waiter(wait_checker, "1")
@@ -92,9 +99,9 @@ class TestScrimConverter(AsyncUnittestBase):
         mock_channel = self._create_mock_channel()
         actual_scrim = await self.converter.create_scrim(mock_channel, mock_game)
 
-        self.assertEqual(3, len(actual_scrim.teams))
-        for team in (PARTICIPANTS, SPECTATORS, QUEUE):
-            self._assert_team_created(team, actual_scrim)
+        self.assertEqual(5, len(actual_scrim.teams))
+        for team, size in ((PARTICIPANTS, 10), (SPECTATORS, 0), (QUEUE, 0), ("Team 1", 5), ("Team 2", 5)):
+            self._assert_team_created(team, size, actual_scrim)
 
     def test_exists_when_called_with_existing_scrim_then_returns_true(self):
         mock_scrim = self._create_mock_scrim()
@@ -119,6 +126,8 @@ class TestScrimConverter(AsyncUnittestBase):
             name = str(self.id_generator.generate_viable_id())
         mock_game = MagicMock()
         mock_game.name = name
+        mock_game.max_team_size = 5
+        mock_game.team_count = 2
         return mock_game
 
     def _create_mock_channel(self, channel_id: int = None):
@@ -133,5 +142,7 @@ class TestScrimConverter(AsyncUnittestBase):
         self.assertEqual(expected_scrim.scrim_id, actual_scrim.scrim_id)
         self.assertEqual(expected_scrim.channel_id, actual_scrim.channel_id)
 
-    def _assert_team_created(self, team_name: str, scrim: Scrim):
-        self.assertIn(team_name, [team.team.name for team in scrim.teams])
+    def _assert_team_created(self, team_name: str, team_size: int, scrim: Scrim):
+        team = next(participant_team for participant_team in scrim.teams if participant_team.team.name == team_name)
+        self.assertIsNotNone(team)
+        self.assertEqual(team_size, team.max_size)

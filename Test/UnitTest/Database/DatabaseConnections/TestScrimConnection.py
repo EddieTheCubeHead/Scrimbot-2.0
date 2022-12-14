@@ -11,7 +11,7 @@ from Bot.DataClasses.Game import Game
 from Bot.DataClasses.ParticipantTeam import ParticipantTeam
 from Bot.DataClasses.Scrim import Scrim, ScrimState
 from Bot.DataClasses.ScrimChannel import ScrimChannel
-from Bot.DataClasses.Team import Team
+from Bot.DataClasses.Team import Team, PARTICIPANTS, QUEUE, SPECTATORS
 from Bot.DataClasses.User import User
 from Bot.DataClasses.UserScrimResult import UserScrimResult, Result
 from Configs.Config import Config
@@ -33,6 +33,7 @@ class TestScrimConnection(UnittestBase):
 
     config: Config
     master: MasterConnection
+    test_game: Game
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -83,6 +84,17 @@ class TestScrimConnection(UnittestBase):
         expected_scrim = self._save_scrim(ScrimState.LFP)
         self._assert_same_scrim(expected_scrim, self.connection.get_active_scrim(expected_scrim.channel_id))
 
+    def test_edit_scrim_given_scrim_teams_changed_when_called_then_changes_saved(self):
+        expected_scrim = self._save_scrim(ScrimState.LFP)
+        mock_user = User(self.id_generator.generate_viable_id())
+        participant_team = ParticipantTeam(None)
+        team = Team(PARTICIPANTS)
+        participant_team.team = team
+        expected_scrim.teams.append(participant_team)
+        expected_scrim.teams[0].team.members.append(mock_user)
+        self.connection.edit_scrim(expected_scrim)
+        self._assert_scrim_in_database(expected_scrim)
+
     def _create_mock_scrim(self, state: ScrimState = ScrimState.LFP):
         mock_message = MagicMock()
         mock_message.channel.id = self.id_generator.generate_viable_id()
@@ -103,6 +115,7 @@ class TestScrimConnection(UnittestBase):
         for expected_team, actual_team in zip(expected.teams, actual.teams):
             self.assertEqual(expected_team.placement, actual_team.placement)
             self.assertEqual(expected_team.team.name, actual_team.team.name)
+            self.assertEqual(len(expected_team.team.members), len(actual_team.team.members))
 
     def _create_win_results(self, scrim: Scrim, team_amount: int = 2, team_size: int = 5):
         result_teams = []
@@ -129,7 +142,7 @@ class TestScrimConnection(UnittestBase):
 
     def _create_participant_team(self, scrim_id: int, placement: int | None, team_size: int = 5) -> ParticipantTeam:
         team = self._create_team(team_size)
-        participant_team = ParticipantTeam(placement)
+        participant_team = ParticipantTeam(placement, self._test_game.max_team_size, self._test_game.min_team_size)
         for player in team.members:
             player_result = UserScrimResult(None, player.user_id, scrim_id, 1700, _RESULT_MAPPING[placement])
             player.results.append(player_result)

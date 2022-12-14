@@ -49,7 +49,7 @@ class TestScrimChannelConnection(ConnectionUnittest[User]):
         user_id = self.id_generator.generate_viable_id()
         mock_user = User(user_id)
         mock_game = Game(str(self.id_generator.generate_viable_id()), "0xffffff", "www.icon.example", 5)
-        mock_participant_team = ParticipantTeam(None)
+        mock_participant_team = ParticipantTeam(None, mock_game.max_team_size, mock_game.min_team_size)
         mock_team = Team("Team 1")
         for state in (ScrimState.LFP, ScrimState.LOCKED, ScrimState.VOICE_WAIT, ScrimState.STARTED, ScrimState.CAPS,
                       ScrimState.CAPS_PREP):
@@ -71,7 +71,7 @@ class TestScrimChannelConnection(ConnectionUnittest[User]):
         user_id = self.id_generator.generate_viable_id()
         mock_user = User(user_id)
         mock_game = Game(str(self.id_generator.generate_viable_id()), "0xffffff", "www.icon.example", 5)
-        mock_participant_team = ParticipantTeam(None)
+        mock_participant_team = ParticipantTeam(None, mock_game.max_team_size, mock_game.min_team_size)
         mock_team = Team("Team 1")
         for state in (ScrimState.ENDED, ScrimState.TERMINATED):
             with self.subTest(f"Test is user in active scrim: ScrimState: {state}"):

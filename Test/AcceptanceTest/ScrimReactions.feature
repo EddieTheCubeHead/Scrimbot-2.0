@@ -9,7 +9,6 @@ Feature: Scrim and scrim team leaving/joining with reactions
   #     - If this happens, the reaction that was used for invalid joining should be deleted
   #   - Removing the reaction used to join a group will remove the user from the group
 
-  @wip
   Scenario: User joining participants by adding a reaction
     Given a Dota 2 scrim
     When a user reacts with 🎮
@@ -78,6 +77,7 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | 🎮       | 1      |
       | 👁       | 4      |
 
+  @wip
   Scenario: Participant leaves by removing their reaction
     Given a Rocket League scrim
     When 2 users react with 🎮

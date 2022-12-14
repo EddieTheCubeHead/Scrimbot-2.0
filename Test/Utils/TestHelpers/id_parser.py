@@ -16,12 +16,13 @@ class UserListMatch:
         self.amount = amount if amount is not None else len(match_ids)
         self.found = 0
         self.match_ids = list(match_ids)
+        self.print_ids = self.match_ids.copy()
         self.next_id = self.match_ids.pop(0) if amount is None else None
 
     def __repr__(self):
         if self.amount is not None:
-            return f"{self.amount} user mentions in group {self.match_ids}"
-        return f"User mentions for users in {self.match_ids} in order"
+            return f"{self.amount} user mentions in group {self.print_ids}"
+        return f"User mentions for users in {self.print_ids} in order"
 
     def assert_matches(self, text: str, context):
         for line in text.split(os.linesep):
