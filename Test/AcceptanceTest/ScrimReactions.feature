@@ -77,7 +77,6 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | 🎮       | 1      |
       | 👁       | 4      |
 
-  @wip
   Scenario: Participant leaves by removing their reaction
     Given a Rocket League scrim
     When 2 users react with 🎮

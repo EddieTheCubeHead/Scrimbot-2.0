@@ -40,7 +40,7 @@ class TestScrimTeamOperationService(UnittestBase):
         mock_scrim = self._create_mock_scrim()
         team_names = (PARTICIPANTS, SPECTATORS, QUEUE)
         mock_scrim.teams = _create_mock_teams(*team_names)
-        mock_user = MagicMock()
+        mock_user = self._create_mock_user()
         for index, team_name in enumerate(team_names):
             with self.subTest(f"Adding player to team ({team_name})"):
                 self.service.add_to_team(mock_scrim, mock_user, team_name)
@@ -51,7 +51,7 @@ class TestScrimTeamOperationService(UnittestBase):
         mock_scrim = self._create_mock_scrim()
         team_names = (PARTICIPANTS, SPECTATORS, QUEUE)
         mock_scrim.teams = _create_mock_teams(*team_names)
-        mock_user = MagicMock()
+        mock_user = self._create_mock_user()
         mock_scrim.teams[0].max_size = 10
         mock_scrim.teams[0].team.members = [MagicMock()] * 10
         self.service.add_to_team(mock_scrim, mock_user, PARTICIPANTS)
@@ -61,7 +61,7 @@ class TestScrimTeamOperationService(UnittestBase):
     def test_remove_from_team_given_player_in_any_team_when_called_then_player_removed_from_the_team(self):
         mock_scrim = self._create_mock_scrim()
         mock_scrim.teams = _create_mock_teams(PARTICIPANTS, SPECTATORS, QUEUE)
-        mock_user = MagicMock()
+        mock_user = self._create_mock_user()
         for index in range(3):
             with self.subTest(f"Removing player from team ({mock_scrim.teams[index].team.name})"):
                 mock_scrim.teams[index].team.members.append(mock_user)
@@ -72,7 +72,7 @@ class TestScrimTeamOperationService(UnittestBase):
         mock_scrim = self._create_mock_scrim()
         team_names = (PARTICIPANTS, SPECTATORS, QUEUE)
         mock_scrim.teams = _create_mock_teams(*team_names)
-        mock_user = MagicMock()
+        mock_user = self._create_mock_user()
         mock_scrim.teams[0].max_size = 10
         mock_scrim.teams[0].team.members = [MagicMock()] * 9 + [mock_user]
         mock_scrim.teams[2].team.members = [MagicMock()]
@@ -85,3 +85,8 @@ class TestScrimTeamOperationService(UnittestBase):
         scrim = MagicMock()
         scrim.channel_id = self.id_generator.generate_viable_id()
         return scrim
+
+    def _create_mock_user(self):
+        user = MagicMock()
+        user.user_id = self.id_generator.generate_viable_id()
+        return user

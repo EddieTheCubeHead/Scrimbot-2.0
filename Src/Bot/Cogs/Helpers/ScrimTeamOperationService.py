@@ -29,8 +29,10 @@ class ScrimTeamOperationService:
     @staticmethod
     def remove_from_team(scrim: Scrim, user: User):
         for participant_team in scrim.teams:
-            if user in participant_team.team.members:
-                participant_team.team.members.remove(user)
+            team_member = next((member for member in participant_team.team.members if member.user_id == user.user_id),
+                               None)
+            if team_member is not None:
+                participant_team.team.members.remove(team_member)
                 if participant_team.team.name == PARTICIPANTS:
                     queue = next(search_team.team for search_team in scrim.teams if search_team.team.name == QUEUE)
                     while len(participant_team.team.members) < participant_team.max_size and queue.members:
