@@ -3,10 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from hintedi import HinteDI
 
-from Bot.DataClasses.UserRating import UserRating
-from Bot.DataClasses.UserScrimResult import Result
+from Src.Bot.DataClasses.UserRating import UserRating
+from Src.Bot.DataClasses.UserScrimResult import Result
 
-from Bot.Matchmaking.RatingAlgorithms.UserRatingChange.UserRatingChangeStrategy import UserRatingChangeStrategy
+from Src.Bot.Matchmaking.RatingAlgorithms.UserRatingChange.UserRatingChangeStrategy import UserRatingChangeStrategy
 
 
 @HinteDI.singleton_implementation(base=UserRatingChangeStrategy, key='flat')

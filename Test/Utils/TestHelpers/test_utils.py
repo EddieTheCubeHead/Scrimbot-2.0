@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, AsyncMock
 
 import discord
 
-from Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.Core.ScrimContext import ScrimContext
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 

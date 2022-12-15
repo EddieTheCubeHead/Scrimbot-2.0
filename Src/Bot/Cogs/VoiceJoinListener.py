@@ -5,11 +5,11 @@ import discord
 from discord.ext import commands, tasks
 from hintedi import HinteDI
 
-from Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
-from Bot.Core.ScrimBotClient import ScrimBotClient
-from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
-from Bot.Logic.ScrimManager import ScrimManager
-from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
+from Src.Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
+from Src.Bot.Core.ScrimBotClient import ScrimBotClient
+from Src.Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
+from Src.Bot.Logic.ScrimManager import ScrimManager
+from Src.Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
 
 
 class VoiceJoinListener(commands.Cog):

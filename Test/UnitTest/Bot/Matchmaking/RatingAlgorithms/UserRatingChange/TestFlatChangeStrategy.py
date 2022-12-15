@@ -3,9 +3,9 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.DataClasses.UserRating import UserRating
-from Bot.DataClasses.UserScrimResult import Result
-from Bot.Matchmaking.RatingAlgorithms.UserRatingChange.FlatChangeStrategy import FlatChangeStrategy
+from Src.Bot.DataClasses.UserRating import UserRating
+from Src.Bot.DataClasses.UserScrimResult import Result
+from Src.Bot.Matchmaking.RatingAlgorithms.UserRatingChange.FlatChangeStrategy import FlatChangeStrategy
 from Utils.TestBases.UnittestBase import UnittestBase
 
 

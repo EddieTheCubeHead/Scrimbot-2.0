@@ -4,9 +4,9 @@ __author__ = "Eetu Asikainen"
 import datetime
 from unittest.mock import MagicMock, AsyncMock
 
-from Bot.Cogs.VoiceJoinListener import VoiceJoinListener
-from Bot.DataClasses.Scrim import ScrimState
-from Bot.DataClasses.User import User
+from Src.Bot.Cogs.VoiceJoinListener import VoiceJoinListener
+from Src.Bot.DataClasses.Scrim import ScrimState
+from Src.Bot.DataClasses.User import User
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

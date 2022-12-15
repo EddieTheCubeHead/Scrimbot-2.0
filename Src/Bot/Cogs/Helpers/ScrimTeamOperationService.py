@@ -3,10 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from hintedi import HinteDI
 
-from Bot.DataClasses.ParticipantTeam import ParticipantTeam
-from Bot.DataClasses.Scrim import Scrim
-from Bot.DataClasses.Team import PARTICIPANTS, QUEUE, Team
-from Bot.DataClasses.User import User
+from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
+from Src.Bot.DataClasses.Scrim import Scrim
+from Src.Bot.DataClasses.Team import PARTICIPANTS, QUEUE, Team
+from Src.Bot.DataClasses.User import User
 
 
 def _handle_add_to_team(participant_team: ParticipantTeam, user: User, team_name: str) -> str:

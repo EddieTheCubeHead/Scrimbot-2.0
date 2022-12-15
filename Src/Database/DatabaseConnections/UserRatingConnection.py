@@ -4,15 +4,15 @@ __author__ = "Eetu Asikainen"
 from sqlalchemy.orm import subqueryload, contains_eager, selectinload
 from hintedi import HinteDI
 
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.Guild import Guild
-from Bot.DataClasses.ParticipantTeam import ParticipantTeam
-from Bot.DataClasses.Scrim import Scrim
-from Bot.DataClasses.Team import Team
-from Bot.DataClasses.User import User
-from Bot.DataClasses.UserScrimResult import UserScrimResult
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.Guild import Guild
+from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
+from Src.Bot.DataClasses.Scrim import Scrim
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.DataClasses.User import User
+from Src.Bot.DataClasses.UserScrimResult import UserScrimResult
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
-from Bot.DataClasses.UserRating import UserRating
+from Src.Bot.DataClasses.UserRating import UserRating
 
 
 @HinteDI.singleton

@@ -3,27 +3,34 @@ __author__ = "Eetu Asikainen"
 
 from abc import ABC, abstractmethod
 
+from discord import Message
 from hintedi import HinteDI
 
-from Bot.Converters.Convertable import Convertable
-from Bot.Converters.TeamCreationStrategyConverter import TeamCreationStrategyConverter
-from Bot.Logic.ScrimManager import ScrimManager
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
+from Src.Bot.Cogs.Helpers.ScrimTeamOperationService import ScrimTeamOperationService
+from Src.Bot.Converters.Convertable import Convertable
+from Src.Bot.Converters.TeamCreationStrategyConverter import TeamCreationStrategyConverter
+from Src.Bot.DataClasses.Scrim import Scrim
+from Src.Bot.Logic.ScrimManager import ScrimManager
+from Src.Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
 
 class TeamCreationStrategy(ABC, Convertable):
 
+    @HinteDI.inject
+    def __init__(self, team_service: ScrimTeamOperationService):
+        self._team_service = team_service
+
     @abstractmethod
-    def _create_teams_hook(self, teams_manager: ScrimTeamsManager):  # pragma: no cover
+    def _create_teams_hook(self, scrim: Scrim):  # pragma: no cover
         pass
 
-    async def create_teams(self, scrim_manager: ScrimManager):
-        scrim_manager.teams_manager.clear_teams()
-        self._create_teams_hook(scrim_manager.teams_manager)
-        await self._set_reactions_hook(scrim_manager)
+    async def create_teams(self, scrim: Scrim, message: Message):
+        self._team_service.clear_teams()
+        self._create_teams_hook(scrim)
+        await self._set_reactions_hook(scrim, message)
 
-    async def _set_reactions_hook(self, scrim_manager: ScrimManager):
-        await scrim_manager.message.clear_reactions()
+    async def _set_reactions_hook(self, scrim: Scrim, message: Message):
+        await message.clear_reactions()
 
     @classmethod
     @HinteDI.inject

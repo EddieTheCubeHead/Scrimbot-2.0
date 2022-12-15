@@ -8,24 +8,24 @@ from discord.ext import commands
 from discord.ext.commands import CommandError
 from hintedi import HinteDI
 
-from Bot.Cogs.Helpers.ScrimTeamOperationService import ScrimTeamOperationService
-from Bot.Converters.ScrimConverter import ScrimConverter
-from Bot.Converters.UserConverter import UserConverter
-from Bot.DataClasses.Scrim import ScrimState, Scrim
-from Bot.DataClasses.Team import PARTICIPANTS, SPECTATORS
-from Bot.DataClasses.User import User
-from Bot.EmbedSystem.NewScrimEmbedBuilder import NewScrimEmbedBuilder
-from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
-from Bot.Exceptions.BotAlreadyParticipantException import BotAlreadyParticipantException
-from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
-from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
-from Bot.Exceptions.BotInvalidReactionJoinException import BotInvalidReactionJoinException
-from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
-from Bot.Logic.ScrimManager import ScrimManager
-from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
-from Bot.Core.ScrimBotClient import ScrimBotClient
-from Bot.DataClasses.ScrimChannel import ScrimChannel
+from Src.Bot.Cogs.Helpers.ScrimTeamOperationService import ScrimTeamOperationService
+from Src.Bot.Converters.ScrimConverter import ScrimConverter
+from Src.Bot.Converters.UserConverter import UserConverter
+from Src.Bot.DataClasses.Scrim import ScrimState, Scrim
+from Src.Bot.DataClasses.Team import PARTICIPANTS, SPECTATORS
+from Src.Bot.DataClasses.User import User
+from Src.Bot.EmbedSystem.NewScrimEmbedBuilder import NewScrimEmbedBuilder
+from Src.Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
+from Src.Bot.Exceptions.BotAlreadyParticipantException import BotAlreadyParticipantException
+from Src.Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
+from Src.Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
+from Src.Bot.Exceptions.BotInvalidReactionJoinException import BotInvalidReactionJoinException
+from Src.Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
+from Src.Bot.Logic.ScrimManager import ScrimManager
+from Src.Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
+from Src.Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
+from Src.Bot.Core.ScrimBotClient import ScrimBotClient
+from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
 
 
 async def _try_remove_old_reaction(message: Message, new_team: int, user: Member):

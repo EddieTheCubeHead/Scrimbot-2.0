@@ -3,10 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from hintedi import HinteDI
 
-from Bot.DataClasses.Scrim import Scrim, ScrimState
-from Bot.DataClasses.Team import Team
-from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
-from Bot.EmbedSystem.ScrimStates.StartedState import StartedState
+from Src.Bot.DataClasses.Scrim import Scrim, ScrimState
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Src.Bot.EmbedSystem.ScrimStates.StartedState import StartedState
 
 
 def _create_plural(teams: list[Team]):

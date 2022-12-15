@@ -8,10 +8,10 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import relationship
 
-from Bot.DataClasses.DataClass import DataClass
-from Bot.DataClasses.TeamMember import TeamMember
-from Bot.DataClasses.User import User
-from Bot.DataClasses.VoiceChannel import VoiceChannel
+from Src.Bot.DataClasses.DataClass import DataClass
+from Src.Bot.DataClasses.TeamMember import TeamMember
+from Src.Bot.DataClasses.User import User
+from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
 
 
 PARTICIPANTS = "Participants"

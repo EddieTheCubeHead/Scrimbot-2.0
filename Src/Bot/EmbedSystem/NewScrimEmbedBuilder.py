@@ -5,9 +5,9 @@ __author__ = "Eetu Asikainen"
 from discord import Embed
 from hintedi import HinteDI
 
-from Bot.DataClasses.Scrim import Scrim
-from Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
-from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Src.Bot.DataClasses.Scrim import Scrim
+from Src.Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
+from Src.Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 
 
 def _build_fields(embed: Embed, fields: list[(str, str, bool)]):

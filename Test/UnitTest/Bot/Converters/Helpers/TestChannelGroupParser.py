@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 from Test.Utils.TestBases.UnittestBase import UnittestBase
 
-from Bot.Converters.Helpers.ChannelGroupParser import ChannelGroupParser
+from Src.Bot.Converters.Helpers.ChannelGroupParser import ChannelGroupParser
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 

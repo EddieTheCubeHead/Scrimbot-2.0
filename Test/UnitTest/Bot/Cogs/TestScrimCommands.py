@@ -4,10 +4,10 @@ __author__ = "Eetu Asikainen"
 import unittest
 from unittest.mock import AsyncMock, MagicMock, call
 
-from Bot.Cogs.ScrimCommands import ScrimCommands
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.Scrim import ScrimState
-from Bot.DataClasses.User import User
+from Src.Bot.Cogs.ScrimCommands import ScrimCommands
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.Scrim import ScrimState
+from Src.Bot.DataClasses.User import User
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

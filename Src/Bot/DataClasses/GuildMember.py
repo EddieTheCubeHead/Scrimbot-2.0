@@ -7,8 +7,8 @@ from discord import Member
 from sqlalchemy import Column, Integer, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
-from Bot.DataClasses.DataClass import DataClass
-from Bot.DataClasses.Guild import Guild
+from Src.Bot.DataClasses.DataClass import DataClass
+from Src.Bot.DataClasses.Guild import Guild
 
 
 class PermissionLevel(enum.IntEnum):

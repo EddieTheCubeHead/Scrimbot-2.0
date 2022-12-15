@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from discord.ext.commands import Context
 from hintedi import HinteDI
 
-from Bot.Converters.ConverterBase import ConverterBase
+from Src.Bot.Converters.ConverterBase import ConverterBase
 from Database.DatabaseConnections.GuildConnection import GuildConnection
 
 

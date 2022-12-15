@@ -4,9 +4,9 @@ __author__ = "Eetu Asikainen"
 from discord import Member
 from hintedi import HinteDI
 
-from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
-from Bot.DataClasses.Team import Team
-from Bot.Exceptions.BotBaseNoContextException import BotBaseNoContextException
+from Src.Bot.Core.Logging.BotSystemLogger import BotSystemLogger
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.Exceptions.BotBaseNoContextException import BotBaseNoContextException
 
 
 class BotAlreadyParticipantException(BotBaseNoContextException):

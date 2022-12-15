@@ -1,12 +1,14 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+import unittest
 from unittest.mock import MagicMock, AsyncMock
 
-from Bot.Matchmaking.TeamCreation.RandomTeamsStrategy import RandomTeamsStrategy
+from Src.Bot.Matchmaking.TeamCreation.RandomTeamsStrategy import RandomTeamsStrategy
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
 
+@unittest.skip("Waiting for team creation rewrite")
 class TestRandomTeamsStrategy(AsyncUnittestBase):
 
     def setUp(self) -> None:

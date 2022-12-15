@@ -4,11 +4,11 @@ __author__ = "Eetu Asikainen"
 import unittest
 from unittest.mock import MagicMock
 
-from Bot.Converters.ScrimResultConverter import ScrimResultConverter
-from Bot.DataClasses.Scrim import Scrim
-from Bot.DataClasses.Team import Team
-from Bot.DataClasses.UserScrimResult import Result
-from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
+from Src.Bot.Converters.ScrimResultConverter import ScrimResultConverter
+from Src.Bot.DataClasses.Scrim import Scrim
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.DataClasses.UserScrimResult import Result
+from Src.Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
-from Bot.Exceptions.BotAlreadyParticipantException import BotAlreadyParticipantException
+from Src.Bot.Exceptions.BotAlreadyParticipantException import BotAlreadyParticipantException
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 

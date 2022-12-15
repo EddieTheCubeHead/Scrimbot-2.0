@@ -3,8 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock, AsyncMock
 
-from Bot.Cogs.ScrimChannelCommands import ScrimChannelCommands
-from Bot.DataClasses.VoiceChannel import VoiceChannel
+from Src.Bot.Cogs.ScrimChannelCommands import ScrimChannelCommands
+from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Test.Utils.TestHelpers.test_utils import create_mock_context
 

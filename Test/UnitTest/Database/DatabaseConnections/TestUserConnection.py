@@ -3,11 +3,11 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.ParticipantTeam import ParticipantTeam
-from Bot.DataClasses.Scrim import Scrim, ScrimState
-from Bot.DataClasses.Team import Team
-from Bot.DataClasses.User import User
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
+from Src.Bot.DataClasses.Scrim import Scrim, ScrimState
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.DataClasses.User import User
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
 from Database.DatabaseConnections.UserConnection import UserConnection

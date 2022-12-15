@@ -6,11 +6,11 @@ from unittest.mock import MagicMock
 
 from discord import Color
 
-from Bot.DataClasses.UserScrimResult import Result
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.User import User
-from Bot.DataClasses.UserRating import UserRating, DEFAULT_RATING
-from Bot.EmbedSystem.RatingEmbedBuilder import RatingEmbedBuilder
+from Src.Bot.DataClasses.UserScrimResult import Result
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.User import User
+from Src.Bot.DataClasses.UserRating import UserRating, DEFAULT_RATING
+from Src.Bot.EmbedSystem.RatingEmbedBuilder import RatingEmbedBuilder
 from Utils.TestBases.EmbedUnittest import EmbedUnittest
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

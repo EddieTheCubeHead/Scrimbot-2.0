@@ -3,10 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from hintedi import HinteDI
 
-from Bot.Checks.CheckBase import CheckBase
-from Bot.Converters.ScrimConverter import ScrimConverter
-from Bot.Core.ScrimContext import ScrimContext
-from Bot.Exceptions.BotMissingScrimException import BotMissingScrimException
+from Src.Bot.Checks.CheckBase import CheckBase
+from Src.Bot.Converters.ScrimConverter import ScrimConverter
+from Src.Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.Exceptions.BotMissingScrimException import BotMissingScrimException
 
 
 class ActiveScrimCheck(CheckBase):

@@ -5,11 +5,11 @@ import os
 import unittest
 from unittest.mock import MagicMock
 
-from Bot.DataClasses.Scrim import ScrimState
-from Bot.EmbedSystem.ScrimStates.LookingForPlayersState import LookingForPlayersState
-from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
-from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
+from Src.Bot.DataClasses.Scrim import ScrimState
+from Src.Bot.EmbedSystem.ScrimStates.LookingForPlayersState import LookingForPlayersState
+from Src.Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Src.Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Test.Utils.TestBases.StateUnittest import StateUnittest
 
 

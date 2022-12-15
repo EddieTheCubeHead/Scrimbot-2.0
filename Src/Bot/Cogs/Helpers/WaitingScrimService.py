@@ -7,7 +7,7 @@ from typing import Optional
 from discord import Member
 from hintedi import HinteDI
 
-from Bot.Logic.ScrimManager import ScrimManager
+from Src.Bot.Logic.ScrimManager import ScrimManager
 
 
 @HinteDI.singleton

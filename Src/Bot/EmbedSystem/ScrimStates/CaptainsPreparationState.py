@@ -1,8 +1,8 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.DataClasses.Scrim import Scrim, ScrimState
-from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Src.Bot.DataClasses.Scrim import Scrim, ScrimState
+from Src.Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 
 
 class CaptainsPreparationState(ScrimStateBase):

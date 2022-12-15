@@ -5,8 +5,8 @@ from unittest.mock import MagicMock
 
 from sqlalchemy.exc import NoResultFound
 
-from Bot.DataClasses.Alias import Alias
-from Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.Alias import Alias
+from Src.Bot.DataClasses.Game import Game
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
 from Test.Utils.TestBases.ConnectionUnittest import ConnectionUnittest

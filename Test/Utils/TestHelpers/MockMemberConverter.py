@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 from discord.ext.commands import MemberNotFound
 
-from Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.Core.ScrimContext import ScrimContext
 
 
 class MockMemberConverter:

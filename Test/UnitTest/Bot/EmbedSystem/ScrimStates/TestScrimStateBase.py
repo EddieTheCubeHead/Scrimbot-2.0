@@ -4,11 +4,11 @@ __author__ = "Eetu Asikainen"
 import os
 from unittest.mock import MagicMock
 
-from Bot.DataClasses.Scrim import Scrim, ScrimState
-from Bot.DataClasses.Team import Team, PARTICIPANTS, SPECTATORS, QUEUE
-from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
-from Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
+from Src.Bot.DataClasses.Scrim import Scrim, ScrimState
+from Src.Bot.DataClasses.Team import Team, PARTICIPANTS, SPECTATORS, QUEUE
+from Src.Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Src.Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
+from Src.Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Test.Utils.TestBases.StateUnittest import UnittestBase
 
 

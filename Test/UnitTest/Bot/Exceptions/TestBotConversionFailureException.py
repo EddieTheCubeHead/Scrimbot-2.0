@@ -2,7 +2,7 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 from Test.Utils.TestBases.UnittestBase import UnittestBase
-from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
+from Src.Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 
 
 class TestBotConversionFailureException(UnittestBase):

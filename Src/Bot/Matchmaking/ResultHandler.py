@@ -3,17 +3,17 @@ __author__ = "Eetu Asikainen"
 
 from hintedi import HinteDI
 
-from Bot.Converters.GuildConverter import GuildConverter
-from Bot.Converters.ScrimResultConverter import ScrimResult
-from Bot.Converters.UserRatingConverter import UserRatingConverter
-from Bot.Core.ScrimContext import ScrimContext
-from Bot.DataClasses.Guild import Guild
-from Bot.DataClasses.ParticipantTeam import ParticipantTeam
-from Bot.DataClasses.Scrim import Scrim
-from Bot.DataClasses.Team import Team
-from Bot.DataClasses.User import User
-from Bot.DataClasses.UserScrimResult import Result
-from Bot.Matchmaking.RatingAlgorithms.RatingChangeCalculator import RatingChangeCalculator
+from Src.Bot.Converters.GuildConverter import GuildConverter
+from Src.Bot.Converters.ScrimResultConverter import ScrimResult
+from Src.Bot.Converters.UserRatingConverter import UserRatingConverter
+from Src.Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.DataClasses.Guild import Guild
+from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
+from Src.Bot.DataClasses.Scrim import Scrim
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.DataClasses.User import User
+from Src.Bot.DataClasses.UserScrimResult import Result
+from Src.Bot.Matchmaking.RatingAlgorithms.RatingChangeCalculator import RatingChangeCalculator
 from Database.DatabaseConnections.ScrimConnection import ScrimConnection
 
 

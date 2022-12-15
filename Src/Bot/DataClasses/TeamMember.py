@@ -5,7 +5,7 @@ __author__ = "Eetu Asikainen"
 from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
-from Bot.DataClasses.DataClass import DataClass
+from Src.Bot.DataClasses.DataClass import DataClass
 
 
 class TeamMember(DataClass):  # pragma: no cover

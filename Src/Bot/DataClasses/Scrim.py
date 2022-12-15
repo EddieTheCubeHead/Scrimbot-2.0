@@ -10,13 +10,13 @@ from discord import Message
 from sqlalchemy import Column, String, Integer, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
-from Bot.DataClasses.DataClass import DataClass
+from Src.Bot.DataClasses.DataClass import DataClass
 
 if TYPE_CHECKING:
-    from Bot.DataClasses.Game import Game
-    from Bot.DataClasses.ScrimChannel import ScrimChannel
-    from Bot.DataClasses.Team import Team
-from Bot.DataClasses.ParticipantTeam import ParticipantTeam
+    from Src.Bot.DataClasses.Game import Game
+    from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
+    from Src.Bot.DataClasses.Team import Team
+from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
 
 
 class ScrimState(enum.Enum):

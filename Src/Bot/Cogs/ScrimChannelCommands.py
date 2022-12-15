@@ -7,12 +7,12 @@ from discord.ext import commands
 from discord.ext.commands import Greedy
 from hintedi import HinteDI
 
-from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
-from Bot.Converters.VoiceChannelGroupConverter import VoiceChannelGroupConverter
-from Bot.Core.ScrimBotClient import ScrimBotClient
-from Bot.DataClasses.VoiceChannel import VoiceChannel
-from Bot.EmbedSystem.ScrimChannelEmbedBuilder import ScrimChannelEmbedBuilder
-from Bot.Logic.ScrimChannelManager import ScrimChannelManager
+from Src.Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
+from Src.Bot.Converters.VoiceChannelGroupConverter import VoiceChannelGroupConverter
+from Src.Bot.Core.ScrimBotClient import ScrimBotClient
+from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
+from Src.Bot.EmbedSystem.ScrimChannelEmbedBuilder import ScrimChannelEmbedBuilder
+from Src.Bot.Logic.ScrimChannelManager import ScrimChannelManager
 
 
 class ScrimChannelCommands(commands.Cog):

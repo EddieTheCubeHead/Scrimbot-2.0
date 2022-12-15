@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from math import sqrt
 
-from Bot.Matchmaking.RatingAlgorithms.TeamRating.WeightBestPlayerRatingStrategy import WeightBestPlayerRatingStrategy
+from Src.Bot.Matchmaking.RatingAlgorithms.TeamRating.WeightBestPlayerRatingStrategy import WeightBestPlayerRatingStrategy
 from Utils.TestBases.UnittestBase import UnittestBase
 from Utils.TestHelpers.test_utils import create_team_from_ratings
 

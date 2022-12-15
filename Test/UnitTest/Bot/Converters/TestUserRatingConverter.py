@@ -3,8 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.Converters.UserRatingConverter import UserRatingConverter
-from Bot.DataClasses.UserScrimResult import Result
+from Src.Bot.Converters.UserRatingConverter import UserRatingConverter
+from Src.Bot.DataClasses.UserScrimResult import Result
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

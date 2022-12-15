@@ -5,8 +5,8 @@ from sqlalchemy.orm import subqueryload, selectinload
 
 from hintedi import HinteDI
 
-from Bot.DataClasses.Alias import Alias
-from Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.Alias import Alias
+from Src.Bot.DataClasses.Game import Game
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 

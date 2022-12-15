@@ -4,11 +4,11 @@ __author__ = "Eetu Asikainen"
 from discord.ext.commands import Context
 from hintedi import HinteDI
 
-from Bot.Converters.ConverterBase import ConverterBase
-from Bot.DataClasses.ScrimChannel import ScrimChannel
-from Bot.DataClasses.VoiceChannel import VoiceChannel
-from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
-from Bot.Exceptions.BotReservedChannelException import BotReservedChannelException
+from Src.Bot.Converters.ConverterBase import ConverterBase
+from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
+from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Src.Bot.Exceptions.BotReservedChannelException import BotReservedChannelException
 from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
 
 

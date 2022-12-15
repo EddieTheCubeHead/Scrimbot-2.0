@@ -7,13 +7,13 @@ from typing import Tuple, List, Dict, Iterator, Set, Any, Union
 from discord.ext.commands import Context
 from hintedi import HinteDI
 
-from Bot.Converters.ConverterBase import ConverterBase
-from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
-from Bot.DataClasses.Alias import Alias
-from Bot.DataClasses.Game import Game
-from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
-from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
-from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
+from Src.Bot.Converters.ConverterBase import ConverterBase
+from Src.Bot.Core.Logging.BotSystemLogger import BotSystemLogger
+from Src.Bot.DataClasses.Alias import Alias
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
+from Src.Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
+from Src.Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 from Database.DatabaseConnections.GameConnection import GameConnection
 

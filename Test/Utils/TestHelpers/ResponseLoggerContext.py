@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, AsyncMock
 from discord import Message, Reaction, Member
 from discord.ext.commands import CommandError
 
-from Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.Core.ScrimContext import ScrimContext
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 

@@ -4,9 +4,9 @@ __author__ = "Eetu Asikainen"
 from discord.ext.commands import converter
 from hintedi import HinteDI
 
-from Bot.Converters.ConverterBase import ConverterBase
-from Bot.Core.ScrimContext import ScrimContext
-from Bot.DataClasses.GuildMember import GuildMember
+from Src.Bot.Converters.ConverterBase import ConverterBase
+from Src.Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.DataClasses.GuildMember import GuildMember
 from Database.DatabaseConnections.GuildMemberConnection import GuildMemberConnection
 
 

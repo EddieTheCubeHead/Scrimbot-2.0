@@ -5,14 +5,14 @@ from typing import Optional
 
 from hintedi import HinteDI
 
-from Bot.Converters.ConverterBase import ConverterBase
-from Bot.Converters.UserScrimResultConverter import UserScrimResultConverter
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.Guild import Guild
-from Bot.DataClasses.Scrim import Scrim
-from Bot.DataClasses.User import User
-from Bot.DataClasses.UserRating import UserRating
-from Bot.DataClasses.UserScrimResult import Result
+from Src.Bot.Converters.ConverterBase import ConverterBase
+from Src.Bot.Converters.UserScrimResultConverter import UserScrimResultConverter
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.Guild import Guild
+from Src.Bot.DataClasses.Scrim import Scrim
+from Src.Bot.DataClasses.User import User
+from Src.Bot.DataClasses.UserRating import UserRating
+from Src.Bot.DataClasses.UserScrimResult import Result
 from Database.DatabaseConnections.UserRatingConnection import UserRatingConnection
 
 

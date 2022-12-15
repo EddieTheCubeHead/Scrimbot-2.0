@@ -4,10 +4,10 @@ __author__ = "Eetu Asikainen"
 import os
 import unittest
 
-from Bot.DataClasses.Scrim import ScrimState
-from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
-from Bot.EmbedSystem.ScrimStates.StartedState import StartedState
-from Bot.EmbedSystem.ScrimStates.WaitingForVoiceState import WaitingForVoiceState
+from Src.Bot.DataClasses.Scrim import ScrimState
+from Src.Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Src.Bot.EmbedSystem.ScrimStates.StartedState import StartedState
+from Src.Bot.EmbedSystem.ScrimStates.WaitingForVoiceState import WaitingForVoiceState
 from Utils.TestBases.StateUnittest import StateUnittest
 
 

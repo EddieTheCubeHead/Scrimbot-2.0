@@ -4,8 +4,8 @@ __author__ = "Eetu Asikainen"
 from discord.ext import commands
 from hintedi import HinteDI
 
-from Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
-from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Src.Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 
 
 def _build_message(conversion_type: str, argument: str) -> str:

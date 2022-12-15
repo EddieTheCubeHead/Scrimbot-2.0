@@ -9,14 +9,14 @@ from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from hintedi import HinteDI
 
-from Bot.Converters.Convertable import Convertable
-from Bot.DataClasses.DataClass import DataClass
-from Bot.DataClasses.UserScrimResult import UserScrimResult
+from Src.Bot.Converters.Convertable import Convertable
+from Src.Bot.DataClasses.DataClass import DataClass
+from Src.Bot.DataClasses.UserScrimResult import UserScrimResult
 if TYPE_CHECKING:  # pragma: no cover
-    from Bot.DataClasses.Game import Game
-    from Bot.DataClasses.Guild import Guild
-    from Bot.DataClasses.User import User
-    from Bot.Converters.UserRatingConverter import UserRatingConverter
+    from Src.Bot.DataClasses.Game import Game
+    from Src.Bot.DataClasses.Guild import Guild
+    from Src.Bot.DataClasses.User import User
+    from Src.Bot.Converters.UserRatingConverter import UserRatingConverter
 
 
 DEFAULT_RATING = 1700

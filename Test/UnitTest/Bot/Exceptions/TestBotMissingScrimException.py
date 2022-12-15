@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import MagicMock
 
 from Test.Utils.TestBases.UnittestBase import UnittestBase
-from Bot.Exceptions.BotMissingScrimException import BotMissingScrimException
+from Src.Bot.Exceptions.BotMissingScrimException import BotMissingScrimException
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 

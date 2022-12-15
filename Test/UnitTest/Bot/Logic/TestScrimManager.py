@@ -5,13 +5,13 @@ import unittest
 from unittest import skip
 from unittest.mock import MagicMock, AsyncMock
 
-from Bot.DataClasses.Team import Team
-from Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
-from Bot.Exceptions.BuildException import BuildException
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
+from Src.Bot.Exceptions.BuildException import BuildException
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
-from Bot.Logic.ScrimManager import ScrimManager
-from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Src.Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
+from Src.Bot.Logic.ScrimManager import ScrimManager
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
 

@@ -3,10 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from hintedi import HinteDI
 
-from Bot.DataClasses.Scrim import Scrim, ScrimState
-from Bot.DataClasses.Team import Team, QUEUE, PARTICIPANTS
-from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
-from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Src.Bot.DataClasses.Scrim import Scrim, ScrimState
+from Src.Bot.DataClasses.Team import Team, QUEUE, PARTICIPANTS
+from Src.Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 
 _divider = "----------------------------------------------"
 

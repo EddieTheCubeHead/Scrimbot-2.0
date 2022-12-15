@@ -5,10 +5,10 @@ from logging import DEBUG
 
 from hintedi import HinteDI
 
-from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
-from Bot.DataClasses.Team import Team
-from Bot.DataClasses.User import User
-from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
+from Src.Bot.Core.Logging.BotSystemLogger import BotSystemLogger
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.DataClasses.User import User
+from Src.Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
 
 
 class BotInvalidJoinException(BotLoggedNoContextException):

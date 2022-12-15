@@ -3,10 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from hintedi import HinteDI
 
-from Bot.DataClasses.ParticipantTeam import ParticipantTeam
-from Bot.DataClasses.Scrim import Scrim, ScrimState
-from Bot.DataClasses.Team import Team
-from Bot.DataClasses.User import User
+from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
+from Src.Bot.DataClasses.Scrim import Scrim, ScrimState
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.DataClasses.User import User
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
@@ -29,7 +29,7 @@ class UserConnection(ConnectionBase[User]):
         return active_scrim is not None
 
     def _create_user(self, user_id: int):
-        from Bot.DataClasses.User import User
+        from Src.Bot.DataClasses.User import User
         new_user = User(user_id)
         with self._master_connection.get_session() as session:
             session.add(new_user)

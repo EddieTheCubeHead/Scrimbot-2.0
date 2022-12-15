@@ -5,8 +5,8 @@ from math import sqrt
 
 from hintedi import HinteDI
 
-from Bot.DataClasses.UserRating import UserRating
-from Bot.Matchmaking.RatingAlgorithms.TeamRating.TeamRatingStrategy import TeamRatingStrategy
+from Src.Bot.DataClasses.UserRating import UserRating
+from Src.Bot.Matchmaking.RatingAlgorithms.TeamRating.TeamRatingStrategy import TeamRatingStrategy
 
 
 @HinteDI.singleton_implementation(base=TeamRatingStrategy, key='weighted_best', is_default=True)

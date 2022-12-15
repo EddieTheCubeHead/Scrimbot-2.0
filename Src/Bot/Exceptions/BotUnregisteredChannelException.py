@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext.commands import CheckFailure
 
-from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 
 
 class BotUnregisteredChannelException(BotBaseRespondToContextException, CheckFailure):

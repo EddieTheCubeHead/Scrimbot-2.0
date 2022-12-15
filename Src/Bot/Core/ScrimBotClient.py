@@ -11,21 +11,21 @@ from discord.ext import commands
 from discord.ext.commands import Context
 from hintedi import HinteDI
 
-from Bot.Converters.GameConverter import GameConverter
-from Bot.Converters.GuildConverter import GuildConverter
-from Bot.Core.ContextProvider import ContextProvider
-from Bot.Core.Logging.BotClientLogger import BotClientLogger
-from Bot.Exceptions.BotBaseContextException import BotBaseContextException
-from Bot.Exceptions.BotBaseNoContextException import BotBaseNoContextException
-from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
-from Bot.Exceptions.BotUnrecognizedCommandException import BotUnrecognizedCommandException
-from Bot.Logic.DiscordVoiceChannelProvider import DiscordVoiceChannelProvider
-from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
+from Src.Bot.Converters.GameConverter import GameConverter
+from Src.Bot.Converters.GuildConverter import GuildConverter
+from Src.Bot.Core.ContextProvider import ContextProvider
+from Src.Bot.Core.Logging.BotClientLogger import BotClientLogger
+from Src.Bot.Exceptions.BotBaseContextException import BotBaseContextException
+from Src.Bot.Exceptions.BotBaseNoContextException import BotBaseNoContextException
+from Src.Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
+from Src.Bot.Exceptions.BotUnrecognizedCommandException import BotUnrecognizedCommandException
+from Src.Bot.Logic.DiscordVoiceChannelProvider import DiscordVoiceChannelProvider
+from Src.Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
 from Configs.Config import Config
-from Bot.Logic.BotHelpCommand import BotHelpCommand
+from Src.Bot.Logic.BotHelpCommand import BotHelpCommand
 from Src.Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
 from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
-from Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.Core.ScrimContext import ScrimContext
 
 
 class ScrimBotClient(commands.Bot):

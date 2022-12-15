@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from typing import Any, Union
 
-from Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.Core.ScrimContext import ScrimContext
 
 
 class MockedCall:

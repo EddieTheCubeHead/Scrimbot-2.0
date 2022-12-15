@@ -6,7 +6,7 @@ from typing import TypeVar, Generic
 
 from hintedi import HinteDI
 
-from Bot.DataClasses.DataClass import DataClass
+from Src.Bot.DataClasses.DataClass import DataClass
 from Database.Core.MasterConnection import MasterConnection
 
 T = TypeVar('T', bound=DataClass)  # pylint: disable=invalid-name

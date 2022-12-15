@@ -5,9 +5,9 @@ from unittest.mock import MagicMock
 
 from discord import Embed, Color
 
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.User import User
-from Bot.EmbedSystem.NewScrimEmbedBuilder import NewScrimEmbedBuilder
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.User import User
+from Src.Bot.EmbedSystem.NewScrimEmbedBuilder import NewScrimEmbedBuilder
 from Test.Utils.TestBases.EmbedUnittest import EmbedUnittest
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

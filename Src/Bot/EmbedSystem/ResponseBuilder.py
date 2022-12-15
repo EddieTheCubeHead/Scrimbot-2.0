@@ -8,7 +8,7 @@ from discord import Embed, Message, Guild
 from discord.ext.commands import Context
 from hintedi import HinteDI
 
-from Bot.DataClasses.DataClass import DataClass
+from Src.Bot.DataClasses.DataClass import DataClass
 
 
 T = TypeVar('T', bound=DataClass)  # pylint: disable=invalid-name

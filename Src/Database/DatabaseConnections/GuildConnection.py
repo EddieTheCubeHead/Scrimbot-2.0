@@ -12,7 +12,7 @@ from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 class GuildConnection(ConnectionBase):
 
     def get_guild(self, guild_id: int):
-        from Bot.DataClasses.Guild import Guild
+        from Src.Bot.DataClasses.Guild import Guild
         with self._master_connection.get_session() as session:
             query = session.query(Guild).filter(Guild.guild_id == guild_id).outerjoin(Guild.prefixes)\
                 .options(selectinload(Guild.prefixes))
@@ -20,7 +20,7 @@ class GuildConnection(ConnectionBase):
         return guild or self._create_guild(guild_id)
 
     def _create_guild(self, guild_id: int):
-        from Bot.DataClasses.Guild import Guild
+        from Src.Bot.DataClasses.Guild import Guild
         new_guild = Guild(guild_id)
         with self._master_connection.get_session() as session:
             session.add(new_guild)

@@ -5,46 +5,46 @@ from discord import Message
 from discord.ext import commands
 from hintedi import HinteDI
 
-from Bot.Checks.ActiveScrimCheck import ActiveScrimCheck
-from Bot.Checks.FreeScrimCheck import FreeScrimCheck
-from Bot.Cogs.Helpers.BotSettingsService import BotSettingsService
-from Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
-from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
-from Bot.Converters.ScrimConverter import ScrimConverter
-from Bot.Converters.ScrimResultConverter import ScrimResultConverter
-from Bot.Core.ScrimBotClient import ScrimBotClient
-from Bot.Core.ScrimContext import ScrimContext
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.Scrim import Scrim, ScrimState
-from Bot.EmbedSystem.NewScrimEmbedBuilder import NewScrimEmbedBuilder
-from Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
-from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
-from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
-from Bot.Logic.ScrimManager import ScrimManager
-from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
-from Bot.Matchmaking.ResultHandler import ResultHandler
-from Bot.Matchmaking.TeamCreation.TeamCreationStrategy import TeamCreationStrategy
+from Src.Bot.Checks.ActiveScrimCheck import ActiveScrimCheck
+from Src.Bot.Checks.FreeScrimCheck import FreeScrimCheck
+from Src.Bot.Cogs.Helpers.BotSettingsService import BotSettingsService
+from Src.Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
+from Src.Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
+from Src.Bot.Converters.ScrimConverter import ScrimConverter
+from Src.Bot.Converters.ScrimResultConverter import ScrimResultConverter
+from Src.Bot.Core.ScrimBotClient import ScrimBotClient
+from Src.Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.Scrim import Scrim, ScrimState
+from Src.Bot.EmbedSystem.NewScrimEmbedBuilder import NewScrimEmbedBuilder
+from Src.Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
+from Src.Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Src.Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
+from Src.Bot.Logic.ScrimManager import ScrimManager
+from Src.Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
+from Src.Bot.Matchmaking.ResultHandler import ResultHandler
+from Src.Bot.Matchmaking.TeamCreation.TeamCreationStrategy import TeamCreationStrategy
 # These need to be imported to enable registering them for DI
-from Bot.Converters.GameConverter import GameConverter
-from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
-from Bot.Matchmaking.TeamCreation.RandomTeamsStrategy import RandomTeamsStrategy
-from Bot.Matchmaking.TeamCreation.ClearTeamsStrategy import ClearTeamsStrategy
-from Configs.Config import Config
-from Bot.EmbedSystem.ScrimStates.StartedState import StartedState
-from Bot.EmbedSystem.ScrimStates.CaptainsPreparationState import CaptainsPreparationState
-from Bot.EmbedSystem.ScrimStates.CaptainsState import CaptainsState
-from Bot.EmbedSystem.ScrimStates.EndedState import EndedState
-from Bot.EmbedSystem.ScrimStates.LockedState import LockedState
-from Bot.EmbedSystem.ScrimStates.LookingForPlayersState import LookingForPlayersState
-from Bot.EmbedSystem.ScrimStates.SettingUpState import SettingUpState
-from Bot.EmbedSystem.ScrimStates.TerminatedState import TerminatedState
-from Bot.EmbedSystem.ScrimStates.WaitingForVoiceState import WaitingForVoiceState
-from Bot.Matchmaking.RatingAlgorithms.UserRatingChange.FlatChangeStrategy import FlatChangeStrategy
-from Bot.Matchmaking.RatingAlgorithms.TeamRating.MeanRatingStrategy import MeanRatingStrategy
-from Bot.Matchmaking.RatingAlgorithms.TeamRating.WeightBestPlayerRatingStrategy import WeightBestPlayerRatingStrategy
+from Src.Bot.Converters.GameConverter import GameConverter
+from Src.Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
+from Src.Bot.Matchmaking.TeamCreation.RandomTeamsStrategy import RandomTeamsStrategy
+from Src.Bot.Matchmaking.TeamCreation.ClearTeamsStrategy import ClearTeamsStrategy
+from Src.Configs.Config import Config
+from Src.Bot.EmbedSystem.ScrimStates.StartedState import StartedState
+from Src.Bot.EmbedSystem.ScrimStates.CaptainsPreparationState import CaptainsPreparationState
+from Src.Bot.EmbedSystem.ScrimStates.CaptainsState import CaptainsState
+from Src.Bot.EmbedSystem.ScrimStates.EndedState import EndedState
+from Src.Bot.EmbedSystem.ScrimStates.LockedState import LockedState
+from Src.Bot.EmbedSystem.ScrimStates.LookingForPlayersState import LookingForPlayersState
+from Src.Bot.EmbedSystem.ScrimStates.SettingUpState import SettingUpState
+from Src.Bot.EmbedSystem.ScrimStates.TerminatedState import TerminatedState
+from Src.Bot.EmbedSystem.ScrimStates.WaitingForVoiceState import WaitingForVoiceState
+from Src.Bot.Matchmaking.RatingAlgorithms.UserRatingChange.FlatChangeStrategy import FlatChangeStrategy
+from Src.Bot.Matchmaking.RatingAlgorithms.TeamRating.MeanRatingStrategy import MeanRatingStrategy
+from Src.Bot.Matchmaking.RatingAlgorithms.TeamRating.WeightBestPlayerRatingStrategy import WeightBestPlayerRatingStrategy
 
 
-async def _add_team_reactions(scrim: Scrim, state: ScrimState, message: Message):
+async def _add_team_reactions(scrim: Scrim, state: ScrimStateBase, message: Message):
     for team in range(1, len(state.get_game_teams(scrim)) + 1):
         await message.add_reaction(emoji=f"{team}\u20E3")
 

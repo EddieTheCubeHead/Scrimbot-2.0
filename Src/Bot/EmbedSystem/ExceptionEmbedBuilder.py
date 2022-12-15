@@ -5,7 +5,7 @@ from discord import Embed
 from discord.ext.commands import Context
 from hintedi import HinteDI
 
-from Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
+from Src.Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
 
 
 @HinteDI.singleton

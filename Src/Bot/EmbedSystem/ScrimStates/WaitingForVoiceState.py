@@ -3,9 +3,9 @@ __author__ = "Eetu Asikainen"
 
 from hintedi import HinteDI
 
-from Bot.DataClasses.Scrim import ScrimState, Scrim
-from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
-from Bot.EmbedSystem.ScrimStates.StartedState import StartedState
+from Src.Bot.DataClasses.Scrim import ScrimState, Scrim
+from Src.Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Src.Bot.EmbedSystem.ScrimStates.StartedState import StartedState
 
 
 @HinteDI.singleton_implementation(base=ScrimStateBase, key=ScrimState.VOICE_WAIT)

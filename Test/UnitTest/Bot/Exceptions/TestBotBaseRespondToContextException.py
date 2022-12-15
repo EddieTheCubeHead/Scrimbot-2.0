@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, AsyncMock
 
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Test.Utils.TestBases.UnittestBase import UnittestBase
-from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 
 
 class TestBotBaseRespondToContextException(AsyncUnittestBase):

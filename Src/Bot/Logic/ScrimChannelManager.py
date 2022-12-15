@@ -5,7 +5,7 @@ __author__ = "Eetu Asikainen"
 
 from hintedi import HinteDI
 
-from Bot.DataClasses.VoiceChannel import VoiceChannel
+from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
 
 
 @HinteDI.singleton

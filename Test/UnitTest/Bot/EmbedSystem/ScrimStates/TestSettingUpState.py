@@ -3,9 +3,9 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.DataClasses.Scrim import ScrimState
-from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
-from Bot.EmbedSystem.ScrimStates.SettingUpState import SettingUpState
+from Src.Bot.DataClasses.Scrim import ScrimState
+from Src.Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Src.Bot.EmbedSystem.ScrimStates.SettingUpState import SettingUpState
 from Utils.TestBases.StateUnittest import StateUnittest
 
 

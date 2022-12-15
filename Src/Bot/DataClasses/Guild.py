@@ -10,13 +10,13 @@ from sqlalchemy import Column, Integer, Boolean
 from sqlalchemy.orm import relationship
 from hintedi import HinteDI
 
-from Bot.Converters.Convertable import Convertable
-from Bot.DataClasses.DataClass import DataClass
+from Src.Bot.Converters.Convertable import Convertable
+from Src.Bot.DataClasses.DataClass import DataClass
 from Configs.Config import Config
-from Bot.DataClasses.Prefix import Prefix
-from Bot.DataClasses.UserRating import UserRating
+from Src.Bot.DataClasses.Prefix import Prefix
+from Src.Bot.DataClasses.UserRating import UserRating
 if TYPE_CHECKING:  # pragma: no cover
-    from Bot.Converters.GuildConverter import GuildConverter
+    from Src.Bot.Converters.GuildConverter import GuildConverter
 
 
 class Guild(DataClass, Convertable):  # pragma: no cover

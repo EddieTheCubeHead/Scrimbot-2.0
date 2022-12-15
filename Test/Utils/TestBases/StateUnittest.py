@@ -5,11 +5,11 @@ from unittest.mock import MagicMock
 
 from discord import Embed, Color
 
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.ParticipantTeam import ParticipantTeam
-from Bot.DataClasses.Team import Team
-from Bot.DataClasses.User import User
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.DataClasses.User import User
+from Src.Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Test.Utils.TestBases.UnittestBase import UnittestBase
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

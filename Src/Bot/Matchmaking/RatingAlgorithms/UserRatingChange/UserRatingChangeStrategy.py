@@ -5,8 +5,8 @@ from abc import ABC, abstractmethod
 
 from hintedi import HinteDI
 
-from Bot.DataClasses.UserRating import UserRating
-from Bot.DataClasses.UserScrimResult import Result
+from Src.Bot.DataClasses.UserRating import UserRating
+from Src.Bot.DataClasses.UserScrimResult import Result
 
 
 @HinteDI.abstract_base

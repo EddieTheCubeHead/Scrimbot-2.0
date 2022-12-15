@@ -7,7 +7,7 @@ from contextlib import contextmanager
 from discord import Message
 from discord.ext.commands import Bot
 
-from Bot.Core.ContextProvider import ContextProvider
+from Src.Bot.Core.ContextProvider import ContextProvider
 from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 
 

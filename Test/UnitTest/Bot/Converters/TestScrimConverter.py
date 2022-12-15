@@ -4,11 +4,11 @@ __author__ = "Eetu Asikainen"
 from asyncio import gather, sleep, create_task
 from unittest.mock import MagicMock
 
-from Bot.Converters.ScrimConverter import ScrimConverter
-from Bot.DataClasses.ParticipantTeam import ParticipantTeam
-from Bot.DataClasses.Scrim import Scrim
-from Bot.DataClasses.Team import PARTICIPANTS, SPECTATORS, QUEUE
-from Bot.Exceptions.BotChannelHasScrimException import BotChannelHasScrimException
+from Src.Bot.Converters.ScrimConverter import ScrimConverter
+from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
+from Src.Bot.DataClasses.Scrim import Scrim
+from Src.Bot.DataClasses.Team import PARTICIPANTS, SPECTATORS, QUEUE
+from Src.Bot.Exceptions.BotChannelHasScrimException import BotChannelHasScrimException
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Utils.TestHelpers.async_waiter import WaitChecker, Waiter

@@ -10,13 +10,13 @@ from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from hintedi import HinteDI
 
-from Bot.Converters.Convertable import Convertable
-from Bot.DataClasses.Displayable import Displayable
+from Src.Bot.Converters.Convertable import Convertable
+from Src.Bot.DataClasses.Displayable import Displayable
 
 if TYPE_CHECKING:  # pragma: no cover
-    from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
-from Bot.DataClasses.DataClass import DataClass
-from Bot.DataClasses.VoiceChannel import VoiceChannel
+    from Src.Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
+from Src.Bot.DataClasses.DataClass import DataClass
+from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
 
 
 class ScrimChannel(DataClass, Convertable):  # pragma: no cover

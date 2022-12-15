@@ -1,7 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.Exceptions.BotChannelHasScrimException import BotChannelHasScrimException
+from Src.Bot.Exceptions.BotChannelHasScrimException import BotChannelHasScrimException
 from Test.Utils.TestBases.UnittestBase import UnittestBase
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

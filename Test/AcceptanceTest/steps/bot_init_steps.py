@@ -9,8 +9,8 @@ from behave import *
 from behave.api.async_step import async_run_until_complete
 from hintedi import HinteDI
 
-from Bot.Core.Logging.BotClientLogger import BotClientLogger
-from Bot.Core.ScrimBotClient import ScrimBotClient
+from Src.Bot.Core.Logging.BotClientLogger import BotClientLogger
+from Src.Bot.Core.ScrimBotClient import ScrimBotClient
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
 from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext

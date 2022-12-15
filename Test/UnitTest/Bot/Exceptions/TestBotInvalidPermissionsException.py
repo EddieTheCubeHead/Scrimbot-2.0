@@ -3,9 +3,9 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.Core.ScrimContext import ScrimContext
-from Bot.DataClasses.GuildMember import PermissionLevel
-from Bot.Exceptions.BotInvalidPermissionsException import BotInvalidPermissionsException
+from Src.Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.DataClasses.GuildMember import PermissionLevel
+from Src.Bot.Exceptions.BotInvalidPermissionsException import BotInvalidPermissionsException
 from Utils.TestBases.UnittestBase import UnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

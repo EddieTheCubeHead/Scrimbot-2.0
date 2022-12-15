@@ -10,12 +10,12 @@ from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import relationship
 from hintedi import HinteDI
 
-from Bot.Converters.Convertable import Convertable
+from Src.Bot.Converters.Convertable import Convertable
 if TYPE_CHECKING:  # pragma: no cover
-    from Bot.Converters.GameConverter import GameConverter
-from Bot.DataClasses.DataClass import DataClass
-from Bot.DataClasses.Alias import Alias
-from Bot.DataClasses.Scrim import Scrim
+    from Src.Bot.Converters.GameConverter import GameConverter
+from Src.Bot.DataClasses.DataClass import DataClass
+from Src.Bot.DataClasses.Alias import Alias
+from Src.Bot.DataClasses.Scrim import Scrim
 
 
 class Game(DataClass, Convertable):  # pragma: no cover

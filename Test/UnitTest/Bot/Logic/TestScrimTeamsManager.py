@@ -7,17 +7,17 @@ from unittest.mock import MagicMock, AsyncMock
 
 from discord import Guild, Member
 
-from Bot.DataClasses.User import User
-from Bot.DataClasses.VoiceChannel import VoiceChannel
-from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
-from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
+from Src.Bot.DataClasses.User import User
+from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
+from Src.Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
+from Src.Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
 from Test.Utils.TestBases.UnittestBase import UnittestBase
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.Team import Team
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
-from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
-from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Src.Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
 

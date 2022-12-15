@@ -4,8 +4,8 @@ __author__ = "Eetu Asikainen"
 from discord.ext.commands import converter, Context
 from hintedi import HinteDI
 
-from Bot.Converters.ConverterBase import ConverterBase
-from Bot.DataClasses.VoiceChannel import VoiceChannel
+from Src.Bot.Converters.ConverterBase import ConverterBase
+from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
 from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
 
 

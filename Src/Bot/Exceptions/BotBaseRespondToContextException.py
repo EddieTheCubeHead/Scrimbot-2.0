@@ -5,8 +5,8 @@ from discord.ext import commands
 from discord.ext.commands import Context
 from hintedi import HinteDI
 
-from Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
-from Bot.Exceptions.BotBaseContextException import BotBaseContextException
+from Src.Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
+from Src.Bot.Exceptions.BotBaseContextException import BotBaseContextException
 
 
 class BotBaseRespondToContextException(BotBaseContextException, commands.CommandError):

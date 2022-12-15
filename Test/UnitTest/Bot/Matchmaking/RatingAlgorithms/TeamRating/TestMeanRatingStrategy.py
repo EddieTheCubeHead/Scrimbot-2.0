@@ -1,7 +1,7 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-from Bot.Matchmaking.RatingAlgorithms.TeamRating.MeanRatingStrategy import MeanRatingStrategy
+from Src.Bot.Matchmaking.RatingAlgorithms.TeamRating.MeanRatingStrategy import MeanRatingStrategy
 from Utils.TestBases.UnittestBase import UnittestBase
 from Utils.TestHelpers.test_utils import create_team_from_ratings
 

@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from hintedi import HinteDI
 
-from Bot.DataClasses.GuildMember import GuildMember
+from Src.Bot.DataClasses.GuildMember import GuildMember
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 

@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 import unittest
 from unittest.mock import MagicMock
 
-from Bot.Converters.ScrimManagerConverter import ScrimManagerConverter
+from Src.Bot.Converters.ScrimManagerConverter import ScrimManagerConverter
 from Utils.TestBases.UnittestBase import UnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

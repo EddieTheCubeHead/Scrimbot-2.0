@@ -4,8 +4,8 @@ __author__ = "Eetu Asikainen"
 from discord import Member
 from hintedi import HinteDI
 
-from Bot.Exceptions.BotAlreadyParticipantException import BotAlreadyParticipantException
-from Bot.Logic.DiscordObjectProvider import DiscordObjectProvider
+from Src.Bot.Exceptions.BotAlreadyParticipantException import BotAlreadyParticipantException
+from Src.Bot.Logic.DiscordObjectProvider import DiscordObjectProvider
 
 
 @HinteDI.singleton

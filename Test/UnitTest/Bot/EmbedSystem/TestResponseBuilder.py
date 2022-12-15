@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch, AsyncMock
 from hintedi import HinteDI
 
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
-from Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
+from Src.Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
 from Test.Utils.TestHelpers.test_utils import create_mock_context
 
 

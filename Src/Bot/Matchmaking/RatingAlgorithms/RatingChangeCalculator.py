@@ -5,17 +5,17 @@ from typing import Iterable
 
 from hintedi import HinteDI
 
-from Bot.Converters.ScrimResultConverter import ScrimResult
-from Bot.Converters.UserRatingConverter import UserRatingConverter
-from Bot.Core.ScrimContext import ScrimContext
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.Guild import Guild
-from Bot.DataClasses.Team import Team
-from Bot.DataClasses.User import User
-from Bot.DataClasses.UserRating import UserRating
-from Bot.DataClasses.UserScrimResult import Result
-from Bot.Matchmaking.RatingAlgorithms.TeamRating.TeamRatingStrategy import TeamRatingStrategy
-from Bot.Matchmaking.RatingAlgorithms.UserRatingChange.UserRatingChangeStrategy import UserRatingChangeStrategy
+from Src.Bot.Converters.ScrimResultConverter import ScrimResult
+from Src.Bot.Converters.UserRatingConverter import UserRatingConverter
+from Src.Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.Guild import Guild
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.DataClasses.User import User
+from Src.Bot.DataClasses.UserRating import UserRating
+from Src.Bot.DataClasses.UserScrimResult import Result
+from Src.Bot.Matchmaking.RatingAlgorithms.TeamRating.TeamRatingStrategy import TeamRatingStrategy
+from Src.Bot.Matchmaking.RatingAlgorithms.UserRatingChange.UserRatingChangeStrategy import UserRatingChangeStrategy
 
 
 def _get_other_team_ratings(team: Team, team_ratings: dict[Team: int]):

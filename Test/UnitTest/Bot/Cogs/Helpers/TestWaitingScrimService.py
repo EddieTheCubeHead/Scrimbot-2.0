@@ -5,8 +5,8 @@ import datetime
 from time import sleep
 from unittest.mock import MagicMock
 
-from Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
-from Bot.DataClasses.User import User
+from Src.Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
+from Src.Bot.DataClasses.User import User
 from Utils.TestBases.UnittestBase import UnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Utils.TestHelpers.test_utils import assert_almost_now

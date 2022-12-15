@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
-from Bot.Converters.GuildConverter import GuildConverter
+from Src.Bot.Converters.GuildConverter import GuildConverter
 
 
 class TestGuildConverter(AsyncUnittestBase):

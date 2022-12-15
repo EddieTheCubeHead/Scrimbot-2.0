@@ -5,9 +5,9 @@ from unittest.mock import AsyncMock, MagicMock
 
 from discord import Member
 
-from Bot.Checks.PermissionsCheck import PermissionsCheck
-from Bot.DataClasses.GuildMember import PermissionLevel
-from Bot.Exceptions.BotInvalidPermissionsException import BotInvalidPermissionsException
+from Src.Bot.Checks.PermissionsCheck import PermissionsCheck
+from Src.Bot.DataClasses.GuildMember import PermissionLevel
+from Src.Bot.Exceptions.BotInvalidPermissionsException import BotInvalidPermissionsException
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

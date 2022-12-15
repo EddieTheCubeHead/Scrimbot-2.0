@@ -4,10 +4,10 @@ __author__ = "Eetu Asikainen"
 import unittest
 from unittest.mock import MagicMock
 
-from Bot.Converters.ScrimResultConverter import ScrimResult
-from Bot.DataClasses.Team import Team
-from Bot.DataClasses.UserScrimResult import Result
-from Bot.Matchmaking.ResultHandler import ResultHandler
+from Src.Bot.Converters.ScrimResultConverter import ScrimResult
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.DataClasses.UserScrimResult import Result
+from Src.Bot.Matchmaking.ResultHandler import ResultHandler
 from Utils.TestBases.UnittestBase import UnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

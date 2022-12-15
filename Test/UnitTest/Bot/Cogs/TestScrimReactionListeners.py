@@ -7,16 +7,16 @@ from unittest.mock import AsyncMock, MagicMock, call
 from discord import Emoji, Reaction
 from discord.ext.commands import CommandError
 
-from Bot.Cogs.ScrimReactionListeners import ScrimReactionListeners
-from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.Scrim import ScrimState
-from Bot.DataClasses.Team import SPECTATORS, PARTICIPANTS, QUEUE
-from Bot.Exceptions.BotAlreadyParticipantException import BotAlreadyParticipantException
-from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
-from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
-from Bot.Exceptions.BotInvalidReactionJoinException import BotInvalidReactionJoinException
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
+from Src.Bot.Cogs.ScrimReactionListeners import ScrimReactionListeners
+from Src.Bot.Core.Logging.BotSystemLogger import BotSystemLogger
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.Scrim import ScrimState
+from Src.Bot.DataClasses.Team import SPECTATORS, PARTICIPANTS, QUEUE
+from Src.Bot.Exceptions.BotAlreadyParticipantException import BotAlreadyParticipantException
+from Src.Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
+from Src.Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
+from Src.Bot.Exceptions.BotInvalidReactionJoinException import BotInvalidReactionJoinException
+from Src.Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Test.Utils.TestHelpers.bot_dependency_patcher import mock_dependency

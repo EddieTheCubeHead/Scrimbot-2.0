@@ -4,10 +4,10 @@ __author__ = "Eetu Asikainen"
 from sqlalchemy.orm import subqueryload, selectinload, joinedload
 from hintedi import HinteDI
 
-from Bot.DataClasses.ParticipantTeam import ParticipantTeam
-from Bot.DataClasses.Scrim import Scrim, ScrimState
-from Bot.DataClasses.ScrimChannel import ScrimChannel
-from Bot.DataClasses.Team import Team
+from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
+from Src.Bot.DataClasses.Scrim import Scrim, ScrimState
+from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
+from Src.Bot.DataClasses.Team import Team
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 

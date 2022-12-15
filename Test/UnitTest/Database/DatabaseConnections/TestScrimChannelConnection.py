@@ -3,8 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from sqlalchemy.exc import NoResultFound
 
-from Bot.DataClasses.ScrimChannel import ScrimChannel
-from Bot.DataClasses.VoiceChannel import VoiceChannel
+from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
+from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
 from Test.Utils.TestBases.ConnectionUnittest import ConnectionUnittest

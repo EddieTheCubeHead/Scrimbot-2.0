@@ -3,10 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from hintedi import HinteDI
 
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.ScrimChannel import ScrimChannel
-from Bot.Logic.ScrimManager import ScrimManager
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
+from Src.Bot.Logic.ScrimManager import ScrimManager
+from Src.Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 
 
 def _create_voice_channels(scrim_channel):

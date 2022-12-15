@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from typing import Generic, TypeVar, Any, get_args
 
 from Test.Utils.TestBases.UnittestBase import UnittestBase
-from Bot.DataClasses.DataClass import DataClass
+from Src.Bot.DataClasses.DataClass import DataClass
 
 T = TypeVar('T', bound=DataClass)
 

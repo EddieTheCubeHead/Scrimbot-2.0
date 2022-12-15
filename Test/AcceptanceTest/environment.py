@@ -5,11 +5,11 @@ from unittest.mock import MagicMock
 
 from hintedi import HinteDI
 
-from Bot.Converters.GameConverter import GameConverter
-from Bot.Core.Logging.BotClientLogger import BotClientLogger
-from Bot.Core.ScrimBotClient import ScrimBotClient
-from Bot.Logic.DiscordVoiceChannelProvider import DiscordVoiceChannelProvider
-from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
+from Src.Bot.Converters.GameConverter import GameConverter
+from Src.Bot.Core.Logging.BotClientLogger import BotClientLogger
+from Src.Bot.Core.ScrimBotClient import ScrimBotClient
+from Src.Bot.Logic.DiscordVoiceChannelProvider import DiscordVoiceChannelProvider
+from Src.Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
 from Database.DatabaseConnections.GameConnection import GameConnection

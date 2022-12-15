@@ -3,10 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.Converters.Helpers.ChannelGroupParser import ChannelGroupParser
-from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Src.Bot.Converters.Helpers.ChannelGroupParser import ChannelGroupParser
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
-from Bot.Converters.VoiceChannelGroupConverter import VoiceChannelGroupConverter, DO_CONVERSION_STRINGS
+from Src.Bot.Converters.VoiceChannelGroupConverter import VoiceChannelGroupConverter, DO_CONVERSION_STRINGS
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 

@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING
 
 from hintedi import HinteDI
 
-from Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
-from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Src.Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 if TYPE_CHECKING:
-    from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+    from Src.Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 
 
 class BotInvalidStateChangeException(BotBaseRespondToContextException):

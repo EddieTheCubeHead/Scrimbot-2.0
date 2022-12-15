@@ -5,9 +5,9 @@ from logging import WARNING
 
 from hintedi import HinteDI
 
-from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
-from Bot.Exceptions.BotBaseNoContextException import BotBaseNoContextException
-from Bot.Exceptions.BotLoggedContextException import log_with_level
+from Src.Bot.Core.Logging.BotSystemLogger import BotSystemLogger
+from Src.Bot.Exceptions.BotBaseNoContextException import BotBaseNoContextException
+from Src.Bot.Exceptions.BotLoggedContextException import log_with_level
 
 
 class BotLoggedNoContextException(BotBaseNoContextException):

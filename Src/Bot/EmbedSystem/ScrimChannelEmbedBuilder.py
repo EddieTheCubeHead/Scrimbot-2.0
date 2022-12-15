@@ -5,9 +5,9 @@ from discord import Embed
 from discord.ext.commands import Context
 from hintedi import HinteDI
 
-from Bot.DataClasses.ScrimChannel import ScrimChannel
-from Bot.DataClasses.VoiceChannel import VoiceChannel
-from Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
+from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
+from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
+from Src.Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
 
 
 def _get_channel_name(voice_channel: VoiceChannel) -> str:

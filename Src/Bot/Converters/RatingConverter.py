@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from discord.ext.commands import Converter
 
-from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
+from Src.Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 
 
 class RatingConverter(Converter):

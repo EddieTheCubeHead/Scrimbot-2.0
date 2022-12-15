@@ -9,19 +9,19 @@ import discord
 from hintedi import HinteDI
 
 if TYPE_CHECKING:
-    from Bot.Converters.ScrimResultConverter import ScrimResult
-from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.ScrimChannel import ScrimChannel
-from Bot.DataClasses.Team import Team
-from Bot.DataClasses.User import User
-from Bot.DataClasses.VoiceChannel import VoiceChannel
-from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
-from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
-from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
-from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
-from Bot.Logic.DiscordVoiceChannelProvider import DiscordVoiceChannelProvider
-from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
+    from Src.Bot.Converters.ScrimResultConverter import ScrimResult
+from Src.Bot.Core.Logging.BotSystemLogger import BotSystemLogger
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.DataClasses.User import User
+from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Src.Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
+from Src.Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
+from Src.Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
+from Src.Bot.Logic.DiscordVoiceChannelProvider import DiscordVoiceChannelProvider
+from Src.Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
 
 
 def _assert_valid_game(game):

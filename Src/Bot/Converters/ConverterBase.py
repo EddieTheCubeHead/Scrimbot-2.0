@@ -5,7 +5,7 @@ from typing import Generic, TypeVar
 
 from discord.ext.commands import Context, Converter
 
-from Bot.DataClasses.DataClass import DataClass
+from Src.Bot.DataClasses.DataClass import DataClass
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 T = TypeVar('T', bound=DataClass)  # pylint: disable=invalid-name

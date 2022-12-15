@@ -6,9 +6,9 @@ from logging import DEBUG
 from discord import Member, Reaction
 from hintedi import HinteDI
 
-from Bot.Core.Logging.BotSystemLogger import BotSystemLogger
-from Bot.DataClasses.Team import Team
-from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
+from Src.Bot.Core.Logging.BotSystemLogger import BotSystemLogger
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
 
 
 class BotInvalidReactionJoinException(BotLoggedNoContextException):

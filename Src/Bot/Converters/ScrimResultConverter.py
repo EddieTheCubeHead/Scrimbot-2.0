@@ -5,10 +5,10 @@ from typing import Union
 
 from hintedi import HinteDI
 
-from Bot.Converters.ConverterBase import ConverterBase
-from Bot.Core.ScrimContext import ScrimContext
-from Bot.DataClasses.Team import Team
-from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
+from Src.Bot.Converters.ConverterBase import ConverterBase
+from Src.Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 from Database.DatabaseConnections.ScrimConnection import ScrimConnection
 
 

@@ -4,11 +4,11 @@ __author__ = "Eetu Asikainen"
 from discord.ext.commands import CheckFailure
 from hintedi import HinteDI
 
-from Bot.Core.ScrimContext import ScrimContext
-from Bot.DataClasses.GuildMember import PermissionLevel
-from Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
-from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
-from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Src.Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.DataClasses.GuildMember import PermissionLevel
+from Src.Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
+from Src.Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 
 
 class BotInvalidPermissionsException(BotBaseRespondToContextException, CheckFailure):

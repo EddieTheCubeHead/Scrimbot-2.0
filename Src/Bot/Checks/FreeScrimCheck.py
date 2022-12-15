@@ -4,12 +4,12 @@ __author__ = "Eetu Asikainen"
 from sqlalchemy.exc import NoResultFound
 from hintedi import HinteDI
 
-from Bot.Checks.CheckBase import CheckBase
-from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
-from Bot.Converters.ScrimConverter import ScrimConverter
-from Bot.Core.ScrimContext import ScrimContext
-from Bot.Exceptions.BotChannelHasScrimException import BotChannelHasScrimException
-from Bot.Exceptions.BotUnregisteredChannelException import BotUnregisteredChannelException
+from Src.Bot.Checks.CheckBase import CheckBase
+from Src.Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
+from Src.Bot.Converters.ScrimConverter import ScrimConverter
+from Src.Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.Exceptions.BotChannelHasScrimException import BotChannelHasScrimException
+from Src.Bot.Exceptions.BotUnregisteredChannelException import BotUnregisteredChannelException
 
 
 class FreeScrimCheck(CheckBase):

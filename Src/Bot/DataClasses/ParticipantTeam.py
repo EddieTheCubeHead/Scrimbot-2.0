@@ -5,8 +5,8 @@ __author__ = "Eetu Asikainen"
 from sqlalchemy import Column, Integer, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 
-from Bot.DataClasses.DataClass import DataClass
-from Bot.DataClasses.Team import Team
+from Src.Bot.DataClasses.DataClass import DataClass
+from Src.Bot.DataClasses.Team import Team
 
 
 class ParticipantTeam(DataClass):  # pragma: no cover

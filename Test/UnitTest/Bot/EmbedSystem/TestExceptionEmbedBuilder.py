@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
+from Src.Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
 from Test.Utils.TestBases.EmbedUnittest import EmbedUnittest
 
 

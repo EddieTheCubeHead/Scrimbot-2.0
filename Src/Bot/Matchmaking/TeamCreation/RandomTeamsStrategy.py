@@ -4,9 +4,9 @@ __author__ = "Eetu Asikainen"
 import random
 from collections.abc import Iterator
 
-from Bot.Converters.TeamCreationStrategyConverter import TeamCreationStrategyConverter
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
-from Bot.Matchmaking.TeamCreation.TeamCreationStrategy import TeamCreationStrategy
+from Src.Bot.Converters.TeamCreationStrategyConverter import TeamCreationStrategyConverter
+from Src.Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
+from Src.Bot.Matchmaking.TeamCreation.TeamCreationStrategy import TeamCreationStrategy
 
 
 def _next_team_iterator(team_count: int) -> Iterator[int]:

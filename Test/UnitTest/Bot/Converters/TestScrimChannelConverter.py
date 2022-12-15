@@ -3,13 +3,13 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.DataClasses.VoiceChannel import VoiceChannel
-from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
-from Bot.Exceptions.BotReservedChannelException import BotReservedChannelException
+from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Src.Bot.Exceptions.BotReservedChannelException import BotReservedChannelException
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
-from Bot.DataClasses.ScrimChannel import ScrimChannel
-from Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
+from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
+from Src.Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
 
 
 class TestScrimChannelConverter(AsyncUnittestBase):

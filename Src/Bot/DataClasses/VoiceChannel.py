@@ -9,11 +9,11 @@ from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from hintedi import HinteDI
 
-from Bot.Converters.Convertable import Convertable
+from Src.Bot.Converters.Convertable import Convertable
 
 if TYPE_CHECKING:  # pragma: no cover
-    from Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
-from Bot.DataClasses.DataClass import DataClass
+    from Src.Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
+from Src.Bot.DataClasses.DataClass import DataClass
 
 
 class VoiceChannel(DataClass, Convertable):  # pragma: no cover

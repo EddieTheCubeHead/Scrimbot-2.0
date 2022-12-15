@@ -5,7 +5,7 @@ from typing import Optional
 
 import discord
 
-from Bot.Exceptions.BuildException import BuildException
+from Src.Bot.Exceptions.BuildException import BuildException
 
 
 class DiscordObjectProvider:

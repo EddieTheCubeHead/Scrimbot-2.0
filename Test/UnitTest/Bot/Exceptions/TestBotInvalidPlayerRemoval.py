@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from logging import DEBUG
 from unittest.mock import AsyncMock, MagicMock
 
-from Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
+from Src.Bot.Exceptions.BotInvalidPlayerRemoval import BotInvalidPlayerRemoval
 from Test.Utils.TestBases.UnittestBase import UnittestBase
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

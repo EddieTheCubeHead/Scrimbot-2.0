@@ -4,9 +4,9 @@ __author__ = "Eetu Asikainen"
 import unittest
 from unittest.mock import MagicMock
 
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.ScrimChannel import ScrimChannel
-from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
+from Src.Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 from Test.Utils.TestBases.UnittestBase import UnittestBase
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

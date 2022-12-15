@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.DataClasses.GuildMember import GuildMember, PermissionLevel
+from Src.Bot.DataClasses.GuildMember import GuildMember, PermissionLevel
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
 from Database.DatabaseConnections.GuildMemberConnection import GuildMemberConnection

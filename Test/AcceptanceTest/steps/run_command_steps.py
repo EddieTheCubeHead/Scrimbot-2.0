@@ -11,9 +11,9 @@ from behave.runner import Context
 from discord import Reaction, Message
 from hintedi import HinteDI
 
-from Bot.DataClasses.UserScrimResult import Result
+from Src.Bot.DataClasses.UserScrimResult import Result
 from Test.AcceptanceTest.steps.mock_discord_objects_steps import create_voice_channels
-from Bot.Converters.GameConverter import GameConverter
+from Src.Bot.Converters.GameConverter import GameConverter
 from Test.Utils.TestHelpers.TestIdGenerator import GLOBAL_ID_GENERATOR
 from Test.Utils.TestHelpers.embed_test_helper import parse_embed_from_table, create_error_embed, assert_same_embed_text
 from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext

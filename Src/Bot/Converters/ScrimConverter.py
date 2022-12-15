@@ -7,14 +7,14 @@ from contextlib import asynccontextmanager
 from discord import Message
 from hintedi import HinteDI
 
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.ParticipantTeam import ParticipantTeam
-from Bot.DataClasses.Scrim import Scrim, ScrimState
-from Bot.DataClasses.ScrimChannel import ScrimChannel
-from Bot.DataClasses.Team import PARTICIPANTS, SPECTATORS, QUEUE, Team
-from Bot.DataClasses.User import User
-from Bot.Exceptions.BotChannelHasScrimException import BotChannelHasScrimException
-from Bot.Logic.ScrimManager import ScrimManager
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
+from Src.Bot.DataClasses.Scrim import Scrim, ScrimState
+from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
+from Src.Bot.DataClasses.Team import PARTICIPANTS, SPECTATORS, QUEUE, Team
+from Src.Bot.DataClasses.User import User
+from Src.Bot.Exceptions.BotChannelHasScrimException import BotChannelHasScrimException
+from Src.Bot.Logic.ScrimManager import ScrimManager
 from Database.DatabaseConnections.ScrimConnection import ScrimConnection
 
 

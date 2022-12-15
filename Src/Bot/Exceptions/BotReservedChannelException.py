@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from hintedi import HinteDI
 
-from Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
+from Src.Bot.EmbedSystem.ExceptionEmbedBuilder import ExceptionEmbedBuilder
 from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 
 

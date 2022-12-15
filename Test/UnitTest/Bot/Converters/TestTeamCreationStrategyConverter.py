@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.Converters.TeamCreationStrategyConverter import TeamCreationStrategyConverter
+from Src.Bot.Converters.TeamCreationStrategyConverter import TeamCreationStrategyConverter
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

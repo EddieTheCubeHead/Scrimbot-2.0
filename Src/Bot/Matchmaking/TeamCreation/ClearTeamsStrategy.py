@@ -2,10 +2,10 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 
-from Bot.Converters.TeamCreationStrategyConverter import TeamCreationStrategyConverter
-from Bot.Logic import ScrimManager
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
-from Bot.Matchmaking.TeamCreation.TeamCreationStrategy import TeamCreationStrategy
+from Src.Bot.Converters.TeamCreationStrategyConverter import TeamCreationStrategyConverter
+from Src.Bot.Logic import ScrimManager
+from Src.Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
+from Src.Bot.Matchmaking.TeamCreation.TeamCreationStrategy import TeamCreationStrategy
 
 
 @TeamCreationStrategyConverter.register("clear")

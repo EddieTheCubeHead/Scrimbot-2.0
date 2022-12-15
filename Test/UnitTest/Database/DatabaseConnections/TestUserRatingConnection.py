@@ -5,14 +5,14 @@ import unittest
 from typing import Optional
 from unittest.mock import MagicMock
 
-from Bot.DataClasses.UserScrimResult import Result, UserScrimResult
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.Guild import Guild
-from Bot.DataClasses.ParticipantTeam import ParticipantTeam
-from Bot.DataClasses.Scrim import Scrim
-from Bot.DataClasses.Team import Team
-from Bot.DataClasses.User import User
-from Bot.DataClasses.UserRating import UserRating, DEFAULT_RATING
+from Src.Bot.DataClasses.UserScrimResult import Result, UserScrimResult
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.Guild import Guild
+from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
+from Src.Bot.DataClasses.Scrim import Scrim
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.DataClasses.User import User
+from Src.Bot.DataClasses.UserRating import UserRating, DEFAULT_RATING
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
 from Database.DatabaseConnections.UserRatingConnection import UserRatingConnection

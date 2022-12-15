@@ -8,9 +8,9 @@ from abc import ABC, abstractmethod
 
 from hintedi import HinteDI
 
-from Bot.DataClasses.Scrim import Scrim, ScrimState
-from Bot.DataClasses.Team import Team, QUEUE, SPECTATORS, PARTICIPANTS
-from Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
+from Src.Bot.DataClasses.Scrim import Scrim, ScrimState
+from Src.Bot.DataClasses.Team import Team, QUEUE, SPECTATORS, PARTICIPANTS
+from Src.Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
 
 
 @HinteDI.abstract_base

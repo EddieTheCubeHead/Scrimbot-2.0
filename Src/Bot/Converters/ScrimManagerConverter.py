@@ -3,9 +3,9 @@ __author__ = "Eetu Asikainen"
 
 from hintedi import HinteDI
 
-from Bot.Converters.ScrimConverter import ScrimConverter
-from Bot.DataClasses.Scrim import Scrim
-from Bot.Logic.ScrimManager import ScrimManager
+from Src.Bot.Converters.ScrimConverter import ScrimConverter
+from Src.Bot.DataClasses.Scrim import Scrim
+from Src.Bot.Logic.ScrimManager import ScrimManager
 
 
 @HinteDI.singleton

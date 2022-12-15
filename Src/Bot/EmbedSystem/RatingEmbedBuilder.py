@@ -5,10 +5,10 @@ from discord import Embed
 from discord.ext.commands import Context
 from hintedi import HinteDI
 
-from Bot.DataClasses.UserScrimResult import Result
-from Bot.DataClasses.ParticipantTeam import ParticipantTeam
-from Bot.DataClasses.UserRating import UserRating
-from Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
+from Src.Bot.DataClasses.UserScrimResult import Result
+from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
+from Src.Bot.DataClasses.UserRating import UserRating
+from Src.Bot.EmbedSystem.ResponseBuilder import ResponseBuilder
 
 
 @HinteDI.instance

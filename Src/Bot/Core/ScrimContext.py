@@ -4,8 +4,8 @@ __author__ = "Eetu Asikainen"
 from discord.ext import commands
 from hintedi import HinteDI
 
-from Bot.DataClasses.ScrimChannel import ScrimChannel
-from Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
+from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
+from Src.Bot.Logic.ActiveScrimsManager import ActiveScrimsManager
 
 
 class ScrimContext(commands.Context):

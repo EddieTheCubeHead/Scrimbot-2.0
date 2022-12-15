@@ -6,8 +6,8 @@ from unittest.mock import MagicMock, patch
 from discord import Intents
 from discord.ext.commands import Context, Bot
 
-from Bot.Checks.CheckBase import CheckBase
-from Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.Checks.CheckBase import CheckBase
+from Src.Bot.Core.ScrimContext import ScrimContext
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Test.Utils.TestHelpers.test_utils import create_mock_guild, create_mock_channel, create_mock_author, \
     create_async_mock_message

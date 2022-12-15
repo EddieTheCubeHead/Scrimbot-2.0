@@ -4,16 +4,16 @@ __author__ = "Eetu Asikainen"
 from discord.ext import commands
 from hintedi import HinteDI
 
-from Bot.Checks.PermissionsCheck import PermissionsCheck
-from Bot.Converters.GuildConverter import GuildConverter
-from Bot.Converters.RatingConverter import RatingConverter
-from Bot.Converters.UserRatingConverter import UserRatingConverter
-from Bot.Core.ScrimBotClient import ScrimBotClient
-from Bot.Core.ScrimContext import ScrimContext
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.GuildMember import PermissionLevel
-from Bot.DataClasses.User import User
-from Bot.EmbedSystem.RatingEmbedBuilder import RatingEmbedBuilder
+from Src.Bot.Checks.PermissionsCheck import PermissionsCheck
+from Src.Bot.Converters.GuildConverter import GuildConverter
+from Src.Bot.Converters.RatingConverter import RatingConverter
+from Src.Bot.Converters.UserRatingConverter import UserRatingConverter
+from Src.Bot.Core.ScrimBotClient import ScrimBotClient
+from Src.Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.GuildMember import PermissionLevel
+from Src.Bot.DataClasses.User import User
+from Src.Bot.EmbedSystem.RatingEmbedBuilder import RatingEmbedBuilder
 
 
 class RatingCommands(commands.Cog):

@@ -3,8 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock, AsyncMock
 
-from Bot.Matchmaking.TeamCreation.TeamCreationStrategy import TeamCreationStrategy
+from Src.Bot.Cogs.Helpers.ScrimTeamOperationService import ScrimTeamOperationService
+from Src.Bot.Matchmaking.TeamCreation.TeamCreationStrategy import TeamCreationStrategy
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
+from Utils.TestHelpers.bot_dependency_patcher import mock_dependency
 
 
 class MockTeamCreationStrategy(TeamCreationStrategy):
@@ -15,12 +17,14 @@ class MockTeamCreationStrategy(TeamCreationStrategy):
 
 class TestTeamCreationStrategy(AsyncUnittestBase):
 
+    def setUp(self) -> None:
+        self.team_service = MagicMock()
+        with mock_dependency(ScrimTeamOperationService, self.team_service):
+            self.strategy = MockTeamCreationStrategy()
+
     async def test_create_teams_when_called_then_teams_cleared_first_and_reactions_cleared(self):
-        strategy = MockTeamCreationStrategy()
-        scrim_manager = MagicMock()
-        teams_manager = MagicMock()
-        scrim_manager.teams_manager = teams_manager
-        scrim_manager.message = AsyncMock()
-        await strategy.create_teams(scrim_manager)
-        teams_manager.clear_teams.assert_called()
-        scrim_manager.message.clear_reactions.assert_called()
+        scrim = AsyncMock()
+        message = AsyncMock()
+        await self.strategy.create_teams(scrim, message)
+        self.team_service.clear_teams.assert_called()
+        message.clear_reactions.assert_called()

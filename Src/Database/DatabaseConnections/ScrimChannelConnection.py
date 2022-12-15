@@ -6,8 +6,8 @@ from typing import Union, Optional
 from sqlalchemy.orm import subqueryload, selectinload
 from hintedi import HinteDI
 
-from Bot.DataClasses.ScrimChannel import ScrimChannel
-from Bot.DataClasses.VoiceChannel import VoiceChannel
+from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
+from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
 from Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 

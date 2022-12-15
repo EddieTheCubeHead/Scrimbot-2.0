@@ -3,10 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.Exceptions.BotAlreadyParticipantException import BotAlreadyParticipantException
-from Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
+from Src.Bot.Exceptions.BotAlreadyParticipantException import BotAlreadyParticipantException
+from Src.Bot.Exceptions.BotInvalidJoinException import BotInvalidJoinException
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
-from Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
+from Src.Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
 

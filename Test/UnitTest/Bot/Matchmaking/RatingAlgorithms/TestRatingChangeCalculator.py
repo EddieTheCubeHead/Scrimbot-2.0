@@ -3,12 +3,12 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.Converters.ScrimResultConverter import ScrimResult
-from Bot.DataClasses.Game import Game
-from Bot.DataClasses.Guild import Guild
-from Bot.DataClasses.Team import Team
-from Bot.DataClasses.UserScrimResult import Result
-from Bot.Matchmaking.RatingAlgorithms.RatingChangeCalculator import RatingChangeCalculator
+from Src.Bot.Converters.ScrimResultConverter import ScrimResult
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.DataClasses.Guild import Guild
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.DataClasses.UserScrimResult import Result
+from Src.Bot.Matchmaking.RatingAlgorithms.RatingChangeCalculator import RatingChangeCalculator
 from Utils.TestBases.UnittestBase import UnittestBase
 
 

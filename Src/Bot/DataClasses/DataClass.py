@@ -10,7 +10,7 @@ from discord.ext.commands import Context
 from sqlalchemy.orm import declared_attr, declarative_base
 
 if TYPE_CHECKING:  # pragma: no cover
-    from Bot.Converters.ConverterBase import ConverterBase
+    from Src.Bot.Converters.ConverterBase import ConverterBase
 
 
 class _DataClass:

@@ -4,11 +4,11 @@ __author__ = "Eetu Asikainen"
 from discord.ext.commands import Context
 from hintedi import HinteDI
 
-from Bot.Converters.ConverterBase import ConverterBase
-from Bot.Converters.Helpers.ChannelGroupParser import ChannelGroupParser
-from Bot.DataClasses.VoiceChannel import VoiceChannel
-from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
-from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
+from Src.Bot.Converters.ConverterBase import ConverterBase
+from Src.Bot.Converters.Helpers.ChannelGroupParser import ChannelGroupParser
+from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Src.Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
 
 DO_CONVERSION_STRINGS = ["auto", "group", "category", "from_group", "from_category"]

@@ -3,11 +3,11 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.DataClasses.ScrimChannel import ScrimChannel
-from Bot.DataClasses.VoiceChannel import VoiceChannel
+from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
+from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Test.Utils.TestBases.EmbedUnittest import EmbedUnittest
-from Bot.EmbedSystem.ScrimChannelEmbedBuilder import ScrimChannelEmbedBuilder
+from Src.Bot.EmbedSystem.ScrimChannelEmbedBuilder import ScrimChannelEmbedBuilder
 
 
 class TestScrimChannelEmbedBuilder(EmbedUnittest):

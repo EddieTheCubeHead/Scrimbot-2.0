@@ -3,8 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock, AsyncMock
 
-from Bot.Checks.ActiveScrimCheck import ActiveScrimCheck
-from Bot.Exceptions.BotMissingScrimException import BotMissingScrimException
+from Src.Bot.Checks.ActiveScrimCheck import ActiveScrimCheck
+from Src.Bot.Exceptions.BotMissingScrimException import BotMissingScrimException
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

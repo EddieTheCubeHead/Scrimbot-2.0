@@ -3,8 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from hintedi import HinteDI
 
-from Bot.DataClasses.Scrim import Scrim, ScrimState
-from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Src.Bot.DataClasses.Scrim import Scrim, ScrimState
+from Src.Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
 
 
 @HinteDI.singleton_implementation(base=ScrimStateBase, key=ScrimState.SETTING_UP)

@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, AsyncMock
 
 import inflect
 
-from Bot.DataClasses.DataClass import DataClass
+from Src.Bot.DataClasses.DataClass import DataClass
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
 

@@ -3,8 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.DataClasses.Guild import Guild
-from Bot.DataClasses.Prefix import Prefix
+from Src.Bot.DataClasses.Guild import Guild
+from Src.Bot.DataClasses.Prefix import Prefix
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator

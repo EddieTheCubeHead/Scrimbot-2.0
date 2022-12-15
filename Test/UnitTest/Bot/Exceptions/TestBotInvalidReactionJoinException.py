@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock, AsyncMock
 
-from Bot.Exceptions.BotInvalidReactionJoinException import BotInvalidReactionJoinException
+from Src.Bot.Exceptions.BotInvalidReactionJoinException import BotInvalidReactionJoinException
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

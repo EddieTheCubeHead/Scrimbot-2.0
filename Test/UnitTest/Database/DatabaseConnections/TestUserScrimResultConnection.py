@@ -3,8 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.DataClasses.UserRating import UserRating
-from Bot.DataClasses.UserScrimResult import Result, UserScrimResult
+from Src.Bot.DataClasses.UserRating import UserRating
+from Src.Bot.DataClasses.UserScrimResult import Result, UserScrimResult
 from Configs.Config import Config
 from Database.Core.MasterConnection import MasterConnection
 from Database.DatabaseConnections.UserScrimResultConnection import UserScrimResultConnection

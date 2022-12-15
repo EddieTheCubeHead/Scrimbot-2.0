@@ -5,10 +5,10 @@ from unittest.mock import MagicMock, AsyncMock
 
 from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 
-from Bot.Checks.FreeScrimCheck import FreeScrimCheck
-from Bot.Exceptions.BotChannelHasScrimException import BotChannelHasScrimException
-from Bot.Exceptions.BotReservedChannelException import BotReservedChannelException
-from Bot.Exceptions.BotUnregisteredChannelException import BotUnregisteredChannelException
+from Src.Bot.Checks.FreeScrimCheck import FreeScrimCheck
+from Src.Bot.Exceptions.BotChannelHasScrimException import BotChannelHasScrimException
+from Src.Bot.Exceptions.BotReservedChannelException import BotReservedChannelException
+from Src.Bot.Exceptions.BotUnregisteredChannelException import BotUnregisteredChannelException
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

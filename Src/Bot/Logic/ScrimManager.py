@@ -10,16 +10,16 @@ from discord import Message, Member
 from hintedi import HinteDI
 
 if TYPE_CHECKING:
-    from Bot.Converters.ScrimResultConverter import ScrimResult
-    from Bot.DataClasses.Scrim import ScrimState, Scrim
-from Bot.DataClasses.Team import Team
-from Bot.DataClasses.User import User
-from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
-from Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
-from Bot.Exceptions.BuildException import BuildException
-from Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
-from Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
-from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
+    from Src.Bot.Converters.ScrimResultConverter import ScrimResult
+    from Src.Bot.DataClasses.Scrim import ScrimState, Scrim
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.DataClasses.User import User
+from Src.Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Src.Bot.Exceptions.BotInvalidStateChangeException import BotInvalidStateChangeException
+from Src.Bot.Exceptions.BuildException import BuildException
+from Src.Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
+from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
+from Src.Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
 
 
 class ScrimManager:

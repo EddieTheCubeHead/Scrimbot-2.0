@@ -3,12 +3,12 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.Converters.ScrimResultConverter import ScrimResult
-from Bot.DataClasses.Scrim import Scrim, ScrimState
-from Bot.DataClasses.Team import Team
-from Bot.EmbedSystem.ScrimStates.EndedState import EndedState
-from Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
-from Bot.EmbedSystem.ScrimStates.StartedState import StartedState
+from Src.Bot.Converters.ScrimResultConverter import ScrimResult
+from Src.Bot.DataClasses.Scrim import Scrim, ScrimState
+from Src.Bot.DataClasses.Team import Team
+from Src.Bot.EmbedSystem.ScrimStates.EndedState import EndedState
+from Src.Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
+from Src.Bot.EmbedSystem.ScrimStates.StartedState import StartedState
 from Utils.TestBases.StateUnittest import StateUnittest
 
 

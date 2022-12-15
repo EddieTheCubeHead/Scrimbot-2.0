@@ -3,7 +3,7 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock, AsyncMock
 
-from Bot.Converters.Convertable import Convertable
+from Src.Bot.Converters.Convertable import Convertable
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
 

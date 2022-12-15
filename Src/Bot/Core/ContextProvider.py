@@ -5,7 +5,7 @@ from discord import Message
 from discord.ext.commands import Bot
 from hintedi import HinteDI
 
-from Bot.Core.ScrimContext import ScrimContext
+from Src.Bot.Core.ScrimContext import ScrimContext
 
 
 @HinteDI.singleton

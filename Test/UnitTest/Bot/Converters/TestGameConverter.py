@@ -5,13 +5,13 @@ import unittest
 from typing import Any
 from unittest.mock import MagicMock
 
-from Bot.DataClasses.Alias import Alias
+from Src.Bot.DataClasses.Alias import Alias
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
-from Bot.DataClasses.Game import Game
-from Bot.Converters.GameConverter import GameConverter
-from Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
-from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
+from Src.Bot.DataClasses.Game import Game
+from Src.Bot.Converters.GameConverter import GameConverter
+from Src.Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
+from Src.Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 
 
 class TestGameConverter(AsyncUnittestBase):

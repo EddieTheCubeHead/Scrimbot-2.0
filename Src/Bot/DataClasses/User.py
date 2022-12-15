@@ -10,12 +10,12 @@ from sqlalchemy import Column, Integer
 from sqlalchemy.orm import relationship
 from hintedi import HinteDI
 
-from Bot.Converters.Convertable import Convertable
+from Src.Bot.Converters.Convertable import Convertable
 if TYPE_CHECKING:  # pragma: no cover
-    from Bot.Converters.UserConverter import UserConverter
-from Bot.DataClasses.DataClass import DataClass
-from Bot.DataClasses.GuildMember import GuildMember
-from Bot.DataClasses.TeamMember import TeamMember
+    from Src.Bot.Converters.UserConverter import UserConverter
+from Src.Bot.DataClasses.DataClass import DataClass
+from Src.Bot.DataClasses.GuildMember import GuildMember
+from Src.Bot.DataClasses.TeamMember import TeamMember
 
 
 class User(DataClass, Convertable):  # pragma: no cover

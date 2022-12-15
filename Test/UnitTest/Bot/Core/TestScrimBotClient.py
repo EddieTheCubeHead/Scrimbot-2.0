@@ -9,15 +9,15 @@ from asyncio import sleep
 from logging import DEBUG
 from unittest.mock import MagicMock, patch, AsyncMock, call
 
-from Bot.Exceptions.BotBaseContextException import BotBaseContextException
-from Bot.Exceptions.BotBaseNoContextException import BotBaseNoContextException
-from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
-from Bot.Exceptions.BotUnrecognizedCommandException import BotUnrecognizedCommandException
-from Bot.Exceptions.BuildException import BuildException
+from Src.Bot.Exceptions.BotBaseContextException import BotBaseContextException
+from Src.Bot.Exceptions.BotBaseNoContextException import BotBaseNoContextException
+from Src.Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
+from Src.Bot.Exceptions.BotUnrecognizedCommandException import BotUnrecognizedCommandException
+from Src.Bot.Exceptions.BuildException import BuildException
 from Configs.Config import Config
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Test.Utils.TestHelpers.test_utils import get_cogs_messages
-from Bot.Core.ScrimBotClient import ScrimBotClient
+from Src.Bot.Core.ScrimBotClient import ScrimBotClient
 from Test.Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
 

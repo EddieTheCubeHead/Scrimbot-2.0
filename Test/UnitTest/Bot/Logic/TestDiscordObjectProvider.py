@@ -3,8 +3,8 @@ __author__ = "Eetu Asikainen"
 
 from unittest.mock import MagicMock
 
-from Bot.Exceptions.BuildException import BuildException
-from Bot.Logic.DiscordObjectProvider import DiscordObjectProvider
+from Src.Bot.Exceptions.BuildException import BuildException
+from Src.Bot.Logic.DiscordObjectProvider import DiscordObjectProvider
 from Utils.TestBases.UnittestBase import UnittestBase
 
 

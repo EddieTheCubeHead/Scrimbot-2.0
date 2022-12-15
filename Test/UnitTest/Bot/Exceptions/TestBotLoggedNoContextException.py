@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL, NOTSET
 from unittest.mock import MagicMock
 
-from Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
+from Src.Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
 from Test.Utils.TestBases.UnittestBase import UnittestBase
 
 

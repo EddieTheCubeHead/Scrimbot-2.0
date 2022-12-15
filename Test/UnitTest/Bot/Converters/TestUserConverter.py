@@ -5,9 +5,9 @@ from unittest.mock import MagicMock, patch, AsyncMock
 
 from discord.ext.commands import MemberNotFound
 
-from Bot.Converters.UserConverter import UserConverter
-from Bot.DataClasses.User import User
-from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
+from Src.Bot.Converters.UserConverter import UserConverter
+from Src.Bot.DataClasses.User import User
+from Src.Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 

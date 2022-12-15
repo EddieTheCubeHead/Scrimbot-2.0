@@ -3,10 +3,10 @@ __author__ = "Eetu Asikainen"
 
 from hintedi import HinteDI
 
-from Bot.Converters.ConverterBase import ConverterBase
-from Bot.DataClasses.Scrim import Scrim
-from Bot.DataClasses.UserRating import UserRating
-from Bot.DataClasses.UserScrimResult import UserScrimResult, Result
+from Src.Bot.Converters.ConverterBase import ConverterBase
+from Src.Bot.DataClasses.Scrim import Scrim
+from Src.Bot.DataClasses.UserRating import UserRating
+from Src.Bot.DataClasses.UserScrimResult import UserScrimResult, Result
 from Database.DatabaseConnections.UserScrimResultConnection import UserScrimResultConnection
 
 

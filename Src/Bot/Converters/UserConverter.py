@@ -8,10 +8,10 @@ from typing import TYPE_CHECKING
 from discord.ext.commands import Context, converter, MemberNotFound
 from hintedi import HinteDI
 
-from Bot.Converters.ConverterBase import ConverterBase
-from Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
+from Src.Bot.Converters.ConverterBase import ConverterBase
+from Src.Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 
-from Bot.DataClasses.User import User
+from Src.Bot.DataClasses.User import User
 from Database.DatabaseConnections.UserConnection import UserConnection
 
 
