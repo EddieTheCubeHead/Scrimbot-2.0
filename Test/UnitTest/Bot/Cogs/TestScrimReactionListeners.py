@@ -79,7 +79,7 @@ class TestScrimReactionListeners(AsyncUnittestBase):
     async def test_on_reaction_add_given_team_reaction_then_user_added_to_correct_team_and_message_edited(self):
         self.scrim.state = ScrimState.LOCKED
         for team in range(1, 10):
-            with self.subTest(f"Adding team joining reaction '{team}\u20E3'"):
+            with self.subTest(f"Adding team joining reaction '{team}'"):
                 players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji=f"{team}\u20E3")
                 await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
                 self.teams_service.add_to_team.assert_called_with(self.scrim, self.mock_user, f"Team {team}")
@@ -100,7 +100,7 @@ class TestScrimReactionListeners(AsyncUnittestBase):
     async def test_on_reaction_add_given_player_in_another_team_then_original_reaction_removed(self):
         self.scrim.state = ScrimState.LOCKED
         for team in range(1, 10):
-            with self.subTest(f"Removing old reaction while adding team joining reaction '{team}\u20E3'"):
+            with self.subTest(f"Removing old reaction while adding team joining reaction '{team}'"):
                 original_joining_reaction = AsyncMock()
                 original_joining_reaction.emoji = f"{(team + 1) % 9 + 1}\u20E3"
                 original_joining_reaction.users.return_value = [self.mock_member]
@@ -129,7 +129,7 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         teams = (SPECTATORS, PARTICIPANTS)
         self.scrim.state = ScrimState.LFP
         for emoji, team in zip(emojis, teams):
-            with self.subTest(f"Joining a scrim with reaction {emoji}"):
+            with self.subTest(f"Joining a scrim with reaction ({team})"):
                 players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji=emoji)
                 await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
                 self.teams_service.add_to_team.assert_called_with(self.scrim, self.mock_user, team)
@@ -139,7 +139,7 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         teams = ("Team 1", "Team 2", "Team 3", "Team 4")
         self.scrim.state = ScrimState.LOCKED
         for emoji, team in zip(emojis, teams):
-            with self.subTest(f"Joining a scrim with reaction {emoji}"):
+            with self.subTest(f"Joining a scrim with reaction ({team})"):
                 players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji=emoji)
                 await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
                 self.teams_service.add_to_team.assert_called_with(self.scrim, self.mock_user, team)
@@ -167,7 +167,7 @@ class TestScrimReactionListeners(AsyncUnittestBase):
     async def test_on_reaction_remove_given_team_reaction_then_user_removed_from_team_and_message_edited(self):
         self.scrim.state = ScrimState.LOCKED
         for team in range(1, 10):
-            with self.subTest(f"Adding team joining reaction '{team}\u20E3'"):
+            with self.subTest(f"Adding team joining reaction '{team}'"):
                 players_joining_reaction = Reaction(data={}, message=self.mock_message, emoji=f"{team}\u20E3")
                 await self.cog.scrim_reaction_remove_listener(players_joining_reaction, self.mock_member)
                 self.teams_service.remove_from_team.assert_called_with(self.scrim, self.mock_user)

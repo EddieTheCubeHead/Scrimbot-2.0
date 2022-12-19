@@ -6,7 +6,7 @@ from hintedi import HinteDI
 from Src.Bot.DataClasses.Scrim import Scrim
 from Src.Bot.DataClasses.UserRating import UserRating
 from Src.Bot.DataClasses.UserScrimResult import UserScrimResult, Result
-from Database.DatabaseConnections.ConnectionBase import ConnectionBase
+from Src.Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
 @HinteDI.singleton

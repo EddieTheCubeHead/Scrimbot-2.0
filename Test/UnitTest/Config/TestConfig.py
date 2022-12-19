@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from typing import List
 
 from Test.Utils.TestBases.UnittestBase import UnittestBase
-from Configs.Config import Config
+from Src.Configs.Config import Config
 
 
 class TestConfig(UnittestBase):

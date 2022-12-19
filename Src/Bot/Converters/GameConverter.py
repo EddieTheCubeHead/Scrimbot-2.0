@@ -14,8 +14,8 @@ from Src.Bot.DataClasses.Game import Game
 from Src.Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
 from Src.Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
 from Src.Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
-from Database.DatabaseConnections.ConnectionBase import ConnectionBase
-from Database.DatabaseConnections.GameConnection import GameConnection
+from Src.Database.DatabaseConnections.ConnectionBase import ConnectionBase
+from Src.Database.DatabaseConnections.GameConnection import GameConnection
 
 
 @HinteDI.singleton

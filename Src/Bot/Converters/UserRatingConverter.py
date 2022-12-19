@@ -13,7 +13,7 @@ from Src.Bot.DataClasses.Scrim import Scrim
 from Src.Bot.DataClasses.User import User
 from Src.Bot.DataClasses.UserRating import UserRating
 from Src.Bot.DataClasses.UserScrimResult import Result
-from Database.DatabaseConnections.UserRatingConnection import UserRatingConnection
+from Src.Database.DatabaseConnections.UserRatingConnection import UserRatingConnection
 
 
 @HinteDI.singleton

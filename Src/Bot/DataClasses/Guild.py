@@ -12,7 +12,7 @@ from hintedi import HinteDI
 
 from Src.Bot.Converters.Convertable import Convertable
 from Src.Bot.DataClasses.DataClass import DataClass
-from Configs.Config import Config
+from Src.Configs.Config import Config
 from Src.Bot.DataClasses.Prefix import Prefix
 from Src.Bot.DataClasses.UserRating import UserRating
 if TYPE_CHECKING:  # pragma: no cover

@@ -5,7 +5,7 @@ from discord.ext.commands import Context
 from hintedi import HinteDI
 
 from Src.Bot.Converters.ConverterBase import ConverterBase
-from Database.DatabaseConnections.GuildConnection import GuildConnection
+from Src.Database.DatabaseConnections.GuildConnection import GuildConnection
 
 
 @HinteDI.singleton

@@ -12,7 +12,7 @@ from Src.Bot.Converters.ConverterBase import ConverterBase
 from Src.Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 
 from Src.Bot.DataClasses.User import User
-from Database.DatabaseConnections.UserConnection import UserConnection
+from Src.Database.DatabaseConnections.UserConnection import UserConnection
 
 
 @HinteDI.singleton

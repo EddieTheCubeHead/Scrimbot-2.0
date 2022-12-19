@@ -9,7 +9,7 @@ from Src.Bot.Converters.Helpers.ChannelGroupParser import ChannelGroupParser
 from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
 from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 from Src.Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
-from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
+from Src.Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
 
 DO_CONVERSION_STRINGS = ["auto", "group", "category", "from_group", "from_category"]
 

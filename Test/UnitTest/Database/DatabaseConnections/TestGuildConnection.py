@@ -5,11 +5,11 @@ from unittest.mock import MagicMock
 
 from Src.Bot.DataClasses.Guild import Guild
 from Src.Bot.DataClasses.Prefix import Prefix
-from Configs.Config import Config
-from Database.Core.MasterConnection import MasterConnection
+from Src.Configs.Config import Config
+from Src.Database.Core.MasterConnection import MasterConnection
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Test.Utils.TestBases.UnittestBase import UnittestBase
-from Database.DatabaseConnections.GuildConnection import GuildConnection
+from Src.Database.DatabaseConnections.GuildConnection import GuildConnection
 
 
 def _construct_prefixes(*prefixes):

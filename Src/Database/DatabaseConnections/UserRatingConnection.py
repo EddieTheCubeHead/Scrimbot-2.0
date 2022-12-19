@@ -11,7 +11,7 @@ from Src.Bot.DataClasses.Scrim import Scrim
 from Src.Bot.DataClasses.Team import Team
 from Src.Bot.DataClasses.User import User
 from Src.Bot.DataClasses.UserScrimResult import UserScrimResult
-from Database.DatabaseConnections.ConnectionBase import ConnectionBase
+from Src.Database.DatabaseConnections.ConnectionBase import ConnectionBase
 from Src.Bot.DataClasses.UserRating import UserRating
 
 

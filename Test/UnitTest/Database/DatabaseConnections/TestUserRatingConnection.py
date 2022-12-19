@@ -13,9 +13,9 @@ from Src.Bot.DataClasses.Scrim import Scrim
 from Src.Bot.DataClasses.Team import Team
 from Src.Bot.DataClasses.User import User
 from Src.Bot.DataClasses.UserRating import UserRating, DEFAULT_RATING
-from Configs.Config import Config
-from Database.Core.MasterConnection import MasterConnection
-from Database.DatabaseConnections.UserRatingConnection import UserRatingConnection
+from Src.Configs.Config import Config
+from Src.Database.Core.MasterConnection import MasterConnection
+from Src.Database.DatabaseConnections.UserRatingConnection import UserRatingConnection
 from Utils.TestBases.UnittestBase import UnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

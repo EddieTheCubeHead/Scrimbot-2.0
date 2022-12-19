@@ -5,7 +5,7 @@ from discord import Guild
 from hintedi import HinteDI
 
 from Src.Bot.Converters.GuildConverter import GuildConverter
-from Configs.Config import Config
+from Src.Configs.Config import Config
 
 
 @HinteDI.singleton

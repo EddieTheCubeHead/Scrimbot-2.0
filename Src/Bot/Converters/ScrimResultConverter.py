@@ -9,7 +9,7 @@ from Src.Bot.Converters.ConverterBase import ConverterBase
 from Src.Bot.Core.ScrimContext import ScrimContext
 from Src.Bot.DataClasses.Team import Team
 from Src.Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
-from Database.DatabaseConnections.ScrimConnection import ScrimConnection
+from Src.Database.DatabaseConnections.ScrimConnection import ScrimConnection
 
 
 ScrimResult = list[tuple[Team, ...]] | None

@@ -9,7 +9,7 @@ from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
 from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
 from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
 from Src.Bot.Exceptions.BotReservedChannelException import BotReservedChannelException
-from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
+from Src.Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
 
 
 @HinteDI.singleton

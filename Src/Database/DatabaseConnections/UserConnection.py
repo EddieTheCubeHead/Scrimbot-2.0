@@ -7,7 +7,7 @@ from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
 from Src.Bot.DataClasses.Scrim import Scrim, ScrimState
 from Src.Bot.DataClasses.Team import Team
 from Src.Bot.DataClasses.User import User
-from Database.DatabaseConnections.ConnectionBase import ConnectionBase
+from Src.Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
 @HinteDI.singleton

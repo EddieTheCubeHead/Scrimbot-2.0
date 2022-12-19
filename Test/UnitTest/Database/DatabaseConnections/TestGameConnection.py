@@ -7,11 +7,11 @@ from sqlalchemy.exc import NoResultFound
 
 from Src.Bot.DataClasses.Alias import Alias
 from Src.Bot.DataClasses.Game import Game
-from Configs.Config import Config
-from Database.Core.MasterConnection import MasterConnection
+from Src.Configs.Config import Config
+from Src.Database.Core.MasterConnection import MasterConnection
 from Test.Utils.TestBases.ConnectionUnittest import ConnectionUnittest
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
-from Database.DatabaseConnections.GameConnection import GameConnection
+from Src.Database.DatabaseConnections.GameConnection import GameConnection
 
 
 _test_games = {

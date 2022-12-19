@@ -5,7 +5,7 @@ from sqlalchemy.orm import subqueryload, selectinload
 
 from hintedi import HinteDI
 
-from Database.DatabaseConnections.ConnectionBase import ConnectionBase
+from Src.Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
 @HinteDI.singleton

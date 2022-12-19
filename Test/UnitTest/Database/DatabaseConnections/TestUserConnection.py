@@ -8,9 +8,9 @@ from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
 from Src.Bot.DataClasses.Scrim import Scrim, ScrimState
 from Src.Bot.DataClasses.Team import Team
 from Src.Bot.DataClasses.User import User
-from Configs.Config import Config
-from Database.Core.MasterConnection import MasterConnection
-from Database.DatabaseConnections.UserConnection import UserConnection
+from Src.Configs.Config import Config
+from Src.Database.Core.MasterConnection import MasterConnection
+from Src.Database.DatabaseConnections.UserConnection import UserConnection
 from Test.Utils.TestBases.ConnectionUnittest import ConnectionUnittest
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

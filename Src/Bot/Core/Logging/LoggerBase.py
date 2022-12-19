@@ -7,7 +7,7 @@ from logging import Logger, DEBUG
 
 from hintedi import HinteDI
 
-from Configs.Config import Config
+from Src.Configs.Config import Config
 
 
 class LoggerBase(Logger, ABC):

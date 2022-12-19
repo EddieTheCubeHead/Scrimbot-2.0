@@ -14,7 +14,7 @@ from Src.Bot.DataClasses.Team import Team
 from Src.Bot.DataClasses.User import User
 from Src.Bot.DataClasses.UserScrimResult import Result
 from Src.Bot.Matchmaking.RatingAlgorithms.RatingChangeCalculator import RatingChangeCalculator
-from Database.DatabaseConnections.ScrimConnection import ScrimConnection
+from Src.Database.DatabaseConnections.ScrimConnection import ScrimConnection
 
 
 @HinteDI.singleton

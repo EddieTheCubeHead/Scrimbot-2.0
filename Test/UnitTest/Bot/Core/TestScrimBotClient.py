@@ -14,7 +14,7 @@ from Src.Bot.Exceptions.BotBaseNoContextException import BotBaseNoContextExcepti
 from Src.Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextException
 from Src.Bot.Exceptions.BotUnrecognizedCommandException import BotUnrecognizedCommandException
 from Src.Bot.Exceptions.BuildException import BuildException
-from Configs.Config import Config
+from Src.Configs.Config import Config
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 from Test.Utils.TestHelpers.test_utils import get_cogs_messages
 from Src.Bot.Core.ScrimBotClient import ScrimBotClient

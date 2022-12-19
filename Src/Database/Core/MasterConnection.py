@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from hintedi import HinteDI
 
 from Src.Bot.DataClasses.DataClass import DataClass
-from Configs.Config import Config
+from Src.Configs.Config import Config
 
 
 @HinteDI.singleton

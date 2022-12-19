@@ -44,7 +44,7 @@ class TestResponseBuilder(AsyncUnittestBase):
     async def test_send_given_embed_data_and_no_text_then_only_embed_response_sent(self):
         _embed = MagicMock()
         _embed_build = MagicMock(return_value=_embed)
-        with patch("Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
+        with patch("Src.Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
             await self.builder.send(self.ctx, displayable=MagicMock())
         self.ctx.send.assert_called_with(None, embed=_embed, delete_after=None)
 
@@ -52,7 +52,7 @@ class TestResponseBuilder(AsyncUnittestBase):
         _response = "Pong!"
         _embed = MagicMock()
         _embed_build = MagicMock(return_value=_embed)
-        with patch("Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
+        with patch("Src.Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
             await self.builder.send(self.ctx, _response, displayable=MagicMock())
         self.ctx.send.assert_called_with(_response, embed=_embed, delete_after=None)
 
@@ -61,7 +61,7 @@ class TestResponseBuilder(AsyncUnittestBase):
         _response = "Pong!"
         _embed = MagicMock()
         _embed_build = MagicMock(return_value=_embed)
-        with patch("Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
+        with patch("Src.Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
             await self.builder.send(self.ctx, _response, displayable=MagicMock(), delete_after=deletion_timeout)
         self.ctx.send.assert_called_with(_response, embed=_embed, delete_after=deletion_timeout)
 
@@ -71,7 +71,7 @@ class TestResponseBuilder(AsyncUnittestBase):
         _embed = MagicMock()
         _embed_build = MagicMock(return_value=_embed)
         self.ctx.send.return_value = MagicMock()
-        with patch("Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
+        with patch("Src.Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
             message = await self.builder.send(self.ctx, _response, displayable=MagicMock(),
                                               delete_after=deletion_timeout)
         self.assertEqual(self.ctx.send.return_value, message)
@@ -86,7 +86,7 @@ class TestResponseBuilder(AsyncUnittestBase):
         mock_original = AsyncMock()
         _embed = MagicMock()
         _embed_build = MagicMock(return_value=_embed)
-        with patch("Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
+        with patch("Src.Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
             await self.builder.edit(mock_original, displayable=MagicMock())
         mock_original.edit.assert_called_with(content=None, embed=_embed)
 
@@ -95,6 +95,6 @@ class TestResponseBuilder(AsyncUnittestBase):
         _response = "Pong!"
         _embed = MagicMock()
         _embed_build = MagicMock(return_value=_embed)
-        with patch("Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
+        with patch("Src.Bot.EmbedSystem.ResponseBuilder.ResponseBuilder.build", _embed_build):
             await self.builder.edit(mock_original, _response, displayable=MagicMock())
         mock_original.edit.assert_called_with(content=_response, embed=_embed)

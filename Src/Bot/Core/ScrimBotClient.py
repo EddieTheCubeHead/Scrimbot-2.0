@@ -21,7 +21,7 @@ from Src.Bot.Exceptions.BotLoggedNoContextException import BotLoggedNoContextExc
 from Src.Bot.Exceptions.BotUnrecognizedCommandException import BotUnrecognizedCommandException
 from Src.Bot.Logic.DiscordVoiceChannelProvider import DiscordVoiceChannelProvider
 from Src.Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
-from Configs.Config import Config
+from Src.Configs.Config import Config
 from Src.Bot.Logic.BotHelpCommand import BotHelpCommand
 from Src.Bot.Exceptions.BotLoggedContextException import BotLoggedContextException
 from Src.Bot.Exceptions.BotBaseRespondToContextException import BotBaseRespondToContextException
@@ -63,7 +63,7 @@ class ScrimBotClient(commands.Bot):
         parent_path = Path(os.path.dirname(__file__)).parent
         for cog in os.listdir(os.path.join(parent_path, "Cogs")):
             if cog[-3:] == ".py" and not cog.startswith("_"):
-                self.load_extension(f".{cog[:-3]}", package="Bot.Cogs")
+                self.load_extension(f".{cog[:-3]}", package="Src.Bot.Cogs")
 
     def load_games(self):
         self.game_converter.init_games(self.config.games_dict)

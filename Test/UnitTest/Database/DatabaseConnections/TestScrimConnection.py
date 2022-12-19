@@ -14,9 +14,9 @@ from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
 from Src.Bot.DataClasses.Team import Team, PARTICIPANTS, QUEUE, SPECTATORS
 from Src.Bot.DataClasses.User import User
 from Src.Bot.DataClasses.UserScrimResult import UserScrimResult, Result
-from Configs.Config import Config
-from Database.Core.MasterConnection import MasterConnection
-from Database.DatabaseConnections.ScrimConnection import ScrimConnection
+from Src.Configs.Config import Config
+from Src.Database.Core.MasterConnection import MasterConnection
+from Src.Database.DatabaseConnections.ScrimConnection import ScrimConnection
 from Utils.TestBases.UnittestBase import UnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

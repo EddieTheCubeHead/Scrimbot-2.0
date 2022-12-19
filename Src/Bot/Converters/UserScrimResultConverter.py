@@ -7,7 +7,7 @@ from Src.Bot.Converters.ConverterBase import ConverterBase
 from Src.Bot.DataClasses.Scrim import Scrim
 from Src.Bot.DataClasses.UserRating import UserRating
 from Src.Bot.DataClasses.UserScrimResult import UserScrimResult, Result
-from Database.DatabaseConnections.UserScrimResultConnection import UserScrimResultConnection
+from Src.Database.DatabaseConnections.UserScrimResultConnection import UserScrimResultConnection
 
 
 @HinteDI.singleton

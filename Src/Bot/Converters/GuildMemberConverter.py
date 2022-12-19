@@ -7,7 +7,7 @@ from hintedi import HinteDI
 from Src.Bot.Converters.ConverterBase import ConverterBase
 from Src.Bot.Core.ScrimContext import ScrimContext
 from Src.Bot.DataClasses.GuildMember import GuildMember
-from Database.DatabaseConnections.GuildMemberConnection import GuildMemberConnection
+from Src.Database.DatabaseConnections.GuildMemberConnection import GuildMemberConnection
 
 
 @HinteDI.singleton

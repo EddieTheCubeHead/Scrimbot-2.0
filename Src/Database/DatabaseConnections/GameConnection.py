@@ -7,7 +7,7 @@ from hintedi import HinteDI
 
 from Src.Bot.DataClasses.Alias import Alias
 from Src.Bot.DataClasses.Game import Game
-from Database.DatabaseConnections.ConnectionBase import ConnectionBase
+from Src.Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
 @HinteDI.singleton

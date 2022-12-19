@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from hintedi import HinteDI
 
 from Src.Bot.DataClasses.GuildMember import GuildMember
-from Database.DatabaseConnections.ConnectionBase import ConnectionBase
+from Src.Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
 @HinteDI.singleton

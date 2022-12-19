@@ -4,9 +4,9 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import MagicMock
 
 from Src.Bot.DataClasses.GuildMember import GuildMember, PermissionLevel
-from Configs.Config import Config
-from Database.Core.MasterConnection import MasterConnection
-from Database.DatabaseConnections.GuildMemberConnection import GuildMemberConnection
+from Src.Configs.Config import Config
+from Src.Database.Core.MasterConnection import MasterConnection
+from Src.Database.DatabaseConnections.GuildMemberConnection import GuildMemberConnection
 from Utils.TestBases.UnittestBase import UnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

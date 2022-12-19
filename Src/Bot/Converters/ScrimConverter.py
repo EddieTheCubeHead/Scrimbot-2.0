@@ -15,7 +15,7 @@ from Src.Bot.DataClasses.Team import PARTICIPANTS, SPECTATORS, QUEUE, Team
 from Src.Bot.DataClasses.User import User
 from Src.Bot.Exceptions.BotChannelHasScrimException import BotChannelHasScrimException
 from Src.Bot.Logic.ScrimManager import ScrimManager
-from Database.DatabaseConnections.ScrimConnection import ScrimConnection
+from Src.Database.DatabaseConnections.ScrimConnection import ScrimConnection
 
 
 def _add_team_to_scrim(team_name: str, scrim: Scrim, min_size: int = 0, max_size: int = 0):

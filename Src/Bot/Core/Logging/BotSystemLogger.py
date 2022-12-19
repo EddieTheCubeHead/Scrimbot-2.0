@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from hintedi import HinteDI
 
 from Src.Bot.Core.Logging.LoggerBase import LoggerBase
-from Configs.Config import Config
+from Src.Configs.Config import Config
 
 
 @HinteDI.singleton

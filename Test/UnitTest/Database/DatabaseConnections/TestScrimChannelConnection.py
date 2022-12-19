@@ -5,11 +5,11 @@ from sqlalchemy.exc import NoResultFound
 
 from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
 from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
-from Configs.Config import Config
-from Database.Core.MasterConnection import MasterConnection
+from Src.Configs.Config import Config
+from Src.Database.Core.MasterConnection import MasterConnection
 from Test.Utils.TestBases.ConnectionUnittest import ConnectionUnittest
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
-from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
+from Src.Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
 
 
 def _generate_voice_channels(voice_ids, parent_channel_id) -> list[VoiceChannel]:

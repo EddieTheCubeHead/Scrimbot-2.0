@@ -5,9 +5,9 @@ from unittest.mock import MagicMock
 
 from Src.Bot.DataClasses.UserRating import UserRating
 from Src.Bot.DataClasses.UserScrimResult import Result, UserScrimResult
-from Configs.Config import Config
-from Database.Core.MasterConnection import MasterConnection
-from Database.DatabaseConnections.UserScrimResultConnection import UserScrimResultConnection
+from Src.Configs.Config import Config
+from Src.Database.Core.MasterConnection import MasterConnection
+from Src.Database.DatabaseConnections.UserScrimResultConnection import UserScrimResultConnection
 from Utils.TestBases.UnittestBase import UnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 

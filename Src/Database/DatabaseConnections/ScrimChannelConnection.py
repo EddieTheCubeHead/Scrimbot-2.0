@@ -8,7 +8,7 @@ from hintedi import HinteDI
 
 from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
 from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
-from Database.DatabaseConnections.ConnectionBase import ConnectionBase
+from Src.Database.DatabaseConnections.ConnectionBase import ConnectionBase
 
 
 def _get_from_id(channel_id, session):

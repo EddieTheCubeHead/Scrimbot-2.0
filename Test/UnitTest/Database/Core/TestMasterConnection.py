@@ -4,7 +4,7 @@ __author__ = "Eetu Asikainen"
 from unittest.mock import MagicMock
 
 from Test.Utils.TestBases.UnittestBase import UnittestBase
-from Database.Core.MasterConnection import MasterConnection
+from Src.Database.Core.MasterConnection import MasterConnection
 
 
 class TestMasterConnection(UnittestBase):

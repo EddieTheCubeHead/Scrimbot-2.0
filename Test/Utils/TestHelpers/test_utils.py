@@ -38,10 +38,10 @@ def assert_almost_now(timestamp: datetime, delta: timedelta = timedelta(millisec
 
 
 def get_cogs_messages():
-    from Bot import Cogs
+    from Src.Bot import Cogs
     for cog in os.listdir(os.path.dirname(Cogs.__file__)):
         if re.match(r"^[^_][a-zA-Z]*\.py$", cog):
-            yield rf"Using cog Bot.Cogs.{cog[:-3]}, with version {__version__}"
+            yield rf"Using cog Src.Bot.Cogs.{cog[:-3]}, with version {__version__}"
 
 
 def set_member_voice_present(context, member_id: int, guild: discord.Guild):

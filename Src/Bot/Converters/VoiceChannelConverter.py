@@ -6,7 +6,7 @@ from hintedi import HinteDI
 
 from Src.Bot.Converters.ConverterBase import ConverterBase
 from Src.Bot.DataClasses.VoiceChannel import VoiceChannel
-from Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
+from Src.Database.DatabaseConnections.ScrimChannelConnection import ScrimChannelConnection
 
 
 _LOBBY_CHANNEL_PREFIX: str = "l:"

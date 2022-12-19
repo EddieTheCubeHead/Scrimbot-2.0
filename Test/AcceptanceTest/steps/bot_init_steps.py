@@ -11,8 +11,8 @@ from hintedi import HinteDI
 
 from Src.Bot.Core.Logging.BotClientLogger import BotClientLogger
 from Src.Bot.Core.ScrimBotClient import ScrimBotClient
-from Configs.Config import Config
-from Database.Core.MasterConnection import MasterConnection
+from Src.Configs.Config import Config
+from Src.Database.Core.MasterConnection import MasterConnection
 from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 from Test.Utils.TestHelpers.ResponseMessageCatcher import ResponseMessageCatcher
 from Test.Utils.TestHelpers.test_utils import get_cogs_messages
