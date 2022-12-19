@@ -3,8 +3,6 @@ from __future__ import annotations
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
-import asyncio
-import queue
 from collections import OrderedDict
 from datetime import datetime
 from typing import Optional, Union

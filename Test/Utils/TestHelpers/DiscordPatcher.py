@@ -30,7 +30,7 @@ class DiscordPatcher:
     @contextmanager
     def patch_all(self):
         try:
-            self.patchers.append(patch("Bot.Core.ScrimBotClient.ScrimBotClient.user", MagicMock()))
+            self.patchers.append(patch("Src.Bot.Core.ScrimBotClient.ScrimBotClient.user", MagicMock()))
             for patched, mock in self.patches:
                 self.patchers.append(patch(patched, mock))
             for patcher in self.patchers:
