@@ -41,7 +41,7 @@ class TestScrimReactionListeners(AsyncUnittestBase):
         self.scrim.teams = [_create_team(name) for name in (PARTICIPANTS, SPECTATORS, QUEUE, "Team 1", "Team 2")]
         self.embed_builder = AsyncMock()
         self.user_converter = MagicMock()
-        self.user_converter.is_in_scrim.return_value = False
+        self.user_converter.is_in_another_scrim.return_value = False
         self.scrim_converter = MagicMock()
         self.scrim_converter.fetch_scrim.return_value.__aenter__.return_value = self.scrim
         self.teams_service = MagicMock()
@@ -111,7 +111,7 @@ class TestScrimReactionListeners(AsyncUnittestBase):
 
     async def test_on_reaction_add_given_multi_scrim_join_caught_then_exception_logged_and_reaction_removed(self):
         self.scrim.state = ScrimState.LFP
-        self.user_converter.is_in_scrim.return_value = True
+        self.user_converter.is_in_another_scrim.return_value = True
         mock_team = SPECTATORS
         players_joining_reaction = AsyncMock()
         players_joining_reaction.emoji = "\U0001F441"

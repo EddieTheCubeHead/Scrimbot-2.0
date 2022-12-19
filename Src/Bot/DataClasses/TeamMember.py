@@ -14,5 +14,6 @@ class TeamMember(DataClass):  # pragma: no cover
     team_id = Column(Integer, ForeignKey("Teams.team_id"), primary_key=True)
 
     def __init__(self, user=None, team=None):
+        super().__init__()
         self.user = user
         self.team = team

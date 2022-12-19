@@ -21,6 +21,7 @@ class ParticipantTeam(DataClass):  # pragma: no cover
     scrim = relationship("Scrim", back_populates="teams")
 
     def __init__(self, placement: int | None, max_size: int = 0, min_size: int = None):
+        super().__init__()
         self.placement = placement
         self.max_size = max_size
         self.min_size = min_size if min_size is not None else max_size

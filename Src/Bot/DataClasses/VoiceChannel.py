@@ -26,6 +26,7 @@ class VoiceChannel(DataClass, Convertable):  # pragma: no cover
     teams = relationship("Team", back_populates="voice_channel")
 
     def __init__(self, channel_id: int, parent_channel_id: int, team_number: int = None):
+        super().__init__()
         self.channel_id: int = channel_id
         self.parent_channel_id: int = parent_channel_id
         self.team_number: Optional[int] = team_number

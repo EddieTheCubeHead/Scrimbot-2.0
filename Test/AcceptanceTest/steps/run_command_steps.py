@@ -253,6 +253,7 @@ async def add_user_reaction(context, reaction_string, user):
     reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
     await context.latest_fetched.add_reaction(reaction_string, user)
     context.client.dispatch("reaction_add", reaction, user)
+    await sleep(0)
 
 
 @when("users {users_string} react with {reaction_string}")

@@ -5,7 +5,7 @@ from hintedi import HinteDI
 
 from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
 from Src.Bot.DataClasses.Scrim import Scrim
-from Src.Bot.DataClasses.Team import PARTICIPANTS, QUEUE, Team
+from Src.Bot.DataClasses.Team import PARTICIPANTS, QUEUE, Team, SPECTATORS
 from Src.Bot.DataClasses.User import User
 
 
@@ -38,3 +38,11 @@ class ScrimTeamOperationService:
                     while len(participant_team.team.members) < participant_team.max_size and queue.members:
                         participant_team.team.members.append(queue.members.pop(0))
 
+    @staticmethod
+    def clear_teams(scrim: Scrim):
+        participants = next(team.team for team in scrim.teams if team.team.name == PARTICIPANTS)
+        for team in [participant_team.team for participant_team in scrim.teams]:
+            if team.name in (PARTICIPANTS, SPECTATORS, QUEUE):
+                continue
+            while team.members:
+                participants.members.append(team.members.pop())

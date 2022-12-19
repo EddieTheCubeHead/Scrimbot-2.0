@@ -15,5 +15,6 @@ class Alias(DataClass):  # pragma: no cover
     game = relationship("Game", back_populates="aliases")
 
     def __init__(self, name: str, game_name: str):
+        super().__init__()
         self.name = name
         self.game_name = game_name

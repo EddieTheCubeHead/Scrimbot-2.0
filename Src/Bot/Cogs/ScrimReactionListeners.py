@@ -26,6 +26,24 @@ from Src.Bot.Logic.ScrimParticipantProvider import ScrimParticipantProvider
 from Src.Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
 from Src.Bot.Core.ScrimBotClient import ScrimBotClient
 from Src.Bot.DataClasses.ScrimChannel import ScrimChannel
+# These need to be imported to enable registering them for DI
+from Src.Bot.Converters.GameConverter import GameConverter
+from Src.Bot.Converters.VoiceChannelConverter import VoiceChannelConverter
+from Src.Bot.Matchmaking.TeamCreation.RandomTeamsStrategy import RandomTeamsStrategy
+from Src.Bot.Matchmaking.TeamCreation.ClearTeamsStrategy import ClearTeamsStrategy
+from Src.Configs.Config import Config
+from Src.Bot.EmbedSystem.ScrimStates.StartedState import StartedState
+from Src.Bot.EmbedSystem.ScrimStates.CaptainsPreparationState import CaptainsPreparationState
+from Src.Bot.EmbedSystem.ScrimStates.CaptainsState import CaptainsState
+from Src.Bot.EmbedSystem.ScrimStates.EndedState import EndedState
+from Src.Bot.EmbedSystem.ScrimStates.LockedState import LockedState
+from Src.Bot.EmbedSystem.ScrimStates.LookingForPlayersState import LookingForPlayersState
+from Src.Bot.EmbedSystem.ScrimStates.SettingUpState import SettingUpState
+from Src.Bot.EmbedSystem.ScrimStates.TerminatedState import TerminatedState
+from Src.Bot.EmbedSystem.ScrimStates.WaitingForVoiceState import WaitingForVoiceState
+from Src.Bot.Matchmaking.RatingAlgorithms.UserRatingChange.FlatChangeStrategy import FlatChangeStrategy
+from Src.Bot.Matchmaking.RatingAlgorithms.TeamRating.MeanRatingStrategy import MeanRatingStrategy
+from Src.Bot.Matchmaking.RatingAlgorithms.TeamRating.WeightBestPlayerRatingStrategy import WeightBestPlayerRatingStrategy
 
 
 async def _try_remove_old_reaction(message: Message, new_team: int, user: Member):
@@ -108,7 +126,7 @@ class ScrimReactionListeners(commands.Cog):
             await BotInvalidReactionJoinException(member, react, exception_reason).resolve()
 
     def _try_add_to_team(self, scrim: Scrim, user: User, team: str):
-        if self._user_converter.is_in_scrim(user):
+        if self._user_converter.is_in_another_scrim(user, scrim):
             raise BotInvalidJoinException(user, team, "already a participant in another scrim")
         self._teams_service.add_to_team(scrim, user, team)
 

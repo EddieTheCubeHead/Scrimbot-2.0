@@ -29,6 +29,7 @@ class GuildMember(DataClass):  # pragma: no cover
     user = relationship("User", back_populates="guild_memberships")
 
     def __init__(self, user_id: int, guild_id: int, member: Member = None):
+        super().__init__()
         self.user_id = user_id
         self.guild_id = guild_id
         self.member = member

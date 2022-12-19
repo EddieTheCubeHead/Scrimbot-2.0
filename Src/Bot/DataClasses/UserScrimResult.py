@@ -29,6 +29,7 @@ class UserScrimResult(DataClass):  # pragma: no cover
 
     def __init__(self, user_id: int, rating_id: int | None, scrim_id: int, frozen_rating: int,
                  result: Result = Result.UNREGISTERED):
+        super().__init__()
         self.rating_id = rating_id
         self.user_id = user_id
         self.scrim_id = scrim_id

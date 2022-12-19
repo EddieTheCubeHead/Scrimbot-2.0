@@ -36,6 +36,7 @@ class UserRating(DataClass, Convertable):  # pragma: no cover
     results = relationship("UserScrimResult", back_populates="rating")
 
     def __init__(self, user_id: int, game_name: str, guild_id: int = 0, rating: int = DEFAULT_RATING):
+        super().__init__()
         self.user_id = user_id
         self.game_name = game_name
         self.guild_id = guild_id

@@ -34,6 +34,7 @@ class ScrimState(enum.Enum):
 class Scrim(DataClass):  # pragma: no cover
 
     def __init__(self, message: Message | None, game: Game, state: ScrimState = ScrimState.LFP):
+        super().__init__()
         if message is not None:
             self.channel_id = message.channel.id
             self.message_id = message.id

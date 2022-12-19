@@ -33,6 +33,7 @@ class Guild(DataClass, Convertable):  # pragma: no cover
     teams = relationship("Team", back_populates="guild")
 
     def __init__(self, guild_id: int, prefixes: Optional[list[Prefix]] = None):
+        super().__init__()
         self.guild_id = guild_id
         if prefixes is not None:
             self.prefixes = prefixes

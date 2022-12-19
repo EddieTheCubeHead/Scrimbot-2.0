@@ -39,7 +39,7 @@ class Game(DataClass, Convertable):  # pragma: no cover
     def __init__(self, name: str, colour: str, icon: str, min_team_size: int, max_team_size: int = None,
                  team_count: int = 2, aliases: list[Alias] = None, rating_change: str = "flat",
                  team_rating: str = "mean"):
-
+        super().__init__()
         self.name = name
         self._colour = colour
         self.icon = icon

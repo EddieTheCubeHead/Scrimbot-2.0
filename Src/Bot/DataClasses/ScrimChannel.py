@@ -29,6 +29,7 @@ class ScrimChannel(DataClass, Convertable):  # pragma: no cover
     scrims = relationship("Scrim", back_populates="scrim_channel")
 
     def __init__(self, channel_id: int, guild_id: int, *voice_channels: VoiceChannel):
+        super().__init__()
         self.channel_id: int = channel_id
         self.guild_id: int = guild_id
         self.voice_channels: list[VoiceChannel] = list(voice_channels)

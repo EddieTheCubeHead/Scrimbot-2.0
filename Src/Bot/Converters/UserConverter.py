@@ -9,6 +9,7 @@ from discord.ext.commands import Context, converter, MemberNotFound
 from hintedi import HinteDI
 
 from Src.Bot.Converters.ConverterBase import ConverterBase
+from Src.Bot.DataClasses.Scrim import Scrim
 from Src.Bot.Exceptions.BotConversionFailureException import BotConversionFailureException
 
 from Src.Bot.DataClasses.User import User
@@ -36,6 +37,9 @@ class UserConverter(ConverterBase):
 
     def is_in_scrim(self, user: User) -> bool:
         return self.connection.is_in_scrim(user.user_id)
+
+    def is_in_another_scrim(self, user: User, scrim: Scrim) -> bool:
+        return self.connection.is_in_another_scrim(user.user_id, scrim.scrim_id)
 
     def get_user(self, user_id: int) -> User:
         return self.connection.get_user(user_id)

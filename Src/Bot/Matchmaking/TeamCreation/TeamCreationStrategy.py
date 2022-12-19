@@ -25,7 +25,7 @@ class TeamCreationStrategy(ABC, Convertable):
         pass
 
     async def create_teams(self, scrim: Scrim, message: Message):
-        self._team_service.clear_teams()
+        self._team_service.clear_teams(scrim)
         self._create_teams_hook(scrim)
         await self._set_reactions_hook(scrim, message)
 

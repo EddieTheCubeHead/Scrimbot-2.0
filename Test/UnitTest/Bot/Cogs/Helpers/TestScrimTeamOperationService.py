@@ -7,6 +7,7 @@ from Src.Bot.Cogs.Helpers.ScrimTeamOperationService import ScrimTeamOperationSer
 from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
 from Src.Bot.DataClasses.Scrim import Scrim
 from Src.Bot.DataClasses.Team import PARTICIPANTS, SPECTATORS, QUEUE
+from Src.Bot.DataClasses.User import User
 from Utils.TestBases.UnittestBase import UnittestBase
 from Utils.TestHelpers.TestIdGenerator import TestIdGenerator
 
@@ -22,6 +23,13 @@ def _create_mock_teams(*team_names: str) -> [ParticipantTeam]:
         mock_participant_team.team = mock_team
         teams.append(mock_participant_team)
     return teams
+
+
+def _create_members(amount: int) -> list[User]:
+    members = []
+    for _ in range(amount):
+        members.append(MagicMock())
+    return members
 
 
 class TestScrimTeamOperationService(UnittestBase):
@@ -53,7 +61,7 @@ class TestScrimTeamOperationService(UnittestBase):
         mock_scrim.teams = _create_mock_teams(*team_names)
         mock_user = self._create_mock_user()
         mock_scrim.teams[0].max_size = 10
-        mock_scrim.teams[0].team.members = [MagicMock()] * 10
+        mock_scrim.teams[0].team.members = _create_members(10)
         self.service.add_to_team(mock_scrim, mock_user, PARTICIPANTS)
         self.assertEqual(1, len(mock_scrim.teams[2].team.members))
         self.assertEqual(10, len(mock_scrim.teams[0].team.members))
@@ -74,12 +82,23 @@ class TestScrimTeamOperationService(UnittestBase):
         mock_scrim.teams = _create_mock_teams(*team_names)
         mock_user = self._create_mock_user()
         mock_scrim.teams[0].max_size = 10
-        mock_scrim.teams[0].team.members = [MagicMock()] * 9 + [mock_user]
+        mock_scrim.teams[0].team.members = _create_members(9) + [mock_user]
         mock_scrim.teams[2].team.members = [MagicMock()]
         self.service.remove_from_team(mock_scrim, mock_user)
         self.assertEqual(0, len(mock_scrim.teams[2].team.members))
         self.assertEqual(10, len(mock_scrim.teams[0].team.members))
         self.assertNotIn(mock_user, mock_scrim.teams[2])
+
+    def test_clear_teams_when_members_in_game_teams_then_all_game_team_members_moved_to_participants(self):
+        mock_scrim = self._create_mock_scrim()
+        team_names = (PARTICIPANTS, SPECTATORS, QUEUE, "Team 1", "Team 2")
+        mock_scrim.teams = _create_mock_teams(*team_names)
+        mock_scrim.teams[3].team.members = _create_members(5)
+        mock_scrim.teams[4].team.members = _create_members(5)
+        self.service.clear_teams(mock_scrim)
+        self.assertEqual(10, len(mock_scrim.teams[0].team.members))
+        self.assertEqual(0, len(mock_scrim.teams[3].team.members))
+        self.assertEqual(0, len(mock_scrim.teams[4].team.members))
 
     def _create_mock_scrim(self) -> Scrim:
         scrim = MagicMock()

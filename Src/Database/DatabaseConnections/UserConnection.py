@@ -28,6 +28,15 @@ class UserConnection(ConnectionBase[User]):
             active_scrim = query.first()
         return active_scrim is not None
 
+    def is_in_another_scrim(self, user_id: int, scrim_id: int) -> bool:
+        with self._master_connection.get_session() as session:
+            query = session.query(ParticipantTeam).join(ParticipantTeam.team).join(Team.members)\
+                .join(ParticipantTeam.scrim).filter(Scrim.state != ScrimState.ENDED)\
+                .filter(Scrim.state != ScrimState.TERMINATED).filter(Scrim.scrim_id != scrim_id)\
+                .filter(User.user_id == user_id)
+            active_scrim = query.first()
+        return active_scrim is not None
+
     def _create_user(self, user_id: int):
         from Src.Bot.DataClasses.User import User
         new_user = User(user_id)

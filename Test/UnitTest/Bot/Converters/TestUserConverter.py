@@ -77,3 +77,17 @@ class TestUserConverter(AsyncUnittestBase):
         mock_user = MagicMock()
         self.assertTrue(self.converter.is_in_scrim(mock_user))
         self.connection.is_in_scrim.assert_called_with(mock_user.user_id)
+
+    def test_is_in_another_scrim_given_user_not_in_scrim_when_called_with_user_id_then_false_returned(self):
+        self.connection.is_in_another_scrim.return_value = False
+        mock_user = MagicMock()
+        mock_scrim = MagicMock()
+        self.assertFalse(self.converter.is_in_another_scrim(mock_user, mock_scrim))
+        self.connection.is_in_another_scrim.assert_called_with(mock_user.user_id, mock_scrim.scrim_id)
+
+    def test_is_in_another_scrim_given_user_in_scrim_when_called_with_user_id_then_true_returned(self):
+        self.connection.is_in_another_scrim.return_value = True
+        mock_user = MagicMock()
+        mock_scrim = MagicMock()
+        self.assertTrue(self.converter.is_in_another_scrim(mock_user, mock_scrim))
+        self.connection.is_in_another_scrim.assert_called_with(mock_user.user_id, mock_scrim.scrim_id)

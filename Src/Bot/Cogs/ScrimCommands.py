@@ -15,7 +15,7 @@ from Src.Bot.Converters.ScrimResultConverter import ScrimResultConverter
 from Src.Bot.Core.ScrimBotClient import ScrimBotClient
 from Src.Bot.Core.ScrimContext import ScrimContext
 from Src.Bot.DataClasses.Game import Game
-from Src.Bot.DataClasses.Scrim import Scrim, ScrimState
+from Src.Bot.DataClasses.Scrim import ScrimState, Scrim
 from Src.Bot.EmbedSystem.NewScrimEmbedBuilder import NewScrimEmbedBuilder
 from Src.Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
 from Src.Bot.EmbedSystem.ScrimStates.ScrimStateBase import ScrimStateBase
@@ -128,10 +128,11 @@ class ScrimCommands(commands.Cog):
         :type criteria: TeamCreationStrategy
         """
 
-        scrim = ctx.scrim
-        await criteria.create_teams(scrim)
-        await ctx.message.delete()
-        await self._response_builder.edit(scrim.message, displayable=scrim)
+        async with self._scrim_converter.fetch_scrim(ctx.channel.id) as scrim:
+            message = await ctx.channel.get_message(scrim.message_id)
+            await criteria.create_teams(scrim, message)
+            await ctx.message.delete()
+            await self._response_builder.edit(message, displayable=scrim)
 
     @commands.command(aliases=["begin"])
     @commands.guild_only()

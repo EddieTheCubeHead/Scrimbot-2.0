@@ -29,6 +29,7 @@ class User(DataClass, Convertable):  # pragma: no cover
     results = relationship("UserScrimResult", back_populates="user")
 
     def __init__(self, user_id: int, member: Member = None):
+        super().__init__()
         self.user_id = user_id
         self.member = member
 

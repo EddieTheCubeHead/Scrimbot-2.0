@@ -91,7 +91,6 @@ Feature: Scrim locking and team creation
       | 1️⃣       | 1      |
       | 2️⃣       | 1      |
 
-  @wip
   Scenario: Using the teams command to create random teams
     Given a Dota 2 scrim in locked state
     When ;teams random is called

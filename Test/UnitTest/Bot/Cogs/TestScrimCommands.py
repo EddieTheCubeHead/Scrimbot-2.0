@@ -2,7 +2,7 @@ __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
 import unittest
-from unittest.mock import AsyncMock, MagicMock, call
+from unittest.mock import AsyncMock, MagicMock, call, patch
 
 from Src.Bot.Cogs.ScrimCommands import ScrimCommands
 from Src.Bot.DataClasses.Game import Game
@@ -28,27 +28,31 @@ class TestScrimCommands(AsyncUnittestBase):
         self.participant_provider = MagicMock()
         self.result_handler = MagicMock()
         self.state_provider = MagicMock()
+        self.mock_scrim = MagicMock()
+
+        mock_context_manager = MagicMock()
+        mock_context_manager.return_value.__aenter__.return_value = self.mock_scrim
+        self.scrim_converter.fetch_scrim = mock_context_manager
+
         self.cog = ScrimCommands(self.scrim_channel_converter, self.response_builder, self.settings_service,
                                  self.scrim_converter, self.active_scrims_manager, self.waiting_scrim_service,
                                  self.participant_provider, self.result_handler, self.state_provider)
         self.cog._inject(MagicMock())
 
-    @unittest.skip(reason="Waiting for scrim command rewrite")
     async def test_scrim_given_called_with_game_then_scrim_with_game_created_and_embed_sent(self):
         game = Game("Test", "0xffffff", "icon_url", 5)
         ctx = AsyncMock()
-        ctx.channel.id = self.id_generator.generate_viable_id()
+        mock_message = AsyncMock()
+        self.response_builder.send.return_value = mock_message
         ctx.scrim = None
+        setup_scrim = MagicMock()
+        mock_init = MagicMock()
+        mock_init.return_value = setup_scrim
         result_scrim = MagicMock()
-        mock_scrim_channel = AsyncMock()
-        self.scrim_channel_converter.get_from_id.return_value = mock_scrim_channel
         self.scrim_converter.create_scrim.return_value = result_scrim
         await self.cog.scrim(ctx, game)
-        self.scrim_channel_converter.get_from_id.assert_called_with(ctx.channel.id)
-        self.scrim_converter.create_scrim.assert_called_with(mock_scrim_channel, game)
-        self.response_builder.send.assert_called_with(ctx, displayable=result_scrim)
+        self.response_builder.edit.assert_called_with(mock_message, displayable=result_scrim)
 
-    @unittest.skip(reason="Waiting for scrim command rewrite")
     async def test_scrim_given_called_with_game_then_team_joining_reactions_added(self):
         game = Game("Test", "0xffffff", "icon_url", 5)
         ctx = AsyncMock()
@@ -83,34 +87,26 @@ class TestScrimCommands(AsyncUnittestBase):
         self.response_builder.edit.assert_called_with(scrim_message, displayable=result_scrim)
 
     async def test_lock_given_called_with_enough_participants_then_scrim_locked_and_message_edited(self):
-        mock_scrim = MagicMock()
-        mock_scrim.state = ScrimState.LFP
+        self.mock_scrim.state = ScrimState.LFP
         mock_message = AsyncMock()
-        mock_scrim.message = mock_message
-        mock_context_manager = MagicMock()
-        mock_context_manager.return_value.__aenter__.return_value = mock_scrim
-        self.scrim_converter.fetch_scrim = mock_context_manager
+        self.mock_scrim.message = mock_message
         mock_lfp_state = MagicMock()
         self.state_provider.resolve_from_key.return_value = mock_lfp_state
         ctx = AsyncMock()
         ctx.channel.get_message.return_value = mock_message
-        ctx.scrim = mock_scrim
+        ctx.scrim = self.mock_scrim
         await self.cog.lock(ctx)
-        mock_lfp_state.transition.assert_called_with(mock_scrim, ScrimState.LOCKED)
-        self.response_builder.edit.assert_called_with(mock_message, displayable=mock_scrim)
+        mock_lfp_state.transition.assert_called_with(self.mock_scrim, ScrimState.LOCKED)
+        self.response_builder.edit.assert_called_with(mock_message, displayable=self.mock_scrim)
         ctx.message.delete.assert_called()
 
     async def test_lock_given_locked_then_scrim_joining_reactions_removed_and_team_joining_reactions_added(self):
-        mock_scrim = MagicMock()
-        mock_scrim.state = ScrimState.LFP
+        self.mock_scrim.state = ScrimState.LFP
         mock_message = AsyncMock()
-        mock_scrim.message = mock_message
-        mock_context_manager = MagicMock()
-        mock_context_manager.return_value.__aenter__.return_value = mock_scrim
-        self.scrim_converter.fetch_scrim = mock_context_manager
+        self.mock_scrim.message = mock_message
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
-        ctx.scrim = mock_scrim
+        ctx.scrim = self.mock_scrim
         ctx.channel.get_message.return_value = mock_message
         mock_state = MagicMock()
         mock_transitioned_state = MagicMock()
@@ -309,17 +305,16 @@ class TestScrimCommands(AsyncUnittestBase):
             *[participant.user_id for participant in participants])
 
     async def test_teams_when_called_then_strategy_create_teams_called_embed_edited_and_message_deleted(self):
-        mock_scrim = MagicMock()
-        mock_scrim.state = ScrimState.LOCKED
+        self.mock_scrim.state = ScrimState.LOCKED
         ctx = AsyncMock()
         ctx.channel.id = self.id_generator.generate_viable_id()
-        ctx.scrim = mock_scrim
-        ctx.scrim.message = AsyncMock()
+        mock_message = AsyncMock()
+        ctx.channel.get_message.return_value = mock_message
         mock_strategy = AsyncMock()
         await self.cog.teams(ctx, mock_strategy)
         ctx.message.delete.assert_called()
-        mock_strategy.create_teams.assert_called_with(mock_scrim)
-        self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
+        mock_strategy.create_teams.assert_called_with(self.mock_scrim, mock_message)
+        self.response_builder.edit.assert_called_with(mock_message, displayable=self.mock_scrim)
         ctx.scrim.message.clear_reactions.assert_not_called()
 
     def _create_participants(self, amount: int) -> list[User]:
