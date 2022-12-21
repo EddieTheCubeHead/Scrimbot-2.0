@@ -12,7 +12,7 @@ from Src.Bot.Cogs.Helpers.ScrimTeamOperationService import ScrimTeamOperationSer
 from Src.Bot.Converters.ScrimConverter import ScrimConverter
 from Src.Bot.Converters.UserConverter import UserConverter
 from Src.Bot.DataClasses.Scrim import ScrimState, Scrim
-from Src.Bot.DataClasses.Team import PARTICIPANTS, SPECTATORS
+from Src.Bot.DataClasses.Team import PARTICIPANTS, SPECTATORS, QUEUE
 from Src.Bot.DataClasses.User import User
 from Src.Bot.EmbedSystem.NewScrimEmbedBuilder import NewScrimEmbedBuilder
 from Src.Bot.EmbedSystem.ScrimEmbedBuilder import ScrimEmbedBuilder
@@ -125,10 +125,15 @@ class ScrimReactionListeners(commands.Cog):
                                f" because they are already a participant in another scrim."
             await BotInvalidReactionJoinException(member, react, exception_reason).resolve()
 
-    def _try_add_to_team(self, scrim: Scrim, user: User, team: str):
+    def _try_add_to_team(self, scrim: Scrim, user: User, team_name: str):
         if self._user_converter.is_in_another_scrim(user, scrim):
-            raise BotInvalidJoinException(user, team, "already a participant in another scrim")
-        self._teams_service.add_to_team(scrim, user, team)
+            raise BotAlreadyParticipantException(user)
+
+        if user.user_id in [member.user_id for team in scrim.teams for member in team.team.members] \
+           and team_name in (PARTICIPANTS, SPECTATORS, QUEUE):
+
+            raise BotInvalidJoinException(user, team_name, "already participating in the scrim")
+        self._teams_service.add_to_team(scrim, user, team_name)
 
     def _remove_from_team(self, scrim: Scrim, user: User):
         self._teams_service.remove_from_team(scrim, user)

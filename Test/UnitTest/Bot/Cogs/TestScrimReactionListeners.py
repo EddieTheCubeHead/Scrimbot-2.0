@@ -120,9 +120,9 @@ class TestScrimReactionListeners(AsyncUnittestBase):
             await self.cog.scrim_reaction_add_listener(players_joining_reaction, self.mock_member)
         players_joining_reaction.remove.assert_called_with(self.mock_member)
         system_logger.debug.assert_called_with(f"An exception occurred during bot operation: User "
-                                               f"'{self.mock_member.id}' could not join team '{mock_team}' with "
-                                               f"reaction {players_joining_reaction} because they are already a "
-                                               f"participant in another scrim.")
+                                               f"'{self.mock_member.id}' could not join the scrim with reaction "
+                                               f"{players_joining_reaction} because they are already a participant in "
+                                               f"another scrim.")
 
     async def test_on_reaction_add_when_joining_participants_or_spectators_then_participant_manager_updated(self):
         emojis = ("\U0001F441", "\U0001F3AE")

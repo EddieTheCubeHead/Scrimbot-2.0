@@ -168,7 +168,7 @@ Feature: Scrim and scrim team leaving/joining with reactions
 
   Scenario: Attempting to join participants after spectators
     Given an Among Us scrim
-    When a user reacts with 👁
+    When user 1 reacts with 👁
     And user 1 reacts with 🎮
     Then embed edited to have fields
       | name         | value                                                                     |
@@ -184,6 +184,7 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | 🎮       | 1      |
       | 👁       | 2      |
 
+  @wip
   Scenario: Joining a team in a locked scrim
     Given a Dota 2 scrim in locked state
     When user 1 reacts with 1️⃣
