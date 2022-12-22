@@ -7,6 +7,7 @@ from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
 from Src.Bot.DataClasses.Scrim import Scrim
 from Src.Bot.DataClasses.Team import PARTICIPANTS, QUEUE, Team, SPECTATORS
 from Src.Bot.DataClasses.User import User
+from Src.Database.Core.MasterConnection import MasterConnection
 
 
 def _handle_add_to_team(participant_team: ParticipantTeam, user: User, team_name: str) -> str:
@@ -27,7 +28,8 @@ class ScrimTeamOperationService:
                 team_name = _handle_add_to_team(participant_team, user, team_name)
 
     @staticmethod
-    def remove_from_team(scrim: Scrim, user: User):
+    @HinteDI.inject
+    def remove_from_team(scrim: Scrim, user: User, connection: MasterConnection):
         for participant_team in scrim.teams:
             team_member = next((member for member in participant_team.team.members if member.user_id == user.user_id),
                                None)

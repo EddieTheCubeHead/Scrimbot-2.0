@@ -1,6 +1,8 @@
 __version__ = "0.1"
 __author__ = "Eetu Asikainen"
 
+import time
+
 from sqlalchemy.orm import subqueryload, selectinload, joinedload
 from hintedi import HinteDI
 
@@ -37,5 +39,8 @@ class ScrimConnection(ConnectionBase):
         return scrim
 
     def edit_scrim(self, scrim: Scrim):
+        for team in scrim.teams:
+            with self._master_connection.get_session() as session:
+                session.add(team)
         with self._master_connection.get_session() as session:
             session.add(scrim)
