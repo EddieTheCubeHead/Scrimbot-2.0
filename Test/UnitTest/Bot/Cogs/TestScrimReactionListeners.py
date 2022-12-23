@@ -27,6 +27,7 @@ def _create_team(name: str):
     team = MagicMock()
     team.name = name
     participant_team.team = team
+    participant_team.max_size = 0
     return participant_team
 
 

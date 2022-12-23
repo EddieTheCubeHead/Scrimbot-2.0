@@ -270,7 +270,6 @@ Feature: Scrim and scrim team leaving/joining with reactions
       | 1️⃣       | 1      |
       | 2️⃣       | 1      |
 
-  @wip
   Scenario: Attempting to join a full team
     Given a Rocket League scrim in locked state
     When users 1 to 3 react with 1️⃣

@@ -55,6 +55,12 @@ async def _try_remove_old_reaction(message: Message, new_team: int, user: Member
                 pass
 
 
+def _assert_room_in_team(user: User, scrim: Scrim, team_name: str):
+    team = next((team for team in scrim.teams if team.team.name == team_name), None)
+    if team is not None and team.max_size != 0 and len(team.team.members) >= team.max_size:
+        raise BotInvalidJoinException(user, team_name, "team is already full")
+
+
 class ScrimReactionListeners(commands.Cog):
     """A cog responsive for tracking the reaction-based UI of the scrims
 
@@ -108,6 +114,7 @@ class ScrimReactionListeners(commands.Cog):
 
             elif re.match(r"^[1-9]\u20E3$", str(react.emoji)) and scrim.state == ScrimState.LOCKED:
                 new_team = int(str(react.emoji[0]))
+                _assert_room_in_team(user, scrim, f"Team {new_team}")
                 self._remove_from_team(scrim, user)
                 self._try_add_to_team(scrim, user, f"Team {int(str(react.emoji[0]))}")
                 await _try_remove_old_reaction(react.message, new_team, member)
