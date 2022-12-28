@@ -108,7 +108,6 @@ Feature: Scrim locking and team creation
       | Footer          | Send command 'start' to start the scrim or send command 'teams clear' to clear teams   |
     And scrim message has no reactions
 
-  @wip
   Scenario: Using the teams command to clear teams
     Given a Dota 2 scrim with full teams
     When ;teams clear is called
@@ -118,7 +117,7 @@ Feature: Scrim locking and team creation
       | Icon                     | https://i.imgur.com/OlWIlyY.jpg?1                   |
       | Colour                   | 0xce0000                                            |
       | Status                   | Players locked. Use reactions for manual team selection or the command 'teams _random/balanced/balancedrandom/pickup_' to define teams. |
-      | Unassigned               | {{users 1 to 10}}                                   |
+      | Unassigned               | {{10 users in users 1 to 10}}                       |
       | Spectators               | _empty_                                             |
       | {divider}                | {divider}                                           |
       | Team 1 _(5 more needed)_ | _empty_                                             |
