@@ -11,6 +11,7 @@ Feature: Starting a scrim after team creation
   #
   # If scrim waits for more than five minutes for players to join voice chat then state is reverted to team creation
 
+  @wip
   Scenario: Starting a scrim with full teams with automatic voice channel moving
     Given a Dota 2 scrim with full teams and 2 registered voice channels
     When all players are in voice chat

@@ -95,7 +95,9 @@ class TestScrimCommands(AsyncUnittestBase):
         ctx = AsyncMock()
         ctx.channel.get_message.return_value = mock_message
         ctx.scrim = self.mock_scrim
+
         await self.cog.lock(ctx)
+
         mock_lfp_state.transition.assert_called_with(self.mock_scrim, ScrimState.LOCKED)
         self.response_builder.edit.assert_called_with(mock_message, displayable=self.mock_scrim)
         ctx.message.delete.assert_called()
@@ -123,71 +125,36 @@ class TestScrimCommands(AsyncUnittestBase):
                 mock_message.add_reaction.call_args_list = []
 
     async def test_start_given_no_move_voice_arg_then_player_moving_attempted(self):
-        mock_scrim = AsyncMock()
-        mock_scrim.start = MagicMock()
-        mock_scrim.state = ScrimState.LOCKED
+        self.mock_scrim.state = ScrimState.LOCKED
+        mock_state = MagicMock()
+        mock_transitioned_state = MagicMock()
+        mock_state.transition.return_value = mock_transitioned_state
+        self.state_provider.resolve_from_key.return_value = mock_state
         ctx = AsyncMock()
-        ctx.channel.id = self.id_generator.generate_viable_id()
-        ctx.scrim = mock_scrim
-        ctx.scrim.message = AsyncMock()
+        mock_message = AsyncMock()
+        ctx.channel.get_message.return_value = mock_message
+
         await self.cog.start(ctx)
-        mock_scrim.start_with_voice.assert_called()
+
         ctx.message.delete.assert_called()
-        self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
-        mock_scrim.message.clear_reactions.assert_called()
-
-    async def test_start_when_player_moving_attended_successfully_then_scrim_not_registered_for_wait(self):
-        mock_scrim = AsyncMock()
-        mock_scrim.start = MagicMock()
-        mock_scrim.state = ScrimState.LOCKED
-        ctx = AsyncMock()
-        ctx.channel.id = self.id_generator.generate_viable_id()
-        ctx.scrim = mock_scrim
-        mock_scrim.message = AsyncMock()
-        mock_scrim.start_with_voice.return_value = True
-        await self.cog.start(ctx)
-        self.waiting_scrim_service.register.assert_not_called()
-
-    async def test_start_when_player_moving_attended_unsuccessfully_then_scrim_registered_for_wait(self):
-        mock_scrim = AsyncMock()
-        mock_scrim.start = MagicMock()
-        mock_scrim.state = ScrimState.LOCKED
-        ctx = AsyncMock()
-        ctx.channel.id = self.id_generator.generate_viable_id()
-        ctx.scrim = mock_scrim
-        mock_scrim.message = AsyncMock()
-        mock_scrim.start_with_voice.return_value = False
-        await self.cog.start(ctx)
-        self.waiting_scrim_service.register.assert_called_with(mock_scrim)
+        mock_state.transition.assert_called_with(self.mock_scrim, ScrimState.VOICE_WAIT)
+        self.response_builder.edit.assert_called_with(mock_message, displayable=self.mock_scrim)
 
     async def test_start_given_negative_move_voice_arg_then_started_without_moving(self):
-        mock_scrim = AsyncMock()
-        mock_scrim.start = MagicMock()
-        mock_scrim.state = ScrimState.LOCKED
+        self.mock_scrim.state = ScrimState.LOCKED
+        mock_state = MagicMock()
+        mock_transitioned_state = MagicMock()
+        mock_state.transition.return_value = mock_transitioned_state
+        self.state_provider.resolve_from_key.return_value = mock_state
         ctx = AsyncMock()
-        ctx.channel.id = self.id_generator.generate_viable_id()
-        ctx.scrim = mock_scrim
-        ctx.scrim.message = AsyncMock()
-        await self.cog.start(ctx, False)
-        mock_scrim.start.assert_called()
-        ctx.message.delete.assert_called()
-        self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
-        mock_scrim.message.clear_reactions.assert_called()
+        mock_message = AsyncMock()
+        ctx.channel.get_message.return_value = mock_message
 
-    async def test_start_given_not_enough_voice_channels_then_started_without_moving(self):
-        mock_scrim = AsyncMock()
-        mock_scrim.start = MagicMock()
-        mock_scrim.state = ScrimState.LOCKED
-        ctx = AsyncMock()
-        ctx.channel.id = self.id_generator.generate_viable_id()
-        ctx.scrim = mock_scrim
-        ctx.scrim.message = AsyncMock()
-        mock_scrim.teams_manager.supports_voice = False
-        await self.cog.start(ctx)
-        mock_scrim.start.assert_called()
+        await self.cog.start(ctx, False)
+
         ctx.message.delete.assert_called()
-        self.response_builder.edit.assert_called_with(ctx.scrim.message, displayable=mock_scrim)
-        mock_scrim.message.clear_reactions.assert_called()
+        mock_state.transition.assert_called_with(self.mock_scrim, ScrimState.STARTED)
+        self.response_builder.edit.assert_called_with(mock_message, displayable=self.mock_scrim)
 
     async def test_winner_given_team_name_then_team_made_winner(self):
         mock_scrim = AsyncMock()

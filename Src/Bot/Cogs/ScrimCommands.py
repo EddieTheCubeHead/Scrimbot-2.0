@@ -149,17 +149,12 @@ class ScrimCommands(commands.Cog):
         :type move_voice: bool
         """
 
-        await ctx.message.delete()
-        started = True
-        if move_voice and ctx.scrim.teams_manager.supports_voice:
-            started = await ctx.scrim.start_with_voice()
-        else:
-            ctx.scrim.start()
-        if started:
-            await ctx.scrim.message.clear_reactions()
-        else:
-            self._waiting_scrim_service.register(ctx.scrim)
-        await self._response_builder.edit(ctx.scrim.message, displayable=ctx.scrim)
+        async with self._scrim_converter.fetch_scrim(ctx.channel.id) as scrim:
+            await ctx.message.delete()
+            target_state = ScrimState.VOICE_WAIT if move_voice else ScrimState.STARTED
+            self._scrim_state_provider.resolve_from_key(scrim.state).transition(scrim, target_state)
+            message = await ctx.channel.get_message(scrim.message_id)
+            await self._response_builder.edit(message, displayable=scrim)
 
     @commands.command(aliases=["win", "w", "victor", "v"])
     @commands.guild_only()
