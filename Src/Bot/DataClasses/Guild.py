@@ -32,9 +32,10 @@ class Guild(DataClass, Convertable):  # pragma: no cover
     scrim_channels = relationship("ScrimChannel", back_populates="guild")
     teams = relationship("Team", back_populates="guild")
 
-    def __init__(self, guild_id: int, prefixes: Optional[list[Prefix]] = None):
+    def __init__(self, guild_id: int, prefixes: Optional[list[Prefix]] = None, discord_guild: discord.Guild = None):
         super().__init__()
         self.guild_id = guild_id
+        self.discord_guild = discord_guild
         if prefixes is not None:
             self.prefixes = prefixes
         else:

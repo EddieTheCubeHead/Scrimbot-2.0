@@ -5,6 +5,7 @@ __author__ = "Eetu Asikainen"
 
 from typing import TYPE_CHECKING
 
+from discord import Guild
 from discord.ext.commands import Context, converter, MemberNotFound
 from hintedi import HinteDI
 

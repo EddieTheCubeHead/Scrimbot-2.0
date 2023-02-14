@@ -41,7 +41,7 @@ class Scrim(DataClass):  # pragma: no cover
         self.game_name = game.name
         self.game = game
         self.state = state
-        self.teams: list[Team] = []
+        self.teams: list[ParticipantTeam] = []
 
     scrim_id = Column(Integer, primary_key=True, autoincrement=True)
     channel_id = Column(Integer, ForeignKey("ScrimChannels.channel_id"), nullable=False)
