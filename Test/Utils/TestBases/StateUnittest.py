@@ -10,8 +10,8 @@ from Src.Bot.DataClasses.ParticipantTeam import ParticipantTeam
 from Src.Bot.DataClasses.Team import Team
 from Src.Bot.DataClasses.User import User
 from Src.Bot.Logic.ScrimTeamsManager import ScrimTeamsManager
-from Test.Utils.TestBases.UnittestBase import UnittestBase
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
+from Utils.TestBases.AsyncUnittestBase import AsyncUnittestBase
 
 
 def _create_mock_player(user_id):
@@ -24,7 +24,7 @@ def _create_participant_team(team: Team, placement: int = None):
     return participant_team
 
 
-class StateUnittest(UnittestBase):
+class StateUnittest(AsyncUnittestBase):
 
     @classmethod
     def setUpClass(cls) -> None:

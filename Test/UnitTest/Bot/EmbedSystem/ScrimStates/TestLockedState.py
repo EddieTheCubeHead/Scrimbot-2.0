@@ -116,18 +116,18 @@ class TestLockedState(StateUnittest):
         self.scrim.has_full_teams = True
         self.assertEqual(expected_footer, state.build_footer(self.scrim))
 
-    def test_transition_given_teams_full_when_moving_to_started_state_then_state_transition_successful(self):
+    async def test_transition_given_teams_full_when_moving_to_started_state_then_state_transition_successful(self):
         self.add_team_1(*range(5))
         self.add_team_2(*range(5, 10))
         state = LockedState()
         mock_state_provider = MagicMock()
         new_state_mock = MagicMock()
         mock_state_provider.resolve_from_key.return_value = new_state_mock
-        new_state = state.transition(self.scrim, ScrimState.STARTED, mock_state_provider)
+        new_state = await state.transition(self.scrim, ScrimState.STARTED, mock_state_provider)
         self.assertEqual(new_state_mock, new_state)
         self.assertEqual(self.scrim.state, ScrimState.STARTED)
 
-    def test_transition_given_participants_left_when_moving_to_started_state_then_exception_raised(self):
+    async def test_transition_given_participants_left_when_moving_to_started_state_then_exception_raised(self):
         self.add_team_1(*range(5))
         self.add_team_2(*range(5, 10))
         self.add_participants(10, 11)
@@ -137,10 +137,10 @@ class TestLockedState(StateUnittest):
         mock_state_provider.resolve_from_key.return_value = new_state_mock
         expected_exception = BotBaseRespondToContextException(
             "Could not start the scrim. All participants are not in a team.", send_help=False)
-        self._assert_raises_correct_exception(expected_exception, state.transition, self.scrim, ScrimState.STARTED,
-                                              mock_state_provider)
+        await self._async_assert_raises_correct_exception(expected_exception, state.transition, self.scrim,
+                                                          ScrimState.STARTED, mock_state_provider)
 
-    def test_transition_given_teams_not_full_when_moving_to_started_state_then_exception_raised(self):
+    async def test_transition_given_teams_not_full_when_moving_to_started_state_then_exception_raised(self):
         self.add_team_1(*range(5))
         self.add_team_2(*range(5, 9))
         state = LockedState()
@@ -149,21 +149,21 @@ class TestLockedState(StateUnittest):
         mock_state_provider.resolve_from_key.return_value = new_state_mock
         expected_exception = BotBaseRespondToContextException(
             "Could not start the scrim. Some teams lack the minimum number of players required.", send_help=False)
-        self._assert_raises_correct_exception(expected_exception, state.transition, self.scrim, ScrimState.STARTED,
-                                              mock_state_provider)
+        await self._async_assert_raises_correct_exception(expected_exception, state.transition, self.scrim,
+                                                          ScrimState.STARTED, mock_state_provider)
 
-    def test_transition_given_teams_full_when_moving_to_voice_wait_state_then_state_transition_successful(self):
+    async def test_transition_given_teams_full_when_moving_to_voice_wait_state_then_state_transition_successful(self):
         self.add_team_1(*range(5))
         self.add_team_2(*range(5, 10))
         state = LockedState()
         mock_state_provider = MagicMock()
         new_state_mock = MagicMock()
         mock_state_provider.resolve_from_key.return_value = new_state_mock
-        new_state = state.transition(self.scrim, ScrimState.VOICE_WAIT, mock_state_provider)
+        new_state = await state.transition(self.scrim, ScrimState.VOICE_WAIT, mock_state_provider)
         self.assertEqual(new_state_mock, new_state)
         self.assertEqual(self.scrim.state, ScrimState.VOICE_WAIT)
 
-    def test_transition_given_participants_left_when_moving_to_voice_wait_state_then_exception_raised(self):
+    async def test_transition_given_participants_left_when_moving_to_voice_wait_state_then_exception_raised(self):
         self.add_team_1(*range(5))
         self.add_team_2(*range(5, 10))
         self.add_participants(10, 11)
@@ -173,10 +173,10 @@ class TestLockedState(StateUnittest):
         mock_state_provider.resolve_from_key.return_value = new_state_mock
         expected_exception = BotBaseRespondToContextException(
             "Could not start the scrim. All participants are not in a team.", send_help=False)
-        self._assert_raises_correct_exception(expected_exception, state.transition, self.scrim, ScrimState.VOICE_WAIT,
-                                              mock_state_provider)
+        await self._async_assert_raises_correct_exception(expected_exception, state.transition, self.scrim,
+                                                          ScrimState.VOICE_WAIT, mock_state_provider)
 
-    def test_transition_given_teams_not_full_when_moving_to_voice_wait_state_then_exception_raised(self):
+    async def test_transition_given_teams_not_full_when_moving_to_voice_wait_state_then_exception_raised(self):
         self.add_team_1(*range(5))
         self.add_team_2(*range(5, 9))
         state = LockedState()
@@ -185,5 +185,5 @@ class TestLockedState(StateUnittest):
         mock_state_provider.resolve_from_key.return_value = new_state_mock
         expected_exception = BotBaseRespondToContextException(
             "Could not start the scrim. Some teams lack the minimum number of players required.", send_help=False)
-        self._assert_raises_correct_exception(expected_exception, state.transition, self.scrim, ScrimState.VOICE_WAIT,
-                                              mock_state_provider)
+        await self._async_assert_raises_correct_exception(expected_exception, state.transition, self.scrim,
+                                                          ScrimState.VOICE_WAIT, mock_state_provider)

@@ -56,5 +56,5 @@ class LookingForPlayersState(ScrimStateBase):
             raise BotBaseRespondToContextException("Could not lock the scrim. Too few participants present.",
                                                    delete_after=60)
 
-    def transition_hook(self, scrim: Scrim, new_state: ScrimState):
+    async def transition_hook(self, scrim: Scrim, new_state: ScrimState):
         self.get_setup_teams(scrim)[2].members.clear()
