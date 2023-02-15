@@ -113,7 +113,7 @@ class TestLookingForPlayersState(StateUnittest):
                           "command 'lock'"
         self.assertEqual(expected_footer, state.build_footer(self.scrim))
 
-    async def test_transition_given_participants_full_when_moving_to_locked_state_then_state_transition_successful(self):
+    def test_transition_given_participants_full_when_moving_to_locked_state_then_state_transition_successful(self):
         self.participants.team.min_size = 10
         self.participants.team.max_size = 10
         self.add_participants(*range(10))
@@ -121,25 +121,25 @@ class TestLookingForPlayersState(StateUnittest):
         mock_state_provider = MagicMock()
         new_state_mock = MagicMock()
         mock_state_provider.resolve_from_key.return_value = new_state_mock
-        new_state = await state.transition(self.scrim, ScrimState.LOCKED, mock_state_provider)
+        new_state = state.transition(self.scrim, ScrimState.LOCKED, mock_state_provider)
         self.assertEqual(new_state_mock, new_state)
         self.assertEqual(self.scrim.state, ScrimState.LOCKED)
 
-    async def test_transition_given_players_in_queue_when_moving_to_locked_state_then_queue_emptied(self):
+    def test_transition_given_players_in_queue_when_moving_to_locked_state_then_queue_emptied(self):
         self.participants.team.min_size = 10
         self.participants.team.max_size = 10
         self.add_participants(*range(10))
         self.add_queued(*range(10, 13))
         state = LookingForPlayersState()
-        await state.transition(self.scrim, ScrimState.LOCKED, MagicMock())
+        state.transition(self.scrim, ScrimState.LOCKED, MagicMock())
         self.assertEqual(0, len(self.queue.team.members))
 
-    async def test_transition_given_not_enough_players_in_participants_then_exception_thrown(self):
+    def test_transition_given_not_enough_players_in_participants_then_exception_thrown(self):
         self.add_participants(*range(9))
         self.participants.team.min_size = 10
         self.participants.team.max_size = 10
         state = LookingForPlayersState()
         expected_exception = BotBaseRespondToContextException("Could not lock the scrim. Too few participants present.",
                                                               delete_after=60)
-        await self._async_assert_raises_correct_exception(expected_exception, state.transition, self.scrim,
-                                                          ScrimState.LOCKED, MagicMock())
+        self._assert_raises_correct_exception(expected_exception, state.transition, self.scrim, ScrimState.LOCKED,
+                                              MagicMock())
