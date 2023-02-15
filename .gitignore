@@ -8,3 +8,5 @@
 # Virtual environment
 /venv/
 /DataFiles/
+
+*__pycache__*
