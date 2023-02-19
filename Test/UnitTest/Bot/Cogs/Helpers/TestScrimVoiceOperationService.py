@@ -29,6 +29,9 @@ class TestScrimVoiceOperationService(AsyncUnittestBase):
         self.guild.get_member.side_effect = lambda player_id: self.player_states[player_id]
         self.guild.get_channel.side_effect = lambda channel_id: self.channels[channel_id]
 
+    def test_build_given_file_imported_then_singleton_dependency_created(self):
+        self._assert_singleton_dependency(ScrimVoiceOperationService)
+
     async def test_try_move_to_voice_given_all_players_present_then_returns_true(self):
         self.assertTrue(await self.service.try_move_to_voice(self.guild, self.scrim))
 

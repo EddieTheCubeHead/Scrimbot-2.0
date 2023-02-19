@@ -29,6 +29,7 @@ class TestScrimCommands(AsyncUnittestBase):
         self.result_handler = MagicMock()
         self.state_provider = MagicMock()
         self.mock_scrim = MagicMock()
+        self.mock_voice_operation_service = AsyncMock()
 
         mock_context_manager = MagicMock()
         mock_context_manager.return_value.__aenter__.return_value = self.mock_scrim
@@ -36,7 +37,8 @@ class TestScrimCommands(AsyncUnittestBase):
 
         self.cog = ScrimCommands(self.scrim_channel_converter, self.response_builder, self.settings_service,
                                  self.scrim_converter, self.active_scrims_manager, self.waiting_scrim_service,
-                                 self.participant_provider, self.result_handler, self.state_provider)
+                                 self.participant_provider, self.result_handler, self.state_provider,
+                                 self.mock_voice_operation_service)
         self.cog._inject(MagicMock())
 
     async def test_scrim_given_called_with_game_then_scrim_with_game_created_and_embed_sent(self):
@@ -133,6 +135,7 @@ class TestScrimCommands(AsyncUnittestBase):
         ctx = AsyncMock()
         mock_message = AsyncMock()
         ctx.channel.get_message.return_value = mock_message
+        self.mock_voice_operation_service.try_move_to_voice.return_value = False
 
         await self.cog.start(ctx)
 

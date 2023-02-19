@@ -224,7 +224,7 @@ def _create_call_ids(context: Context, *, alternative_text_channel=False) -> lis
 
 async def execute_command(command, context: Context, table):
     for row in table:
-        mock_guild = create_mock_guild(int(row[2]))
+        mock_guild = create_mock_guild(int(row[2]), context)
         mock_author = create_mock_author(int(row[0]), mock_guild, context)
         mock_channel = create_mock_channel(int(row[1]), mock_guild)
         mock_message = create_async_mock_message(mock_guild, mock_channel, mock_author, command)
@@ -248,7 +248,7 @@ async def step_impl(context: Context, user, reaction_string):
 
 async def add_user_reaction(context, reaction_string, user):
     user_id = try_get_id(context, f"user_{user}_id")
-    guild = create_mock_guild(try_get_id(context, "guild_id"))
+    guild = create_mock_guild(try_get_id(context, "guild_id"), context)
     user = create_mock_author(user_id, guild, context)
     reaction = Reaction(data={}, message=context.latest_fetched, emoji=reaction_string)
     await context.latest_fetched.add_reaction(reaction_string, user)
@@ -286,7 +286,7 @@ async def step_impl(context: Context, amount, reaction_string):
 
 
 async def _add_reactions(amount, context: Context, reaction_string, increment_start=None):
-    guild = create_mock_guild(try_get_id(context, "guild_id"))
+    guild = create_mock_guild(try_get_id(context, "guild_id"), context)
     user_increment = get_id_increment(context, "user") if increment_start is None else increment_start
     for increment in range(user_increment, user_increment + int(amount)):
         await _add_reaction(context, guild, reaction_string, increment)
@@ -304,7 +304,7 @@ async def _add_reaction(context: Context, guild, reaction_string, user_increment
 @when("user {user} removes reaction {reaction_string}")
 @async_run_until_complete
 async def step_impl(context: Context, user, reaction_string):
-    guild = create_mock_guild(try_get_id(context, "guild_id"))
+    guild = create_mock_guild(try_get_id(context, "guild_id"), context)
     user_id = try_get_id(context, f"user_{user}_id")
     await _remove_reaction(context, guild, _try_insert_number_react(reaction_string), user_id)
 

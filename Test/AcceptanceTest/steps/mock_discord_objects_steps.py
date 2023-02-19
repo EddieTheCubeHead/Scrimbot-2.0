@@ -16,6 +16,7 @@ from Test.Utils.TestHelpers.id_parser import get_id_increment, try_get_id, parse
 from Test.Utils.TestHelpers.test_utils import create_mock_channel, create_mock_guild, create_mock_channel_group, \
     set_member_voice_present, set_member_voice_not_present, create_mock_author
 from Test.Utils.TestHelpers.VoiceChannelFetchPatcher import VoiceChannelFetchPatcher
+from Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 
 
 @given("exists {amount} voice channels")
@@ -54,14 +55,14 @@ def _get_all_players(context):
     return [int(context.discord_ids[name]) for name in context.discord_ids if re.match(r"user_(\d+_|)id", name)]
 
 
-@when("{player_spec} are in voice chat")
-@when("{player_spec} is in voice chat")
+@given("{player_spec} are in voice chat")
+@given("{player_spec} is in voice chat")
 def step_impl(context: Context, player_spec):
     _mock_voice_presence(context, player_spec)
 
 
-@when("{player_spec} are not in voice chat")
-@when("{player_spec} is not in voice chat")
+@given("{player_spec} are not in voice chat")
+@given("{player_spec} is not in voice chat")
 def step_impl(context: Context, player_spec):
     _mock_voice_presence(context, player_spec, False)
 
@@ -74,6 +75,7 @@ def _mock_voice_presence(context, player_spec, present=True) -> list[int]:
             set_member_voice_present(context, player, guild)
         else:
             set_member_voice_not_present(context, player, guild)
+    guild.get_member.side_effect = lambda user_id: context.mocked_users[(user_id, guild.id)]
     return players
 
 
@@ -144,7 +146,7 @@ def _create_mock_group(context, mock_guild):
 
 def _ensure_mocked_guild(context):
     mock_guild_id = try_get_id(context, "guild_id")
-    mock_guild = create_mock_guild(mock_guild_id)
+    mock_guild = create_mock_guild(mock_guild_id, context)
     return mock_guild
 
 

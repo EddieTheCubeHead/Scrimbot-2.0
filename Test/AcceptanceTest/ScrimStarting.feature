@@ -14,8 +14,8 @@ Feature: Starting a scrim after team creation
   @wip
   Scenario: Starting a scrim with full teams with automatic voice channel moving
     Given a Dota 2 scrim with full teams and 2 registered voice channels
-    When all players are in voice chat
-    And ;start is called
+    And all players are in voice chat
+    When ;start is called
     Then embed edited to have fields
       | name   | value                             |
       | Author | Dota 2 scrim                      |
@@ -31,8 +31,8 @@ Feature: Starting a scrim after team creation
 
   Scenario: Starting a scrim with fewer voice channels than teams
     Given a Dota 2 scrim with full teams and 1 registered voice channel
-    When all players are in voice chat
-    And ;start is called
+    And all players are in voice chat
+    When ;start is called
     Then embed edited to have fields
       | name   | value                             |
       | Author | Dota 2 scrim                      |
@@ -47,8 +47,8 @@ Feature: Starting a scrim after team creation
 
   Scenario: Starting a scrim with full teams with automatic voice channel moving disabled
     Given a Dota 2 scrim with full teams and 2 registered voice channel
-    When all players are in voice chat
-    And ;start false is called
+    And all players are in voice chat
+    When ;start false is called
     Then command message is deleted
     And embed edited to have fields
       | name   | value                             |
@@ -64,9 +64,9 @@ Feature: Starting a scrim after team creation
 
   Scenario: Starting a scrim with full teams and automatic voice channel moving when one player is not in voice
     Given a Dota 2 scrim with full teams and 2 registered voice channels
-    When players 1 to 9 are in voice chat
+    And players 1 to 9 are in voice chat
     And player 10 is not in voice chat
-    And ;start is called
+    When ;start is called
     Then command message is deleted
     And embed edited to have fields
       | name   | value                                                                |
@@ -97,10 +97,10 @@ Feature: Starting a scrim after team creation
 
   Scenario: Starting a scrim with full teams and automatic voice channel moving when multiple players are not in voice
     Given a Dota 2 scrim with full teams and 2 registered voice channels
-    When players 1 to 4 are in voice chat
+    And players 1 to 4 are in voice chat
     And players 6 to 9 are in voice chat
     And players 5 and 10 are not in voice chat
-    And ;start is called
+    When ;start is called
     Then command message is deleted
     And embed edited to have fields
       | name   | value                                                                |
@@ -145,9 +145,9 @@ Feature: Starting a scrim after team creation
 
   Scenario: Attempting to start a scrim but players don't join voice channel in five minutes
     Given a Dota 2 scrim with full teams and 2 registered voice channels
-    When players 1 to 9 are in voice chat
+    And players 1 to 9 are in voice chat
     And player 10 is not in voice chat
-    And ;start is called
+    When ;start is called
     Then command message is deleted
     When 5 minutes elapses
     And the task to prune waiting scrims is ran

@@ -9,6 +9,7 @@ from typing import Tuple, Type, Optional, Union
 from unittest.mock import MagicMock, AsyncMock
 
 import discord
+from discord import Member
 
 from Src.Bot.Core.ScrimContext import ScrimContext
 from Test.Utils.TestHelpers.TestIdGenerator import TestIdGenerator
@@ -101,9 +102,14 @@ def create_mock_channel_group(group_id: int, guild: discord.Guild) -> discord.Ca
     return mock_channel_group
 
 
-def create_mock_guild(guild_id: int) -> discord.Guild:
-    mock_guild = MagicMock()
+def create_mock_guild(guild_id: int, context = None) -> discord.Guild:
+    mock_guild = AsyncMock()
     mock_guild.id = guild_id
+
+    async def mock_get_member(member_id: int) -> Member:
+        return create_mock_author(member_id, mock_guild, context)
+
+    mock_guild.get_member = mock_get_member
     return mock_guild
 
 

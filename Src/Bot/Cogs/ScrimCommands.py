@@ -8,6 +8,7 @@ from hintedi import HinteDI
 from Src.Bot.Checks.ActiveScrimCheck import ActiveScrimCheck
 from Src.Bot.Checks.FreeScrimCheck import FreeScrimCheck
 from Src.Bot.Cogs.Helpers.BotSettingsService import BotSettingsService
+from Src.Bot.Cogs.Helpers.ScrimVoiceOperationService import ScrimVoiceOperationService
 from Src.Bot.Cogs.Helpers.WaitingScrimService import WaitingScrimService
 from Src.Bot.Converters.ScrimChannelConverter import ScrimChannelConverter
 from Src.Bot.Converters.ScrimConverter import ScrimConverter
@@ -57,7 +58,7 @@ class ScrimCommands(commands.Cog):
                  settings_service: BotSettingsService, scrim_converter: ScrimConverter,
                  scrims_manager: ActiveScrimsManager, waiting_scrim_service: WaitingScrimService,
                  participant_provider: ScrimParticipantProvider, result_handler: ResultHandler,
-                 scrim_state_provider: ScrimStateBase):
+                 scrim_state_provider: ScrimStateBase, voice_operation_service: ScrimVoiceOperationService):
         self._scrim_channel_converter = scrim_channel_converter
         self._response_builder = response_builder
         self._settings_service = settings_service
@@ -67,6 +68,7 @@ class ScrimCommands(commands.Cog):
         self._participant_provider = participant_provider
         self._result_handler = result_handler
         self._scrim_state_provider = scrim_state_provider
+        self._voice_operation_service = voice_operation_service
 
     @commands.command(aliases=['s'])
     @commands.guild_only()
@@ -151,9 +153,12 @@ class ScrimCommands(commands.Cog):
 
         async with self._scrim_converter.fetch_scrim(ctx.channel.id) as scrim:
             await ctx.message.delete()
-            target_state = ScrimState.VOICE_WAIT if move_voice else ScrimState.STARTED
+            target_state = ScrimState.STARTED
+            if move_voice and not await self._voice_operation_service.try_move_to_voice(ctx.guild, scrim):
+                target_state = ScrimState.VOICE_WAIT
             self._scrim_state_provider.resolve_from_key(scrim.state).transition(scrim, target_state)
             message = await ctx.channel.get_message(scrim.message_id)
+            await message.clear_reactions()
             await self._response_builder.edit(message, displayable=scrim)
 
     @commands.command(aliases=["win", "w", "victor", "v"])
