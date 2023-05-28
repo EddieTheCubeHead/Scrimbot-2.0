@@ -141,6 +141,7 @@ class TestScrimCommands(AsyncUnittestBase):
 
         ctx.message.delete.assert_called()
         mock_state.transition.assert_called_with(self.mock_scrim, ScrimState.VOICE_WAIT)
+        mock_message.clear_reactions.assert_called()
         self.response_builder.edit.assert_called_with(mock_message, displayable=self.mock_scrim)
 
     async def test_start_given_negative_move_voice_arg_then_started_without_moving(self):
@@ -157,6 +158,7 @@ class TestScrimCommands(AsyncUnittestBase):
 
         ctx.message.delete.assert_called()
         mock_state.transition.assert_called_with(self.mock_scrim, ScrimState.STARTED)
+        mock_message.clear_reactions.assert_called()
         self.response_builder.edit.assert_called_with(mock_message, displayable=self.mock_scrim)
 
     async def test_winner_given_team_name_then_team_made_winner(self):

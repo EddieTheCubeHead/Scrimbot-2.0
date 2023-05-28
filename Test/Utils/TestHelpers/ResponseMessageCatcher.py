@@ -3,6 +3,7 @@ __author__ = "Eetu Asikainen"
 
 import queue
 from contextlib import contextmanager
+from unittest.mock import AsyncMock
 
 from discord import Message
 from discord.ext.commands import Bot
@@ -12,6 +13,8 @@ from Test.Utils.TestHelpers.ResponseLoggerContext import ResponseLoggerContext
 
 
 class ResponseMessageCatcher(ContextProvider):
+
+    guild = AsyncMock()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

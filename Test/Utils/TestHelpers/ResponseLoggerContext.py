@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import Optional, Union
 from unittest.mock import MagicMock, AsyncMock
 
+import discord
 from discord import Message, Reaction, Member
 from discord.ext.commands import CommandError
 
@@ -74,10 +75,20 @@ class ResponseLoggerContext(ScrimContext):
     sent_dict = OrderedDict()
     dict_index = 0
     id_mocker = TestIdGenerator()
+    guild_mock: discord.Guild = AsyncMock()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.channel.get_message = self.get_message
+        self._guild = AsyncMock()
+
+    @property
+    def guild(self) -> discord.Guild:
+        return self.guild_mock
+
+    @guild.setter
+    def guild(self, value: discord.Guild):
+        self.guild_mock = value
 
     async def get_message(self, message_id: int):
         return self.sent_dict[message_id]

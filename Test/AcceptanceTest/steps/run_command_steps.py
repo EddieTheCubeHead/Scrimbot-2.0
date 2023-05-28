@@ -5,6 +5,7 @@ from asyncio import wait, sleep
 from typing import Optional
 from unittest.mock import MagicMock
 
+import discord
 from behave import *
 from behave.api.async_step import async_run_until_complete
 from behave.runner import Context
@@ -80,7 +81,15 @@ async def _create_locked_scrim(context, game, amount=0):
 @given("an {game} scrim with full teams and {amount} registered voice channel")
 @async_run_until_complete
 async def step_impl(context: Context, game, amount):
+    mock_registered_voice_channels(context, int(amount))
     await create_filled_game(amount, context, game)
+
+
+def mock_registered_voice_channels(context: Context, amount: int):
+    async def mock_get_channel(channel_id: int) -> discord.VoiceChannel:
+        mock_channel = MagicMock()
+        mock_channel.name = try_get_id(context, channel_id)
+        return mock_channel
 
 
 @given("a {game} scrim with full teams")
